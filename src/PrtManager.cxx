@@ -19,7 +19,7 @@ PrtManager::PrtManager(G4String outfile)
   fPhysList = 0;
   fParticle = 0;
   fMomentum = 0;
-  fGeometry = 3;
+  fGeometry = 0;
   fAngle = 0;
   fLens = 0;
 }
