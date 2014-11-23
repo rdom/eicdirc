@@ -1,0 +1,16 @@
+/vis/open OGL
+
+/vis/modeling/trajectories/create/drawByCharge
+/vis/modeling/trajectories/drawByCharge-0/default/setDrawStepPts true
+/vis/modeling/trajectories/drawByCharge-0/default/setStepPtsSize 5
+#/vis/modeling/trajectories/drawByCharge-0/default/setDrawAuxPts true
+#/vis/modeling/trajectories/drawByCharge-0/default/setAuxPtsSize 5
+#/vis/modeling/trajectories/drawByCharge-0/default/setTimeSliceInterval 0.1 ns
+#/vis/modeling/trajectories/list
+
+/vis/drawVolume
+/vis/scene/add/trajectories
+#/vis/ogl/set/startTime 0.0 ns
+#/vis/ogl/set/endTime 100.0 ns
+
+/vis/scene/add/hits

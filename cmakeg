@@ -1,0 +1,1 @@
+cmake -DGeant4_DIR=/home/john/usr/local ../.
