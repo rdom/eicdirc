@@ -51,7 +51,7 @@ int main(int argc,char** argv)
   G4int nThreads = 0;
 #endif
 
-  G4long myseed = 345354;
+  G4long myseed = 3453541;
   for ( G4int i=1; i<argc; i=i+2 ) {
     if      ( G4String(argv[i]) == "-m" ) macro     = argv[i+1];
     else if ( G4String(argv[i]) == "-u" ) session   = argv[i+1];
