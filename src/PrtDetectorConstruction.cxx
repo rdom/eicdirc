@@ -32,7 +32,7 @@ PrtDetectorConstruction::PrtDetectorConstruction()
 
   fNRow = 6;
   fNCol = 4;
-  fNBar = 1;
+  fNBar = 10;
 
   fHall[0] = 1000; fHall[1] = 1000; fHall[2] = 2000;
   //fBar[0] = 17; fBar[1] = 32; fBar[2] = 4200;
@@ -106,7 +106,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   }else{
     int pixelId = 0;
     for(int i=0; i<fNBar; i++){
-      double shifty=(i-1)*(fBar[1]+0.01)-fBar[1];
+      double shifty = i*(fBar[1]+0.01)-fPrizm[0]/2. + fBar[1]/2.;
       new G4PVPlacement(0,G4ThreeVector(0,shifty,0),lBar,"wBar",lDirc,false,i);      
     }
   }
