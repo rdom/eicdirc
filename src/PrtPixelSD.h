@@ -1,3 +1,9 @@
+// -----------------------------------------
+// PrtPixelSD.h
+//
+// Author  : R.Dzhygadlo at gsi.de
+// -----------------------------------------
+
 #ifndef PrtPixelSD_h
 #define PrtPixelSD_h 1
 

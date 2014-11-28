@@ -1,3 +1,9 @@
+// -----------------------------------------
+// PrtHit.h
+//
+// Author  : R.Dzhygadlo at gsi.de
+// -----------------------------------------
+
 #ifndef PrtHit_h
 #define PrtHit_h 1
 
@@ -32,8 +38,10 @@ public:
   Int_t GetChannel() { return fChannel;}
   Int_t GetTdc() { return fTdc;}
   Int_t GetMultiplicity() { return fMultiplicity; }
-  Int_t GetLeadTime(Int_t ind) { return fLeadTime[ind]; } 
-  Int_t GetTrailTime(Int_t ind) { return fTrailTime[ind]; } 
+  Double_t GetLeadTime() { return fLeadTime; } 
+  Double_t GetTotTime() { return fTotTime; } 
+
+  Double_t GetCherenkovMC()  { return fCherenkovMC; }
 
   // Mutators
   void SetMcpId(Int_t val)   { fMcpId = val; }
@@ -53,8 +61,10 @@ public:
   void SetTdc(Int_t val) { fTdc = val; }
   void SetMultiplicity(Int_t val) { fMultiplicity = val; }
  
-  void SetLeadTime(Int_t ind, Int_t val)  { fLeadTime[ind]=val; } 
-  void SetTrailTime(Int_t ind, Int_t val) { fTrailTime[ind]=val; } 
+  void SetLeadTime(Double_t val) { fLeadTime=val; } 
+  void SetTotTime(Double_t val) { fTotTime=val; } 
+
+  void SetCherenkovMC(Double_t val)    { fCherenkovMC = val; }
 
 protected:
 
@@ -70,12 +80,13 @@ protected:
   TVector3 fDigiPos;
   TVector3 fMomentum;
   TVector3 fPosition;
-
+  Double_t fCherenkovMC;
+  
   Int_t fChannel;
   Int_t fTdc;
   Int_t fMultiplicity;
-  Int_t fLeadTime[4];    
-  Int_t fTrailTime[4];  
+  Double_t fLeadTime;    
+  Double_t fTotTime;  
 
   ClassDef(PrtHit,1)
 };

@@ -28,7 +28,7 @@ find_package(ROOT REQUIRED)
 #----------------------------------------------------------------------------
 # Generate dictionary for root
 #
-execute_process(COMMAND rootcint -f PrtDict.cxx -c ../src/PrtHit.h ../src/PrtEvent.h ../src/PrtLinkDef.h)
+execute_process(COMMAND rootcint -f PrtDict.cxx -c ../src/PrtHit.h ../src/PrtEvent.h ../src/PrtLutNode.h ../src/PrtTrackInfo.h  ../src/PrtPhotonInfo.h ../src/PrtAmbiguityInfo.h ../src/PrtLinkDef.h)
 
 
 #----------------------------------------------------------------------------
@@ -45,7 +45,7 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/src/*.h)
 #
 add_executable(eicdirc PrtDirc.cxx ${sources} PrtDict.cxx ${headers} PrtDict.h)
 target_link_libraries(eicdirc ${Geant4_LIBRARIES} ${ROOT_LIBRARIES})
-add_library(eicdirclib SHARED ../src/PrtHit.cxx ../src/PrtEvent.cxx PrtDict.cxx ../src/PrtHit.h ../src/PrtEvent.h PrtDict.h)
+add_library(prtdirclib SHARED ../src/PrtHit.cxx ../src/PrtEvent.cxx ../src/PrtLutNode.cxx ../src/PrtTrackInfo.cxx  ../src/PrtPhotonInfo.cxx ../src/PrtAmbiguityInfo.cxx PrtDict.cxx ../src/PrtHit.h ../src/PrtEvent.h ../src/PrtLutNode.h ../src/PrtTrackInfo.h  ../src/PrtPhotonInfo.h ../src/PrtAmbiguityInfo.h PrtDict.h)
 
 #----------------------------------------------------------------------------
 # Copy all scripts to the build directory, i.e. the directory in which we

@@ -25,8 +25,10 @@ example:
                 1    bar (default)
                 2    plate
 
-//-c   MCP layout
-//                0    MCP covers all FD plain
+-c   MCP layout
+                0    pixels covers all FD plain
+                1    MCP covers all FD plain
+                2    MCP covers all FD plain
 //-l    focusing system
 //                0    no lens
 //                1    spherical lens

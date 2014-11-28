@@ -11,11 +11,10 @@ PrtHit::PrtHit(){
   fGlobalPos = TVector3(0,0,0);
   fDigiPos = TVector3(0,0,0);
   fMomentum = TVector3(0,0,0);
+  fCherenkovMC = 0;
   fChannel= -1;
   fTdc = -1;
   fMultiplicity = 0;
-  for(Int_t i=0; i<4; i++){
-    fLeadTime[i] = -1; 
-    fTrailTime[i] = -1; 
-  }
+  fLeadTime = -1; 
+  fTotTime = -1; 
 }

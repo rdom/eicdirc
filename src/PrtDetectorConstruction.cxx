@@ -28,7 +28,10 @@
 PrtDetectorConstruction::PrtDetectorConstruction()
   : G4VUserDetectorConstruction(){
 
-  fGeomId=2014; // 2012
+  fGeomId = PrtManager::Instance()->GetGeometry();
+  fMcpLayout = PrtManager::Instance()->GetMcpLayout();
+
+  //fGeomId=2014; // 2012
 
   fNRow = 6;
   fNCol = 4;
@@ -145,8 +148,8 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   fPrismShift = G4ThreeVector((fPrizm[2]+fPrizm[3])/4.-fPrizm[3]/2.,0,fBar[2]/2.+fPrizm[1]/2.+fLens[2]);
   new G4PVPlacement(xRot,fPrismShift,lPrizm,"wPrizm", lDirc,false,0);
 
-
-  if(false){
+  G4int mcplayout=1;
+  if(true){
     // The MCP
     G4Box* gMcp = new G4Box("gMcp",fMcpTotal[0]/2.,fMcpTotal[1]/2.,fMcpTotal[2]/2.);
     lMcp = new G4LogicalVolume(gMcp,BarMaterial,"lMcp",0,0,0);

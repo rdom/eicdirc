@@ -9,6 +9,7 @@
 #endif
 
 #include "G4UImanager.hh"
+#include "TROOT.h"
 
 #include "PrtPhysicsList.h"
 #include "PrtDetectorConstruction.h"
@@ -24,40 +25,46 @@
 #include "G4UIExecutive.hh"
 #endif
 
-#include "G4SystemOfUnits.hh"
+#include "TApplication.h"
+
 #include "PrtManager.h"
-#include "TVector3.h"
-#include "TString.h"
+//#include "PrtLutReco.h"
+
+
 
 namespace {
   void PrintUsage() {
-    G4cerr<<" Usage: "<<G4endl;
-    G4cerr<<" Prt [-m macro ] [-u UIsession] [-t nThreads] [-r seed] "<<G4endl;
-    G4cerr<<"   note: -t option is available only for multi-threaded mode."<<G4endl;
+    G4cerr<<" read README.md "<<G4endl;
   }
 }
 
 int main(int argc,char** argv)
 {
+  for ( G4int i=1; i<argc; i=i+2 ) std::cout<< argv[i] << "  "<<argv[i+1] <<std::endl;
+
   // Evaluate arguments
   if ( argc > 50 ) {
     PrintUsage();
     return 1;
   }
 
-  G4String macro, outfile, events, geometry, physlist;
-  G4String session,geomAng,batchmode,lensId,particle,momentum;
-#ifdef G4MULTITHREADED
-  G4int nThreads = 0;
-#endif
+  TApplication theApp("App", 0, 0);
+  
+  G4String macro, events, geometry, radiator, physlist, outfile, 
+    session,geomAng,batchmode,lensId,particle,momentum("1 GeV"),testVal,
+    beamDimension, mcpLayout, infile = "hits.root", lutfile = "../data/lut.root";
+  G4int runtype = 0;
 
   G4long myseed = 345354;
   for ( G4int i=1; i<argc; i=i+2 ) {
     if      ( G4String(argv[i]) == "-m" ) macro     = argv[i+1];
-    else if ( G4String(argv[i]) == "-u" ) session   = argv[i+1];
+    //    else if ( G4String(argv[i]) == "-u" ) session   = argv[i+1];
     else if ( G4String(argv[i]) == "-r" ) myseed    = atol(argv[i+1]);
     else if ( G4String(argv[i]) == "-o" ) outfile   = argv[i+1];
+    else if ( G4String(argv[i]) == "-i" ) infile    = argv[i+1];
+    else if ( G4String(argv[i]) == "-u" ) lutfile   = argv[i+1];
     else if ( G4String(argv[i]) == "-g" ) geometry  = argv[i+1];
+    else if ( G4String(argv[i]) == "-h" ) radiator  = argv[i+1];
     else if ( G4String(argv[i]) == "-a" ) geomAng   = argv[i+1];
     else if ( G4String(argv[i]) == "-b" ) batchmode = argv[i+1];
     else if ( G4String(argv[i]) == "-e" ) events    = argv[i+1];
@@ -65,11 +72,10 @@ int main(int argc,char** argv)
     else if ( G4String(argv[i]) == "-x" ) particle  = argv[i+1];
     else if ( G4String(argv[i]) == "-p" ) momentum  = argv[i+1];
     else if ( G4String(argv[i]) == "-w" ) physlist  = argv[i+1];
-#ifdef G4MULTITHREADED
-    else if ( G4String(argv[i]) == "-t" ) {
-      nThreads = G4UIcommand::ConvertToInt(argv[i+1]);
-    }
-#endif
+    else if ( G4String(argv[i]) == "-s" ) runtype   = atoi(argv[i+1]);
+    else if ( G4String(argv[i]) == "-z" ) beamDimension  = argv[i+1];
+    else if ( G4String(argv[i]) == "-c" ) mcpLayout = argv[i+1];
+    else if ( G4String(argv[i]) == "-t" ) testVal   = argv[i+1];
     else {
       PrintUsage();
       return 1;
@@ -78,28 +84,21 @@ int main(int argc,char** argv)
 
   // Choose the Random engine
   G4Random::setTheEngine(new CLHEP::RanecuEngine);
-
-  // Construct the default run manager
-#ifdef G4MULTITHREADED
-  G4MTRunManager * runManager = new G4MTRunManager;
-  if ( nThreads > 0 ) runManager->SetNumberOfThreads(nThreads);
-#else
-  G4RunManager * runManager = new G4RunManager;
-#endif
-
-  // Seed the random number generator manually
-  // if(myseed==345354) myseed = time(NULL);
-  
   std::cout<<"SEED "<<myseed <<std::endl;
   G4Random::setTheSeed(myseed);
-
-  if(outfile=="") outfile = "hits.root";
-  PrtManager::Instance(outfile);
+  G4RunManager * runManager = new G4RunManager;
 
   if(physlist.size()) PrtManager::Instance()->SetPhysList(atoi(physlist));
   if(geometry.size()) PrtManager::Instance()->SetGeometry(atoi(geometry));
+  if(radiator.size()) PrtManager::Instance()->SetRadiator(atoi(radiator));
   if(lensId.size())   PrtManager::Instance()->SetLens(atoi(lensId));
- 
+  if(mcpLayout.size())PrtManager::Instance()->SetMcpLayout(atoi(mcpLayout));
+  if(beamDimension.size())   PrtManager::Instance()->SetBeamDimension(atoi(beamDimension));
+  if(testVal.size())   PrtManager::Instance()->SetShift(atof(testVal));
+  if(testVal.size())   PrtManager::Instance()->SetTest(atof(testVal));
+  if(geomAng.size())   PrtManager::Instance()->SetAngle(atof(geomAng));
+
+
   // Detector construction
   runManager-> SetUserInitialization(new PrtDetectorConstruction());
   // Physics list
@@ -112,7 +111,6 @@ int main(int argc,char** argv)
 #ifdef G4VIS_USE
   // Initialize visualization
   G4VisManager* visManager = new G4VisExecutive;
-  // G4VisExecutive can take a verbosity argument - see /vis/verbose guidance.
   // G4VisManager* visManager = new G4VisExecutive("Quiet");
   visManager->Initialize();
 #endif
@@ -124,19 +122,12 @@ int main(int argc,char** argv)
     G4String command = "/control/execute ";
     UImanager->ApplyCommand(command+macro);
   } else { 
-    UImanager->ApplyCommand("/control/execute PrtDirc.mac");
+    UImanager->ApplyCommand("/control/execute prt.mac");
   }
   
   if ( geomAng.size() ) {
     G4String command = "/Prt/geom/prtRotation ";
     UImanager->ApplyCommand(command+geomAng);
-    G4String command1 = "/gun/direction ";
-    TVector3 rot(1,0,0);
-    rot.RotateY((-atoi(geomAng)+90)*deg);
-    UImanager->ApplyCommand(command1+Form("%f %f %f",rot.X(),rot.Y(),rot.Z()));
-
-    std::cout<<"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF    "<<atoi(geomAng)*deg<<"  "<<rot.X()<<"  "<<rot.Y()<<"  "<<rot.Z() <<std::endl;
-    
   }
 
   if ( lensId.size() ) {
@@ -158,32 +149,20 @@ int main(int argc,char** argv)
     PrtManager::Instance()->SetParticle(pdgid);
   }
 
-  if ( momentum.size() ) {
-    G4String command = "/gun/energy ";
-    UImanager->ApplyCommand(command+momentum);
-    PrtManager::Instance()->SetMomentum(atof(momentum));
-  }
+  if(momentum.size()) UImanager->ApplyCommand( "/gun/momentumAmp "+momentum);
 
-  if ( batchmode.size() ) { // batch mode
-    if ( events.size() ) {
-      G4String command = "/run/beamOn ";
-      UImanager->ApplyCommand(command+events);
-    }else{
-      UImanager->ApplyCommand("/run/beamOn 1");
-    }
-  } else {  // UI session for interactive mode
+  if(batchmode.size()){ // batch mode
+    UImanager->ApplyCommand("/run/beamOn "+events);
+  }else{  // UI session for interactive mode
+
 #ifdef G4UI_USE
     G4UIExecutive * ui = new G4UIExecutive(argc,argv,session);
 #ifdef G4VIS_USE
     UImanager->ApplyCommand("/control/execute ../vis.mac");
 #endif
     if (ui->IsGUI()) UImanager->ApplyCommand("/control/execute gui.mac");
-    if ( events.size() ) {
-      G4String command = "/run/beamOn ";
-      UImanager->ApplyCommand(command+events);
-    }else{
-      UImanager->ApplyCommand("/run/beamOn 1");
-    }
+    UImanager->ApplyCommand("/run/beamOn "+events);
+    //UImanager->ApplyCommand("/vis/ogl/printEPS");
     ui->SessionStart();
     delete ui;
 #endif

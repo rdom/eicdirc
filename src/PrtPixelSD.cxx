@@ -13,11 +13,10 @@
 #include "PrtRunAction.h"
 #include "PrtManager.h"
 
-PrtPixelSD::PrtPixelSD(
-                            const G4String& name, 
-                            const G4String& hitsCollectionName,
-                            G4int nofCells)
- : G4VSensitiveDetector(name)
+PrtPixelSD::PrtPixelSD( const G4String& name, 
+			const G4String& hitsCollectionName,
+			G4int nofCells)
+  : G4VSensitiveDetector(name)
 {
   collectionName.insert(hitsCollectionName);
 }
@@ -48,7 +47,7 @@ void PrtPixelSD::Initialize(G4HCofThisEvent* hce)
   //   fHitsCollection->insert(new B4cCalorHit());
   // }
  
-  PrtManager::Instance()->AddEvent(PrtEvent());
+  //PrtManager::Instance()->AddEvent(PrtEvent());
 }
 
 G4bool PrtPixelSD::ProcessHits(G4Step* step, G4TouchableHistory* hist)
@@ -65,7 +64,7 @@ G4bool PrtPixelSD::ProcessHits(G4Step* step, G4TouchableHistory* hist)
   // if ( edep==0. && stepLength == 0. ) return false;     
 
   if(step == 0) return false;
-
+ 
   //G4ThreeVector translation = hist->GetTranslation();
   //G4ThreeVector localpos = step->GetPreStepPoint()->GetPhysicalVolume()->GetObjectTranslation();
   G4TouchableHistory* touchable = (G4TouchableHistory*)(step->GetPostStepPoint()->GetTouchable());
@@ -103,7 +102,7 @@ G4bool PrtPixelSD::ProcessHits(G4Step* step, G4TouchableHistory* hist)
 
  
   Double_t pathId = 0;
-  Int_t refl=0;
+  Int_t refl=-1;
   for (G4int i=0;i<prizmCol->entries();i++){
     PrtPrizmHit* phit = (*prizmCol)[i];
     if(phit->GetTrackID()==track->GetTrackID()) {
@@ -126,12 +125,12 @@ G4bool PrtPixelSD::ProcessHits(G4Step* step, G4TouchableHistory* hist)
   hit.SetParentParticleId(track->GetParentID());
   hit.SetNreflectionsInPrizm(refl);
   hit.SetPathInPrizm(pathId);
+  hit.SetCherenkovMC(PrtManager::Instance()->GetCurrentCherenkov());
   // time since track created
-  hit.SetLeadTime(0,step->GetPreStepPoint()->GetLocalTime()*1000);
-  hit.SetLeadTime(1,step->GetPostStepPoint()->GetLocalTime()*1000);
+  hit.SetLeadTime(step->GetPreStepPoint()->GetLocalTime());
+  hit.SetTotTime(1);
   // time since event created
-  hit.SetTrailTime(0,step->GetPreStepPoint()->GetGlobalTime()*1000); 
-  hit.SetTrailTime(1,step->GetPostStepPoint()->GetGlobalTime()*1000);
+  //hit.SetTrailTime(0,step->GetPreStepPoint()->GetGlobalTime()*1000); 
  
 
   PrtManager::Instance()->AddHit(hit);
@@ -161,5 +160,6 @@ void PrtPixelSD::EndOfEvent(G4HCofThisEvent*)
   G4int eventNumber = G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID();
   if(eventNumber%1==0) std::cout<<"Event # "<<eventNumber <<std::endl;
   PrtManager::Instance()->Fill();
+  
 }
 
