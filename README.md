@@ -1,9 +1,11 @@
+##Synopsis
+
 eicdirc [OPTION] [ARGUMENT] ... [OPTION] [ARGUMENT]
 
 example:
 ./eicdirc -a 40 -l 0 -x "pi+" -p 1 -w 0 -g 0 -e 1
 
-Options
+##Options
 
 -o    output file name
 -i    input file name
@@ -23,13 +25,12 @@ Options
                 1    bar (default)
                 2    plate
 
-#-c   MCP layout
-#                0    MCP covers all FD plain
-
-#-l    focusing system
-#                0    no lens
-#                1    spherical lens
-#                10   ideal lens (thickness = 0, ideal focusing)
+//-c   MCP layout
+//                0    MCP covers all FD plain
+//-l    focusing system
+//                0    no lens
+//                1    spherical lens
+//                10   ideal lens (thickness = 0, ideal focusing)
 
 -a    angle between particle beam and bar radiator
 
