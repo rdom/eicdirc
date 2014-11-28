@@ -1,0 +1,24 @@
+/control/verbose 0
+/tracking/verbose 0
+/run/verbose 0
+/event/verbose 0
+/particle/process/verbose 0
+
+/Prt/phys/verbose 0
+
+#
+/Prt/geom/prtRotation 90 deg
+/Prt/geom/lensId 0
+
+#/random/setSeeds 34325 38473
+/gun/particle proton
+/gun/energy 3 GeV
+
+#
+#/gun/direction 5 -3 0
+/Prt/gun/optPhotonPolar
+#/run/beamOn 1
+#
+/gun/position 0 0 -200 cm
+/gun/direction 0 0 1
+/Prt/gun/optPhotonPolar
