@@ -50,7 +50,7 @@ PrtManager::PrtManager(G4String outfile, G4int runtype)
   fLens = 0;
   fMcpLayout = 2014;
   fBeamDimension = 0;
-
+  fRadiator = 1;
   std::cout<<"PrtManager has been successfully initialized. " <<std::endl;
 }
 

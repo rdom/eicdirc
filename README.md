@@ -21,9 +21,7 @@ example:
                 0    whole DIRC
                 1    one barbox
 
--h    radiator type
-                1    bar (default)
-                2    plate
+-h    number of bars in one radiator box
 
 -c   MCP layout
                 0    pixels covers all FD plain

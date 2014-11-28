@@ -35,7 +35,8 @@ PrtDetectorConstruction::PrtDetectorConstruction()
 
   fNRow = 6;
   fNCol = 4;
-  fNBar = 10;
+  fNBar = PrtManager::Instance()->GetRadiator();
+  if(fNBar<0) fNBar=1;
 
   fHall[0] = 1000; fHall[1] = 1000; fHall[2] = 2000;
   //fBar[0] = 17; fBar[1] = 32; fBar[2] = 4200;
