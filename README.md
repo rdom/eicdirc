@@ -1,12 +1,12 @@
 ##Synopsis
-
+```
 eicdirc [OPTION] [ARGUMENT] ... [OPTION] [ARGUMENT]
 
 example:
 ./eicdirc -a 40 -l 0 -x "pi+" -p 1 -w 0 -g 0 -e 1
-
+```
 ##Options
-
+```
 -o    output file name
 -i    input file name
 -u    look-up file name
@@ -18,8 +18,8 @@ example:
                 5    calibration
 
 -g    geometry configuration
-                1    in vacuum
-                2    in air
+                0    whole DIRC
+                1    one barbox
 
 -h    radiator type
                 1    bar (default)
@@ -55,4 +55,4 @@ example:
 
 -b    batch mode
                1    run silent (without GUI)
-
+```
