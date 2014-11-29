@@ -122,7 +122,7 @@ int main(int argc,char** argv)
     G4String command = "/control/execute ";
     UImanager->ApplyCommand(command+macro);
   } else { 
-    UImanager->ApplyCommand("/control/execute prt.mac");
+    //UImanager->ApplyCommand("/control/execute ../prt.mac");
   }
   
   if ( geomAng.size() ) {

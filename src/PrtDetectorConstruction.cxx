@@ -149,8 +149,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   fPrismShift = G4ThreeVector((fPrizm[2]+fPrizm[3])/4.-fPrizm[3]/2.,0,fBar[2]/2.+fPrizm[1]/2.+fLens[2]);
   new G4PVPlacement(xRot,fPrismShift,lPrizm,"wPrizm", lDirc,false,0);
 
-  G4int mcplayout=1;
-  if(true){
+  if(fMcpLayout==1){
     // The MCP
     G4Box* gMcp = new G4Box("gMcp",fMcpTotal[0]/2.,fMcpTotal[1]/2.,fMcpTotal[2]/2.);
     lMcp = new G4LogicalVolume(gMcp,BarMaterial,"lMcp",0,0,0);
@@ -171,10 +170,10 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     int mcpId = 0;
     for(int i=0; i<fNCol; i++){
       for(int j=0; j<fNRow; j++){
-	double shiftx = i*(fMcpTotal[0]);
-	double shifty = j*(fMcpTotal[0])-fPrizm[0]/2.+fMcpTotal[0]/2-1;
+	double shiftx = i*(fMcpTotal[0])-fPrizm[3]/2.+fMcpTotal[0]/2;;
+	double shifty = j*(fMcpTotal[0])-fPrizm[0]/2.+fMcpTotal[0]/2;
 
-	if(fGeomId==2012){
+       	if(fGeomId==2012){
 	  shiftx = i*(fMcpActive[0]+2+6)-fBar[0]/2.+fMcpActive[0]/2.-3-1;
 	  shifty = j*(fMcpActive[0]+9+6)-fPrizm[2]/2.-fPrizm[3]/2.+fMcpActive[0]/2.-3-1.5;
 	}
@@ -182,7 +181,8 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
       }
     }
 
-  }else{
+  }
+  if(fMcpLayout==0){
     // // for layout optimization 
     // The MCP
     G4Box* gMcp = new G4Box("gMcp",fPrizm[2]/2.,fPrizm[0]/2.,fMcpTotal[2]/2.);
@@ -544,7 +544,7 @@ void PrtDetectorConstruction::SetVisualization(){
     waDirc->SetVisibility(false);
   lDirc->SetVisAttributes(waDirc);
 
-  G4VisAttributes *waBar = new G4VisAttributes(G4Colour(0.,1.,0.9,0.3));
+  G4VisAttributes *waBar = new G4VisAttributes(G4Colour(0.,1.,0.9,0.1));
   waBar->SetVisibility(true);
   lBar->SetVisAttributes(waBar);
 
