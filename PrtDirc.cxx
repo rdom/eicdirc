@@ -82,6 +82,20 @@ int main(int argc,char** argv)
     }
   }
 
+  if(outfile=="" && runtype == 0) outfile = "hits.root"; // simulation
+  if(outfile=="" && (runtype == 1 || runtype == 5)) outfile = "../data/lut.root"; // lookup table generation
+  if(outfile=="" && runtype == 2) outfile = "reco.root"; // reconstruction
+
+  if(batchmode.size()) gROOT->SetBatch(kTRUE);
+  if(!events.size()) events = "1";
+  PrtManager::Instance(outfile,runtype);
+
+  if(runtype == 2){
+    PrtLutReco * reco = new PrtLutReco(infile,lutfile); 
+    reco->Run(0);
+    return 0;
+  }
+
   // Choose the Random engine
   G4Random::setTheEngine(new CLHEP::RanecuEngine);
   std::cout<<"SEED "<<myseed <<std::endl;
