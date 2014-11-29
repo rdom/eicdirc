@@ -1,33 +1,3 @@
-//
-// ********************************************************************
-// * License and Disclaimer                                           *
-// *                                                                  *
-// * The  Geant4 software  is  copyright of the Copyright Holders  of *
-// * the Geant4 Collaboration.  It is provided  under  the terms  and *
-// * conditions of the Geant4 Software License,  included in the file *
-// * LICENSE and available at  http://cern.ch/geant4/license .  These *
-// * include a list of copyright holders.                             *
-// *                                                                  *
-// * Neither the authors of this software system, nor their employing *
-// * institutes,nor the agencies providing financial support for this *
-// * work  make  any representation or  warranty, express or implied, *
-// * regarding  this  software system or assume any liability for its *
-// * use.  Please see the license in the file  LICENSE  and URL above *
-// * for the full disclaimer and the limitation of liability.         *
-// *                                                                  *
-// * This  code  implementation is the result of  the  scientific and *
-// * technical work of the GEANT4 collaboration.                      *
-// * By using,  copying,  modifying or  distributing the software (or *
-// * any work based  on the software)  you  agree  to acknowledge its *
-// * use  in  resulting  scientific  publications,  and indicate your *
-// * acceptance of all terms of the Geant4 Software license.          *
-// ********************************************************************
-//
-//
-//
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
 #include "PrtPrimaryGeneratorAction.h"
 #include "PrtPrimaryGeneratorMessenger.h"
 
@@ -38,8 +8,9 @@
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4SystemOfUnits.hh"
+#include "globals.hh"
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+#include "PrtManager.h"
 
 PrtPrimaryGeneratorAction::PrtPrimaryGeneratorAction()
  : G4VUserPrimaryGeneratorAction(), 
@@ -63,22 +34,60 @@ PrtPrimaryGeneratorAction::PrtPrimaryGeneratorAction()
   fParticleGun->SetParticleEnergy(500.0*keV);
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
 PrtPrimaryGeneratorAction::~PrtPrimaryGeneratorAction()
 {
   delete fParticleGun;
   delete fGunMessenger;
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
 void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
-{
-  fParticleGun->GeneratePrimaryVertex(anEvent);
-}
+{ 
+  G4double x,y,z;
+  G4double angle = PrtManager::Instance()->GetAngle();
+  PrtManager::Instance()->AddEvent(PrtEvent());
+  if(PrtManager::Instance()->GetRunType() == 0){ // simulation
+    G4ThreeVector vec(0,0,1);
+    vec.setTheta(angle);
+    fParticleGun->SetParticleMomentumDirection(vec);
+  }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+  if(PrtManager::Instance()->GetBeamDinsion() == 1){ // smearing and divergence
+    G4double sigma = 1*cm;
+    z = fParticleGun->GetParticlePosition().z();
+    x = G4RandGauss::shoot(0,sigma);
+    y = G4RandGauss::shoot(0,sigma);
+    
+    fParticleGun->SetParticlePosition(G4ThreeVector(x,y,z));
+    PrtManager::Instance()->Event()->SetPosition(TVector3(x,y,z));
+  }
+  if(PrtManager::Instance()->GetRunType() == 1){ // LUT generation
+    fParticleGun->SetParticlePosition(G4ThreeVector(-1224.9/2.+0.1,0,0));
+    G4double angle = -G4UniformRand()*M_PI;
+    G4ThreeVector vec(0,0,1);
+    vec.setTheta(acos(G4UniformRand()));
+    vec.setPhi(2*M_PI*G4UniformRand());
+    
+    vec.rotateY(-M_PI/2.);
+    fParticleGun->SetParticleMomentumDirection(vec);
+  }
+  if(PrtManager::Instance()->GetRunType() == 5){ // calibration light
+    G4double shift = PrtManager::Instance()->GetShift();
+    
+    fParticleGun->SetParticlePosition(G4ThreeVector(-1250/2.+0.1-shift,0,5+tan(45*M_PI/180.)*shift+25));
+    G4double angle = -G4UniformRand()*M_PI;
+    G4ThreeVector vec(0,0,1);
+    vec.setTheta(acos(G4UniformRand()));
+    vec.setPhi(2*M_PI*G4UniformRand());
+    
+    vec.rotateY(-M_PI/2.);
+    fParticleGun->SetParticleMomentumDirection(vec);
+  }
+  fParticleGun->GeneratePrimaryVertex(anEvent);
+
+  G4ThreeVector dir = fParticleGun->GetParticleMomentumDirection();
+  dir *= fParticleGun->GetParticleMomentum();
+  PrtManager::Instance()->SetMomentum(TVector3(dir.x(),dir.y(),dir.z()));
+}
 
 void PrtPrimaryGeneratorAction::SetOptPhotonPolar()
 {
@@ -86,14 +95,13 @@ void PrtPrimaryGeneratorAction::SetOptPhotonPolar()
  SetOptPhotonPolar(angle);
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
 void PrtPrimaryGeneratorAction::SetOptPhotonPolar(G4double angle)
 {
  if (fParticleGun->GetParticleDefinition()->GetParticleName()!="opticalphoton")
    {
      G4cout << "--> warning from PrimaryGeneratorAction::SetOptPhotonPolar() :"
-               "the particleGun is not an opticalphoton" << G4endl;
+       "the particleGun is not an opticalphoton " << 
+       fParticleGun->GetParticleDefinition()->GetParticleName()<< G4endl;
      return;
    }
 
@@ -109,5 +117,3 @@ void PrtPrimaryGeneratorAction::SetOptPhotonPolar(G4double angle)
  G4ThreeVector polar = std::cos(angle)*e_paralle + std::sin(angle)*e_perpend;
  fParticleGun->SetParticlePolarization(polar);
 }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

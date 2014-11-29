@@ -192,17 +192,17 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     lMcp = new G4LogicalVolume(gMcp,BarMaterial,"lMcp",0,0,0);
   
     // The MCP Pixel
-    double npix1=4;
-    double npix2=6;
+    fNpix1=4;
+    fNpix2=6;
     G4Box* gPixel = new G4Box("gPixel",fMcpTotal[0]/2.,fMcpTotal[1]/2.,fMcpTotal[2]/16.);
     lPixel = new G4LogicalVolume(gPixel,BarMaterial,"lPixel",0,0,0);
 
-    double disx = (fPrizm[0]-npix2*fMcpTotal[0])/(double)npix2;
-    double disy = (fPrizm[1]-npix1*fMcpTotal[0])/(double)(npix1+1);
+    double disx = (fPrizm[0]-fNpix2*fMcpTotal[0])/(double)fNpix2;
+    double disy = (fPrizm[1]-fNpix1*fMcpTotal[0])/(double)(fNpix1+1);
     if(true){
       int pixelId=0;
-      for(int i=0; i<npix1; i++){
-	for(int j=0; j<npix2; j++){
+      for(int i=0; i<fNpix1; i++){
+	for(int j=0; j<fNpix2; j++){
 	  double shiftx = i*(fMcpTotal[0] +disy/2.) - fPrizm[2]/2. + fMcpTotal[0]/2.+disy/2.;
 	  double shifty = j*(fMcpTotal[0] +disy/2.) - fPrizm[0]/2. + fMcpTotal[0]/2.+disy/2.;
 	  new G4PVPlacement(0,G4ThreeVector(shiftx,shifty,0),lPixel,"wPixel", lMcp,false,pixelId++);      
@@ -219,40 +219,39 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     G4Box* gMcp = new G4Box("gMcp",0.5*fPrizm[2],0.5*fPrizm[0],0.5*fMcpTotal[2]);
     lMcp = new G4LogicalVolume(gMcp,BarMaterial,"lMcp",0,0,0);
   
-    double npix1=20;
-    double npix2=40;
-    G4Box* gPixel = new G4Box("gPixel",0.5*fPrizm[2]/npix1,0.5*fPrizm[0]/npix2,0.2);
+    fNpix1 = 90;
+    fNpix2 = 120;
+    G4Box* gPixel = new G4Box("gPixel",0.5*fPrizm[2]/fNpix1,0.5*fPrizm[0]/fNpix2,0.2);
     lPixel = new G4LogicalVolume(gPixel,BarMaterial,"lPixel",0,0,0);
-
-    double disx = (fPrizm[0]-npix2*fMcpTotal[0])/(double)npix2;
-    double disy = (fPrizm[1]-npix1*fMcpTotal[0])/(double)(npix1+1);
     int pixelId=0;
-    for(int i=0; i<npix1; i++){
-      for(int j=0; j<npix2; j++){
-	double shiftx = i*(fPrizm[2]/npix1) - fPrizm[2]/2.+fPrizm[2]/(2*npix1);
-	double shifty = j*(fPrizm[0]/npix2) - fPrizm[0]/2.+fPrizm[0]/(2*npix2);
-	pPixel[pixelId] = new G4PVPlacement(0,G4ThreeVector(shiftx,shifty,0),lPixel,"wPixel", lMcp,false,pixelId++);      
+    for(int i=0; i<fNpix1; i++){
+      for(int j=0; j<fNpix2; j++){
+	//std::cout<<"i  "<<i <<"   j  "<< j <<std::endl;
+	
+	double shiftx = i*(fPrizm[2]/fNpix1) - 0.5*fPrizm[2]+0.5*fPrizm[2]/fNpix1;
+	double shifty = j*(fPrizm[0]/fNpix2) - 0.5*fPrizm[0]+0.5*fPrizm[0]/fNpix2;
+	new G4PVPlacement(0,G4ThreeVector(shiftx,shifty,0),lPixel,"wPixel", lMcp,false,pixelId++);      
       }
     }
     new G4PVPlacement(0,G4ThreeVector(fPrizm[2]/2.-fPrizm[3]/2.,0,fBar[2]/2.+fPrizm[1]+fMcpActive[2]/2.+fLens[2]),lMcp,"wMcp", lDirc,false,1);
   }
 
   // if(fMcpLayout==3){
-  //   double npix1=30;
-  //   double npix2=50;
+  //   double fNpix1=30;
+  //   double fNpix2=50;
   //   int pixelId=0;
   //   G4LogicalVolume * lHit;
-  //   for(int i=0; i<npix1; i++){
-  //     for(int j=0; j<npix2; j++){
+  //   for(int i=0; i<fNpix1; i++){
+  //     for(int j=0; j<fNpix2; j++){
   // 	double hight = 0.5*(i+1)*fMcpActive[2];
-  // 	G4Box* gHit = new G4Box("gHit",0.5*fPrizm[2]/npix1,0.5*fPrizm[0]/npix2,hight);
+  // 	G4Box* gHit = new G4Box("gHit",0.5*fPrizm[2]/fNpix1,0.5*fPrizm[0]/fNpix2,hight);
   // 	lHit = new G4LogicalVolume(gHit,BarMaterial,"lHit",0,0,0);
 	
-  // 	G4VisAttributes *waHit = new G4VisAttributes(G4Colour(i/npix1,j/npix2,j/npix2,1.0));
+  // 	G4VisAttributes *waHit = new G4VisAttributes(G4Colour(i/fNpix1,j/fNpix2,j/fNpix2,1.0));
   // 	lHit->SetVisAttributes(waHit);
 
-  // 	double shiftx = i*(fPrizm[2]/npix1) - fPrizm[2]/2.+fPrizm[2]/(2*npix1);
-  // 	double shifty = j*(fPrizm[0]/npix2) - fPrizm[0]/2.+fPrizm[0]/(2*npix2);
+  // 	double shiftx = i*(fPrizm[2]/fNpix1) - fPrizm[2]/2.+fPrizm[2]/(2*fNpix1);
+  // 	double shifty = j*(fPrizm[0]/fNpix2) - fPrizm[0]/2.+fPrizm[0]/(2*fNpix2);
   // 	new G4PVPlacement(0,G4ThreeVector(shiftx,shifty,hight),lHit,"wHit", lMcp,false,pixelId++);      
   //     }
   //   }
@@ -615,6 +614,7 @@ void PrtDetectorConstruction::SetVisualization(){
 
   G4VisAttributes *waPixel = new G4VisAttributes(G4Colour(1.0,0.0,0.1,0.6));
   //waPixel->SetForceWireframe(true);
+  waPixel->SetVisibility(false);
   lPixel->SetVisAttributes(waPixel);
 
 }
@@ -653,12 +653,10 @@ void PrtDetectorConstruction::DrawHitBox(int id){
   std::cout<<"nevent  "<< nevent <<std::endl;
   
   int pix(0);
-  const int maxpixel(1000);
+  const int maxpixel(50000);
   int load[maxpixel]={0};
   for (Int_t i=0;i<nevent;i++) {
-    tree->GetEvent(i);
-    std::cout<<"event->GetHitSize(); "<<event->GetHitSize() <<std::endl;
-    
+    tree->GetEvent(i);    
     for(Int_t h=0; h<event->GetHitSize(); h++){
       hit = event->GetHit(h);
       pix=hit.GetPixelId();
@@ -670,29 +668,32 @@ void PrtDetectorConstruction::DrawHitBox(int id){
   for(Int_t i=0; i<maxpixel; i++){
     if(maxload<load[pix]) maxload =  load[pix];
   }
+  maxload += maxload*0.1;
+
   int rgbcolors[256][3] = {{0, 0, 130},{0, 2, 131},{0, 4, 132},{0, 7, 134},{0, 9, 135},{0, 11, 137},{0, 14, 138},{0, 16, 140},{0, 18, 141},{0, 21, 142},{0, 23, 144},{0, 26, 145},{0, 28, 147},{0, 30, 148},{0, 33, 150},{0, 35, 151},{0, 37, 153},{0, 40, 154},{0, 42, 155},{0, 45, 157},{0, 47, 158},{0, 49, 160},{0, 52, 161},{0, 54, 163},{0, 56, 164},{0, 59, 165},{0, 61, 167},{0, 64, 168},{0, 66, 170},{0, 68, 171},{0, 71, 173},{0, 73, 174},{0, 75, 176},{0, 78, 177},{0, 80, 178},{0, 83, 180},{0, 85, 181},{0, 87, 183},{0, 90, 184},{0, 92, 186},{0, 94, 187},{0, 97, 188},{0, 99, 190},{0, 102, 191},{0, 104, 193},{0, 106, 194},{0, 109, 196},{0, 111, 197},{0, 113, 198},{0, 116, 200},{0, 118, 201},{0, 121, 203},{0, 123, 204},{0, 125, 206},{0, 128, 207},{0, 130, 209},{0, 132, 210},{0, 135, 211},{0, 137, 213},{0, 140, 214},{0, 142, 216},{0, 144, 217},{0, 147, 219},{0, 149, 220},{0, 151, 221},{0, 154, 223},{0, 156, 224},{0, 159, 226},{0, 161, 227},{0, 163, 229},{0, 166, 230},{0, 168, 232},{0, 170, 233},{0, 173, 234},{0, 175, 236},{0, 178, 237},{0, 180, 239},{0, 182, 240},{0, 185, 242},{0, 187, 243},{0, 189, 244},{0, 192, 246},{0, 194, 247},{0, 197, 249},{0, 199, 250},{0, 201, 252},{0, 204, 253},{0, 206, 255},{3, 207, 251},{6, 207, 248},{9, 208, 245},{12, 209, 241},{16, 210, 238},{19, 210, 235},{22, 211, 232},{25, 212, 228},{28, 212, 225},{32, 213, 222},{35, 214, 219},{38, 214, 215},{41, 215, 212},{45, 216, 209},{48, 217, 206},{51, 217, 202},{54, 218, 199},{57, 219, 196},{61, 219, 193},{64, 220, 189},{67, 221, 186},{70, 221, 183},{73, 222, 180},{77, 223, 176},{80, 224, 173},{83, 224, 170},{86, 225, 167},{90, 226, 163},{93, 226, 160},{96, 227, 157},{99, 228, 154},{102, 229, 150},{106, 229, 147},{109, 230, 144},{112, 231, 141},{115, 231, 137},{118, 232, 134},{122, 233, 131},{125, 233, 128},{128, 234, 124},{131, 235, 121},{135, 236, 118},{138, 236, 115},{141, 237, 111},{144, 238, 108},{147, 238, 105},{151, 239, 102},{154, 240, 98},{157, 240, 95},{160, 241, 92},{163, 242, 89},{167, 243, 85},{170, 243, 82},{173, 244, 79},{176, 245, 76},{180, 245, 72},{183, 246, 69},{186, 247, 66},{189, 247, 63},{192, 248, 59},{196, 249, 56},{199, 250, 53},{202, 250, 50},{205, 251, 46},{208, 252, 43},{212, 252, 40},{215, 253, 37},{218, 254, 33},{221, 255, 30},{222, 251, 30},{222, 248, 29},{223, 244, 29},{224, 241, 28},{224, 237, 28},{225, 234, 27},{225, 230, 26},{226, 227, 26},{226, 223, 25},{227, 220, 25},{228, 216, 24},{228, 213, 24},{229, 210, 23},{229, 206, 23},{230, 203, 22},{230, 199, 22},{231, 196, 21},{231, 192, 21},{232, 189, 20},{233, 185, 20},{233, 182, 19},{234, 178, 19},{234, 175, 18},{235, 172, 18},{235, 168, 17},{236, 165, 17},{237, 161, 16},{237, 158, 16},{238, 154, 15},{238, 151, 15},{239, 147, 14},{239, 144, 14},{240, 140, 13},{240, 137, 12},{241, 133, 12},{242, 130, 11},{242, 127, 11},{243, 123, 10},{243, 120, 10},{244, 116, 9},{244, 113, 9},{245, 109, 8},{246, 106, 8},{246, 102, 7},{247, 99, 7},{247, 95, 6},{248, 92, 6},{248, 89, 5},{249, 85, 5},{249, 82, 4},{250, 78, 4},{251, 75, 3},{251, 71, 3},{252, 68, 2},{252, 64, 2},{253, 61, 1},{253, 57, 1},{254, 54, 0},{255, 51, 0},{251, 49, 0},{248, 48, 0},{245, 47, 0},{242, 46, 0},{239, 44, 0},{236, 43, 0},{233, 42, 0},{230, 41, 0},{227, 39, 0},{224, 38, 0},{221, 37, 0},{218, 36, 0},{215, 34, 0},{212, 33, 0},{209, 32, 0},{206, 31, 0},{203, 29, 0},{200, 28, 0},{197, 27, 0},{194, 26, 0},{191, 24, 0},{187, 23, 0},{184, 22, 0},{181, 21, 0},{178, 19, 0},{175, 18, 0},{172, 17, 0},{169, 16, 0},{166, 14, 0},{163, 13, 0},{160, 12, 0},{157, 11, 0},{154, 9, 0},{151, 8, 0},{148, 7, 0},{145, 6, 0},{142, 4, 0},{139, 3, 0},{136, 2, 0},{133, 1, 0}};
 
- 
-  double npix1=20;
-  double npix2=40;
   int pixelId=0;
   G4LogicalVolume * lHit;
-  for(int i=0; i<npix1; i++){
-    for(int j=0; j<npix2; j++){
+  G4VisAttributes *waHit;
+  G4Box* gHit;
+  for(int i=0; i<fNpix1; i++){
+    for(int j=0; j<fNpix2; j++){
       double colorid = load[pixelId]/(double)maxload;
-      std::cout<<"colorid  "<< colorid <<std::endl;
       
-      double hight = colorid*5;
-      int cid = colorid*256;
-      G4Box* gHit = new G4Box("gHit",0.5*fPrizm[2]/npix1,0.5*fPrizm[0]/npix2,hight+0.2);
-      lHit = new G4LogicalVolume(gHit,BarMaterial,"lHit",0,0,0);
-      G4VisAttributes *waHit = new G4VisAttributes(G4Colour(rgbcolors[cid][0]/256.,rgbcolors[cid][1]/256.,rgbcolors[cid][2]/256.,1.0));
-      lHit->SetVisAttributes(waHit);
-      std::cout<<"lHit  "<<lHit <<std::endl;
+      double hight = colorid*10;
+      int cid = colorid*150;
+      if(cid>1){
+	gHit = new G4Box("gHit",0.5*fPrizm[2]/fNpix1,0.5*fPrizm[0]/fNpix2,hight+0.2);
+	lHit = new G4LogicalVolume(gHit,BarMaterial,"lHit",0,0,0);
+	waHit = new G4VisAttributes(G4Colour(rgbcolors[cid][0]/250.,rgbcolors[cid][1]/250.,rgbcolors[cid][2]/250.,1.0));
+	waHit->SetForceSolid(true);
+	lHit->SetVisAttributes(waHit);
 
-      double shiftx = i*(fPrizm[2]/npix1) - fPrizm[2]/2.+fPrizm[2]/(2*npix1);
-      double shifty = j*(fPrizm[0]/npix2) - fPrizm[0]/2.+fPrizm[0]/(2*npix2);
-      new G4PVPlacement(0,G4ThreeVector(shiftx,shifty,hight),lHit,"wHit", lMcp,false,pixelId++);      
+	double shiftx = i*(fPrizm[2]/fNpix1) - fPrizm[2]/2.+fPrizm[2]/(2*fNpix1);
+	double shifty = j*(fPrizm[0]/fNpix2) - fPrizm[0]/2.+fPrizm[0]/(2*fNpix2);
+	new G4PVPlacement(0,G4ThreeVector(shiftx,shifty,hight),lHit,"wHit", lMcp,false,pixelId);      
+      }
+      pixelId++;
     }
   }
   

@@ -44,9 +44,10 @@
 #/vis/modeling/trajectories/drawByCharge-0/default/setStepPtsSize 2
 
 /vis/modeling/trajectories/create/drawByParticleID
-/vis/modeling/trajectories/drawByParticleID-0/set opticalphoton yellow
+#/vis/modeling/trajectories/drawByParticleID-0/set opticalphoton yellow
+/vis/modeling/trajectories/drawByParticleID-0/setRGBA opticalphoton 1 0.843 0 0.2
 /vis/modeling/trajectories/drawByParticleID-0/setRGBA e+ 1 0 1 1
-/vis/modeling/trajectories/drawByParticleID-0/default/setDrawStepPts true
+#/vis/modeling/trajectories/drawByParticleID-0/default/setDrawStepPts true
 /vis/modeling/trajectories/drawByParticleID-0/default/setStepPtsSize 4
 
 

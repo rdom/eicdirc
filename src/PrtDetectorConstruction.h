@@ -39,7 +39,6 @@ private:
   G4LogicalVolume* lPrizm;
   G4LogicalVolume* lMcp;
   G4LogicalVolume* lPixel;
-  G4PVPlacement*   pPixel[1000];
 
   G4VPhysicalVolume* wBar;
   G4VPhysicalVolume* wMirror;
@@ -55,6 +54,8 @@ private:
   
   G4int fNRow;
   G4int fNCol;
+  G4double fNpix1;
+  G4double fNpix2;
   G4int fGeomId;
   G4int fMcpLayout;
   G4double fNBar;
