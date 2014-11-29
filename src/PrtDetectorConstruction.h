@@ -6,6 +6,7 @@
 #include "G4VUserDetectorConstruction.hh"
 #include "G4RotationMatrix.hh"
 
+#include "G4PVPlacement.hh"
 #include "PrtDetectorConstructionMessenger.h"
 
 class PrtDetectorConstructionMessenger;
@@ -22,6 +23,7 @@ public:
   void DefineMaterials();
   void SetVisualization();
   void SetRotation(G4double angle);
+  void DrawHitBox(G4int id);
   void SetLens(G4int id);
   void SetQuantumEfficiency(G4int id);
   
@@ -37,6 +39,7 @@ private:
   G4LogicalVolume* lPrizm;
   G4LogicalVolume* lMcp;
   G4LogicalVolume* lPixel;
+  G4PVPlacement*   pPixel[1000];
 
   G4VPhysicalVolume* wBar;
   G4VPhysicalVolume* wMirror;

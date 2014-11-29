@@ -33,6 +33,12 @@ PrtDetectorConstructionMessenger::PrtDetectorConstructionMessenger
   fDetEffType->SetParameterName("detEffType",true);
   fDetEffType->SetRange("detEffType>=0");
   fDetEffType->SetDefaultValue(0);
+
+  fDrawHits = new G4UIcmdWithAnInteger("/Prt/geom/drawHits",this);
+  fDrawHits->SetGuidance("draw occupancy in lego form");
+  fDrawHits->SetParameterName("drawHits",true);
+  fDrawHits->SetRange("drawHits>=0");
+  fDrawHits->SetDefaultValue(0);
 }
 
 PrtDetectorConstructionMessenger::~PrtDetectorConstructionMessenger()
@@ -62,5 +68,10 @@ void PrtDetectorConstructionMessenger::SetNewValue(
     G4int id = fDetEffType->GetNewIntValue(newValue);
     //PrtManager::Instance()->SetQuantumEfficiency(id);
     //PrtManager::Instance()->SetDetEffType();
+  }
+
+  if( command == fDrawHits ) {
+    G4int id = fDrawHits->GetNewIntValue(newValue);
+    fPrtGeom->DrawHitBox(id);
   }
 }

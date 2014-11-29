@@ -26,6 +26,7 @@ private:
   G4UIcmdWithADoubleAndUnit*      fAngleCmd;
   G4UIcmdWithAnInteger*           fLensIdCmd;  
   G4UIcmdWithAnInteger*           fDetEffType;
+  G4UIcmdWithAnInteger*           fDrawHits;
 };
 
 #endif

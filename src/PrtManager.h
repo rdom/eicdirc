@@ -11,6 +11,7 @@
 
 #include <TFile.h>
 #include <TTree.h>
+#include <TChain.h>
 #include <TCanvas.h>
 #include <TH1F.h>
 #include "TClonesArray.h"
@@ -70,6 +71,7 @@ public:
   double GetCurrentCherenkov(){ return fCurrentCherenkov; }
   double GetShift(){ return fShift; }
   double GetTest(){ return fTest; }
+  TTree *GetTree(){ return fTree; }
   
 private: 
   int fRunType;

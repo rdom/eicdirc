@@ -7,15 +7,15 @@ tseed=$(($(date +%s%N)/1000000-1393400000000))
 
 echo $tseed
 
-for i in {0..5}; do ./prt -o h_b$i.root -a 140 -l 1 -x "pi+" -p 3  -w 0 -g 1 -e 50 -b 1 -r $tseed$i > l_b$i.log & done
+for i in {0..5}; do ./eicdirc -o h_b$i.root -a 140 -x "pi+" -p 3  -w 0 -g 1 -h 8 -e 50 -c 3 -b 1 -r $tseed$i > l_b$i.log & done
 
 sleep 1
 
 while : 
 do
-    activth=$(ps aux | grep "[p]rt" | grep "h_b" | wc -l)
+    activth=$(ps aux | grep "[e]icdirc" | grep "h_b" | wc -l)
     diffth=$(($maxnthr-$activth))
-    echo "We have $activth active prt simulations " 
+    echo "We have $activth active eicdirc simulations " 
     if [ "$activth" -eq 0 ]; then 
       break  
     fi

@@ -30,6 +30,7 @@ void PrtRunAction::BeginOfRunAction(const G4Run* aRun)
 
 void PrtRunAction::EndOfRunAction(const G4Run* aRun)
 {
+  
   PrtManager::Instance()->Save();
   
   fTimer->Stop();
