@@ -1,3 +1,9 @@
+// -----------------------------------------
+// PrtPrizmSD.cxx
+//
+// Author  : R.Dzhygadlo at gsi.de
+// -----------------------------------------
+
 #include "PrtPrizmSD.h"
 #include "G4HCofThisEvent.hh"
 #include "G4Step.hh"
@@ -45,7 +51,11 @@ G4bool PrtPrizmSD::ProcessHits(G4Step* aStep, G4TouchableHistory* hist)
   //if (edep==0.) return false;
 
   PrtPrizmHit* newHit = new PrtPrizmHit();
-
+  G4TouchableHistory* touchable = (G4TouchableHistory*)(aStep->GetPostStepPoint()->GetTouchable());
+  if(touchable->GetVolume()->GetName()=="wDirc"){
+    newHit->SetPrizmID(touchable->GetReplicaNumber());
+  }
+ 
   newHit->SetTrackID  (aStep->GetTrack()->GetTrackID());
   newHit->SetEdep(edep);
   newHit->SetPos (aStep->GetPostStepPoint()->GetPosition());

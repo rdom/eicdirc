@@ -4,6 +4,7 @@ ClassImp(PrtHit)
 
 // -----   Default constructor   -------------------------------------------
 PrtHit::PrtHit(){ 
+  fPrizmId=-1;
   fMcpId=-1;
   fPixelId=-1;
   fType=-1;

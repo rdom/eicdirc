@@ -11,6 +11,7 @@ G4ThreadLocal G4Allocator<PrtPrizmHit>* PrtPrizmHitAllocator=0;
 
 PrtPrizmHit::PrtPrizmHit()
  : G4VHit(),
+   fPrizmID(-1),
    fTrackID(-1),
    fNormalId(-1),
    fEdep(0.),
@@ -22,6 +23,7 @@ PrtPrizmHit::~PrtPrizmHit() {}
 PrtPrizmHit::PrtPrizmHit(const PrtPrizmHit& right)
   : G4VHit()
 {
+  fPrizmID =  right.fPrizmID;
   fTrackID   = right.fTrackID;
   fNormalId = right.fNormalId;
   fEdep      = right.fEdep;
@@ -30,6 +32,7 @@ PrtPrizmHit::PrtPrizmHit(const PrtPrizmHit& right)
 
 const PrtPrizmHit& PrtPrizmHit::operator=(const PrtPrizmHit& right)
 {
+  fPrizmID =  right.fPrizmID;
   fTrackID   = right.fTrackID;
   fNormalId = right.fNormalId;
   fEdep      = right.fEdep;

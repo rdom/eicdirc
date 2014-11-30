@@ -22,6 +22,7 @@ public:
   ~PrtHit(){};
  
   // Accessors 
+  Int_t GetPrizmId()       { return fPrizmId; }
   Int_t GetMcpId()       { return fMcpId; }
   Int_t GetPixelId()     { return fPixelId; }
   Int_t GetType()        { return fType; }
@@ -44,6 +45,7 @@ public:
   Double_t GetCherenkovMC()  { return fCherenkovMC; }
 
   // Mutators
+  void SetPrizmId(Int_t val)   { fPrizmId = val; }
   void SetMcpId(Int_t val)   { fMcpId = val; }
   void SetPixelId(Int_t val) { fPixelId = val; }
   void SetType(Int_t val)    { fType = val; }
@@ -68,6 +70,7 @@ public:
 
 protected:
 
+  Int_t fPrizmId;
   Int_t fMcpId;
   Int_t fPixelId;
   Int_t fType;

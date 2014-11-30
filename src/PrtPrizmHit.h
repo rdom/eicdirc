@@ -26,19 +26,21 @@ class PrtPrizmHit : public G4VHit
     virtual void Print();
 
     // Set methods
+    void SetPrizmID  (G4int id)         { fPrizmID = id; };
     void SetTrackID  (G4int track)      { fTrackID = track; };
     void SetNormalId(G4int chamb)       { fNormalId = chamb; };
     void SetEdep     (G4double de)      { fEdep = de; };
     void SetPos      (G4ThreeVector xyz){ fPos = xyz; };
 
     // Get methods
+    G4int GetPrizmID() const     { return fPrizmID; };
     G4int GetTrackID() const     { return fTrackID; };
     G4int GetNormalId() const    { return fNormalId; };
     G4double GetEdep() const     { return fEdep; };
     G4ThreeVector GetPos() const { return fPos; };
 
   private:
-
+      G4int         fPrizmID;
       G4int         fTrackID;
       G4int         fNormalId;
       G4double      fEdep;

@@ -30,11 +30,9 @@
 #
 # Specify style (surface or wireframe):
 #/vis/viewer/set/style wireframe
-#
-#/vis/viewer/set/background white
 
 # Draw coordinate axes:
-/vis/scene/add/axes 0 0 0 1 m
+#/vis/scene/add/axes 0 0 0 1 m
 #
 # Draw smooth trajectories at end of event, showing trajectory points
 # as markers 2 pixels wide:
@@ -45,7 +43,7 @@
 
 /vis/modeling/trajectories/create/drawByParticleID
 #/vis/modeling/trajectories/drawByParticleID-0/set opticalphoton yellow
-/vis/modeling/trajectories/drawByParticleID-0/setRGBA opticalphoton 1 0.843 0 0.2
+/vis/modeling/trajectories/drawByParticleID-0/setRGBA opticalphoton 1 0.843 0 0.4
 /vis/modeling/trajectories/drawByParticleID-0/setRGBA e+ 1 0 1 1
 #/vis/modeling/trajectories/drawByParticleID-0/default/setDrawStepPts true
 /vis/modeling/trajectories/drawByParticleID-0/default/setStepPtsSize 4
@@ -78,3 +76,8 @@
 #
 # For file-based drivers, use this to create an empty detector view:
 #/vis/viewer/flush
+
+/vis/viewer/set/projection p 40 deg
+#/vis/viewer/set/background white
+/vis/viewer/set/background 1 1 1 0
+/vis/viewer/set/hiddenMarker 

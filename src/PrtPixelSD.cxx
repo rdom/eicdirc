@@ -25,8 +25,7 @@ PrtPixelSD::~PrtPixelSD()
 { 
 }
 
-void PrtPixelSD::Initialize(G4HCofThisEvent* hce)
-{
+void PrtPixelSD::Initialize(G4HCofThisEvent* hce){
 
  // TTree *gTree = new TTree("Prt","Prototype hits tree");
  // Event *fHit = 0;
@@ -50,8 +49,7 @@ void PrtPixelSD::Initialize(G4HCofThisEvent* hce)
   //PrtManager::Instance()->AddEvent(PrtEvent());
 }
 
-G4bool PrtPixelSD::ProcessHits(G4Step* step, G4TouchableHistory* hist)
-{  
+G4bool PrtPixelSD::ProcessHits(G4Step* step, G4TouchableHistory* hist){  
   // // energy deposit
   // G4double edep = step->GetTotalEnergyDeposit();
   
@@ -103,17 +101,20 @@ G4bool PrtPixelSD::ProcessHits(G4Step* step, G4TouchableHistory* hist)
  
   Double_t pathId = 0;
   Int_t refl=-1;
+  Int_t prizmId=-1;
   for (G4int i=0;i<prizmCol->entries();i++){
     PrtPrizmHit* phit = (*prizmCol)[i];
+    if(prizmId==-1) prizmId =phit->GetPrizmID();
     if(phit->GetTrackID()==track->GetTrackID()) {
       refl++;
       pathId += phit->GetNormalId()*1000*refl;
     }
   }
-
+ 
   //std::cout<<"Number of reflections: "<<refl <<std::endl;
 
   PrtHit hit;
+  hit.SetPrizmId(prizmId);
   hit.SetMcpId(touchable->GetReplicaNumber(1));
   hit.SetPixelId(touchable->GetReplicaNumber(0));
   hit.SetGlobalPos(globalPos);

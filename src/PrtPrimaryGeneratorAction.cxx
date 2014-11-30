@@ -47,7 +47,14 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   PrtManager::Instance()->AddEvent(PrtEvent());
   if(PrtManager::Instance()->GetRunType() == 0){ // simulation
     G4ThreeVector vec(0,0,1);
-    vec.setTheta(angle);
+    if(angle>0)    vec.setTheta(angle);
+    else{
+      G4double theta = M_PI*G4UniformRand();
+      if(theta>140*deg) theta-=40*deg;
+      if(theta<20*deg) theta+=20*deg;
+      vec.setTheta(M_PI-theta);
+      vec.setPhi(2*M_PI*G4UniformRand());
+    }
     fParticleGun->SetParticleMomentumDirection(vec);
   }
 
