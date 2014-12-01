@@ -628,6 +628,7 @@ void PrtDetectorConstruction::DrawHitBox(int id){
   }
 
   TBranch *branch = tree->GetBranch("PrtEvent");
+  if(!branch) return;
   branch->SetAddress(&event);
   
   Int_t nevent = tree->GetEntries();
