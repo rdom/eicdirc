@@ -55,6 +55,7 @@ public:
   void SetMomentum(TVector3 val){ fMomentum = val; }
   void SetCurrentCherenkov(double val){ fCurrentCherenkov = val; }
   void SetShift(double val){ fShift = val; }
+  void SetDisplayOpt(int val){ fDispalyOpt = val; }
   void SetTest(double val){ fTest = val; }
 
   // Accessors
@@ -70,6 +71,7 @@ public:
   TVector3 GetMomentum(){ return fMomentum; }
   double GetCurrentCherenkov(){ return fCurrentCherenkov; }
   double GetShift(){ return fShift; }
+  int GetDisplayOpt(){ return fDispalyOpt; }
   double GetTest(){ return fTest; }
   TTree *GetTree(){ return fTree; }
   
@@ -88,6 +90,7 @@ private:
   TClonesArray *fTrackInfoArray;
   double fCurrentCherenkov;
   double fShift;
+  int fDispalyOpt;
   double fTest;
 };
 

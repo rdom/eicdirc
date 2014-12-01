@@ -45,8 +45,8 @@
 #/vis/modeling/trajectories/drawByParticleID-0/set opticalphoton yellow
 /vis/modeling/trajectories/drawByParticleID-0/setRGBA opticalphoton 1 0.843 0 0.4
 /vis/modeling/trajectories/drawByParticleID-0/setRGBA e+ 1 0 1 1
-#/vis/modeling/trajectories/drawByParticleID-0/default/setDrawStepPts true
-/vis/modeling/trajectories/drawByParticleID-0/default/setStepPtsSize 4
+/vis/modeling/trajectories/drawByParticleID-0/default/setDrawStepPts true
+/vis/modeling/trajectories/drawByParticleID-0/default/setStepPtsSize 0.1
 
 
 # (if too many tracks cause core dump => /tracking/storeTrajectory 0)
@@ -78,6 +78,11 @@
 #/vis/viewer/flush
 
 /vis/viewer/set/projection p 40 deg
-#/vis/viewer/set/background white
+/vis/viewer/set/style s
+/vis/viewer/set/hiddenEdge true
 /vis/viewer/set/background 1 1 1 0
+#/vis/viewer/set/background 0 0 0 0
 /vis/viewer/set/hiddenMarker 
+
+
+/vis/viewer/set/viewpointThetaPhi 30 30

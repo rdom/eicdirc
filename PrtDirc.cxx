@@ -51,7 +51,7 @@ int main(int argc,char** argv)
   TApplication theApp("App", 0, 0);
   
   G4String macro, events, geometry, radiator, physlist, outfile, 
-    session,geomAng,batchmode,lensId,particle,momentum("1 GeV"),testVal,
+    session,geomAng,batchmode,lensId,particle,momentum("1 GeV"),testVal,displayOpt,
     beamDimension, mcpLayout, infile = "hits.root", lutfile = "../data/lut.root";
   G4int runtype = 0;
 
@@ -75,6 +75,7 @@ int main(int argc,char** argv)
     else if ( G4String(argv[i]) == "-s" ) runtype   = atoi(argv[i+1]);
     else if ( G4String(argv[i]) == "-z" ) beamDimension  = argv[i+1];
     else if ( G4String(argv[i]) == "-c" ) mcpLayout = argv[i+1];
+    else if ( G4String(argv[i]) == "-d" ) displayOpt= argv[i+1];
     else if ( G4String(argv[i]) == "-t" ) testVal   = argv[i+1];
     else {
       PrintUsage();
@@ -107,7 +108,8 @@ int main(int argc,char** argv)
   if(radiator.size()) PrtManager::Instance()->SetRadiator(atoi(radiator));
   if(lensId.size())   PrtManager::Instance()->SetLens(atoi(lensId));
   if(mcpLayout.size())PrtManager::Instance()->SetMcpLayout(atoi(mcpLayout));
-  if(beamDimension.size())   PrtManager::Instance()->SetBeamDimension(atoi(beamDimension));
+  if(beamDimension.size()) PrtManager::Instance()->SetBeamDimension(atoi(beamDimension));
+  if(displayOpt.size())   PrtManager::Instance()->SetDisplayOpt(atoi(displayOpt));
   if(testVal.size())   PrtManager::Instance()->SetShift(atof(testVal));
   if(testVal.size())   PrtManager::Instance()->SetTest(atof(testVal));
   if(geomAng.size())   PrtManager::Instance()->SetAngle(atof(geomAng));
