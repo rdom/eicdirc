@@ -32,7 +32,7 @@ public:
   void Run(Int_t start=0, Int_t end=0);
 
 private:
-  Bool_t FindPeak(Double_t& cherenkovreco, Double_t& spr);
+  Bool_t FindPeak(Double_t& cherenkovreco, Double_t& spr,Int_t a);
   Int_t FindPdg(Double_t mom, Double_t cangle);
   Int_t fDetectorID;  
   Double_t fBboxNum,fPipehAngle,fDphi,fBarPhi;

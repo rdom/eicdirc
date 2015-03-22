@@ -15,6 +15,7 @@
 #include "PrtAmbiguityInfo.h"
 
 #include "TROOT.h"
+#include "TStyle.h"
 #include "TCanvas.h"
 #include "TMath.h"
 
@@ -55,6 +56,7 @@ void PrtLutReco::Run(Int_t start, Int_t end){
  Double_t cangle,spr,tangle,boxPhi,evtime, bartime, lenz,dirz,luttheta, barHitTime, hitTime;
   Int_t pdgcode, evpointcount=0;
   Bool_t reflected = kFALSE;
+  gStyle->SetOptFit(111);
 
   TVector3 fnX1 = TVector3 (1,0,0);   
   TVector3 fnY1 = TVector3( 0,1,0);
@@ -195,7 +197,7 @@ void PrtLutReco::Run(Int_t start, Int_t end){
     PrtManager::Instance()->Fill();
   }
  
-  FindPeak(cangle,spr);
+  FindPeak(cangle,spr,fEvent->GetAngle()+0.01);
   Double_t aEvents = ntotal/(Double_t)nEvents;
 
   nph = ntotal/(Double_t)nEvents;
@@ -212,7 +214,7 @@ void PrtLutReco::Run(Int_t start, Int_t end){
 }
 
 Int_t g_num =0;
-Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr){
+Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
   cherenkovreco=0;
   spr=0;
   if(fHist->GetEntries()>20 ){
@@ -230,13 +232,13 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr){
     fHist->Fit("fgaus","M","",cherenkovreco-0.07,cherenkovreco+0.07);
     cherenkovreco = fFit->GetParameter(1);
     spr = fFit->GetParameter(2);
-    gROOT->SetBatch(0);
 
-    Int_t fVerbose=0;
+    Int_t fVerbose=1;
     if(fVerbose>0){
       TCanvas* c = new TCanvas("c","c",0,0,800,600);
       fHist->GetXaxis()->SetTitle("#theta_{C}, [rad]");
       fHist->GetYaxis()->SetTitle("Entries, [#]");
+      fHist->SetTitle(Form("theta %d", a));
       fHist->Draw();
       // fHist1->SetLineColor(2);
       // fHist1->Draw();
@@ -244,16 +246,18 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr){
 
       c->Modified();
       c->Update();
-      c->WaitPrimitive();
+      c->Print(Form("spr/tangle_%d.png", a));
+      //c->WaitPrimitive();
 
-      fHist3->Draw("colz");
-      c->Modified();
-      c->Update();
-      c->WaitPrimitive();
-      // c->Print(Form("pic/animpid/animpid_%d.png",g_num++));
+      // fHist3->Draw("colz");
+      // c->Modified();
+      // c->Update();
+      // c->WaitPrimitive();
+    
     }
   }
 
+  gROOT->SetBatch(0);
   fHist->Reset();
   fHist1->Reset();
   fHist2->Reset();
