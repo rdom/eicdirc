@@ -32,7 +32,7 @@
 #/vis/viewer/set/style wireframe
 
 # Draw coordinate axes:
-#/vis/scene/add/axes 0 0 0 1 m
+/vis/scene/add/axes 0 0 0 1 m
 #
 # Draw smooth trajectories at end of event, showing trajectory points
 # as markers 2 pixels wide:
@@ -42,8 +42,8 @@
 #/vis/modeling/trajectories/drawByCharge-0/default/setStepPtsSize 2
 
 /vis/modeling/trajectories/create/drawByParticleID
-#/vis/modeling/trajectories/drawByParticleID-0/set opticalphoton yellow
-/vis/modeling/trajectories/drawByParticleID-0/setRGBA opticalphoton 1 0.843 0 0.4
+/vis/modeling/trajectories/drawByParticleID-0/set opticalphoton yellow
+#/vis/modeling/trajectories/drawByParticleID-0/setRGBA opticalphoton 1 0.843 0 0.4
 /vis/modeling/trajectories/drawByParticleID-0/setRGBA e+ 1 0 1 1
 /vis/modeling/trajectories/drawByParticleID-0/default/setDrawStepPts true
 /vis/modeling/trajectories/drawByParticleID-0/default/setStepPtsSize 0.1
@@ -80,9 +80,9 @@
 /vis/viewer/set/projection p 40 deg
 /vis/viewer/set/style s
 /vis/viewer/set/hiddenEdge true
-/vis/viewer/set/background 1 1 1 0
-#/vis/viewer/set/background 0 0 0 0
+#/vis/viewer/set/background 1 1 1 0
+/vis/viewer/set/background 0 0 0 0
 /vis/viewer/set/hiddenMarker 
-
+/vis/geometry/set/forceLineSegmentsPerCircle all 0 100
 
 /vis/viewer/set/viewpointThetaPhi 30 30

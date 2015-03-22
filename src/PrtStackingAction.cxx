@@ -1,32 +1,3 @@
-//
-// ********************************************************************
-// * License and Disclaimer                                           *
-// *                                                                  *
-// * The  Geant4 software  is  copyright of the Copyright Holders  of *
-// * the Geant4 Collaboration.  It is provided  under  the terms  and *
-// * conditions of the Geant4 Software License,  included in the file *
-// * LICENSE and available at  http://cern.ch/geant4/license .  These *
-// * include a list of copyright holders.                             *
-// *                                                                  *
-// * Neither the authors of this software system, nor their employing *
-// * institutes,nor the agencies providing financial support for this *
-// * work  make  any representation or  warranty, express or implied, *
-// * regarding  this  software system or assume any liability for its *
-// * use.  Please see the license in the file  LICENSE  and URL above *
-// * for the full disclaimer and the limitation of liability.         *
-// *                                                                  *
-// * This  code  implementation is the result of  the  scientific and *
-// * technical work of the GEANT4 collaboration.                      *
-// * By using,  copying,  modifying or  distributing the software (or *
-// * any work based  on the software)  you  agree  to acknowledge its *
-// * use  in  resulting  scientific  publications,  and indicate your *
-// * acceptance of all terms of the Geant4 Software license.          *
-// ********************************************************************
-//
-//
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
 #include "PrtStackingAction.h"
 
 #include "G4VProcess.hh"
@@ -36,8 +7,7 @@
 #include "G4Track.hh"
 #include "G4ios.hh"
 #include "G4PhysicalConstants.hh"
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+#include "PrtManager.h"
 
 PrtStackingAction::PrtStackingAction()
   : G4UserStackingAction(),
@@ -70,16 +40,10 @@ PrtStackingAction::PrtStackingAction()
 
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+PrtStackingAction::~PrtStackingAction(){}
 
-PrtStackingAction::~PrtStackingAction()
-{}
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-G4ClassificationOfNewTrack
-PrtStackingAction::ClassifyNewTrack(const G4Track * aTrack)
-{
+G4ClassificationOfNewTrack PrtStackingAction::ClassifyNewTrack(const G4Track * aTrack){
   if(aTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition())
   { // particle is optical photon
     if(aTrack->GetParentID()>0)
@@ -91,19 +55,27 @@ PrtStackingAction::ClassifyNewTrack(const G4Track * aTrack)
     }
   }
   
-  if(aTrack->GetDefinition()->GetParticleName()=="opticalphoton" && aTrack->GetParentID()!=1)  return fKill;
 
+  
+  if(PrtManager::Instance()->GetRunType() == 0){ // for the simulation run
 
-  G4String ParticleName = aTrack->GetDynamicParticle()->
-    GetParticleDefinition()->GetParticleName();
+    if(aTrack->GetDefinition()->GetParticleName()=="opticalphoton" 
+       && aTrack->GetParentID()!=1)  return fKill;
 
-  if(ParticleName == "opticalphoton") {
-    // apply detector efficiency at the production stage:    
-    if(true){
-      Double_t lambda = 197.0*2.0*pi/(aTrack->GetMomentum().mag()*1.0E6);          
-      Double_t ra = fRand->Uniform(0., 1.);
-      if(ra > fDetEff->Eval(lambda)){ 
-	return fKill;
+    G4String ParticleName = aTrack->GetDynamicParticle()->
+      GetParticleDefinition()->GetParticleName();
+    
+    // kill opticalphotons from secondaries
+    // if(aTrack->GetParentID() == 1 && ParticleName == "opticalphoton" ) 	  return fKill;
+    
+    if(ParticleName == "opticalphoton") {
+      // apply detector efficiency at the production stage:    
+      if(true){
+	Double_t lambda = 197.0*2.0*pi/(aTrack->GetMomentum().mag()*1.0E6);          
+	Double_t ra = fRand->Uniform(0., 1.);
+	if(ra > fDetEff->Eval(lambda)){ 
+	  return fKill;
+	}
       }
     }
   }
@@ -111,17 +83,14 @@ PrtStackingAction::ClassifyNewTrack(const G4Track * aTrack)
   return fUrgent;
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
 void PrtStackingAction::NewStage()
 {
   // G4cout << "Number of Scintillation photons produced in this event : "
   //        << fScintillationCounter << G4endl;
-  G4cout << "Number of Cerenkov photons produced in this event : "
-         << fCerenkovCounter << G4endl;
+  if(PrtManager::Instance()->GetRunType() == 0)
+    G4cout << "Number of Cerenkov photons produced in this event : "
+	   << fCerenkovCounter << G4endl;
 }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void PrtStackingAction::PrepareNewEvent()
 {
@@ -129,4 +98,3 @@ void PrtStackingAction::PrepareNewEvent()
   fCerenkovCounter = 0;
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

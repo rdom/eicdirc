@@ -44,6 +44,10 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 { 
   G4double x,y,z;
   G4double angle = PrtManager::Instance()->GetAngle();
+  G4double radiatorL = PrtManager::Instance()->GetRadiatorL();
+  G4double radiatorW = PrtManager::Instance()->GetRadiatorW();
+  G4double radiatorH = PrtManager::Instance()->GetRadiatorH();
+
   PrtManager::Instance()->AddEvent(PrtEvent());
   if(PrtManager::Instance()->GetRunType() == 0){ // simulation
     G4ThreeVector vec(0,0,1);
@@ -81,13 +85,14 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     PrtManager::Instance()->Event()->SetPosition(TVector3(x,y,z));
   }
   if(PrtManager::Instance()->GetRunType() == 1){ // LUT generation
-    fParticleGun->SetParticlePosition(G4ThreeVector(-1224.9/2.+0.1,0,0));
+    
+    fParticleGun->SetParticlePosition(G4ThreeVector(0,0,radiatorL/2.-0.1));
     G4double angle = -G4UniformRand()*M_PI;
-    G4ThreeVector vec(0,0,1);
+    G4ThreeVector vec(0,0,-1);
     vec.setTheta(acos(G4UniformRand()));
     vec.setPhi(2*M_PI*G4UniformRand());
     
-    vec.rotateY(-M_PI/2.);
+    //  vec.rotateY(-M_PI/2.);
     fParticleGun->SetParticleMomentumDirection(vec);
   }
   if(PrtManager::Instance()->GetRunType() == 5){ // calibration light

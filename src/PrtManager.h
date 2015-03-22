@@ -51,6 +51,9 @@ public:
   void SetLens(int val){ fLens = val; }
   void SetMcpLayout(int val){ fMcpLayout = val; }
   void SetAngle(double val){ fAngle = val; }
+  void SetRadiatorL(double val){ fRadiatorL = val; }
+  void SetRadiatorW(double val){ fRadiatorW = val; }
+  void SetRadiatorH(double val){ fRadiatorH = val; }
   void SetParticle(int val){ fParticle = val; }
   void SetMomentum(TVector3 val){ fMomentum = val; }
   void SetCurrentCherenkov(double val){ fCurrentCherenkov = val; }
@@ -67,6 +70,9 @@ public:
   int GetLens(){ return fLens; }
   int GetMcpLayout(){ return fMcpLayout; }
   double GetAngle(){ return fAngle; }
+  double GetRadiatorL(){ return fRadiatorL; }
+  double GetRadiatorW(){ return fRadiatorW; }
+  double GetRadiatorH(){ return fRadiatorH; }
   int GetParticle(){ return fParticle; }
   TVector3 GetMomentum(){ return fMomentum; }
   double GetCurrentCherenkov(){ return fCurrentCherenkov; }
@@ -74,6 +80,7 @@ public:
   int GetDisplayOpt(){ return fDispalyOpt; }
   double GetTest(){ return fTest; }
   TTree *GetTree(){ return fTree; }
+  TString GetOutName(){return fOutName;}
   
 private: 
   int fRunType;
@@ -83,6 +90,9 @@ private:
   int fLens;
   int fMcpLayout;
   double fAngle;
+  double fRadiatorL;
+  double fRadiatorW;
+  double fRadiatorH;
   int fParticle;
   int fBeamDimension;
   TVector3 fMomentum;
@@ -92,6 +102,7 @@ private:
   double fShift;
   int fDispalyOpt;
   double fTest;
+  TString fOutName;
 };
 
 #endif

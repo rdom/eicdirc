@@ -84,8 +84,6 @@ G4bool PrtPrizmSD::ProcessHits(G4Step* aStep, G4TouchableHistory* hist)
 
 void PrtPrizmSD::EndOfEvent(G4HCofThisEvent*)
 { 
-  std::cout<<"fHitsCollection->entries()  "<<fHitsCollection->entries() <<std::endl;
- 
   if ( verboseLevel>1 ) { 
     G4int nofHits = fHitsCollection->entries();
     G4cout << "\n-------->Prizm Hits Collection: in this event they are " << nofHits 

@@ -5,6 +5,7 @@ ClassImp(PrtLutNode)
 // -----   Default constructor   -------------------------------------------
 PrtLutNode::PrtLutNode()
 { 
+  fDetectorId = -1;
   fSize = 0;
 }
 

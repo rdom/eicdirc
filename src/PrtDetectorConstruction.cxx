@@ -44,20 +44,25 @@ PrtDetectorConstruction::PrtDetectorConstruction()
   //fBar[0] = 17; fBar[1] = 32; fBar[2] = 4200;
   //fMirror[0] = 20; fMirror[1] = 40; fMirror[2] =1;
   //fPrizm[0] = 170; fPrizm[1] = 300; fPrizm[2] = 30+300*tan(37*deg); fPrizm[3] = 30;
-  fPrizm[0] = 390; fPrizm[1] = 300; fPrizm[2] = 30+300*tan(38*deg); fPrizm[3] = 30;
+  fPrizm[0] = 390; fPrizm[1] = 300; fPrizm[3] = 50; fPrizm[2]= fPrizm[3]+300*tan(38*deg); 
   fMirror[0] = 20; fMirror[1] = fPrizm[0]; fMirror[2] =1;
   //  fPrizm[0] = 170; fPrizm[1] = 300; fPrizm[2] = 50+300*tan(45*deg); fPrizm[3] = 50;
-  fBar[0] = 17; fBar[1] = fPrizm[0]/fNBar; fBar[2] = 4200;
+  fBar[0] = 17; fBar[1] = fPrizm[0]/fNBar; fBar[2] = 4200; //4200
 
   fMcpTotal[0] = fMcpTotal[1] = 53+4; fMcpTotal[2]=1;
   fMcpActive[0] = fMcpActive[1] = 53; fMcpActive[2]=1;
   fLens[0] = fLens[1] = 40; fLens[2]=10;
 
-  if(fGeomId==2012){
-    fNCol = 3;
-    fPrizm[2] = 30+300*tan(30*deg); fPrizm[3] = 30;
+  if(PrtManager::Instance()->GetLens() == 2){
+    fLens[0] = 50; fLens[1] = 175; fLens[2]=14.4;
   }
-			  
+  if(PrtManager::Instance()->GetLens() == 3){
+    fLens[0] = 30; fLens[1] = fBar[1]; fLens[2]=15;
+  }
+
+  PrtManager::Instance()->SetRadiatorL(fBar[2]);
+  PrtManager::Instance()->SetRadiatorW(fBar[1]);
+  PrtManager::Instance()->SetRadiatorH(fBar[0]);			  
   fPrtRot = new G4RotationMatrix();
   //create a messenger for this class
   fGeomMessenger = new PrtDetectorConstructionMessenger(this);
@@ -91,15 +96,22 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   G4double radius = 1000;
   G4double tphi, dphi = 22.5*deg; //22.5*deg;
   G4int BoxId = 0;
-  for(int i=0; i<fNBoxes; i++){
-    tphi = dphi*i; 
-    G4double dx = radius * cos(tphi);
-    G4double dy = radius * sin(tphi);
 
-    G4RotationMatrix *tRot = new G4RotationMatrix();
-    tRot->rotateZ(-tphi);     
-    new G4PVPlacement(tRot,G4ThreeVector(dx,dy,-500),lDirc,"wDirc",lExpHall,false,i);
+  if(PrtManager::Instance()->GetRunType()==1){ 
+    // LUT
+    new G4PVPlacement(0,G4ThreeVector(0,0,0),lDirc,"wDirc",lExpHall,false,0);
+  }else{ 
+    for(int i=0; i<fNBoxes; i++){
+      tphi = dphi*i; 
+      G4double dx = radius * cos(tphi);
+      G4double dy = radius * sin(tphi);
+
+      G4RotationMatrix *tRot = new G4RotationMatrix();
+      tRot->rotateZ(-tphi);     
+      new G4PVPlacement(tRot,G4ThreeVector(dx,dy,0),lDirc,"wDirc",lExpHall,false,i); //G4ThreeVector(dx,dy,-500)
+    }
   }
+
 
   // The Bar
   G4Box *gBar = new G4Box("gBar",fBar[0]/2.,fBar[1]/2.,fBar[2]/2.);
@@ -136,9 +148,38 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   lLens1 = new G4LogicalVolume(gLens1,Nlak33aMaterial,"lLens1",0,0,0); //Nlak33aMaterial  
   lLens2 = new G4LogicalVolume(gLens2,BarMaterial,"lLens2",0,0,0);
 
+  if(PrtManager::Instance()->GetLens() == 3){ // 3-component spherical lens
+    G4double lensMinThikness = 2; 
+  
+    G4double r1 = 0; //PrtManager::Instance()->GetTest1();
+    G4double r2 = 0; //PrtManager::Instance()->GetTest2();
+  
+    G4double lensrad1 = (r1==0)? 47.8: r1;
+    G4double lensrad2 = (r2==0)? 29.1: r2;
+    
+ 
+    G4ThreeVector zTrans1(0, 0, -lensrad1-fLens[2]/2.+lensrad1-sqrt(lensrad1*lensrad1-fLens[0]/2.*fLens[0]/2.)+lensMinThikness);
+    G4ThreeVector zTrans2(0, 0, -lensrad2+fLens[2]/2.-lensMinThikness);
+    
+    G4Sphere* gsphere1 = new G4Sphere("Sphere1",0,lensrad1,0,360*deg,0,360*deg);
+    G4Sphere* gsphere2 = new G4Sphere("Sphere2",0,lensrad2,0,360*deg,0,360*deg);
+
+
+    G4IntersectionSolid* gLens1 = new G4IntersectionSolid("Fbox*Sphere1", gfbox, gsphere1,new G4RotationMatrix(),zTrans1); 
+    G4SubtractionSolid* gLenst = new G4SubtractionSolid("Fbox-Sphere1", gfbox, gsphere1, new G4RotationMatrix(),zTrans1);
+
+    G4IntersectionSolid* gLens2 = new G4IntersectionSolid("gLenst*Sphere2", gLenst, gsphere2, new G4RotationMatrix(),zTrans2);
+    G4SubtractionSolid* gLens3 = new G4SubtractionSolid("gLenst-Sphere2", gLenst, gsphere2,new G4RotationMatrix(),zTrans2);
+    
+    lLens1 = new G4LogicalVolume(gLens1,BarMaterial,"lLens1",0,0,0);
+    lLens2 = new G4LogicalVolume(gLens2,Nlak33aMaterial,"lLens2",0,0,0);
+    lLens3 = new G4LogicalVolume(gLens3,BarMaterial,"lLens3",0,0,0);
+  }
+
   if(PrtManager::Instance()->GetLens() != 0 && PrtManager::Instance()->GetLens() != 10){
     new G4PVPlacement(0,G4ThreeVector(0,0,fBar[2]/2.+fLens[2]/2.),lLens1,"wLens1", lDirc,false,0);
     new G4PVPlacement(0,G4ThreeVector(0,0,fBar[2]/2.+fLens[2]/2.),lLens2,"wLens2", lDirc,false,0);
+    if(PrtManager::Instance()->GetLens() == 3)  new G4PVPlacement(0,G4ThreeVector(0,0,fBar[2]/2.+fLens[2]/2.),lLens3,"wLens3", lDirc,false,0);
   }else{
     fLens[2]=0; 
   }
@@ -171,15 +212,12 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     }
  
     int mcpId = 0;
+    G4double gapx = (fPrizm[2]-4*fMcpTotal[0])/5.;
+    G4double gapy = (fPrizm[0]-6*fMcpTotal[0])/7.;
     for(int i=0; i<fNCol; i++){
       for(int j=0; j<fNRow; j++){
-	double shiftx = i*(fMcpTotal[0])-fPrizm[3]/2.+fMcpTotal[0]/2;;
-	double shifty = j*(fMcpTotal[0])-fPrizm[0]/2.+fMcpTotal[0]/2;
-
-       	if(fGeomId==2012){
-	  shiftx = i*(fMcpActive[0]+2+6)-fBar[0]/2.+fMcpActive[0]/2.-3-1;
-	  shifty = j*(fMcpActive[0]+9+6)-fPrizm[2]/2.-fPrizm[3]/2.+fMcpActive[0]/2.-3-1.5;
-	}
+	double shiftx = i*(fMcpTotal[0]+gapx)-fPrizm[3]/2.+fMcpTotal[0]/2+gapx;
+	double shifty = j*(fMcpTotal[0]+gapy)-fPrizm[0]/2.+fMcpTotal[0]/2+gapy;
 	new G4PVPlacement(0,G4ThreeVector(shiftx,shifty,fBar[2]/2.+fPrizm[1]+fMcpActive[2]/2.+fLens[2]),lMcp,"wMcp", lDirc,false,mcpId++);
       }
     }
@@ -218,8 +256,15 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     G4Box* gMcp = new G4Box("gMcp",0.5*fPrizm[2],0.5*fPrizm[0],0.5*fMcpTotal[2]);
     lMcp = new G4LogicalVolume(gMcp,BarMaterial,"lMcp",0,0,0);
   
-    fNpix1 = 90;
-    fNpix2 = 120;
+
+    G4double pixSize = 3*mm;
+    fNpix1 = fPrizm[2]/pixSize-1;
+    fNpix2 = fPrizm[0]/pixSize-1;
+    std::cout<<"fNpix1  "<< fNpix1<<"   "<<fPrizm[0]<<std::endl;
+    std::cout<<"fNpix2  "<< fNpix2 << "  "<< fPrizm[2]<<std::endl;
+ 
+    // fNpix1 = 90;  
+    // fNpix2 = 120;
     // fNpix1 = 4;
     // fNpix2 = 7;
     G4Box* gPixel = new G4Box("gPixel",0.5*fPrizm[2]/fNpix1,0.5*fPrizm[0]/fNpix2,0.2);
@@ -576,6 +621,7 @@ void PrtDetectorConstruction::SetVisualization(){
   //vaLens->SetForceAuxEdgeVisible(true);
   lLens1->SetVisAttributes(vaLens);
   lLens2->SetVisAttributes(vaLens);
+  if(PrtManager::Instance()->GetLens()==3) lLens3->SetVisAttributes(vaLens);
 
   G4VisAttributes *waPrizm = new G4VisAttributes(G4Colour(0.,0.9,0.9,0.4));
   //waPrizm->SetForceAuxEdgeVisible(true);

@@ -44,7 +44,7 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/src/*.h)
 # Add the executable, and link it to the Geant4 libraries
 #
 add_executable(eicdirc PrtDirc.cxx ${sources} PrtDict.cxx ${headers} PrtDict.h)
-target_link_libraries(eicdirc ${Geant4_LIBRARIES} ${ROOT_LIBRARIES})
+target_link_libraries(eicdirc ${Geant4_LIBRARIES} ${ROOT_LIBRARIES} -lSpectrum)
 add_library(prtdirclib SHARED ../src/PrtHit.cxx ../src/PrtEvent.cxx ../src/PrtLutNode.cxx ../src/PrtTrackInfo.cxx  ../src/PrtPhotonInfo.cxx ../src/PrtAmbiguityInfo.cxx PrtDict.cxx ../src/PrtHit.h ../src/PrtEvent.h ../src/PrtLutNode.h ../src/PrtTrackInfo.h  ../src/PrtPhotonInfo.h ../src/PrtAmbiguityInfo.h PrtDict.h)
 
 #----------------------------------------------------------------------------

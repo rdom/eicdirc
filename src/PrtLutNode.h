@@ -34,7 +34,7 @@ public:
 
   // Accessors
   Int_t Entries() { return fSize; }
-  Double_t GetDetectorId() { return fDetectorId; }
+  Int_t GetDetectorId() { return fDetectorId; }
 
   TVector3 GetEntry(Int_t entry) { return fNodeArray[entry]; }
   Double_t GetPathId(Int_t entry){ return fPathIdArray[entry]; }
@@ -43,7 +43,7 @@ public:
   TVector3 GetHitPos(Int_t entry){ return fHitPos[entry]; }
   TVector3 GetDigiPos(){ return fDigiPos; }
 
-protected:
+private:
 
   Int_t fDetectorId;
   Int_t fSize;
@@ -55,7 +55,6 @@ protected:
   std::vector<Int_t> fNRefl;
   std::vector<Double_t> fTimeArray;
 
-protected: 
   ClassDef(PrtLutNode, 1);
   
 };

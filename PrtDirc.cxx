@@ -28,7 +28,7 @@
 #include "TApplication.h"
 
 #include "PrtManager.h"
-//#include "PrtLutReco.h"
+#include "PrtLutReco.h"
 
 
 
@@ -92,8 +92,8 @@ int main(int argc,char** argv)
   PrtManager::Instance(outfile,runtype);
 
   if(runtype == 2){
-    //PrtLutReco * reco = new PrtLutReco(infile,lutfile); 
-    //reco->Run(0);
+    PrtLutReco * reco = new PrtLutReco(infile,lutfile); 
+    reco->Run(0);
     return 0;
   }
 

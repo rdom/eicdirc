@@ -36,6 +36,7 @@ private:
   G4LogicalVolume* lMirror;
   G4LogicalVolume* lLens1;
   G4LogicalVolume* lLens2;
+  G4LogicalVolume* lLens3;
   G4LogicalVolume* lPrizm;
   G4LogicalVolume* lMcp;
   G4LogicalVolume* lPixel;

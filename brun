@@ -7,7 +7,7 @@ tseed=$(($(date +%s%N)/1000000-1393400000000))
 
 echo $tseed
 
-for i in {0..5}; do ./eicdirc -o h_b$i.root -a 110 -x "pi+" -p 4  -w 0 -g 0 -h 1 -e 400 -c 3 -l 0 -b 1 -r $tseed$i > l_b$i.log & done
+for i in {0..4}; do ./eicdirc -r $tseed$i -o h_b$i.root -s 0 -a 30 -x "pi+" -p 6  -w 0 -g 1 -h 9 -e 100 -c 3 -l 3 -b 1  > l_b$i.log & done
 
 sleep 1
 
@@ -24,5 +24,5 @@ done
 
 sleep 2
  
-rm hits1.root
-hadd hits1.root h_b*.root
+rm hits.root
+hadd hits.root h_b*.root

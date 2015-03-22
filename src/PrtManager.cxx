@@ -10,7 +10,9 @@ PrtManager * PrtManager::fInstance= NULL;
 
 PrtManager::PrtManager(G4String outfile, G4int runtype)
 {
-  TString filename = outfile;
+  TString filename  = outfile;
+  fOutName = filename; 
+  fOutName = fOutName.Remove(fOutName.Last('.'));
   fRunType = runtype;
   fRootFile = new TFile(filename,"RECREATE");
 
@@ -24,11 +26,11 @@ PrtManager::PrtManager(G4String outfile, G4int runtype)
     fLut = new TClonesArray("PrtLutNode");
     fTree = new TTree("prtlut","Look-up table for the geometrical reconstruction.");
     fTree->Branch("LUT",&fLut,256000,2); 
-    Int_t Nnodes = 2000;
+    Int_t Nnodes = 100000;
     
     TClonesArray &fLuta = *fLut; 
     for (Long64_t n=0; n<Nnodes; n++) {
-      new((fLuta)[n]) PrtLutNode(-1);
+      new((fLuta)[n]) PrtLutNode(n);
     }    
   }
 
@@ -68,6 +70,9 @@ void PrtManager::AddEvent(PrtEvent event){
     fEvent = new PrtEvent(event);
     fEvent->SetPhysList(fPhysList);
     fEvent->SetAngle((180*deg-fAngle)/deg);
+    // fEvent->SetRadiatorL(fRadiatorL);
+    // fEvent->SetRadiatorW(fRadiatorW);
+    // fEvent->SetRadiatorH(fRadiatorH);
     fEvent->SetParticle(fParticle);
     fEvent->SetMomentum(fMomentum);
     fEvent->SetGeometry(fGeometry);

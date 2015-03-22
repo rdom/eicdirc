@@ -79,7 +79,7 @@ G4bool PrtPixelSD::ProcessHits(G4Step* step, G4TouchableHistory* hist){
   G4ThreeVector localpos = touchable->GetHistory()->GetTopTransform().TransformPoint(globalpos);
   G4ThreeVector translation = touchable->GetHistory()->GetTopTransform().Inverse().TransformPoint(G4ThreeVector(0,0,0));
   G4ThreeVector inPrismpos = touchable->GetHistory()->GetTransform( 1 ).TransformPoint(globalpos);
-  G4ThreeVector g4mom = track->GetMomentum();
+  G4ThreeVector g4mom = track->GetVertexMomentumDirection();//GetMomentum();
   G4ThreeVector g4pos = track->GetVertexPosition();
  
   TVector3 globalPos(inPrismpos.x(),inPrismpos.y(),inPrismpos.z());
@@ -159,7 +159,8 @@ G4bool PrtPixelSD::ProcessHits(G4Step* step, G4TouchableHistory* hist){
 void PrtPixelSD::EndOfEvent(G4HCofThisEvent*)
 { 
   G4int eventNumber = G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID();
-  if(eventNumber%1==0) std::cout<<"Event # "<<eventNumber <<std::endl;
+  if(eventNumber%1==0 && PrtManager::Instance()->GetRunType()==0) std::cout<<"Event # "<<eventNumber <<std::endl;
+  if(eventNumber%1000==0 && PrtManager::Instance()->GetRunType()!=0) std::cout<<"Event # "<<eventNumber <<std::endl;
   PrtManager::Instance()->Fill();
   
 }

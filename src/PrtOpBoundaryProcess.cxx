@@ -36,7 +36,10 @@ G4VParticleChange* PrtOpBoundaryProcess::PostStepDoIt(const G4Track& aTrack, con
     }
   }
 
-  
+  if(PrtManager::Instance()->GetRunType() == 1 && pPostStepPoint->GetPosition().z()<pPreStepPoint->GetPosition().z()){
+    particleChange->ProposeTrackStatus(fStopAndKill);
+  }
+
   // kill photons outside bar and prizm
   if(GetStatus() == FresnelRefraction 
      && aStep.GetPostStepPoint()->GetPhysicalVolume()->GetName()=="wDirc"){
@@ -44,7 +47,8 @@ G4VParticleChange* PrtOpBoundaryProcess::PostStepDoIt(const G4Track& aTrack, con
   }
 
   if((aStep.GetPreStepPoint()->GetPhysicalVolume()->GetName()=="wLens1" 
-      || aStep.GetPreStepPoint()->GetPhysicalVolume()->GetName()=="wLens2") 
+      || aStep.GetPreStepPoint()->GetPhysicalVolume()->GetName()=="wLens2"
+      ) //  || aStep.GetPreStepPoint()->GetPhysicalVolume()->GetName()=="wLens3"
      &&  aStep.GetPostStepPoint()->GetPhysicalVolume()->GetName()=="wDirc"){
     particleChange->ProposeTrackStatus(fStopAndKill);
   }
