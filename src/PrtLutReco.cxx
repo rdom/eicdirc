@@ -37,8 +37,8 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile){
   fTree->SetBranchAddress("LUT",&fLut); 
   fTree->GetEntry(0);
 
-  fHist = new TH1F("chrenkov_angle_hist","chrenkov_angle_hist", 200,0.5,0.9);
-  fFit = new TF1("fgaus","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2])",0.35,0.9);
+  fHist = new TH1F("chrenkov_angle_hist","chrenkov_angle_hist", 200,0.7,0.9);
+  fFit = new TF1("fgaus","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +[3]",0.35,0.9);
   fSpect = new TSpectrum(10);
  
   cout << "-I- PrtLutReco: Intialization successfull" << endl;
@@ -92,7 +92,7 @@ void PrtLutReco::Run(Int_t start, Int_t end){
     trackinfo.AddInfo(fEvent->PrintInfo()+"\n Basic reco informaion: \n");
     
     Double_t minChangle = 0.35;
-    Double_t maxChangle = 0.85;
+    Double_t maxChangle = 0.9;
     trackinfo.AddInfo(Form("Cerenkov angle selection: (%f,%f) \n",minChangle,maxChangle));
 
     TVector3 rotatedmom = fEvent->GetMomentum().Unit();
@@ -220,16 +220,20 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr){
     Int_t nfound = fSpect->Search(fHist,1,"",0.6);
     Float_t *xpeaks = fSpect->GetPositionX();
     if(nfound>0) cherenkovreco = xpeaks[0];
-    fFit->SetParameters(100,cherenkovreco,0.005);   // peak
+    fFit->SetParameters(100,cherenkovreco,0.005,10);   // peak
     // fFit->SetParameter(1,cherenkovreco);   // peak
     // fFit->SetParameter(2,0.005); // width
-    fHist->Fit("fgaus","M","",cherenkovreco-0.02,cherenkovreco+0.02);
+
+    fFit->FixParameter(2,0.009); // width
+    fHist->Fit("fgaus","","",cherenkovreco-0.07,cherenkovreco+0.07);
+    fFit->ReleaseParameter(2); // width
+    fHist->Fit("fgaus","M","",cherenkovreco-0.07,cherenkovreco+0.07);
     cherenkovreco = fFit->GetParameter(1);
     spr = fFit->GetParameter(2);
     gROOT->SetBatch(0);
 
     Int_t fVerbose=0;
-    if(fVerbose>1){
+    if(fVerbose>0){
       TCanvas* c = new TCanvas("c","c",0,0,800,600);
       fHist->GetXaxis()->SetTitle("#theta_{C}, [rad]");
       fHist->GetYaxis()->SetTitle("Entries, [#]");
