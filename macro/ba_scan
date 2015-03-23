@@ -4,6 +4,8 @@ tseed=$(($(date +%s%N)/1000000-1393400000000))
 
 echo $tseed
 
+#./eicdirc -s 1 -a 60 -x "opticalphoton" -p "3.18 eV" -w 0 -g 1 -h 9 -e 500000 -c 3 -l 3 -d 0 -b 1
+
 for i in {30..150..10}; do 
     ../build/eicdirc -r $tseed$i -o h_b$i.root -s 0 -a $i -x "pi+" -p 6  -w 0 -g 1 -h 9 -e 10 -c 3 -l 3 -b 1  > /dev/null && ../build/eicdirc -r $tseed$i -i h_b$i.root -o r_b$i.root  -s 2 > /dev/null &
     echo $i
