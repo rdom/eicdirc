@@ -102,7 +102,6 @@ int main(int argc,char** argv)
   std::cout<<"SEED "<<myseed <<std::endl;
   G4Random::setTheSeed(myseed);
   G4RunManager * runManager = new G4RunManager;
-
   if(physlist.size()) PrtManager::Instance()->SetPhysList(atoi(physlist));
   if(geometry.size()) PrtManager::Instance()->SetGeometry(atoi(geometry));
   if(radiator.size()) PrtManager::Instance()->SetRadiator(atoi(radiator));

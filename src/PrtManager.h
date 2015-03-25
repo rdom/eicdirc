@@ -34,7 +34,7 @@ public:
   PrtManager(G4String outfile, G4int runtype);
   ~PrtManager(){};
   static PrtManager* Instance(G4String outfile="hits.root", G4int runtype=0);
-  void Save()             { fRootFile->Close(); }
+  void Save()             { fRootFile->Write(); }
   void Fill();
   void FillLut();
   void AddEvent(PrtEvent event);
@@ -55,7 +55,7 @@ public:
   void SetRadiatorW(double val){ fRadiatorW = val; }
   void SetRadiatorH(double val){ fRadiatorH = val; }
   void SetParticle(int val){ fParticle = val; }
-  void SetMomentum(TVector3 val){ fMomentum = val; }
+  void SetMomentum(TVector3 val){ fMomentum = val; fEvent->SetMomentum(fMomentum);}
   void SetCurrentCherenkov(double val){ fCurrentCherenkov = val; }
   void SetShift(double val){ fShift = val; }
   void SetDisplayOpt(int val){ fDispalyOpt = val; }

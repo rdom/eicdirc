@@ -86,6 +86,7 @@ void PrtLutReco::Run(Int_t start, Int_t end){
   Int_t ntotal=0;
   Int_t nEvents = fChain->GetEntries();
   for (Int_t ievent=0; ievent<nEvents; ievent++){
+    if(ievent>0) continue;
     fChain->GetEntry(ievent);
     Int_t nHits = fEvent->GetHitSize();
     ntotal+=nHits;
@@ -103,13 +104,12 @@ void PrtLutReco::Run(Int_t start, Int_t end){
     // std::cout<<"lenz "<<lenz <<std::endl;
  
     for(Int_t h=0; h<nHits; h++) {
-      //if(h>1) continue;
       PrtPhotonInfo photoninfo;
       fHit = fEvent->GetHit(h);
       hitTime = fHit.GetLeadTime();
       lenz = 2100-fHit.GetPosition().Z();
       dirz = fHit.GetMomentum().Z();
-
+      
       if(dirz<0) reflected = kTRUE;
       else reflected = kFALSE;
 
@@ -147,11 +147,9 @@ void PrtLutReco::Run(Int_t start, Int_t end){
 	
 	  fHist1->Fill(hitTime);
 	  fHist2->Fill(bartime + evtime);
-
-
+ 
 	  if(fabs((bartime + evtime)-hitTime)>0.5) continue;
 	  fHist3->Fill(fabs((bartime + evtime)),hitTime);
-
 	  tangle = rotatedmom.Angle(dir);
 	  if(  tangle>TMath::Pi()/2.) tangle = TMath::Pi()-tangle;
 
@@ -163,6 +161,7 @@ void PrtLutReco::Run(Int_t start, Int_t end){
 	  ambinfo.SetEvTime(evtime);
 	  ambinfo.SetCherenkov(tangle);
 	  photoninfo.AddAmbiguity(ambinfo);
+	  
 	  if(tangle > minChangle && tangle < maxChangle)
 	    fHist->Fill(tangle);
 	}
@@ -217,6 +216,8 @@ Int_t g_num =0;
 Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
   cherenkovreco=0;
   spr=0;
+  std::cout<<"NNNNNNNNNNNNNNNNN  "<< fHist->GetEntries()<<std::endl;
+  
   if(fHist->GetEntries()>20 ){
     gROOT->SetBatch(1);
     Int_t nfound = fSpect->Search(fHist,1,"",0.6);
@@ -232,7 +233,8 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
     fHist->Fit("fgaus","M","",cherenkovreco-0.07,cherenkovreco+0.07);
     cherenkovreco = fFit->GetParameter(1);
     spr = fFit->GetParameter(2);
-
+    gROOT->SetBatch(0);
+    
     Int_t fVerbose=1;
     if(fVerbose>0){
       TCanvas* c = new TCanvas("c","c",0,0,800,600);
@@ -247,7 +249,7 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
       c->Modified();
       c->Update();
       c->Print(Form("spr/tangle_%d.png", a));
-      //c->WaitPrimitive();
+      c->WaitPrimitive();
 
       // fHist3->Draw("colz");
       // c->Modified();
