@@ -86,7 +86,6 @@ void PrtLutReco::Run(Int_t start, Int_t end){
   Int_t ntotal=0;
   Int_t nEvents = fChain->GetEntries();
   for (Int_t ievent=0; ievent<nEvents; ievent++){
-    if(ievent>0) continue;
     fChain->GetEntry(ievent);
     Int_t nHits = fEvent->GetHitSize();
     ntotal+=nHits;
@@ -216,8 +215,7 @@ Int_t g_num =0;
 Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
   cherenkovreco=0;
   spr=0;
-  std::cout<<"NNNNNNNNNNNNNNNNN  "<< fHist->GetEntries()<<std::endl;
-  
+
   if(fHist->GetEntries()>20 ){
     gROOT->SetBatch(1);
     Int_t nfound = fSpect->Search(fHist,1,"",0.6);
@@ -233,7 +231,7 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
     fHist->Fit("fgaus","M","",cherenkovreco-0.07,cherenkovreco+0.07);
     cherenkovreco = fFit->GetParameter(1);
     spr = fFit->GetParameter(2);
-    gROOT->SetBatch(0);
+    //gROOT->SetBatch(0);
     
     Int_t fVerbose=1;
     if(fVerbose>0){
