@@ -27,10 +27,11 @@ example:
                 0    pixels covers all FD plain
                 1    MCP covers all FD plain
                 2    MCP covers all FD plain
-//-l    focusing system
-//                0    no lens
-//                1    spherical lens
-//                10   ideal lens (thickness = 0, ideal focusing)
+-l    focusing system
+                0    no lens
+                1    spherical lens
+		3    3-layer lens
+                10   ideal lens (thickness = 0, ideal focusing)
 
 -a    angle between particle beam and bar radiator
 

@@ -53,6 +53,16 @@ G4VParticleChange* PrtOpBoundaryProcess::PostStepDoIt(const G4Track& aTrack, con
     particleChange->ProposeTrackStatus(fStopAndKill);
   }
 
+  if(aStep.GetPreStepPoint()->GetPhysicalVolume()->GetName()=="wLens1" 
+     && aStep.GetPostStepPoint()->GetPhysicalVolume()->GetName()=="wLens1"){
+    particleChange->ProposeTrackStatus(fStopAndKill);
+  }
+  if(aStep.GetPreStepPoint()->GetPhysicalVolume()->GetName()=="wLens2" 
+     && aStep.GetPostStepPoint()->GetPhysicalVolume()->GetName()=="wLens2"){
+    particleChange->ProposeTrackStatus(fStopAndKill);
+  }
+
+
   return particleChange;
 
 }
