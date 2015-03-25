@@ -1,3 +1,4 @@
+#include "../../prttools/prttools.C"
 void da_scan(TString inFile = "r_spr0.root"){
 
   TChain ch("dirc"); ch.Add(inFile);
@@ -77,12 +78,16 @@ void da_scan(TString inFile = "r_spr0.root"){
   gNph->GetXaxis()->SetTitle("#theta_{track} [#circ]");
   gTrr->GetXaxis()->SetTitle("#theta_{track} [#circ]");
 
-
+  TFile *file = new TFile("c_spr0.root","RECREATE");
   TCanvas* c1 = new TCanvas("c1","c1",800,500);c1->SetBottomMargin(0.12);
   gSpr->Draw("APL");
   TCanvas* c2 = new TCanvas("c2","c2",800,500);c2->SetBottomMargin(0.12);
   gNph->Draw("APL");
   TCanvas* c3 = new TCanvas("c3","c3",800,500);c3->SetBottomMargin(0.12);
   gTrr->Draw("APL");
-
+  file->cd();
+  c1->Write();
+  c2->Write();
+  c3->Write();
+  file->Close();
 }
