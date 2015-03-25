@@ -1,5 +1,5 @@
 #include "../../prttools/prttools.C"
-void da_scan(TString inFile = "r_spr.root"){
+void da_scan(TString inFile = "r_spr.root", TString outFile="c_spr.root"){
 
   TChain ch("dirc"); ch.Add(inFile);
   Double_t cangle,spr,trr,nph,par1,par2,par3,par4,par5,par6,par7,par8,theta,phi; 
@@ -78,7 +78,7 @@ void da_scan(TString inFile = "r_spr.root"){
   gNph->GetXaxis()->SetTitle("#theta_{track} [#circ]");
   gTrr->GetXaxis()->SetTitle("#theta_{track} [#circ]");
 
-  TFile *file = new TFile("c_spr0.root","RECREATE");
+  TFile *file = new TFile(outFile,"RECREATE");
   TCanvas* c1 = new TCanvas("c1","c1",800,500);c1->SetBottomMargin(0.12);
   gSpr->Draw("APL");
   TCanvas* c2 = new TCanvas("c2","c2",800,500);c2->SetBottomMargin(0.12);

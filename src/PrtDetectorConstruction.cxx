@@ -157,10 +157,12 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     G4double r1 = 0; //PrtManager::Instance()->GetTest1();
     G4double r2 = 0; //PrtManager::Instance()->GetTest2();
   
-    // r1 = (r1==0)? 47.8: r1;
-    // r2 = (r2==0)? 29.1: r2;
-    r1=69;
-    r2=31;
+    //r1 = (r1==0)? 47.8: r1;
+    //r2 = (r2==0)? 29.1: r2;
+    // r1=69;
+    // r2=31;
+    r1=60;
+    r2=35;
     G4double shight = 40;
     G4double bwidth = fLens[2]-lensMinThikness*2;
 
