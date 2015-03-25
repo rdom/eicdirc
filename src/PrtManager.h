@@ -55,7 +55,7 @@ public:
   void SetRadiatorW(double val){ fRadiatorW = val; }
   void SetRadiatorH(double val){ fRadiatorH = val; }
   void SetParticle(int val){ fParticle = val; }
-  void SetMomentum(TVector3 val){ fMomentum = val; fEvent->SetMomentum(fMomentum);}
+  void SetMomentum(TVector3 val){ fMomentum = val; if(fRunType==0) fEvent->SetMomentum(fMomentum);}
   void SetCurrentCherenkov(double val){ fCurrentCherenkov = val; }
   void SetShift(double val){ fShift = val; }
   void SetDisplayOpt(int val){ fDispalyOpt = val; }
