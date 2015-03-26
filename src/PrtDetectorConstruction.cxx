@@ -290,7 +290,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     lMcp = new G4LogicalVolume(gMcp,BarMaterial,"lMcp",0,0,0);
   
 
-    G4double pixSize = 3*mm;
+    G4double pixSize = PrtManager::Instance()->GetTest()*mm; //3*mm;
     fNpix1 = fPrizm[2]/pixSize-1;
     fNpix2 = fPrizm[0]/pixSize-1;
     std::cout<<"fNpix1  "<< fNpix1<<"   "<<fPrizm[0]<<std::endl;
@@ -676,7 +676,7 @@ void PrtDetectorConstruction::SetVisualization(){
 
   G4VisAttributes *waPixel = new G4VisAttributes(G4Colour(1.0,0.0,0.1,0.1));
   //waPixel->SetForceWireframe(true);
-  waPixel->SetVisibility(false);
+  //waPixel->SetVisibility(false);
   lPixel->SetVisAttributes(waPixel);
 
 }
