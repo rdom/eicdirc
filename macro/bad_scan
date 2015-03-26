@@ -1,0 +1,48 @@
+#!/bin/bash
+
+tseed=$(($(date +%s%N)/1000000-1393400000000))
+
+echo $tseed
+
+#./eicdirc -s 1 -a 60 -x "opticalphoton" -p "3.18 eV" -w 0 -g 1 -h 11 -e 500000 -c 3 -l 3 -d 0 -b 1
+
+for s in {1..20..1}; do 
+    step=$s
+    if [ "$step" -eq 1 ]; then 
+	step="1.08"	  
+    fi
+
+    for i in {30..150..2}; do 
+	../build/eicdirc -r $tseed$i -o h_b$i_d$s.root -s 0 -a $i -x "pi+" -p 6  -w 0 -g 1 -h 11 -e 10 -c 3 -l 3 -b 1  > /dev/null && ../build/eicdirc -r $tseed$i -u ../data/lut_d$i.root -i h_b$i_d$s.root -o r_b$i_d$s.root  -d $step -s 2 > /dev/null &
+	echo $i
+	while : 
+	do
+	    activth=$(ps aux | grep "[e]icdirc" | grep "h_b" | wc -l)
+	    diffth=$(($maxnthr-$activth))
+	    echo "We have $activth active eicdirc simulations " 
+	    if [ "$activth" -lt 6 ]; then 
+		break  
+	    fi
+	    sleep 0.2
+	done
+    done
+done
+
+while : 
+do
+    activth=$(ps aux | grep "[e]icdirc" | grep "h_b" | wc -l)
+    diffth=$(($maxnthr-$activth))
+    echo "We have $activth active eicdirc simulations " 
+    if [ "$activth" -eq 0 ]; then 
+	break  
+    fi
+    sleep 0.2
+done
+
+sleep 2
+
+rm r_spr.root
+hadd r_spr.root r_b*_d*_spr.root
+
+#rm h_b*.root 
+#rm r_b*.root 
