@@ -17,7 +17,7 @@ void addcanvases(){
     it1++;
   }
 
-  TFile *f2 = TFile::Open("c_spr3.root");
+  TFile *f2 = TFile::Open("c_spr_c1mcp.root");
   TIter next2(f2->GetListOfKeys());
   TKey *key2;
   Int_t it2 = 0;
@@ -29,10 +29,17 @@ void addcanvases(){
     carr2[it2] = (TCanvas*)key2->ReadObj();
     it2++;
   }
-  
+
+  TLegend *leg = new TLegend(0.2,0.7,0.5,0.9);
+  leg->SetFillColor(0);
+  leg->SetFillStyle(0);
+  leg->SetBorderSize(0);
+
 
   for(Int_t i=0; i<it2; i++){
     carr1[i]->Draw();
+    //leg->AddEntry( carr1[i],"3x3 full coverage","l");
+    //leg->Draw();
     canvasAdd(carr1[i]);
     TIter next(carr2[i]->GetListOfPrimitives());
     TObject *obj;
@@ -49,14 +56,16 @@ void addcanvases(){
 	TGraph *h = (TGraph*)obj;
 	std::cout<<"name "<< h->GetName() <<std::endl;      
 	h->SetLineColor(32);
-	h->SetMarkerColor(4);
+	h->SetMarkerColor(2);
 	//	h->SetLineWidth(2);
         h->Draw("same PL");
+	// leg->AddEntry(h,"6.5x6.5 MCP PMTs coverage","lp");
+	// leg->Draw();
       }
 
     }
   }
   std::cout<<"save all  " <<std::endl;
   
-  canvasSave(0,"addcanvases.C",1,"data/perf");
+  canvasSave(0,"addcanvases.C",1,"data/perfMcp");
 }

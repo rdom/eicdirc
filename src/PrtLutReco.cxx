@@ -24,7 +24,7 @@ using std::endl;
 
 TH1F*  fHist1 = new TH1F("Time1","1", 1000,0,20);
 TH1F*  fHist2 = new TH1F("Time2","2", 1000,0,20);
-TH2F*  fHist3 = new TH2F("Time3","3", 500,8,15, 500,8,15);
+TH2F*  fHist3 = new TH2F("Time3","3", 500,5,60, 500,5,60);
 
 // -----   Default constructor   -------------------------------------------
 PrtLutReco::PrtLutReco(TString infile, TString lutfile){
@@ -147,7 +147,7 @@ void PrtLutReco::Run(Int_t start, Int_t end){
 	  fHist1->Fill(hitTime);
 	  fHist2->Fill(bartime + evtime);
  
-	  if(fabs((bartime + evtime)-hitTime)>0.5) continue;
+	  // if(fabs((bartime + evtime)-hitTime)>0.5) continue;
 	  fHist3->Fill(fabs((bartime + evtime)),hitTime);
 	  tangle = rotatedmom.Angle(dir);
 	  if(  tangle>TMath::Pi()/2.) tangle = TMath::Pi()-tangle;
@@ -236,7 +236,7 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
     
     Int_t fVerbose=1;
     if(fVerbose>0){
-      TCanvas* c = new TCanvas("c","c",0,0,800,600);
+      TCanvas* c = new TCanvas("c","c",0,0,800,500);
       fHist->GetXaxis()->SetTitle("#theta_{C}, [rad]");
       fHist->GetYaxis()->SetTitle("Entries, [#]");
       fHist->SetTitle(Form("theta %d", a));
@@ -250,10 +250,12 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
       c->Print(Form("spr/tangle_%d.png", a));
       c->WaitPrimitive();
 
-      // fHist3->Draw("colz");
-      // c->Modified();
-      // c->Update();
-      // c->WaitPrimitive();
+      TCanvas* c2 = new TCanvas("c2","c2",0,0,600,600);
+      fHist3->Draw("colz");
+      c2->Print(Form("spr/tcorr_%d.png", a));
+      c2->Modified();
+      c2->Update();
+      c2->WaitPrimitive();
     
     }
   }

@@ -290,7 +290,9 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     lMcp = new G4LogicalVolume(gMcp,BarMaterial,"lMcp",0,0,0);
   
 
-    G4double pixSize = PrtManager::Instance()->GetTest()*mm; //3*mm;
+    G4double pixSize = 3*mm;
+    //pixSize = PrtManager::Instance()->GetTest()*mm;
+    
     fNpix1 = fPrizm[2]/pixSize-1;
     fNpix2 = fPrizm[0]/pixSize-1;
     std::cout<<"fNpix1  "<< fNpix1<<"   "<<fPrizm[0]<<std::endl;
@@ -641,7 +643,7 @@ void PrtDetectorConstruction::SetVisualization(){
   waDirc->SetVisibility(false);
   lDirc->SetVisAttributes(waDirc);
 
-  G4VisAttributes *waBar = new G4VisAttributes(G4Colour(0.,1.,0.9,1.0)); //0.05
+  G4VisAttributes *waBar = new G4VisAttributes(G4Colour(0.,1.,0.9,0.05)); //0.05
   waBar->SetVisibility(true);
   lBar->SetVisAttributes(waBar);
 
@@ -664,7 +666,7 @@ void PrtDetectorConstruction::SetVisualization(){
     if(PrtManager::Instance()->GetLens()==3) lLens3->SetVisAttributes(vaLens);
   }
 
-  G4VisAttributes *waPrizm = new G4VisAttributes(G4Colour(0.,0.9,0.9,1.0)); //0.4
+  G4VisAttributes *waPrizm = new G4VisAttributes(G4Colour(0.,0.9,0.9,0.4)); //0.4
   //waPrizm->SetForceAuxEdgeVisible(true);
   //waPrizm->SetForceSolid(true);
   lPrizm->SetVisAttributes(waPrizm);
@@ -676,7 +678,7 @@ void PrtDetectorConstruction::SetVisualization(){
 
   G4VisAttributes *waPixel = new G4VisAttributes(G4Colour(1.0,0.0,0.1,0.1));
   //waPixel->SetForceWireframe(true);
-  //waPixel->SetVisibility(false);
+  waPixel->SetVisibility(false);
   lPixel->SetVisAttributes(waPixel);
 
 }
