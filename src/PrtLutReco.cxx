@@ -24,7 +24,7 @@ using std::endl;
 
 TH1F*  fHist1 = new TH1F("Time1","1", 1000,0,20);
 TH1F*  fHist2 = new TH1F("Time2","2", 1000,0,20);
-TH2F*  fHist3 = new TH2F("Time3","3", 500,5,60, 500,5,60);
+TH2F*  fHist3 = new TH2F("Time3","3", 500,5,80, 500,5,60);
 
 // -----   Default constructor   -------------------------------------------
 PrtLutReco::PrtLutReco(TString infile, TString lutfile){
@@ -237,8 +237,8 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
     Int_t fVerbose=1;
     if(fVerbose>0){
       TCanvas* c = new TCanvas("c","c",0,0,800,500);
-      fHist->GetXaxis()->SetTitle("#theta_{C}, [rad]");
-      fHist->GetYaxis()->SetTitle("Entries, [#]");
+      fHist->GetXaxis()->SetTitle("#theta_{C} [rad]");
+      fHist->GetYaxis()->SetTitle("Entries [#]");
       fHist->SetTitle(Form("theta %d", a));
       fHist->Draw();
       // fHist1->SetLineColor(2);
@@ -250,7 +250,10 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
       c->Print(Form("spr/tangle_%d.png", a));
       c->WaitPrimitive();
 
-      TCanvas* c2 = new TCanvas("c2","c2",0,0,600,600);
+      TCanvas* c2 = new TCanvas("c2","c2",0,0,800,600);
+      fHist3->GetXaxis()->SetTitle("calculated time [ns]");
+      fHist3->GetYaxis()->SetTitle("measured time [ns]");
+      fHist3->SetTitle(Form("theta %d", a));
       fHist3->Draw("colz");
       c2->Print(Form("spr/tcorr_%d.png", a));
       c2->Modified();
