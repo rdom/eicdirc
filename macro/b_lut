@@ -1,5 +1,5 @@
 #!/bin/bash
 
 for i in {1..20}; do
-    ./eicdirc -s 1 -o ../data/lut_d$i.root -x "opticalphoton" -p "3.18 eV" -w 0 -g 1 -h 11 -e 500000 -c 3 -l 3 -d 0 -t $i -b 1
+    ../build/eicdirc -s 1 -o ../data/lut_d$i.root -x "opticalphoton" -p "3.18 eV" -w 0 -g 1 -h 11 -e 500000 -c 3 -l 3 -d 0 -t $i -b 1
 done
