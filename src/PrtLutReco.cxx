@@ -202,6 +202,7 @@ void PrtLutReco::Run(Int_t start, Int_t end){
   spr = spr*1000;
   trr = spr/sqrt(aEvents);
   theta = fEvent->GetAngle();
+  par3 = fEvent->GetTest();
   
   std::cout<<"RES   "<<spr << "   N "<< nph << " trr  "<<trr<<std::endl;
     
