@@ -21,15 +21,34 @@
 #
 # Draw geometry:
 /vis/drawVolume
-#
-# Specify view angle:
-/vis/viewer/set/viewpointThetaPhi -90. 0.
-#
+
 # Specify zoom value:
 /vis/viewer/zoom 1.5
-#
+
 # Specify style (surface or wireframe):
 #/vis/viewer/set/style wireframe
+
+#top
+/vis/viewer/set/viewpointThetaPhi -90. 0.
+/vis/viewer/set/viewpointVector 0 1 0.00000001
+/vis/viewer/set/upVector 1 0 0
+
+#mcp
+#/vis/viewer/set/viewpointVector -1 0 0.00000001
+#/vis/viewer/set/upVector 0 1 0
+
+#side
+#/vis/viewer/set/viewpointVector 0 1 0.00000001
+#/vis/viewer/set/upVector 0 -1 0
+
+#lenses
+/vis/viewer/set/viewpointThetaPhi 30 30
+
+#/vis/viewer/set/projection orthogonal
+#/vis/viewer/zoomTo 4.5
+#/vis/viewer/set/targetPoint -110 20 -10 cm 
+/vis/viewer/set/background white
+
 
 # Draw coordinate axes:
 #/vis/scene/add/axes 0 0 0 1 m
@@ -85,4 +104,6 @@
 /vis/viewer/set/hiddenMarker 
 /vis/geometry/set/forceLineSegmentsPerCircle all 0 50
 
-/vis/viewer/set/viewpointThetaPhi 30 30
+
+
+

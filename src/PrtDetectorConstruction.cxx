@@ -157,12 +157,12 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     G4double r1 = 0; //PrtManager::Instance()->GetTest1();
     G4double r2 = 0; //PrtManager::Instance()->GetTest2();
   
-    //r1 = (r1==0)? 47.8: r1;
-    //r2 = (r2==0)? 29.1: r2;
+    r1 = (r1==0)? 47.8: r1;
+    r2 = (r2==0)? 29.1: r2;
     // r1=69;
     // r2=31;
-    r1=60;
-    r2=35;
+    // r1=60;
+    // r2=35;
     G4double shight = 40;
     G4double bwidth = fLens[2]-lensMinThikness*2;
 
@@ -641,7 +641,7 @@ void PrtDetectorConstruction::SetVisualization(){
   waDirc->SetVisibility(false);
   lDirc->SetVisAttributes(waDirc);
 
-  G4VisAttributes *waBar = new G4VisAttributes(G4Colour(0.,1.,0.9,0.05));
+  G4VisAttributes *waBar = new G4VisAttributes(G4Colour(0.,1.,0.9,1.0)); //0.05
   waBar->SetVisibility(true);
   lBar->SetVisAttributes(waBar);
 
@@ -649,7 +649,8 @@ void PrtDetectorConstruction::SetVisualization(){
   waMirror->SetVisibility(true);
   lMirror->SetVisAttributes(waMirror);
 
-  G4VisAttributes * vaLens = new G4VisAttributes(G4Colour(0.,1.,1.,0.2));
+  G4double transp = 1.0;
+  G4VisAttributes * vaLens = new G4VisAttributes(G4Colour(0.,1.,1.,transp));
   //  vaLens->SetForceWireframe(true);
   //vaLens->SetForceAuxEdgeVisible(true);
   //vaLens->SetForceLineSegmentsPerCircle(50);
@@ -658,12 +659,12 @@ void PrtDetectorConstruction::SetVisualization(){
   if(PrtManager::Instance()->GetLens()==2 || PrtManager::Instance()->GetLens()==3){
     lLens1->SetVisAttributes(vaLens);
     G4VisAttributes * vaLens2 = new G4VisAttributes(&vaLens);
-    vaLens2->SetColour(G4Colour(0.,0.5,1.,0.2));
+    vaLens2->SetColour(G4Colour(0.,0.5,1.,transp));
     lLens2->SetVisAttributes(vaLens2);
     if(PrtManager::Instance()->GetLens()==3) lLens3->SetVisAttributes(vaLens);
   }
 
-  G4VisAttributes *waPrizm = new G4VisAttributes(G4Colour(0.,0.9,0.9,0.4));
+  G4VisAttributes *waPrizm = new G4VisAttributes(G4Colour(0.,0.9,0.9,1.0)); //0.4
   //waPrizm->SetForceAuxEdgeVisible(true);
   //waPrizm->SetForceSolid(true);
   lPrizm->SetVisAttributes(waPrizm);
