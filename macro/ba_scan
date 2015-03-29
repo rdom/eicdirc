@@ -22,12 +22,14 @@ show_help(){
      -e 
         # of events per thread
      -s 
-        angle step"
+        angle step
+     -t 
+        test value"
     echo "$help" 
 }
 
 OPTIND=1 
-while getopts "h?r:j:qs:e:" opt; do
+while getopts "h?r:j:qs:e:t:" opt; do
     case "$opt" in
 	h|\?)
             show_help
@@ -43,6 +45,8 @@ while getopts "h?r:j:qs:e:" opt; do
             ;;
 	e)  nevents=$OPTARG
             ;;
+	t)  test1=$OPTARG
+            ;;
     esac
 done
 option=${option:-0}
@@ -51,6 +55,7 @@ endEvent=${endEvent:-100000000}
 threads=${threads:-6}
 astep=${astep:-2}
 run=${run:-0}
+test1=${test1:-0}
 
 shift $((OPTIND-1))
 
@@ -93,7 +98,7 @@ fi
 start_time=$(date +%s)
 statusline="Reco"
 for i in $(eval echo {30..150..$astep}); do 
-    ../build/eicdirc -i hdata/h_b$i.root -o r_b$i.root -s 2 > /dev/null 2> /dev/null &
+    ../build/eicdirc -i hdata/h_b$i.root -o r_b${tseed}_$i.root -s 2 -t $test1 > /dev/null 2> /dev/null &
     waitForMe $threads "reconstructions in process "
 done
 waitForMe "1"
@@ -104,9 +109,8 @@ sleep 2
 
 statusline="$statusline merging .."
 
-rm r_spr.root
-hadd r_spr.root r_b*_spr.root
+hadd r_spr${tseed}.root r_b${tseed}_*_spr.root
 
-rm r_b*.root 
+rm r_b${tseed}_*.root 
 
 

@@ -91,6 +91,17 @@ int main(int argc,char** argv)
   if(!events.size()) events = "1";
   PrtManager::Instance(outfile,runtype);
 
+  if(physlist.size()) PrtManager::Instance()->SetPhysList(atoi(physlist));
+  if(geometry.size()) PrtManager::Instance()->SetGeometry(atoi(geometry));
+  if(radiator.size()) PrtManager::Instance()->SetRadiator(atoi(radiator));
+  if(lensId.size())   PrtManager::Instance()->SetLens(atoi(lensId));
+  if(mcpLayout.size())PrtManager::Instance()->SetMcpLayout(atoi(mcpLayout));
+  if(beamDimension.size()) PrtManager::Instance()->SetBeamDimension(atoi(beamDimension));
+  if(displayOpt.size())   PrtManager::Instance()->SetDisplayOpt(atoi(displayOpt));
+  if(testVal.size())   PrtManager::Instance()->SetShift(atof(testVal));
+  if(testVal.size())   PrtManager::Instance()->SetTest(atof(testVal));
+  if(geomAng.size())   PrtManager::Instance()->SetAngle(atof(geomAng));
+
   if(runtype == 2){
     PrtLutReco * reco = new PrtLutReco(infile,lutfile); 
     reco->Run(0);
@@ -102,16 +113,6 @@ int main(int argc,char** argv)
   std::cout<<"SEED "<<myseed <<std::endl;
   G4Random::setTheSeed(myseed);
   G4RunManager * runManager = new G4RunManager;
-  if(physlist.size()) PrtManager::Instance()->SetPhysList(atoi(physlist));
-  if(geometry.size()) PrtManager::Instance()->SetGeometry(atoi(geometry));
-  if(radiator.size()) PrtManager::Instance()->SetRadiator(atoi(radiator));
-  if(lensId.size())   PrtManager::Instance()->SetLens(atoi(lensId));
-  if(mcpLayout.size())PrtManager::Instance()->SetMcpLayout(atoi(mcpLayout));
-  if(beamDimension.size()) PrtManager::Instance()->SetBeamDimension(atoi(beamDimension));
-  if(displayOpt.size())   PrtManager::Instance()->SetDisplayOpt(atoi(displayOpt));
-  if(testVal.size())   PrtManager::Instance()->SetShift(atof(testVal));
-  if(testVal.size())   PrtManager::Instance()->SetTest(atof(testVal));
-  if(geomAng.size())   PrtManager::Instance()->SetAngle(atof(geomAng));
 
 
   // Detector construction
