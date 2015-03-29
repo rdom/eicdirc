@@ -1,22 +1,58 @@
 #!/bin/bash
 
-if [ ${1} == "" ]; then
-    nthreads=6
-else
-    nthreads=${1}
-fi
+show_help(){
+  help="  NAME
+    hldtools - script to convet .hld files into .root
 
-if [ ${2} == "" ]; then
-    nsteps=2
-else
-    nsteps=${2}
-fi
+  SYNOPSIS
+    hldtools [OPTION]... [FILE]
 
-if [ ${3} == "" ]; then
-    run=0
-else
-    run=${3}
-fi
+  DESCRIPTION 
+     -r 
+        run type
+        0 - run sim + reco
+        1 - run lut + sim + reco
+        2 - run only reco
+     -j
+        number of threads 
+     -q 
+        run -a option on claster 
+        one needs to be logged in on hera 
+        no implemented 
+     -e 
+        # of events per thread
+     -s 
+        angle step"
+    echo "$help" 
+}
+
+OPTIND=1 
+while getopts "h?r:j:qs:e:" opt; do
+    case "$opt" in
+	h|\?)
+            show_help
+            exit 0
+            ;;
+	j)  threads=$OPTARG
+            ;;
+	r)  run=$OPTARG
+            ;;
+	q)  clastermode=1
+            ;;
+	s)  astep=$OPTARG
+            ;;
+	e)  nevents=$OPTARG
+            ;;
+    esac
+done
+option=${option:-0}
+nevents=${nevents:-10}
+endEvent=${endEvent:-100000000} 
+threads=${threads:-6}
+astep=${astep:-2}
+run=${run:-0}
+
+shift $((OPTIND-1))
 
 
 tseed=$(($(date +%s%N)/1000000-1393400000000))
@@ -45,25 +81,25 @@ if [ ${run} != "2" ]; then
     mkdir -p hdata
     start_time=$(date +%s)
     statusline="GSim"
-    for i in $(eval echo {30..150..${nsteps}}); do 
-	../build/eicdirc -r $tseed$i -o hdata/h_b$i.root -s 0 -a $i -x "pi+" -p 6  -w 0 -g 1 -h 11 -e 10 -c 3 -l 3 -b 1  > /dev/null  &
-	waitForMe $nthreads
+    for i in $(eval echo {30..150..${astep}}); do 
+	../build/eicdirc -r $tseed$i -o hdata/h_b$i.root -s 0 -a $i -x "pi+" -p 6  -w 0 -g 1 -h 11 -e $nevents -c 3 -l 3 -b 1  > /dev/null  &
+	waitForMe $threads
     done
     waitForMe "1"
     finish_time=$(date +%s)
-    printf "\r$statusline --- done [$((finish_time - start_time)) s]\n"
+    printf "\r$statusline --- done [$((finish_time - start_time)) s]     \n"
 fi
 
 
 start_time=$(date +%s)
 statusline="Reco"
-for i in $(eval echo {30..150..$nsteps}); do 
+for i in $(eval echo {30..150..$astep}); do 
     ../build/eicdirc -i hdata/h_b$i.root -o r_b$i.root -s 2 > /dev/null 2> /dev/null &
-    waitForMe $nthreads "reconstructions in process "
+    waitForMe $threads "reconstructions in process "
 done
 waitForMe "1"
 finish_time=$(date +%s)
-printf "\r$statusline --- done [$((finish_time - start_time)) s]\n"
+printf "\r$statusline --- done [$((finish_time - start_time)) s]         \n"
 
 sleep 2
 
