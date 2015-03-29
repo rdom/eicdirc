@@ -67,8 +67,7 @@ waitForMe (){
     do
 	activth=$(ps aux | grep "[e]icdirc" | grep "h_b" | wc -l)
 
-	printf "\r$statusline "
-	printf '%0.s-' $(seq 1 $activth)
+	printf "\r$statusline [$activth] ---- [$(($(date +%s) - start_time)) s] "
 	sleep .1
 	
 	if [ "$activth" -lt "$1" ]; then 
@@ -87,7 +86,7 @@ if [ ${run} != "2" ]; then
     done
     waitForMe "1"
     finish_time=$(date +%s)
-    printf "\r$statusline --- done [$((finish_time - start_time)) s]     \n"
+    printf "\r$statusline [-] done [$((finish_time - start_time)) s]     \n"
 fi
 
 
@@ -99,7 +98,7 @@ for i in $(eval echo {30..150..$astep}); do
 done
 waitForMe "1"
 finish_time=$(date +%s)
-printf "\r$statusline --- done [$((finish_time - start_time)) s]         \n"
+printf "\r$statusline [-] done [$((finish_time - start_time)) s]         \n"
 
 sleep 2
 
