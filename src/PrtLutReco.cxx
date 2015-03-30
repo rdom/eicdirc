@@ -19,6 +19,10 @@
 #include "TCanvas.h"
 #include "TMath.h"
 #include "TRotation.h"
+#include "TGraph.h"
+#include <TVirtualFitter.h>
+#include <TArc.h>
+#include <TLegend.h>
 
 using std::cout;
 using std::endl;
@@ -28,6 +32,8 @@ TH1F*  fHist2 = new TH1F("Time2","2", 1000,0,20);
 TH2F*  fHist3 = new TH2F("Time3","3", 500,5,80, 500,5,60);
 TH2F*  fHist4 = new TH2F("Time4","4", 200,-1,1, 200,-1,1);
 TH2F*  fHist5 = new TH2F("Time5","5", 200,-1,1, 200,-1,1);
+Int_t gg_i(0);
+TGraph gg_gr;
 
 // -----   Default constructor   -------------------------------------------
 PrtLutReco::PrtLutReco(TString infile, TString lutfile){
@@ -178,8 +184,6 @@ void PrtLutReco::Run(Int_t start, Int_t end){
 	
 	  fHist1->Fill(hitTime);
 	  fHist2->Fill(bartime + evtime);
- 
-	  std::cout<<"test1  "<<test1 <<std::endl;
 	  
 	  if(fabs((bartime + evtime)-hitTime)>test1) continue;
 	  fHist3->Fill(fabs((bartime + evtime)),hitTime);
@@ -209,6 +213,8 @@ void PrtLutReco::Run(Int_t start, Int_t end){
 	    rdir.RotateUz(unitdir3);
 	    Double_t phi =  rdir.Phi();
 	    fHist4->Fill(tangle*TMath::Sin(phi),tangle*TMath::Cos(phi));
+	    gg_gr.SetPoint(gg_i,tangle*TMath::Sin(phi),tangle*TMath::Cos(phi));
+	    gg_i++;
 	  }
 	}
       }
@@ -267,9 +273,11 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
 
   if(fHist->GetEntries()>20 ){
     gROOT->SetBatch(1);
-    Int_t nfound = fSpect->Search(fHist,1,"",0.6);
+    Int_t nfound = fSpect->Search(fHist,1,"",0.6); //0.6
     Float_t *xpeaks = fSpect->GetPositionX();
     if(nfound>0) cherenkovreco = xpeaks[0];
+    else cherenkovreco =  fHist->GetXaxis()->GetBinCenter(fHist->GetMaximumBin());
+
     fFit->SetParameters(100,cherenkovreco,0.005,10);   // peak
     // fFit->SetParameter(1,cherenkovreco);   // peak
     // fFit->SetParameter(2,0.005); // width
@@ -298,23 +306,47 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
       c->Print(Form("spr/tangle_%d.png", a));
       c->WaitPrimitive();
 
-      TCanvas* c2 = new TCanvas("c2","c2",0,0,800,400);
-      c2->Divide(2,1);
-      c2->cd(1);
+      TCanvas* c2 = new TCanvas("c2","c2",0,0,600,600);
+      // c2->Divide(2,1);
+      //c2->cd(1);
       fHist3->GetXaxis()->SetTitle("calculated time [ns]");
       fHist3->GetYaxis()->SetTitle("measured time [ns]");
       fHist3->SetTitle(Form("theta %d", a));
 
+      fHist4->SetStats(0);
       fHist4->GetXaxis()->SetTitle("#theta_{c}sin(#varphi_{c})");
       fHist4->GetYaxis()->SetTitle("#theta_{c}cos(#varphi_{c})");
       fHist4->SetTitle(Form("Calculated from LUT, #theta = %d#circ", a));
       fHist4->Draw("colz");
-      c2->cd(2);
-      
-      fHist5->GetXaxis()->SetTitle("#theta_{c}sin(#varphi_{c})");
-      fHist5->GetYaxis()->SetTitle("#theta_{c}cos(#varphi_{c})");
-      fHist5->SetTitle(Form("True from MC, #theta = %d#circ", a));
-      fHist5->Draw("colz");
+      Double_t x0(0), y0(0), theta(cherenkovreco);
+      FitRing(x0,y0,theta);
+      TVector3 corr(x0,y0,1-TMath::Sqrt(x0*x0+y0*y0));
+      std::cout<<"Tcorr "<< corr.Theta()*1000<< "  Pcorr "<< corr.Phi() <<std::endl;
+
+      TLegend *leg = new TLegend(0.4,0.7,0.85,0.9);
+      leg->SetFillColor(0);
+      leg->SetFillStyle(0);
+      leg->SetBorderSize(0);
+      leg->AddEntry((TObject*)0,Form("Entries %0.0f",fHist4->GetEntries()),"");
+      leg->AddEntry((TObject*)0,Form("#Delta#theta_{c} %f [mrad]",corr.Theta()*1000),"");
+      leg->AddEntry((TObject*)0,Form("#Delta#varphi_{c} %f [rad]",corr.Phi()),"");
+      leg->Draw();
+
+      TArc *arc = new TArc(x0,y0,theta);
+      arc->SetLineColor(kRed);
+      arc->SetLineWidth(1);
+      arc->SetFillStyle(0);
+      arc->Draw();
+      gg_i=0;
+      gg_gr.Set(0);
+
+      // c2->cd(2);
+      // gStyle->SetOptStat(1110); 
+      // fHist5->GetXaxis()->SetTitle("#theta_{c}sin(#varphi_{c})");
+      // fHist5->GetYaxis()->SetTitle("#theta_{c}cos(#varphi_{c})");
+      // fHist5->SetTitle(Form("True from MC, #theta = %d#circ", a));
+      // fHist5->Draw("colz");
+
       c2->Print(Form("spr/tcorr_%d.png", a));
       c2->Modified();
       c2->Update();
@@ -331,6 +363,37 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
   fHist4->Reset();
 
   return (cherenkovreco>0 && cherenkovreco<1);
+}
+
+void circleFcn(Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t) {
+  Int_t np = gg_gr.GetN();
+  f = 0;
+  Double_t *x = gg_gr.GetX();
+  Double_t *y = gg_gr.GetY();
+  for (Int_t i=0;i<np;i++) {
+    Double_t u = x[i] - par[0];
+    Double_t v = y[i] - par[1];
+    Double_t dr = par[2] - TMath::Sqrt(u*u+v*v);
+    if(dr>0.07) f=f; 
+    else f += dr*dr*dr*dr;
+  }
+}
+
+void PrtLutReco::FitRing(Double_t& x0, Double_t& y0, Double_t& theta){
+  //Fit a circle to the graph points
+  TVirtualFitter::SetDefaultFitter("Minuit");  //default is Minuit
+  TVirtualFitter *fitter = TVirtualFitter::Fitter(0, 3);
+  fitter->SetFCN(circleFcn);
+
+  fitter->SetParameter(0, "x0",   0, 0.01, -0.05,0.05);
+  fitter->SetParameter(1, "y0",   0, 0.01, -0.05,0.05);
+  fitter->SetParameter(2, "R",    theta, 0.01, theta-0.05,theta+0.05);
+
+  Double_t arglist[1] = {0};
+  fitter->ExecuteCommand("MIGRAD", arglist, 0);
+  x0 = fitter->GetParameter(0);
+  y0 = fitter->GetParameter(1);
+  theta = fitter->GetParameter(2);
 }
 
 Int_t PrtLutReco::FindPdg(Double_t mom, Double_t cangle){

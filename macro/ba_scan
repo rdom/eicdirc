@@ -2,10 +2,10 @@
 
 show_help(){
   help="  NAME
-    hldtools - script to convet .hld files into .root
+    ba_scan - script to run sim/reco for eicdirc
 
   SYNOPSIS
-    hldtools [OPTION]... [FILE]
+    ba_scan [OPTION]
 
   DESCRIPTION 
      -r 
@@ -65,16 +65,12 @@ printf "====== Run EICDIRC with $tseed seed base ======\n"
 
 #./eicdirc -s 1 -a 60 -x "opticalphoton" -p "3.18 eV" -w 0 -g 1 -h 11 -e 500000 -c 3 -l 3 -d 0 -b 1
 
-
 waitForMe (){
-    i=0    
     while : 
     do
 	activth=$(ps aux | grep "[e]icdirc" | grep "h_b" | wc -l)
-
 	printf "\r$statusline [$activth] ---- [$(($(date +%s) - start_time)) s] "
 	sleep .1
-	
 	if [ "$activth" -lt "$1" ]; then 
 	    break  
 	fi
@@ -90,8 +86,7 @@ if [ ${run} != "2" ]; then
 	waitForMe $threads
     done
     waitForMe "1"
-    finish_time=$(date +%s)
-    printf "\r$statusline [-] done [$((finish_time - start_time)) s]     \n"
+    printf "\r$statusline [-] done [$(($(date +%s) - start_time)) s]     \n"
 fi
 
 
@@ -99,18 +94,14 @@ start_time=$(date +%s)
 statusline="Reco"
 for i in $(eval echo {30..150..$astep}); do 
     ../build/eicdirc -i hdata/h_b$i.root -o r_b${tseed}_$i.root -s 2 -t $test1 > /dev/null 2> /dev/null &
-    waitForMe $threads "reconstructions in process "
+    waitForMe $threads
 done
 waitForMe "1"
-finish_time=$(date +%s)
-printf "\r$statusline [-] done [$((finish_time - start_time)) s]         \n"
+printf "\r$statusline [-] done [$(($(date +%s) - start_time)) s]         \n"
+
 
 sleep 2
-
-statusline="$statusline merging .."
-
 hadd r_spr${tseed}.root r_b${tseed}_*_spr.root
-
 rm r_b${tseed}_*.root 
 
 

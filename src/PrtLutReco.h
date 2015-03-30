@@ -34,6 +34,7 @@ public:
 private:
   Bool_t FindPeak(Double_t& cherenkovreco, Double_t& spr,Int_t a);
   Int_t FindPdg(Double_t mom, Double_t cangle);
+  void FitRing(Double_t& x0, Double_t& y0, Double_t& theta);
   Int_t fDetectorID;  
   Double_t fBboxNum,fPipehAngle,fDphi,fBarPhi;
 
