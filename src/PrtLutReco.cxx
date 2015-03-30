@@ -288,7 +288,7 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
     fHist->Fit("fgaus","M","",cherenkovreco-0.07,cherenkovreco+0.07);
     cherenkovreco = fFit->GetParameter(1);
     spr = fFit->GetParameter(2);
-    //gROOT->SetBatch(0);
+    gROOT->SetBatch(0);
     
     Int_t fVerbose=1;
     if(fVerbose>0){
@@ -371,26 +371,46 @@ void circleFcn(Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t) {
   Double_t *x = gg_gr.GetX();
   Double_t *y = gg_gr.GetY();
   for (Int_t i=0;i<np;i++) {
-    Double_t u = x[i] - par[0];
-    Double_t v = y[i] - par[1];
+    Double_t u = x[i] + par[0];
+    Double_t v = y[i] + par[1];
+    Double_t dr = par[2] - TMath::Sqrt(u*u+v*v);
+    if(dr>0.1) f=f; 
+    else f += dr*dr;
+  }
+}
+
+void circleFcn2(Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t) {
+  Int_t np = gg_gr.GetN();
+  f = 0;
+  Double_t *x = gg_gr.GetX();
+  Double_t *y = gg_gr.GetY();
+  for (Int_t i=0;i<np;i++) {
+    Double_t u = x[i] + par[0];
+    Double_t v = y[i] + par[1];
     Double_t dr = par[2] - TMath::Sqrt(u*u+v*v);
     if(dr>0.05) f=f; 
     else f += dr*dr;
   }
 }
 
+
 void PrtLutReco::FitRing(Double_t& x0, Double_t& y0, Double_t& theta){
   //Fit a circle to the graph points
-  TVirtualFitter::SetDefaultFitter("Minuit");  //default is Minuit
+  TVirtualFitter::SetDefaultFitter("Minuit2");  //default is Minuit
   TVirtualFitter *fitter = TVirtualFitter::Fitter(0, 3);
-  fitter->SetFCN(circleFcn);
+  fitter->SetPrecision(0.00000001);
+  fitter->SetMaxIterations(1000);
 
+  fitter->SetFCN(circleFcn);
   fitter->SetParameter(0, "x0",   0, 0.01, -0.05,0.05);
   fitter->SetParameter(1, "y0",   0, 0.01, -0.05,0.05);
   fitter->SetParameter(2, "R",    theta, 0.01, theta-0.05,theta+0.05);
-
   Double_t arglist[1] = {0};
-  fitter->ExecuteCommand("MIGRAD", arglist, 0);
+  fitter->ExecuteCommand("MINIMIZE", arglist, 0);
+
+  // fitter->SetFCN(circleFcn2);
+  // fitter->ExecuteCommand("MINIMIZE", arglist, 0);
+
   x0 = fitter->GetParameter(0);
   y0 = fitter->GetParameter(1);
   theta = fitter->GetParameter(2);
