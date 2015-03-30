@@ -375,7 +375,7 @@ void circleFcn(Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t) {
     Double_t v = y[i] - par[1];
     Double_t dr = par[2] - TMath::Sqrt(u*u+v*v);
     if(dr>0.07) f=f; 
-    else f += dr*dr*dr*dr;
+    else f += dr*dr;
   }
 }
 
