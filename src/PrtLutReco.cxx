@@ -273,7 +273,7 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
 
   if(fHist->GetEntries()>20 ){
     gROOT->SetBatch(1);
-    Int_t nfound = fSpect->Search(fHist,1,"",0.6); //0.6
+    Int_t nfound = fSpect->Search(fHist,1,"",0.9); //0.6
     Float_t *xpeaks = fSpect->GetPositionX();
     if(nfound>0) cherenkovreco = xpeaks[0];
     else cherenkovreco =  fHist->GetXaxis()->GetBinCenter(fHist->GetMaximumBin());
@@ -288,7 +288,7 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
     fHist->Fit("fgaus","M","",cherenkovreco-0.07,cherenkovreco+0.07);
     cherenkovreco = fFit->GetParameter(1);
     spr = fFit->GetParameter(2);
-    //gROOT->SetBatch(0);
+    gROOT->SetBatch(0);
     
     Int_t fVerbose=1;
     if(fVerbose>0){
@@ -374,8 +374,7 @@ void circleFcn(Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t) {
     Double_t u = x[i] + par[0];
     Double_t v = y[i] + par[1];
     Double_t dr = par[2] - TMath::Sqrt(u*u+v*v);
-    if(dr>0.2) f += dr*dr; 
-    else f += dr*dr;
+    if(dr<0.1) f += dr*dr;
   }
 }
 
@@ -402,16 +401,18 @@ void PrtLutReco::FitRing(Double_t& x0, Double_t& y0, Double_t& theta){
   fitter->SetMaxIterations(1000);
 
   fitter->SetFCN(circleFcn);
-  fitter->SetParameter(0, "x0",   0, 0.01, -0.05,0.05);
-  fitter->SetParameter(1, "y0",   0, 0.01, -0.05,0.05);
+  fitter->SetParameter(0, "x0",   0, 0.01, -0.15,0.15);
+  fitter->SetParameter(1, "y0",   0, 0.01, -0.15,0.15);
   fitter->SetParameter(2, "R",    theta, 0.01, theta-0.05,theta+0.05);
 
   fitter->FixParameter(2);
   Double_t arglist[1] = {0};
   fitter->ExecuteCommand("MINIMIZE", arglist, 0);
+  fitter->ExecuteCommand("MIGRAD", arglist, 0);
 
-  fitter->SetFCN(circleFcn2);
-  fitter->ExecuteCommand("MINIMIZE", arglist, 0);
+  // fitter->FixParameter(2);
+  // fitter->SetFCN(circleFcn2);
+  // fitter->ExecuteCommand("MINIMIZE", arglist, 0);
 
   x0 = fitter->GetParameter(0);
   y0 = fitter->GetParameter(1);
