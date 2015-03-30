@@ -374,7 +374,7 @@ void circleFcn(Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t) {
     Double_t u = x[i] + par[0];
     Double_t v = y[i] + par[1];
     Double_t dr = par[2] - TMath::Sqrt(u*u+v*v);
-    if(dr>0.1) f=f; 
+    if(dr>0.2) f=f; 
     else f += dr*dr;
   }
 }
@@ -388,8 +388,8 @@ void circleFcn2(Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t) {
     Double_t u = x[i] + par[0];
     Double_t v = y[i] + par[1];
     Double_t dr = par[2] - TMath::Sqrt(u*u+v*v);
-    if(dr>0.05) f=f; 
-    else f += dr*dr;
+    if(dr>0.05) f += dr*dr; 
+    else f += fabs(dr);
   }
 }
 
@@ -408,8 +408,8 @@ void PrtLutReco::FitRing(Double_t& x0, Double_t& y0, Double_t& theta){
   Double_t arglist[1] = {0};
   fitter->ExecuteCommand("MINIMIZE", arglist, 0);
 
-  // fitter->SetFCN(circleFcn2);
-  // fitter->ExecuteCommand("MINIMIZE", arglist, 0);
+  fitter->SetFCN(circleFcn2);
+  fitter->ExecuteCommand("MINIMIZE", arglist, 0);
 
   x0 = fitter->GetParameter(0);
   y0 = fitter->GetParameter(1);
