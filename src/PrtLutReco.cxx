@@ -405,6 +405,8 @@ void PrtLutReco::FitRing(Double_t& x0, Double_t& y0, Double_t& theta){
   fitter->SetParameter(0, "x0",   0, 0.01, -0.05,0.05);
   fitter->SetParameter(1, "y0",   0, 0.01, -0.05,0.05);
   fitter->SetParameter(2, "R",    theta, 0.01, theta-0.05,theta+0.05);
+
+  fitter->FixParameter(2);
   Double_t arglist[1] = {0};
   fitter->ExecuteCommand("MINIMIZE", arglist, 0);
 
