@@ -36,7 +36,8 @@ Int_t gg_i(0);
 TGraph gg_gr;
 
 // -----   Default constructor   -------------------------------------------
-PrtLutReco::PrtLutReco(TString infile, TString lutfile){
+PrtLutReco::PrtLutReco(TString infile, TString lutfile, Int_t verbose){
+  fVerbose = verbose;
   fChain = new TChain("data");
   fChain->Add(infile);
   fChain->SetBranchAddress("PrtEvent", &fEvent);
@@ -50,7 +51,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile){
   fHist = new TH1F("chrenkov_angle_hist","chrenkov_angle_hist", 100,0.7,0.9); //200
   fFit = new TF1("fgaus","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +[3]",0.35,0.9);
   fSpect = new TSpectrum(10);
- 
+
   cout << "-I- PrtLutReco: Intialization successfull" << endl;
 }
 
@@ -270,9 +271,10 @@ Int_t g_num =0;
 Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
   cherenkovreco=0;
   spr=0;
-
+  //  gStyle->SetCanvasPreferGL(kTRUE);
+  
   if(fHist->GetEntries()>20 ){
-    gROOT->SetBatch(1);
+     gROOT->SetBatch(1);
     Int_t nfound = fSpect->Search(fHist,1,"",0.9); //0.6
     Float_t *xpeaks = fSpect->GetPositionX();
     if(nfound>0) cherenkovreco = xpeaks[0];
@@ -287,11 +289,11 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
     fFit->ReleaseParameter(2); // width
     fHist->Fit("fgaus","M","",cherenkovreco-0.07,cherenkovreco+0.07);
     cherenkovreco = fFit->GetParameter(1);
-    spr = fFit->GetParameter(2);
-       gROOT->SetBatch(0);
+    spr = fFit->GetParameter(2); 
+    if(fVerbose>1) gROOT->SetBatch(0);
     
-    Int_t fVerbose=1;
-    if(fVerbose>0){
+    Bool_t storePics(true);
+    if(storePics){
       TCanvas* c = new TCanvas("c","c",0,0,800,500);
       fHist->GetXaxis()->SetTitle("#theta_{C} [rad]");
       fHist->GetYaxis()->SetTitle("Entries [#]");
@@ -323,9 +325,11 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
       TVector3 corr(x0,y0,1-TMath::Sqrt(x0*x0+y0*y0));
       std::cout<<"Tcorr "<< corr.Theta()*1000<< "  Pcorr "<< corr.Phi() <<std::endl;
 
-      TLegend *leg = new TLegend(0.4,0.7,0.85,0.9);
-      leg->SetFillColor(0);
-      leg->SetFillStyle(0);
+      TLegend *leg = new TLegend(0.5,0.7,0.85,0.87);
+      //      leg->SetFillColor(0);
+      leg->SetFillColorAlpha(0,0.8);
+      //leg->SetFillStyle(0);
+      leg->SetFillStyle(4000); 
       leg->SetBorderSize(0);
       leg->AddEntry((TObject*)0,Form("Entries %0.0f",fHist4->GetEntries()),"");
       leg->AddEntry((TObject*)0,Form("#Delta#theta_{c} %f [mrad]",corr.Theta()*1000),"");
@@ -355,7 +359,7 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
     }
   }
 
-  gROOT->SetBatch(0);
+  if(fVerbose<2) gROOT->SetBatch(0);
   fHist->Reset();
   fHist1->Reset();
   fHist2->Reset();

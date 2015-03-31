@@ -53,7 +53,7 @@ int main(int argc,char** argv)
   G4String macro, events, geometry, radiator, physlist, outfile, 
     session,geomAng,batchmode,lensId,particle,momentum("1 GeV"),testVal,displayOpt,
     beamDimension, mcpLayout, infile = "hits.root", lutfile = "../data/lut.root";
-  G4int runtype = 0;
+  G4int runtype(0), verbose(0);
 
   G4long myseed = 345354;
   for ( G4int i=1; i<argc; i=i+2 ) {
@@ -77,6 +77,7 @@ int main(int argc,char** argv)
     else if ( G4String(argv[i]) == "-c" ) mcpLayout = argv[i+1];
     else if ( G4String(argv[i]) == "-d" ) displayOpt= argv[i+1];
     else if ( G4String(argv[i]) == "-t" ) testVal   = argv[i+1];
+    else if ( G4String(argv[i]) == "-v" ) verbose   = atoi(argv[i+1]);
     else {
       PrintUsage();
       return 1;
@@ -103,7 +104,7 @@ int main(int argc,char** argv)
   if(geomAng.size())   PrtManager::Instance()->SetAngle(atof(geomAng));
 
   if(runtype == 2){
-    PrtLutReco * reco = new PrtLutReco(infile,lutfile); 
+    PrtLutReco * reco = new PrtLutReco(infile,lutfile,verbose); 
     reco->Run(0);
     return 0;
   }

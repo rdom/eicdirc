@@ -22,14 +22,19 @@ show_help(){
      -e 
         # of events per thread
      -s 
-        angle step
+        angle step 
+     -v 
+        verbose level
+        0 - print nothing (default)
+        1 - print text messages
+        2 - draw plots
      -t 
         test value"
     echo "$help" 
 }
 
 OPTIND=1 
-while getopts "h?r:j:qs:e:t:" opt; do
+while getopts "h?r:j:qs:e:v:t:" opt; do
     case "$opt" in
 	h|\?)
             show_help
@@ -45,6 +50,8 @@ while getopts "h?r:j:qs:e:t:" opt; do
             ;;
 	e)  nevents=$OPTARG
             ;;
+	v)  verbose=$OPTARG
+            ;;
 	t)  test1=$OPTARG
             ;;
     esac
@@ -55,6 +62,7 @@ endEvent=${endEvent:-100000000}
 threads=${threads:-6}
 astep=${astep:-2}
 run=${run:-0}
+verbose=${verbose:-0}
 test1=${test1:-0}
 
 shift $((OPTIND-1))
@@ -67,7 +75,7 @@ printf "====== Run EICDIRC with $tseed seed base ======\n"
 
 waitForMe (){
     while : 
-    do
+    do 
 	activth=$(ps aux | grep "[e]icdirc" | grep "h_b" | wc -l)
 	printf "\r$statusline [$activth] ---- [$(($(date +%s) - start_time)) s] "
 	sleep .1
@@ -82,7 +90,7 @@ if [ ${run} != "2" ]; then
     start_time=$(date +%s)
     statusline="GSim"
     for i in $(eval echo {30..150..${astep}}); do 
-	../build/eicdirc -r $tseed$i -o hdata/h_b$i.root -s 0 -a $i -x "pi+" -p 6  -w 0 -g 1 -h 11 -e $nevents -c 3 -l 3 -b 1  > /dev/null  &
+	../build/eicdirc -r $tseed$i -o hdata/h_b$i.root -s 0 -a $i -x "pi+" -p 6  -w 0 -g 1 -h 11 -e $nevents -c 3 -l 3 -v $verbose -b 1  > /dev/null  &
 	waitForMe $threads
     done
     waitForMe "1"
@@ -93,7 +101,7 @@ fi
 start_time=$(date +%s)
 statusline="Reco"
 for i in $(eval echo {30..150..$astep}); do 
-    ../build/eicdirc -i hdata/h_b$i.root -o r_b${tseed}_$i.root -s 2 -t $test1 > /dev/null 2> /dev/null &
+    ../build/eicdirc -i hdata/h_b$i.root -o r_b${tseed}_$i.root -s 2 -t $test1 -v $verbose > /dev/null 2> /dev/null &
     waitForMe $threads
 done
 waitForMe "1"
