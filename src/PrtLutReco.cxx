@@ -47,7 +47,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile){
   fTree->SetBranchAddress("LUT",&fLut); 
   fTree->GetEntry(0);
 
-  fHist = new TH1F("chrenkov_angle_hist","chrenkov_angle_hist", 200,0.7,0.9);
+  fHist = new TH1F("chrenkov_angle_hist","chrenkov_angle_hist", 100,0.7,0.9); //200
   fFit = new TF1("fgaus","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +[3]",0.35,0.9);
   fSpect = new TSpectrum(10);
  
@@ -273,7 +273,7 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
 
   if(fHist->GetEntries()>20 ){
     gROOT->SetBatch(1);
-    Int_t nfound = fSpect->Search(fHist,1,"",0.6); //0.6
+    Int_t nfound = fSpect->Search(fHist,1,"",0.9); //0.6
     Float_t *xpeaks = fSpect->GetPositionX();
     if(nfound>0) cherenkovreco = xpeaks[0];
     else cherenkovreco =  fHist->GetXaxis()->GetBinCenter(fHist->GetMaximumBin());
@@ -288,7 +288,7 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
     fHist->Fit("fgaus","M","",cherenkovreco-0.07,cherenkovreco+0.07);
     cherenkovreco = fFit->GetParameter(1);
     spr = fFit->GetParameter(2);
-    //gROOT->SetBatch(0);
+       gROOT->SetBatch(0);
     
     Int_t fVerbose=1;
     if(fVerbose>0){
@@ -374,9 +374,10 @@ void circleFcn(Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t) {
     Double_t u = x[i] + par[0];
     Double_t v = y[i] + par[1];
     Double_t dr = par[2] - TMath::Sqrt(u*u+v*v);
-    if(dr>0.2) f += dr*dr; 
-    else f += dr*dr;
+    f += dr*dr;  
   }
+  std::cout<<"fcn  "<< f<<std::endl;
+  
 }
 
 void circleFcn2(Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t) {
@@ -388,30 +389,47 @@ void circleFcn2(Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t) {
     Double_t u = x[i] + par[0];
     Double_t v = y[i] + par[1];
     Double_t dr = par[2] - TMath::Sqrt(u*u+v*v);
-    if(dr>0.05) f += dr*dr; 
+    if(dr>0.07) f += dr*dr; 
     else f += fabs(dr);
   }
 }
 
 
 void PrtLutReco::FitRing(Double_t& x0, Double_t& y0, Double_t& theta){
+
+
+  TGraph ff_gr;
+  Int_t ff_i(0);
+  Int_t np = gg_gr.GetN();
+  Double_t *x = gg_gr.GetX();
+  Double_t *y = gg_gr.GetY();
+  for (Int_t i=0;i<np;i++) {
+    if( fabs(theta - TMath::Sqrt(x[i]*x[i]+y[i]*y[i]))<0.05) {
+      ff_gr.SetPoint(ff_i,x[i],y[i]);
+      ff_i++;
+    }
+  }
+  gg_gr = ff_gr;
+
   //Fit a circle to the graph points
-  TVirtualFitter::SetDefaultFitter("Minuit2");  //default is Minuit
+  TVirtualFitter::SetDefaultFitter("Minuit");  //default is Minuit
   TVirtualFitter *fitter = TVirtualFitter::Fitter(0, 3);
   fitter->SetPrecision(0.00000001);
   fitter->SetMaxIterations(1000);
 
   fitter->SetFCN(circleFcn);
-  fitter->SetParameter(0, "x0",   0, 0.01, -0.05,0.05);
+  fitter->SetParameter(0, "x0",   0.03, 0.01, -0.05,0.05);
   fitter->SetParameter(1, "y0",   0, 0.01, -0.05,0.05);
   fitter->SetParameter(2, "R",    theta, 0.01, theta-0.05,theta+0.05);
 
+  //fitter->FixParameter(0);
+  //fitter->FixParameter(1);
   fitter->FixParameter(2);
   Double_t arglist[1] = {0};
   fitter->ExecuteCommand("MINIMIZE", arglist, 0);
 
-  fitter->SetFCN(circleFcn2);
-  fitter->ExecuteCommand("MINIMIZE", arglist, 0);
+  // fitter->SetFCN(circleFcn2);
+  // fitter->ExecuteCommand("MINIMIZE", arglist, 0);
 
   x0 = fitter->GetParameter(0);
   y0 = fitter->GetParameter(1);
