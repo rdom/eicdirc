@@ -327,7 +327,7 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
 
       TLegend *leg = new TLegend(0.5,0.7,0.85,0.87);
       //      leg->SetFillColor(0);
-      leg->SetFillColorAlpha(0,0.8);
+      //leg->SetFillColorAlpha(0,0.8);
       //leg->SetFillStyle(0);
       leg->SetFillStyle(4000); 
       leg->SetBorderSize(0);
