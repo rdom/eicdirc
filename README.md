@@ -24,9 +24,9 @@ example:
 -h    number of bars in one radiator box
 
 -c   MCP layout
-                0    pixels covers all FD plain
-                1    MCP covers all FD plain
-                2    MCP covers all FD plain
+                0    4x6 standard MCP's (pixel size == mcp size)
+                1    4x6 standard MCP's (6.4x6.4 pixels)
+		3    one MCP cover all FD plain (custom pixel size)
 -l    focusing system
                 0    no lens
                 1    spherical lens
@@ -61,4 +61,10 @@ example:
                0    standard (default)
                1    display hit occupancy of current run
                2    display hit occupancy of occuhits.root (need to be generated)
+```
+
+##Example of script usage from macro folder
+```
+./ba_scan -j6 -r0 -s5 -e50 -t1 -v0
+root da_scan.C'("r_spr39498736070.root","ttt1.root")'
 ```

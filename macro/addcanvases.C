@@ -1,10 +1,11 @@
 #include "../../prttools/prttools.C"
 void addcanvases(){
+  fSavePath = "data/perfLL";
   const Int_t narr = 20;
   gStyle->SetOptStat(0); 
   gStyle->SetOptTitle(0); 
 
-  TFile *f1 = TFile::Open("c_spr1.root");
+  TFile *f1 = TFile::Open("c_l3.root");
   TIter next1(f1->GetListOfKeys());
   TKey *key1;
   Int_t it1 = 0;
@@ -17,7 +18,7 @@ void addcanvases(){
     it1++;
   }
 
-  TFile *f2 = TFile::Open("c_spr_c1mcp.root");
+  TFile *f2 = TFile::Open("c_l0.root");
   TIter next2(f2->GetListOfKeys());
   TKey *key2;
   Int_t it2 = 0;
@@ -67,5 +68,5 @@ void addcanvases(){
   }
   std::cout<<"save all  " <<std::endl;
   
-  canvasSave(0,"addcanvases.C",1,"data/perfMcp");
+  canvasSave(0,1);
 }
