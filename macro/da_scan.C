@@ -1,6 +1,7 @@
 #include "../../prttools/prttools.C"
 void da_scan(TString inFile = "r_spr.root", TString outFile="c_spr.root"){
 
+  fSavePath = "data/temp";
   TChain ch("dirc"); ch.Add(inFile);
   Double_t cangle,spr,trr,nph,par1,par2,par3,par4,par5,par6,par7,par8,theta,phi; 
 
@@ -88,8 +89,7 @@ void da_scan(TString inFile = "r_spr.root", TString outFile="c_spr.root"){
   TCanvas* c3 = new TCanvas("c3","c3",800,500);c3->SetBottomMargin(0.12);
   gTrr->Draw("APL");
   canvasAdd(c3);
-
-  canvasSave(0,"addcanvases.C",1,"data/temp");
+  canvasSave(0,1);
   
   file->cd();
   c1->Write();

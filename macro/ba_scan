@@ -18,7 +18,7 @@ show_help(){
      -q 
         run -a option on claster 
         one needs to be logged in on hera 
-        no implemented 
+        not implemented yet 
      -e 
         # of events per thread
      -s 
