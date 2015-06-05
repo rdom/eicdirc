@@ -290,7 +290,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     lMcp = new G4LogicalVolume(gMcp,BarMaterial,"lMcp",0,0,0);
   
 
-    G4double pixSize = 3*mm;
+    G4double pixSize = 2*mm;
     //pixSize = PrtManager::Instance()->GetTest()*mm;
     
     fNpix1 = fPrizm[2]/pixSize-1;
