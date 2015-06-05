@@ -10,7 +10,6 @@ void da_scan(TString inFile = "r_spr.root", TString outFile="c_spr.root"){
   TGraph *gTrr = new TGraph();
   TGraph *gTrr1 = new TGraph();
   TGraph *gTrr2 = new TGraph();
-  TGraph *gTrr3 = new TGraph();
 
   ch.SetBranchAddress("spr",&spr);
   ch.SetBranchAddress("trr",&trr);
@@ -32,10 +31,9 @@ void da_scan(TString inFile = "r_spr.root", TString outFile="c_spr.root"){
     gNph->SetPoint(i,theta,nph);
     trr = TMath::Abs(trr);
     //gTrr->SetPoint(i,theta,trr);
-    gTrr->SetPoint(i,theta,sqrt(trr*trr+0.25*0.25));
+    gTrr->SetPoint(i,theta,trr);
     gTrr1->SetPoint(i,theta,sqrt(trr*trr+0.5*0.5));
-    gTrr2->SetPoint(i,theta,sqrt(trr*trr+0.75*0.75));
-    gTrr3->SetPoint(i,theta,sqrt(trr*trr+1));
+    gTrr2->SetPoint(i,theta,sqrt(trr*trr+1));
      
   }
   gSpr->Sort();
@@ -43,32 +41,27 @@ void da_scan(TString inFile = "r_spr.root", TString outFile="c_spr.root"){
   gTrr->Sort();
   gTrr1->Sort();
   gTrr2->Sort();
-  gTrr3->Sort();
 
   gSpr->SetLineColor(38);
   gNph->SetLineColor(38);
   gTrr->SetLineColor(38);
   gTrr1->SetLineColor(2);
   gTrr2->SetLineColor(8);
-  gTrr3->SetLineColor(4);
 
   gTrr1->SetMarkerColor(2);
   gTrr2->SetMarkerColor(8);
-  gTrr3->SetMarkerColor(4);
   
   gSpr->SetMarkerStyle(20);
   gNph->SetMarkerStyle(20);
   gTrr->SetMarkerStyle(20);
   gTrr1->SetMarkerStyle(20);
   gTrr2->SetMarkerStyle(20);
-  gTrr3->SetMarkerStyle(20);
 
   gSpr->SetMarkerSize(0.7);
   gNph->SetMarkerSize(0.7);
   gTrr->SetMarkerSize(0.7);
   gTrr1->SetMarkerSize(0.7);
   gTrr2->SetMarkerSize(0.7);
-  gTrr3->SetMarkerSize(0.7);
 	  
   gNph->GetYaxis()->SetRangeUser(0,150);
   gSpr->GetYaxis()->SetRangeUser(0,12);
@@ -118,7 +111,6 @@ void da_scan(TString inFile = "r_spr.root", TString outFile="c_spr.root"){
   gTrr->Draw("APL");
   gTrr1->Draw("same PL");
   gTrr2->Draw("same PL");
-  gTrr3->Draw("same PL");
   
   canvasAdd(c3);
   canvasSave(0,1);
