@@ -78,7 +78,7 @@ printf "====== Run EICDIRC with $tseed seed base ======\n"
 
 simopt="-p 6 -w 0 -g 1 -h 11 -c 3 -l 3"
 
-if [ ${run} != "2" ]; then
+if [ ${run} == "1" ]; then
     ../build/eicdirc -s 1 -x "opticalphoton" -p "3.18 eV" -w 0 -g 1 -h 11 -e 500000 -c 3 -l 3 -d 0 -b 1
     exit
 fi

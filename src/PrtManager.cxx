@@ -37,7 +37,7 @@ PrtManager::PrtManager(G4String outfile, G4int runtype)
   if(fRunType==2){
     fTree = new TTree("recodata","Reconstructed info for the prototype");
     fTrackInfoArray = new TClonesArray("PrtTrackInfo");
-    fTree->Branch("PrtTrackInfo",&fTrackInfoArray,256000,2); 
+    fTree->Branch("PrtTrackInfo",&fTrackInfoArray,256000,3); 
   }
   
   // fHist = new TH1F("id", "name", 100, 0., 100);

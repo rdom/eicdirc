@@ -192,7 +192,6 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     lLens2 = new G4LogicalVolume(gLens2,Nlak33aMaterial,"lLens2",0,0,0);
     lLens3 = new G4LogicalVolume(gLens3,BarMaterial,"lLens3",0,0,0);
   }
-
   
   if(PrtManager::Instance()->GetLens() != 0 && PrtManager::Instance()->GetLens() != 10){
     if(fNBar==1){
@@ -254,7 +253,6 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
 	new G4PVPlacement(0,G4ThreeVector(shiftx,shifty,fBar[2]/2.+fPrizm[1]+fMcpActive[2]/2.+fLens[2]),lMcp,"wMcp", lDirc,false,mcpId++);
       }
     }
-
   }
   if(fMcpLayout==0){
     // only mcps
@@ -315,6 +313,50 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
       }
     }
     new G4PVPlacement(0,G4ThreeVector(fPrizm[2]/2.-fPrizm[3]/2.,0,fBar[2]/2.+fPrizm[1]+fMcpActive[2]/2.+fLens[2]),lMcp,"wMcp", lDirc,false,1);
+  }
+  
+  if(fMcpLayout==4){
+    // alternative mcp pmt
+    // The MCP
+
+    fMcpTotal[1]=fPrizm[0]/6.-1;
+    fMcpTotal[0]=fPrizm[2]/4.-5;
+    fMcpActive[1]= fMcpTotal[1];
+    fMcpActive[0]= fMcpTotal[0];
+    
+    G4Box* gMcp = new G4Box("gMcp",fMcpTotal[0]/2.,fMcpTotal[1]/2.,fMcpTotal[2]/2.);
+    lMcp = new G4LogicalVolume(gMcp,BarMaterial,"lMcp",0,0,0);
+
+
+    G4double pixSize = 6*mm;
+    
+    fNpix1 = 32;//fMcpActive[1]/pixSize-1;
+    fNpix2 = 32;// fMcpActive[1]/pixSize-1;
+
+    // The MCP Pixel
+    G4Box* gPixel = new G4Box("gPixel",0.5*fMcpActive[0]/fNpix1,0.5*fMcpActive[1]/fNpix2,fMcpActive[2]/16.);
+    lPixel = new G4LogicalVolume(gPixel,BarMaterial,"lPixel",0,0,0);
+    
+    int pixelId = 0;
+    for(int i=0; i<fNpix1; i++){
+      for(int j=0; j<fNpix2; j++){
+    	double shiftx = i*(fMcpActive[0]/fNpix1)-fMcpActive[0]/2.+0.5*fMcpActive[0]/fNpix1;
+    	double shifty = j*(fMcpActive[1]/fNpix2)-fMcpActive[1]/2.+0.5*fMcpActive[1]/fNpix2;
+    	new G4PVPlacement(0,G4ThreeVector(shiftx,shifty,0),lPixel,"wPixel", lMcp,false,pixelId++);      
+      }
+    }
+ 
+    int mcpId = 0;
+    G4double gapx = (fPrizm[2]-4*fMcpTotal[0])/5.;
+    G4double gapy = (fPrizm[0]-6*fMcpTotal[1])/7.;
+    for(int i=0; i<fNCol; i++){
+      for(int j=0; j<fNRow; j++){
+	double shiftx = i*(fMcpTotal[0]+gapx)-fPrizm[3]/2.+fMcpTotal[0]/2+gapx;
+	double shifty = j*(fMcpTotal[1]+gapy)-fPrizm[0]/2.+fMcpTotal[1]/2+gapy;
+	new G4PVPlacement(0,G4ThreeVector(shiftx,shifty,fBar[2]/2.+fPrizm[1]+fMcpActive[2]/2.+fLens[2]),lMcp,"wMcp", lDirc,false,mcpId++);
+      }
+    }
+
   }
 
   const G4int num = 36; 
@@ -671,14 +713,15 @@ void PrtDetectorConstruction::SetVisualization(){
   //waPrizm->SetForceSolid(true);
   lPrizm->SetVisAttributes(waPrizm);
 
-  G4VisAttributes *waMcp = new G4VisAttributes(G4Colour(0.1,0.1,0.9,0.3));
+  //G4VisAttributes *waMcp = new G4VisAttributes(G4Colour(0.1,0.1,0.9,0.3));
+  G4VisAttributes *waMcp = new G4VisAttributes(G4Colour(1.0,0.,0.1,0.7));
   //  waMcp->SetForceWireframe(true);
   waMcp->SetForceSolid(true);
   lMcp->SetVisAttributes(waMcp);
 
-  G4VisAttributes *waPixel = new G4VisAttributes(G4Colour(1.0,0.0,0.1,0.1));
+  G4VisAttributes *waPixel = new G4VisAttributes(G4Colour(1.0,0.0,0.1,0.3));
   //waPixel->SetForceWireframe(true);
-  waPixel->SetVisibility(false);
+  waPixel->SetVisibility(true);
   lPixel->SetVisAttributes(waPixel);
 
 }

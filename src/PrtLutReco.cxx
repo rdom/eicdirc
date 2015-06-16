@@ -29,6 +29,7 @@ using std::endl;
 
 TH1F*  fHist1 = new TH1F("Time1","1", 1000,0,20);
 TH1F*  fHist2 = new TH1F("Time2","2", 1000,0,20);
+TH1F*  fHistDiff = new TH1F("TimeDiff","2", 500,-10,10);
 TH2F*  fHist3 = new TH2F("Time3","3", 500,5,80, 500,5,60);
 TH2F*  fHist4 = new TH2F("Time4","4", 200,-1,1, 200,-1,1);
 TH2F*  fHist5 = new TH2F("Time5","5", 200,-1,1, 200,-1,1);
@@ -185,15 +186,13 @@ void PrtLutReco::Run(Int_t start, Int_t end){
 	
 	  fHist1->Fill(hitTime);
 	  fHist2->Fill(bartime + evtime);
-	  
+	  par4=(bartime + evtime)-hitTime;
+	  //fHistDiff->Fill(par4);	    
 	  if(fabs((bartime + evtime)-hitTime)>test1) continue;
 	  fHist3->Fill(fabs((bartime + evtime)),hitTime);
 	  tangle = rotatedmom.Angle(dir);
 	  if(  tangle>TMath::Pi()/2.) tangle = TMath::Pi()-tangle;
 
-	  // std::cout<<"tangle  "<<tangle <<std::endl;
-	  
-	 
 	  PrtAmbiguityInfo ambinfo;
 	  ambinfo.SetBarTime(bartime);
 	  ambinfo.SetEvTime(evtime);
@@ -203,12 +202,9 @@ void PrtLutReco::Run(Int_t start, Int_t end){
 	  if(tangle > minChangle && tangle < maxChangle){
 	    fHist->Fill(tangle);
 
-
 	    // Double_t phi = rotatedmom.Phi()-dir.Phi();
+	    // if(TMath::Abs(tangle-0.82)<0.015)  fHistDiff->Fill(par4);
 
-	    // if(TMath::Abs(tangle-0.82)<0.1)
-
-	   
 	    TVector3 rdir = TVector3(-dir.X(),dir.Y(),dir.Z());
 	    TVector3 unitdir3 = rotatedmom.Unit();
 	    rdir.RotateUz(unitdir3);
@@ -308,7 +304,7 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
       c->Print(Form("spr/tangle_%d.png", a));
       c->WaitPrimitive();
 
-      TCanvas* c2 = new TCanvas("c2","c2",0,0,600,600);
+      TCanvas* c2 = new TCanvas("c2","c2",0,0,800,500);
       // c2->Divide(2,1);
       //c2->cd(1);
       fHist3->GetXaxis()->SetTitle("calculated time [ns]");
@@ -351,6 +347,11 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
       // fHist5->SetTitle(Form("True from MC, #theta = %d#circ", a));
       // fHist5->Draw("colz");
 
+      // fHistDiff->GetXaxis()->SetTitle("calculated time - measured time [ns]");
+      // fHistDiff->GetYaxis()->SetTitle("entries [ns]");
+      // fHistDiff->SetTitle(Form("theta %d", a));
+      // fHistDiff->Draw();
+
       c2->Print(Form("spr/tcorr_%d.png", a));
       c2->Modified();
       c2->Update();
@@ -365,7 +366,8 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
   fHist2->Reset();
   fHist3->Reset();
   fHist4->Reset();
-
+  fHistDiff->Reset();
+  
   return (cherenkovreco>0 && cherenkovreco<1);
 }
 

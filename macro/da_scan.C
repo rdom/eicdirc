@@ -1,9 +1,8 @@
 #include "../../prttools/prttools.C"
 void da_scan(TString inFile = "r_spr.root", TString outFile="c_spr.root"){
-
   fSavePath = "auto";
   TChain ch("dirc"); ch.Add(inFile);
-  Double_t cangle,spr,trr,nph,par1,par2,par3,par4,par5,par6,par7,par8,theta,phi; 
+  Double_t cangle,spr,trr,nph,par1,par2,par3,par4,par5,par6,test1,test2,theta,phi; 
 
   TGraph *gSpr = new TGraph();
   TGraph *gNph = new TGraph();
@@ -18,8 +17,8 @@ void da_scan(TString inFile = "r_spr.root", TString outFile="c_spr.root"){
   ch.SetBranchAddress("par4",&par4);
   ch.SetBranchAddress("par5",&par5);
   ch.SetBranchAddress("par6",&par6);
-  ch.SetBranchAddress("par7",&par7);
-  ch.SetBranchAddress("par8",&par8);
+  ch.SetBranchAddress("test1",&test1);
+  ch.SetBranchAddress("test2",&test2);
   ch.SetBranchAddress("theta",&theta);
   ch.SetBranchAddress("phi",&phi);
   
@@ -46,10 +45,10 @@ void da_scan(TString inFile = "r_spr.root", TString outFile="c_spr.root"){
   gNph->SetLineColor(38);
   gTrr->SetLineColor(38);
   gTrr1->SetLineColor(2);
-  gTrr2->SetLineColor(8);
+  gTrr2->SetLineColor(4);
 
   gTrr1->SetMarkerColor(2);
-  gTrr2->SetMarkerColor(8);
+  gTrr2->SetMarkerColor(4);
   
   gSpr->SetMarkerStyle(20);
   gNph->SetMarkerStyle(20);
@@ -101,7 +100,7 @@ void da_scan(TString inFile = "r_spr.root", TString outFile="c_spr.root"){
   gTrr->GetXaxis()->SetTitle("#theta_{track} [#circ]");
 
   TFile *file = new TFile(outFile,"RECREATE");
-  TCanvas* c1 = new TCanvas("c1","c1",800,500);c1->SetBottomMargin(0.12);
+  TCanvas* c1 = new TCanvas(Form("c_spr%2.0f",test1*10),"c1",800,500);c1->SetBottomMargin(0.12);
   gSpr->Draw("APL");
   canvasAdd(c1);
   TCanvas* c2 = new TCanvas("c2","c2",800,500);c2->SetBottomMargin(0.12);

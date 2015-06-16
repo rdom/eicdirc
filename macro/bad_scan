@@ -9,11 +9,13 @@ echo $tseed
 for s in {1..20}; do 
     step=$s
     if [ "$step" -eq 1 ]; then 
-	step="1.08"	  
+	step="1.1"	  
     fi
 
-    for i in {30..150..2}; do 
-	../build/eicdirc -r $tseed$i -o h_b$i_d$s.root -s 0 -a $i -x "pi+" -p 6  -w 0 -g 1 -h 11 -e 10 -c 3 -l 3 -t $step -b 1  > /dev/null && ../build/eicdirc -r $tseed$i -u ../data/lut_d$s.root -i h_b$i_d$s.root -o r_b$i_d$s.root -s 2 > /dev/null &
+   # for i in {30..150..2}; do
+    for i in 30 70 110 150 ; do 	
+#	../build/eicdirc -r $tseed$i -o h_b${i}_d${s}.root -s 0 -a $i -x "pi+" -p 6  -w 0 -g 1 -h 11 -e 50 -c 3 -l 3 -t $step -b 1  > /dev/null &
+        ../build/eicdirc -r $tseed$i -u ../data/lut_d${s}.root -i h_b${i}_d${s}.root -o r_b${i}_d${s}.root -s 2 -t 1 > /dev/null &
 	echo $i
 	while : 
 	do

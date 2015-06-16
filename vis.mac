@@ -51,7 +51,7 @@
 
 
 # Draw coordinate axes:
-/vis/scene/add/axes 0 0 0 1 m
+#/vis/scene/add/axes 0 0 0 1 m
 #
 # Draw smooth trajectories at end of event, showing trajectory points
 # as markers 2 pixels wide:
@@ -100,9 +100,12 @@
 /vis/viewer/set/style s
 /vis/viewer/set/hiddenEdge true
 #/vis/viewer/set/background 1 1 1 0
-/vis/viewer/set/background 0 0 0 0
+#/vis/viewer/set/background 0 0 0 0
 /vis/viewer/set/hiddenMarker 
 /vis/geometry/set/forceLineSegmentsPerCircle all 0 50
+
+
+#fp 
 
 
 #/vis/viewer/save
