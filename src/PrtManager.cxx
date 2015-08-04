@@ -46,6 +46,7 @@ PrtManager::PrtManager(G4String outfile, G4int runtype)
   fParticle = 0;
   fMomentum = TVector3(2,0,0);
   fGeometry = 3;
+  fEvType = 0;
   fAngle = 0;
   fShift = 150;
   fDispalyOpt = 0;
@@ -76,6 +77,7 @@ void PrtManager::AddEvent(PrtEvent event){
     fEvent->SetParticle(fParticle);
     fEvent->SetMomentum(fMomentum);
     fEvent->SetGeometry(fGeometry);
+    fEvent->SetEvType(fEvType);
     fEvent->SetLens(fLens);
     fEvent->SetTest(fTest);
   }

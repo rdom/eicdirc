@@ -15,6 +15,7 @@ PrtEvent::PrtEvent(){
   fPosition = TVector3(0,0,0);
   fHitSize = 0;
   fGeometry = 0;
+  fEvType = 0;
   fLens = -1;
   fTrigger = 0;
   fTest = 0;
@@ -31,6 +32,7 @@ TString PrtEvent::PrintInfo(){
   info += Form("Particle  id %d \n",fParticle);
   info += Form("Particle momentum %f \n", fMomentum.Mag());
   info += Form("Geometry id %d \n", fGeometry);
+  info += Form("Ev type %d \n", fEvType);
   info += Form("Lens  id %d \n",    fLens);
   return info;
 }

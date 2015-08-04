@@ -20,6 +20,7 @@ example:
 -g    geometry configuration
                 0    whole DIRC
                 1    one barbox
+	        2    tilted EV	
 
 -h    number of bars in one radiator box
 

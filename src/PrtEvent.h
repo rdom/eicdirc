@@ -37,6 +37,7 @@ public:
   TVector3 GetPosition()      const { return fPosition; }
   Int_t GetHitSize()       const { return fHitSize; }
   Int_t GetGeometry()      const { return fGeometry; }
+  Int_t GetEvType()      const { return fEvType; }
   Int_t GetLens()      const { return fLens; }
   Int_t GetTrigger()      const { return fTrigger; }
   Double_t GetTest()      const { return fTest; }
@@ -53,6 +54,7 @@ public:
   void SetMomentum(TVector3 val) { fMomentum = val; }
   void SetPosition(TVector3 val) { fPosition = val; }
   void SetGeometry(Int_t val) { fGeometry = val; }
+  void SetEvType(Int_t val) { fEvType = val; }
   void SetLens(Int_t val) { fLens = val; }
   void SetTrigger(Int_t val) { fTrigger = val; }
   void SetTest(Double_t val) { fTest = val; }
@@ -73,6 +75,7 @@ private:
   TVector3 fMomentum;
   TVector3 fPosition;
   Int_t fGeometry;
+  Int_t fEvType;
   Int_t fLens;
   Int_t fTrigger; 
   Double_t fTest;

@@ -50,7 +50,7 @@ int main(int argc,char** argv)
 
   TApplication theApp("App", 0, 0);
   
-  G4String macro, events, geometry, radiator, physlist, outfile, 
+  G4String macro, events, geometry,evType, radiator, physlist, outfile, 
     session,geomAng,batchmode,lensId,particle,momentum("1 GeV"),testVal,displayOpt,
     beamDimension, mcpLayout, infile = "hits.root", lutfile = "../data/lut.root";
   G4int runtype(0), verbose(0);
@@ -64,6 +64,7 @@ int main(int argc,char** argv)
     else if ( G4String(argv[i]) == "-i" ) infile    = argv[i+1];
     else if ( G4String(argv[i]) == "-u" ) lutfile   = argv[i+1];
     else if ( G4String(argv[i]) == "-g" ) geometry  = argv[i+1];
+    else if ( G4String(argv[i]) == "-f" ) evType = argv[i+1];
     else if ( G4String(argv[i]) == "-h" ) radiator  = argv[i+1];
     else if ( G4String(argv[i]) == "-a" ) geomAng   = argv[i+1];
     else if ( G4String(argv[i]) == "-b" ) batchmode = argv[i+1];
@@ -94,6 +95,7 @@ int main(int argc,char** argv)
 
   if(physlist.size()) PrtManager::Instance()->SetPhysList(atoi(physlist));
   if(geometry.size()) PrtManager::Instance()->SetGeometry(atoi(geometry));
+  if(evType.size())   PrtManager::Instance()->SetEvType(atoi(evType));
   if(radiator.size()) PrtManager::Instance()->SetRadiator(atoi(radiator));
   if(lensId.size())   PrtManager::Instance()->SetLens(atoi(lensId));
   if(mcpLayout.size())PrtManager::Instance()->SetMcpLayout(atoi(mcpLayout));

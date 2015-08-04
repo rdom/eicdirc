@@ -32,12 +32,15 @@ private:
   G4LogicalVolume* lExpHall;
   G4LogicalVolume* lFront;
   G4LogicalVolume* lDirc;
+  G4LogicalVolume* lFd;
   G4LogicalVolume* lBar;
   G4LogicalVolume* lMirror;
   G4LogicalVolume* lLens1;
   G4LogicalVolume* lLens2;
   G4LogicalVolume* lLens3;
   G4LogicalVolume* lPrizm;
+  G4LogicalVolume* lPrizmT1;
+  G4LogicalVolume* lPrizmT2;
   G4LogicalVolume* lMcp;
   G4LogicalVolume* lPixel;
   G4VPhysicalVolume*   pDirc[100];
@@ -65,6 +68,7 @@ private:
   G4double fBar[3];
   G4double fMirror[3];
   G4double fPrizm[4];
+  G4double fPrizmT[6];
   G4double fLens[4];
   G4double fMcpTotal[3];
   G4double fMcpActive[3];

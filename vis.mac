@@ -100,7 +100,7 @@
 /vis/viewer/set/style s
 /vis/viewer/set/hiddenEdge true
 #/vis/viewer/set/background 1 1 1 0
-#/vis/viewer/set/background 0 0 0 0
+/vis/viewer/set/background 0 0 0 0
 /vis/viewer/set/hiddenMarker 
 /vis/geometry/set/forceLineSegmentsPerCircle all 0 50
 

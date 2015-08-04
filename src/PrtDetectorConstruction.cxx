@@ -46,7 +46,15 @@ PrtDetectorConstruction::PrtDetectorConstruction()
   //fBar[0] = 17; fBar[1] = 32; fBar[2] = 4200;
   //fMirror[0] = 20; fMirror[1] = 40; fMirror[2] =1;
   //fPrizm[0] = 170; fPrizm[1] = 300; fPrizm[2] = 30+300*tan(37*deg); fPrizm[3] = 30;
-  fPrizm[0] = 390; fPrizm[1] = 300; fPrizm[3] = 50; fPrizm[2]= fPrizm[3]+300*tan(38*deg); 
+  fPrizm[0] = 390; fPrizm[1] = 300; fPrizm[3] = 50; fPrizm[2]= fPrizm[3]+300*tan(38*deg);
+
+  fPrizmT[0] = 390;
+  fPrizmT[1] = 400 - 290*cos(60*deg); //
+  fPrizmT[2] = 290*sin(60*deg); // hight
+  fPrizmT[3] = 50; // face
+  fPrizmT[4] = 290;
+  fPrizmT[5] = 290*cos(60*deg);
+  
   fMirror[0] = 20; fMirror[1] = fPrizm[0]; fMirror[2] =1;
   //  fPrizm[0] = 170; fPrizm[1] = 300; fPrizm[2] = 50+300*tan(45*deg); fPrizm[3] = 50;
   fBar[0] = 17; fBar[1] = fPrizm[0]/fNBar; fBar[2] = 4200; //4200
@@ -94,6 +102,10 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   G4Box* gDirc = new G4Box("gDirc",400.,300.,fBar[2]/2.+350);
   lDirc = new G4LogicalVolume(gDirc,defaultMaterial,"lDirc",0,0,0);
 
+  G4Box* gFd = new G4Box("gFd",400.,300.,fBar[2]/2.+350);
+  lFd = new G4LogicalVolume(gFd,defaultMaterial,"lFd",0,0,0);
+
+  
   G4int fNBoxes = (PrtManager::Instance()->GetGeometry() == 0)? 16 :1;
   G4double radius = 1000;
   G4double tphi, dphi = 22.5*deg; //22.5*deg;
@@ -219,10 +231,31 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   // The Prizm
   G4Trap* gPrizm = new G4Trap("gPrizm",fPrizm[0],fPrizm[1],fPrizm[2],fPrizm[3]);
   lPrizm = new G4LogicalVolume(gPrizm, BarMaterial,"lPrizm",0,0,0);
+
+  G4Trap* gPrizmT1 = new G4Trap("gPrizmT1",fPrizmT[0],fPrizmT[1],fPrizmT[2],fPrizmT[3]);
+  lPrizmT1 = new G4LogicalVolume(gPrizmT1, BarMaterial,"lPrizmT1",0,0,0);
+  
+  G4Trap* gPrizmT2 = new G4Trap("gPrizmT2",fPrizmT[0],fPrizmT[5],fPrizmT[2],0.0001);
+  lPrizmT2 = new G4LogicalVolume(gPrizmT2, BarMaterial,"lPrizmT2",0,0,0);
+
   G4RotationMatrix* xRot = new G4RotationMatrix();
   xRot->rotateX(M_PI/2.*rad);
-  fPrismShift = G4ThreeVector((fPrizm[2]+fPrizm[3])/4.-fPrizm[3]/2.,0,fBar[2]/2.+fPrizm[1]/2.+fLens[2]);
-  new G4PVPlacement(xRot,fPrismShift,lPrizm,"wPrizm", lDirc,false,0);
+
+  G4RotationMatrix* fdRot = new G4RotationMatrix();
+    
+  if(PrtManager::Instance()->GetEvType() == 0 ){
+    fPrismShift = G4ThreeVector((fPrizm[2]+fPrizm[3])/4.-fPrizm[3]/2.,0,fBar[2]/2.+fPrizm[1]/2.+fLens[2]);
+    new G4PVPlacement(xRot,fPrismShift,lPrizm,"wPrizm", lDirc,false,0);
+  }else {
+    fPrismShift = G4ThreeVector((fPrizmT[2]+fPrizmT[3])/4.-fPrizmT[3]/2.,0,fBar[2]/2.+fPrizmT[1]/2.+fLens[2]);
+    new G4PVPlacement(xRot,fPrismShift,lPrizmT1,"wPrizm", lDirc,false,0);
+    fPrismShift = G4ThreeVector((fPrizmT[2]+0.0001)/4.-0.0001/2.-0.5*fPrizm[3],0,fPrizmT[1]+fBar[2]/2.+fPrizmT[5]/2.+fLens[2]);
+    G4RotationMatrix* yRot = new G4RotationMatrix();
+    yRot->rotateX(-M_PI/2.*rad);
+    fdRot->rotateY(60*deg);
+
+    new G4PVPlacement(yRot,fPrismShift,lPrizmT2,"wPrizm", lDirc,false,0);
+  }
 
   if(fMcpLayout==1){
     // standard mcp pmt layout
@@ -278,9 +311,9 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
 	}
       }
     }else{
-      new G4PVPlacement(0,G4ThreeVector(0,0,0),lPixel,"wPixel", lMcp,false,1);
+      new G4PVPlacement(fdRot,G4ThreeVector(0,0,0),lPixel,"wPixel", lMcp,false,1);
     } 
-    new G4PVPlacement(0,G4ThreeVector(fPrizm[2]/2.-fPrizm[3]/2.,0,fBar[2]/2.+fPrizm[1]+fMcpActive[2]/2.+fLens[2]),lMcp,"wMcp", lDirc,false,1);
+    new G4PVPlacement(fdRot,G4ThreeVector(fPrizm[2]/2.-fPrizm[3]/2.,0,fBar[2]/2.+fPrizm[1]+fMcpActive[2]/2.+fLens[2]),lMcp,"wMcp", lDirc,false,1);
   }
   if(fMcpLayout==3){
     // one mcp layout
@@ -309,10 +342,10 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
 	
 	double shiftx = i*(fPrizm[2]/fNpix1) - 0.5*fPrizm[2]+0.5*fPrizm[2]/fNpix1;
 	double shifty = j*(fPrizm[0]/fNpix2) - 0.5*fPrizm[0]+0.5*fPrizm[0]/fNpix2;
-	new G4PVPlacement(0,G4ThreeVector(shiftx,shifty,0),lPixel,"wPixel", lMcp,false,pixelId++);      
+	new G4PVPlacement(fdRot,G4ThreeVector(shiftx,shifty,0),lPixel,"wPixel", lMcp,false,pixelId++);      
       }
     }
-    new G4PVPlacement(0,G4ThreeVector(fPrizm[2]/2.-fPrizm[3]/2.,0,fBar[2]/2.+fPrizm[1]+fMcpActive[2]/2.+fLens[2]),lMcp,"wMcp", lDirc,false,1);
+    new G4PVPlacement(fdRot,G4ThreeVector(fPrizm[2]/2.-fPrizm[3]/2.,0,fBar[2]/2.+fPrizm[1]+fMcpActive[2]/2.+fLens[2]),lMcp,"wMcp", lDirc,false,1);
   }
   
   if(fMcpLayout==4){
@@ -712,7 +745,9 @@ void PrtDetectorConstruction::SetVisualization(){
   //waPrizm->SetForceAuxEdgeVisible(true);
   //waPrizm->SetForceSolid(true);
   lPrizm->SetVisAttributes(waPrizm);
-
+  lPrizmT1->SetVisAttributes(waPrizm);
+  lPrizmT2->SetVisAttributes(waPrizm);
+ 
   //G4VisAttributes *waMcp = new G4VisAttributes(G4Colour(0.1,0.1,0.9,0.3));
   G4VisAttributes *waMcp = new G4VisAttributes(G4Colour(1.0,0.,0.1,0.7));
   //  waMcp->SetForceWireframe(true);
@@ -731,7 +766,12 @@ void PrtDetectorConstruction::ConstructSDandField(){
   PrtPixelSD* pixelSD = new PrtPixelSD("PixelSD", "PixelHitsCollection", 0);
   SetSensitiveDetector("lPixel",pixelSD);
   PrtPrizmSD* prizmSD = new PrtPrizmSD("PrizmSD", "PrizmHitsCollection", 0);
-  SetSensitiveDetector("lPrizm",prizmSD);
+
+  if(PrtManager::Instance()->GetEvType() == 0 ){
+    SetSensitiveDetector("lPrizm",prizmSD);
+  }else{
+    SetSensitiveDetector("lPrizmT1",prizmSD);
+  }
   // Magnetic field
 }
 
