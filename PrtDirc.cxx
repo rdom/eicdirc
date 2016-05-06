@@ -51,9 +51,9 @@ int main(int argc,char** argv)
   TApplication theApp("App", 0, 0);
   
   G4String macro, events, geometry,evType, radiator, physlist, outfile, 
-    session,geomAng,batchmode,lensId,particle,momentum("1 GeV"),testVal,displayOpt,
+    session,geomAng,batchmode,lensId,particle("proton"),momentum("3.5 GeV"),testVal,displayOpt,
     beamDimension, mcpLayout, infile = "hits.root", lutfile = "../data/lut.root";
-  G4int runtype(0), verbose(0);
+  G4int firstevent(0), runtype(0), verbose(0);
 
   G4long myseed = 345354;
   for ( G4int i=1; i<argc; i=i+2 ) {
@@ -64,10 +64,10 @@ int main(int argc,char** argv)
     else if ( G4String(argv[i]) == "-i" ) infile    = argv[i+1];
     else if ( G4String(argv[i]) == "-u" ) lutfile   = argv[i+1];
     else if ( G4String(argv[i]) == "-g" ) geometry  = argv[i+1];
-    else if ( G4String(argv[i]) == "-f" ) evType = argv[i+1];
     else if ( G4String(argv[i]) == "-h" ) radiator  = argv[i+1];
     else if ( G4String(argv[i]) == "-a" ) geomAng   = argv[i+1];
     else if ( G4String(argv[i]) == "-b" ) batchmode = argv[i+1];
+    else if ( G4String(argv[i]) == "-f" ) firstevent= atoi(argv[i+1]);
     else if ( G4String(argv[i]) == "-e" ) events    = argv[i+1];
     else if ( G4String(argv[i]) == "-l" ) lensId    = argv[i+1];
     else if ( G4String(argv[i]) == "-x" ) particle  = argv[i+1];
@@ -85,12 +85,12 @@ int main(int argc,char** argv)
     }
   }
 
-  if(outfile=="" && runtype == 0) outfile = "hits.root"; // simulation
+  if(outfile=="" && (runtype == 0 || runtype == 10)) outfile = "hits.root"; // simulation
   if(outfile=="" && (runtype == 1 || runtype == 5)) outfile = "../data/lut.root"; // lookup table generation
-  if(outfile=="" && runtype == 2) outfile = "reco.root"; // reconstruction
+  if(outfile=="" && (runtype == 2 || runtype==3 || runtype==4)) outfile = "reco.root"; // reconstruction
 
   if(batchmode.size()) gROOT->SetBatch(kTRUE);
-  if(!events.size()) events = "1";
+  if(!events.size()) events = "0";
   PrtManager::Instance(outfile,runtype);
 
   if(physlist.size()) PrtManager::Instance()->SetPhysList(atoi(physlist));
@@ -105,9 +105,9 @@ int main(int argc,char** argv)
   if(testVal.size())   PrtManager::Instance()->SetTest(atof(testVal));
   if(geomAng.size())   PrtManager::Instance()->SetAngle(atof(geomAng));
 
-  if(runtype == 2){
-    PrtLutReco * reco = new PrtLutReco(infile,lutfile,verbose); 
-    reco->Run(0);
+  if(runtype == 2 || runtype==3 || runtype==4){
+    PrtLutReco * reco = new PrtLutReco(infile,lutfile,verbose);
+    reco->Run(firstevent, atoi(events));
     return 0;
   }
 
@@ -138,39 +138,42 @@ int main(int argc,char** argv)
   G4UImanager* UImanager = G4UImanager::GetUIpointer(); 
    
   if ( macro.size() ) {
-    G4String command = "/control/execute ";
-    UImanager->ApplyCommand(command+macro);
+    UImanager->ApplyCommand("/control/execute "+macro);
   } else { 
     //UImanager->ApplyCommand("/control/execute ../prt.mac");
   }
   
   if ( geomAng.size() ) {
-    G4String command = "/Prt/geom/prtRotation ";
-    UImanager->ApplyCommand(command+geomAng);
+    UImanager->ApplyCommand("/Prt/geom/prtRotation "+geomAng);
   }
 
   if ( lensId.size() ) {
-    G4String command = "/Prt/geom/lensId ";
-    UImanager->ApplyCommand(command+lensId);
+    UImanager->ApplyCommand("/Prt/geom/lensId "+lensId);
   }
  
-  if ( particle.size() ) {
-    G4String command = "/gun/particle ";
-    UImanager->ApplyCommand(command+particle);
-    int pdgid = 0;
-    if(particle=="proton") pdgid = 2212;
-    if(particle=="pi+") pdgid = 211;
-    if(particle=="pi0") pdgid = 111;
-    if(particle=="kaon+") pdgid = 321;
-    if(particle=="mu-") pdgid = 13;
-    if(particle=="e-") pdgid = 11;
-
-    PrtManager::Instance()->SetParticle(pdgid);
-  }
-
-  if(momentum.size()) UImanager->ApplyCommand( "/gun/momentumAmp "+momentum);
+  int pdgid = 2212;
+  if(particle=="proton") pdgid = 2212;
+  if(particle=="pi+") pdgid = 211;
+  if(particle=="pi0") pdgid = 111;
+  if(particle=="kaon+") pdgid = 321;
+  if(particle=="mu-") pdgid = 13;
+  if(particle=="e-") pdgid = 11;
+  PrtManager::Instance()->SetParticle(pdgid);
+  UImanager->ApplyCommand("/gun/particle "+particle);
+  UImanager->ApplyCommand("/gun/momentumAmp "+momentum);
 
   if(batchmode.size()){ // batch mode
+    if(runtype==10){
+      PrtManager::Instance()->SetParticle(211);
+      UImanager->ApplyCommand("/gun/particle pi+");
+      UImanager->ApplyCommand("/gun/momentumAmp "+momentum);
+      UImanager->ApplyCommand("/run/beamOn "+events);
+
+      PrtManager::Instance()->SetParticle(321);
+      UImanager->ApplyCommand("/gun/particle kaon+");
+      UImanager->ApplyCommand("/gun/momentumAmp "+momentum);
+    }
+    
     UImanager->ApplyCommand("/run/beamOn "+events);
   }else{  // UI session for interactive mode
 
@@ -181,7 +184,6 @@ int main(int argc,char** argv)
 #endif
     if (ui->IsGUI()) UImanager->ApplyCommand("/control/execute gui.mac");
     UImanager->ApplyCommand("/run/beamOn "+events);
-    //UImanager->ApplyCommand("/vis/ogl/printEPS");
     ui->SessionStart();
     delete ui;
 #endif

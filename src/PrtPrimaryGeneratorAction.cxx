@@ -49,7 +49,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   G4double radiatorH = PrtManager::Instance()->GetRadiatorH();
 
   PrtManager::Instance()->AddEvent(PrtEvent());
-  if(PrtManager::Instance()->GetRunType() == 0){ // simulation
+  if(PrtManager::Instance()->GetRunType() == 0 || PrtManager::Instance()->GetRunType() == 10){ // simulation
     G4ThreeVector vec(0,0,1);
     //G4int id = anEvent->GetEventID()%5;
     // if(id==0)  vec.setTheta(M_PI-110*deg);

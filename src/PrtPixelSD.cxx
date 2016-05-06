@@ -159,8 +159,8 @@ G4bool PrtPixelSD::ProcessHits(G4Step* step, G4TouchableHistory* hist){
 void PrtPixelSD::EndOfEvent(G4HCofThisEvent*)
 { 
   G4int eventNumber = G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID();
-  if(eventNumber%1==0 && PrtManager::Instance()->GetRunType()==0) std::cout<<"Event # "<<eventNumber <<std::endl;
-  if(eventNumber%1000==0 && PrtManager::Instance()->GetRunType()!=0) std::cout<<"Event # "<<eventNumber <<std::endl;
+  if(eventNumber%1==0 && (PrtManager::Instance()->GetRunType()==0 || PrtManager::Instance()->GetRunType()==10)) std::cout<<"Event # "<<eventNumber <<std::endl;
+  if(eventNumber%1000==0 && PrtManager::Instance()->GetRunType()!=0  && PrtManager::Instance()->GetRunType()!=10) std::cout<<"Event # "<<eventNumber <<std::endl;
   PrtManager::Instance()->Fill();
   
 }

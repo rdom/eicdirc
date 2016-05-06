@@ -54,11 +54,14 @@ private:
   // Verbosity level
   Int_t fVerbose;
   Int_t nevents;
+  Int_t fMethod;
   TString fInputFile;
   TH1F *fHist;
   TF1 *fFit;
   TSpectrum *fSpect;
-
+  Double_t fAngle[5];
+  TF1 *fFunc[5];
+  TH1F *fLnDiff[5];
 };
 
 #endif

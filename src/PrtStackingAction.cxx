@@ -57,7 +57,7 @@ G4ClassificationOfNewTrack PrtStackingAction::ClassifyNewTrack(const G4Track * a
   
 
   
-  if(PrtManager::Instance()->GetRunType() == 0){ // for the simulation run
+  if(PrtManager::Instance()->GetRunType() == 0 || PrtManager::Instance()->GetRunType() == 10){ // for the simulation run
 
     if(aTrack->GetDefinition()->GetParticleName()=="opticalphoton" 
        && aTrack->GetParentID()!=1)  return fKill;
@@ -87,7 +87,7 @@ void PrtStackingAction::NewStage()
 {
   // G4cout << "Number of Scintillation photons produced in this event : "
   //        << fScintillationCounter << G4endl;
-  if(PrtManager::Instance()->GetRunType() == 0)
+  if(PrtManager::Instance()->GetRunType() == 0 || PrtManager::Instance()->GetRunType() == 10)
     G4cout << "Number of Cerenkov photons produced in this event : "
 	   << fCerenkovCounter << G4endl;
 }

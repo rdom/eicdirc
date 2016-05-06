@@ -15,7 +15,11 @@ example:
                 0    simulation
                 1    look-up table generation
                 2    reconstruction
+                3    likelihood calculation for geometrical reconstruction
+                4    likelihood calculation for time imaging
                 5    calibration
+                10   simulation of pions and kaons for 3,4
+
 
 -g    geometry configuration
                 0    whole DIRC

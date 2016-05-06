@@ -13,6 +13,7 @@ show_help(){
         0 - run sim + reco
         1 - run lut
         2 - run only reco
+        10 - run sim 2 part
      -j
         number of threads 
      -q 
@@ -105,6 +106,25 @@ waitForMe (){
     done
 }  
 
+if [ ${run} == "10" ]; then
+    mkdir -p hdata
+    start_time=$(date +%s)
+    statusline="GSim"
+    for i in $(eval echo {30..150..${astep}}); do 
+	../build/eicdirc -r $tseed$i -o hdata/h1_b$i.root -s 0 -a $i -x "pi+" -e $nevents  $simopt -v $verbose -b 1  > /dev/null  &
+	waitForMe $threads
+    done
+    waitForMe "1"
+    for i in $(eval echo {30..150..${astep}}); do 
+	../build/eicdirc -r $tseed$i -o hdata/h2_b$i.root -s 0 -a $i -x "kaon+" -e $nevents  $simopt -v $verbose -b 1  > /dev/null  &
+	waitForMe $threads
+    done
+    waitForMe "1"
+
+    printf "\r$statusline [-] done [$(($(date +%s) - start_time)) s]     \n"
+    exit
+fi
+
 
 if [ ${run} != "2" ]; then
     mkdir -p hdata
@@ -117,6 +137,7 @@ if [ ${run} != "2" ]; then
     waitForMe "1"
     printf "\r$statusline [-] done [$(($(date +%s) - start_time)) s]     \n"
 fi
+
 
 
 start_time=$(date +%s)
