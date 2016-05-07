@@ -8,7 +8,6 @@
 #define PrtEvent_h 1
 
 #include "TObject.h"
-#include "TClonesArray.h"
 #include "TString.h"
 
 #include <vector>
@@ -19,6 +18,7 @@ class PrtEvent: public TObject  {
 public:
 
   PrtEvent(); 	//the default constructor
+  ~PrtEvent(){}; 
 
   void AddHit(PrtHit hit);
   PrtHit GetHit(Int_t ind) { return fHitArray[ind]; }
@@ -30,17 +30,23 @@ public:
   Int_t GetType() const { return fType; }
   Long_t GetTime() const { return fTime; }
 
-  Double_t GetAngle()         const { return fAngle; }
+  Double_t GetAngle()      const { return fAngle; }
   Int_t GetPhysList()      const { return fPhysList; }
   Int_t GetParticle()      const { return fParticle; }
-  TVector3 GetMomentum()      const { return fMomentum; }
-  TVector3 GetPosition()      const { return fPosition; }
+  TVector3 GetMomentum()   const { return fMomentum; }
+  TVector3 GetPosition()   const { return fPosition; }
   Int_t GetHitSize()       const { return fHitSize; }
   Int_t GetGeometry()      const { return fGeometry; }
-  Int_t GetEvType()      const { return fEvType; }
-  Int_t GetLens()      const { return fLens; }
-  Int_t GetTrigger()      const { return fTrigger; }
-  Double_t GetTest()      const { return fTest; }
+  Int_t GetLens()          const { return fLens; }
+  Int_t GetTrigger()       const { return fTrigger; } 
+  Double_t GetTest1()      const { return fTest1; }
+  Double_t GetTest2()      const { return fTest2; }
+  Double_t GetPrismStepX(){ return fPrismStepX; }
+  Double_t GetPrismStepY(){ return fPrismStepY; }
+  Double_t GetBeamX(){ return fBeamX; }
+  Double_t GetBeamZ(){ return fBeamZ; }
+  Double_t GetTimeRes(){ return fTimeRes; }
+  TString  GetInfo() { return fInfo; }
   
   // Mutators
   void SetDecoderId(Int_t val)  { fDecoderId=val; }
@@ -54,10 +60,16 @@ public:
   void SetMomentum(TVector3 val) { fMomentum = val; }
   void SetPosition(TVector3 val) { fPosition = val; }
   void SetGeometry(Int_t val) { fGeometry = val; }
-  void SetEvType(Int_t val) { fEvType = val; }
   void SetLens(Int_t val) { fLens = val; }
   void SetTrigger(Int_t val) { fTrigger = val; }
-  void SetTest(Double_t val) { fTest = val; }
+  void SetTest1(Double_t val) { fTest1 = val; }
+  void SetTest2(Double_t val) { fTest2 = val; }
+  void SetPrismStepX(Double_t val){ fPrismStepX = val; }
+  void SetPrismStepY(Double_t val){ fPrismStepY = val; }
+  void SetBeamX(Double_t val){ fBeamX = val; }
+  void SetBeamZ(Double_t val){ fBeamZ = val; }
+  void SetTimeRes(Double_t val){ fTimeRes = val; }
+  void SetInfo(TString val){ fInfo = val; }
 
 private: 
   Int_t fDecoderId;
@@ -75,11 +87,17 @@ private:
   TVector3 fMomentum;
   TVector3 fPosition;
   Int_t fGeometry;
-  Int_t fEvType;
   Int_t fLens;
   Int_t fTrigger; 
-  Double_t fTest;
-
-  ClassDef(PrtEvent, 1);
+  Double_t fTest1;
+  Double_t fTest2;
+  Double_t fPrismStepX;
+  Double_t fPrismStepY;
+  Double_t fBeamX;
+  Double_t fBeamZ;
+  Double_t fTimeRes;
+  TString  fInfo;
+  
+  ClassDef(PrtEvent, 4);
 };
 #endif

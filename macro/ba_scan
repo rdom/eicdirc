@@ -77,10 +77,14 @@ shift $((OPTIND-1))
 tseed=$(($(date +%s%N)/1000000-1393400000000))
 printf "====== Run EICDIRC with $tseed seed base ======\n"
 
-simopt="-p 6 -w 0 -g 1 -h 11 -c 3 -l 3"
+simopt="-p 6 -w 0 -g 1 -h 11 -c 3 -l 3 -d 0 -b 1"
 
 if [ ${run} == "1" ]; then
-    ../build/eicdirc -s 1 -x "opticalphoton" -p "3.18 eV" -w 0 -g 1 -h 11 -e 500000 -c 3 -l 3 -d 0 -b 1
+    seq 0 9 | xargs -I{} -n1 -P10 ../build/eicdirc -o ../data/l_b{}.root -s 1 -r {}{} ${simopt} -x "opticalphoton" -p "3.18 eV"  -e 1000000
+    sleep 5
+    hadd -f ../data/lut.root ../data/l_b*.root
+    sleep 5
+    root -q -b loadlib.C lutmean.C'("../data/lut")' 
     exit
 fi
 

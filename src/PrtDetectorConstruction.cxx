@@ -181,10 +181,9 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   
     r1 = (r1==0)? 47.8: r1;
     r2 = (r2==0)? 29.1: r2;
-    // r1=69;
-    // r2=31;
-    // r1=60;
-    // r2=35;
+    r1=80;
+    r2=35;
+
     G4double shight = 40;
     G4double bwidth = fLens[2]-lensMinThikness*2;
 
@@ -337,7 +336,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     lMcp = new G4LogicalVolume(gMcp,BarMaterial,"lMcp",0,0,0);
   
 
-    G4double pixSize = 2*mm;
+    G4double pixSize = 3*mm;
     //pixSize = PrtManager::Instance()->GetTest()*mm;
     
     fNpix1 = fPrizm[2]/pixSize-1;
@@ -835,7 +834,7 @@ void PrtDetectorConstruction::DrawHitBox(int id){
     for(Int_t h=0; h<event->GetHitSize(); h++){
       hit = event->GetHit(h);
       pix=hit.GetPixelId();
-      prizm=hit.GetPrizmId();
+      prizm=0;//hit.GetPrizmId();
       if(prizm<0) continue;
       load[prizm][pix]++;
     }

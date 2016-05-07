@@ -92,7 +92,7 @@ void lutmean(TString baseFile = "../data/lut")
       // hDir->Reset();
       // hTime->Reset();
 
-      if(vArray[j].size()<5) continue;
+      //if(vArray[j].size()<5) continue;
       sum *= 1/(Double_t)vArray[j].size();
       sumt *= 1./(Double_t)tArray[j].size();
       

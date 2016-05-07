@@ -60,7 +60,7 @@ public:
   void SetCurrentCherenkov(double val){ fCurrentCherenkov = val; }
   void SetShift(double val){ fShift = val; }
   void SetDisplayOpt(int val){ fDispalyOpt = val; }
-  void SetTest(double val){ fTest = val; }
+  void SetTimeRes(double val){ fTimeRes = val; }
 
   // Accessors
   int GetRunType(){ return fRunType; }
@@ -80,7 +80,7 @@ public:
   double GetCurrentCherenkov(){ return fCurrentCherenkov; }
   double GetShift(){ return fShift; }
   int GetDisplayOpt(){ return fDispalyOpt; }
-  double GetTest(){ return fTest; }
+  double GetTimeRes(){ return fTimeRes; }
   TTree *GetTree(){ return fTree; }
   TString GetOutName(){return fOutName;}
   
@@ -104,7 +104,7 @@ private:
   double fCurrentCherenkov;
   double fShift;
   int fDispalyOpt;
-  double fTest;
+  double fTimeRes;
   TString fOutName;
 };
 

@@ -96,8 +96,6 @@ G4bool PrtPixelSD::ProcessHits(G4Step* step, G4TouchableHistory* hist){
   const G4Event* currentEvent = fRM->GetCurrentEvent();
   G4HCofThisEvent* HCofEvent = currentEvent->GetHCofThisEvent();
   PrtPrizmHitsCollection* prizmCol = (PrtPrizmHitsCollection*)(HCofEvent->GetHC(collectionID));
-
-
  
   Double_t pathId = 0;
   Int_t refl=-1;
@@ -111,10 +109,8 @@ G4bool PrtPixelSD::ProcessHits(G4Step* step, G4TouchableHistory* hist){
     }
   }
  
-  //std::cout<<"Number of reflections: "<<refl <<std::endl;
-
   PrtHit hit;
-  hit.SetPrizmId(prizmId);
+  //hit.SetPrizmId(prizmId);
   hit.SetMcpId(touchable->GetReplicaNumber(1));
   hit.SetPixelId(touchable->GetReplicaNumber(0));
   hit.SetGlobalPos(globalPos);
