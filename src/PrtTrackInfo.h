@@ -40,7 +40,7 @@ public:
   void SetMomentum(TVector3 val)        {fMomentum = val;}
   void SetCherenkov(Double_t val)       {fCherenkov = val;}
   void SetAngle(Double_t val)           {fAngle = val;}
-  TString  SetInfo(TString val)	        {fInfo = val;}
+  void  SetInfo(TString val)	        {fInfo = val;}
 
   void AddPhoton(PrtPhotonInfo photon);
   void AddInfo(TString val)	        {fInfo += val;}
