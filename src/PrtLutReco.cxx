@@ -350,8 +350,7 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
   if(fHist->GetEntries()>20 ){
      gROOT->SetBatch(1);
     Int_t nfound = fSpect->Search(fHist,1,"",0.9); //0.6
-    Float_t *xpeaks = fSpect->GetPositionX();
-    if(nfound>0) cherenkovreco = xpeaks[0];
+    if(nfound>0) cherenkovreco = fSpect->GetPositionX()[0];
     else cherenkovreco =  fHist->GetXaxis()->GetBinCenter(fHist->GetMaximumBin());
 
     fFit->SetParameters(100,cherenkovreco,0.005,10);   // peak
