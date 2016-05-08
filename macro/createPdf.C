@@ -88,7 +88,7 @@ void createPdf(TString path="../build/hits.root"){//beam_15177135523S.root
     path.ReplaceAll(".root",".pdf.root");
     TFile efile(path,"RECREATE");
     
-    for(Int_t i=0; i<nph; i++){
+    for(Int_t i=0; i<nch; i++){
       hlef[i]->Scale(1/(Double_t)totalf);
       hles[i]->Scale(1/(Double_t)totals);
       
