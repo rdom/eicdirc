@@ -50,8 +50,8 @@ void createPdf(TString path="../build/hits.root"){//beam_15177135523S.root
   TH1F *hlef[nch], *hles[nch];
 
   for(Int_t i=0; i<nch; i++){
-    hlef[i] = new TH1F(Form("lef_%d",i),"pdf;LE time [ns]; entries [#]", 1000,0,100);
-    hles[i] = new TH1F(Form("les_%d",i),"pdf;LE time [ns]; entries [#]", 1000,0,100);
+    hlef[i] = new TH1F(Form("lef_%d",i),"pdf;LE time [ns]; entries [#]", 2000,0,100);
+    hles[i] = new TH1F(Form("les_%d",i),"pdf;LE time [ns]; entries [#]", 2000,0,100);
   }
   
   Double_t time;
