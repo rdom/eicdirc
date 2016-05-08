@@ -68,11 +68,11 @@ void createPdf(TString path="../build/hits.root"){//beam_15177135523S.root
       ch=fHit.GetPixelId();      
       time = fHit.GetLeadTime(); //+gRandom->Gaus(0,0.3);
        
-      if(prt_event->GetParticle()==2212){
+      if(prt_event->GetParticle()==321){
 	//totalf++;
 	hlef[ch]->Fill(time);
       }
-      if(prt_event->GetParticle()==211 || prt_event->GetParticle()==212){
+      if(prt_event->GetParticle()==211){
 	//totals++;
 	hles[ch]->Fill(time);
       }
