@@ -125,7 +125,9 @@ G4bool PrtPixelSD::ProcessHits(G4Step* step, G4TouchableHistory* hist){
   hit.SetCherenkovMC(PrtManager::Instance()->GetCurrentCherenkov());
   // time since track created
   hit.SetLeadTime(step->GetPreStepPoint()->GetLocalTime());
-  hit.SetTotTime(1);
+  Double_t wavelength = 1.2398/(track->GetMomentum().mag()*1E6)*1000;
+  hit.SetTotTime(wavelength); //set photon wavelength
+
   // time since event created
   //hit.SetTrailTime(0,step->GetPreStepPoint()->GetGlobalTime()*1000); 
  
