@@ -367,25 +367,20 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
     
     Bool_t storePics(false);
     if(fVerbose>1){
-      TCanvas* c = new TCanvas("c","c",0,0,800,500);
+      canvasAdd(Form("tdiff_%d.png",a),800,400);
+      fHistDiff->GetXaxis()->SetTitle("calculated time - measured time [ns]");
+      fHistDiff->GetYaxis()->SetTitle("entries [ns]");
+      fHistDiff->SetTitle(Form("theta %d", a));
+      fHistDiff->Draw();
+      
+      canvasAdd(Form("tangle_%d.png",a),800,400);
       fHist->GetXaxis()->SetTitle("#theta_{C} [rad]");
       fHist->GetYaxis()->SetTitle("Entries [#]");
       fHist->SetTitle(Form("theta %d", a));
       fHist->Draw();
 
-      
-      canvasAdd("hTimeDiff",800,400);
-      fHistDiff->GetXaxis()->SetTitle("calculated time - measured time [ns]");
-      fHistDiff->GetYaxis()->SetTitle("entries [ns]");
-      fHistDiff->SetTitle(Form("theta %d", a));
-      fHistDiff->Draw();
       canvasSave(1,0);
-
-      c->Modified();
-      c->Update();
-      c->Print(Form("spr/tangle_%d.png", a));
-      c->WaitPrimitive();
-
+      
       if(fVerbose==3){
 	TCanvas* c2 = new TCanvas("c2","c2",0,0,800,500);
 	// c2->Divide(2,1);
