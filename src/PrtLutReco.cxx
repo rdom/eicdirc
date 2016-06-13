@@ -366,7 +366,7 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
     if(fVerbose>1) gROOT->SetBatch(0);
     
     Bool_t storePics(false);
-    if(storePics){
+    if(fVerbose>1){
       TCanvas* c = new TCanvas("c","c",0,0,800,500);
       fHist->GetXaxis()->SetTitle("#theta_{C} [rad]");
       fHist->GetYaxis()->SetTitle("Entries [#]");
