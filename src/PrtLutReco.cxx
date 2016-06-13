@@ -211,7 +211,7 @@ void PrtLutReco::Run(Int_t start, Int_t end){
 	  tangle = rotatedmom.Angle(dir);
 	  //if(  tangle>TMath::Pi()/2.) tangle = TMath::Pi()-tangle;
 
-	  if(tangle < 0.6 ||  tangle > 0.9) continue; 
+	  // if(tangle < 0.6 ||  tangle > 0.9) continue; 
 	  PrtAmbiguityInfo ambinfo;
 	  ambinfo.SetBarTime(bartime);
 	  ambinfo.SetEvTime(evtime);
