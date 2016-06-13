@@ -210,7 +210,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     G4SubtractionSolid*  gLens3 = new G4SubtractionSolid("Lens3", gLenst, gsphere2,new G4RotationMatrix(),zTrans2);
     
     lLens1 = new G4LogicalVolume(gLens1,BarMaterial,"lLens1",0,0,0);
-    lLens2 = new G4LogicalVolume(gLens2,Nlak33aMaterial,"lLens2",0,0,0);
+    lLens2 = new G4LogicalVolume(gLens2,PbF2Material,"lLens2",0,0,0); //Nlak33aMaterial
     lLens3 = new G4LogicalVolume(gLens3,BarMaterial,"lLens3",0,0,0);
   }
   
@@ -546,6 +546,10 @@ void PrtDetectorConstruction::DefineMaterials(){
   Nlak33aMaterial->AddElement(Si, natoms=1);
   Nlak33aMaterial->AddElement(O , natoms=2);
 
+  PbF2Material  = new G4Material("PbF2",density= 4.220*g/cm3, ncomponents=2);
+  PbF2Material->AddElement(Si, natoms=1);
+  PbF2Material->AddElement(O , natoms=2);
+
   G4Material* Vacuum = new G4Material("interGalactic", 1., 1.008*g/mole, 
 				      1.e-25*g/cm3, kStateGas, 
 				      2.73*kelvin, 3.e-18*pascal);
@@ -597,7 +601,14 @@ void PrtDetectorConstruction::DefineMaterials(){
   // refractive or absoprtion values
 
   G4double PhotonEnergyNlak33a[76] = {1,1.2511,1.26386,1.27687,1.29016,1.30372,1.31758,1.33173,1.34619,1.36097,1.37607,1.39152,1.40731,1.42347,1.44,1.45692,1.47425,1.49199,1.51016,1.52878,1.54787,1.56744,1.58751,1.6081,1.62923,1.65092,1.6732,1.69609,1.71961,1.7438,1.76868,1.79427,1.82062,1.84775,1.87571,1.90452,1.93423,1.96488,1.99652,2.0292,2.06296,2.09787,2.13398,2.17135,2.21006,2.25017,2.29176,2.33492,2.37973,2.42631,2.47473,2.52514,2.57763,2.63236,2.68946,2.7491,2.81143,2.87666,2.94499,3.01665,3.09187,3.17095,3.25418,3.34189,3.43446,3.53231,3.6359,3.74575,3.86244,3.98663,4.11908,4.26062,4.41225,4.57506,4.75035,4.93961};
+  
+  G4int n_PbF2=56;
+  G4double en_PbF2[] = {1.55 ,1.569,1.59 ,1.61 ,1.631,1.653,1.675,1.698,1.722,1.746,1.771,1.797,1.823,1.851,1.879,1.907,1.937,1.968,2    ,2.033,2.066,2.101,2.138,2.175,2.214,2.254,2.296,2.339,2.384,2.431,2.48 ,2.53 ,2.583,2.638,2.695,2.755,2.818,2.883,2.952,3.024,3.1  ,3.179,3.263,3.351,3.444,3.542,3.647,3.757,3.875,3.999,4.133,4.275,4.428,4.592,4.769,4.959};
 
+  G4double ab_PbF2[]= {407  ,403.3,379.1,406.3,409.7,408.9,406.7,404.7,391.7,397.7,409.6,403.7,403.8,409.7,404.9,404.2,407.1,411.1,403.1,406.1,415.4,399.1,405.8,408.2,385.7,405.6,405.2,401.6,402.6,407.1,417.7,401.1,389.9,411.9,400.9,398.3,402.1,408.7,384.8,415.8,413.1,385.7,353.7,319.1,293.6,261.9,233.6,204.4,178.3,147.6,118.2,78.7 ,51.6 ,41.5 ,24.3 ,8.8};
+  
+  G4double ref_PbF2[]= {1.749,1.749,1.75 ,1.75 ,1.751,1.752,1.752,1.753,1.754,1.754,1.755,1.756,1.757,1.757,1.758,1.759,1.76 ,1.761,1.762,1.764,1.765,1.766,1.768,1.769,1.771,1.772,1.774,1.776,1.778,1.78 ,1.782,1.785,1.787,1.79 ,1.793,1.796,1.8  ,1.804,1.808,1.813,1.818,1.824,1.83 ,1.837,1.845,1.854,1.865,1.877,1.892,1.91 ,1.937,1.991,1.38 ,1.915,1.971,2.019};
+  
   /*************************** ABSORPTION COEFFICIENTS *****************************/
 
   // absorption of KamLandOil per 50 cm - from jjv
@@ -708,7 +719,13 @@ void PrtDetectorConstruction::DefineMaterials(){
   G4MaterialPropertiesTable* Nlak33aMPT = new G4MaterialPropertiesTable();
   Nlak33aMPT->AddProperty("RINDEX", PhotonEnergyNlak33a, Nlak33aRefractiveIndex, 76);
   Nlak33aMPT->AddProperty("ABSLENGTH",PhotonEnergyNlak33a, Nlak33aAbsorption, 76);
-  Nlak33aMaterial->SetMaterialPropertiesTable(Nlak33aMPT);  
+  Nlak33aMaterial->SetMaterialPropertiesTable(Nlak33aMPT);
+
+  // PbF2
+  G4MaterialPropertiesTable* PbF2MPT = new G4MaterialPropertiesTable();
+  PbF2MPT->AddProperty("RINDEX", en_PbF2, ref_PbF2, n_PbF2);
+  PbF2MPT->AddProperty("ABSLENGTH",en_PbF2, ab_PbF2, n_PbF2);
+  PbF2Material->SetMaterialPropertiesTable(PbF2MPT);
 
   // Epotek Glue                                        
   G4MaterialPropertiesTable* EpotekMPT = new G4MaterialPropertiesTable();
