@@ -793,7 +793,8 @@ void PrtDetectorConstruction::SetVisualization(){
 
   G4VisAttributes *waPixel = new G4VisAttributes(G4Colour(1.0,0.0,0.1,0.3));
   //waPixel->SetForceWireframe(true);
-  waPixel->SetVisibility(true);
+  if(fMcpLayout==3) waPixel->SetVisibility(false);
+  else waPixel->SetVisibility(true);
   lPixel->SetVisAttributes(waPixel);
 
 }
