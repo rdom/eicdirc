@@ -303,7 +303,7 @@ void PrtLutReco::Run(Int_t start, Int_t end){
     trr = spr/sqrt(nph);
     theta = fEvent->GetAngle();
     par3 = fEvent->GetTest2();
-    if(fVerbose) std::cout<<Form("SPR=%2.2F N=%2.2f",spr,nph)<<std::endl; 
+    std::cout<<Form("SPR=%2.2F N=%2.2f",spr,nph)<<std::endl; 
   }else{
     //if(!fVerbose) gROOT->SetBatch(1);
     canvasAdd("r_lhood",800,400);
@@ -363,7 +363,7 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
     fHist->Fit("fgaus","M","",cherenkovreco-0.07,cherenkovreco+0.07);
     cherenkovreco = fFit->GetParameter(1);
     spr = fFit->GetParameter(2); 
-    if(fVerbose>1) gROOT->SetBatch(0);
+    if(fVerbose>2) gROOT->SetBatch(0);
     
     Bool_t storePics(false);
     if(fVerbose>1){
