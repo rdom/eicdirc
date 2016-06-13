@@ -147,7 +147,7 @@ fi
 start_time=$(date +%s)
 statusline="Reco"
 for i in $(eval echo {30..150..$astep}); do
-	../build/eicdirc -i hdata/h_b$i.root -o r_b${tseed}_$i.root -s 2 -t $test1 -v $verbose > /dev/null 2> /dev/null &
+	../build/eicdirc -i hdata/h_b$i.root -o r_b${tseed}_$i.root -s 2 -tr $test1 -v $verbose > /dev/null 2> /dev/null &
 	waitForMe $threads
 done
 

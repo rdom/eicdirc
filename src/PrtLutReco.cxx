@@ -126,7 +126,7 @@ void PrtLutReco::Run(Int_t start, Int_t end){
     mom=fEvent->GetMomentum().Mag()/1000.;    
     tofPid = fEvent->GetParticle();
 
-    if(fMethod==2 && tofPid!=321) continue;
+    if(fMethod==2 && tofPid!=211) continue;
     
     std::cout<<"Event # "<< ievent << " has "<< nHits <<" hits"<<std::endl;
     PrtTrackInfo trackinfo;
