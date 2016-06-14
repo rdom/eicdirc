@@ -259,7 +259,8 @@ void PrtLutReco::Run(Int_t start, Int_t end){
 
     if(fVerbose==1){
       FindPeak(cangle,spr,fEvent->GetAngle()+0.01);
-      nph = nsHits/(Double_t)nsEvents;
+      nph = nsHits;
+      nsHits=0;
       spr = spr*1000;
       trr = spr/sqrt(nph);
       theta = fEvent->GetAngle();
