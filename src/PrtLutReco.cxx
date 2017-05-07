@@ -59,7 +59,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, Int_t verbose){
   fFit = new TF1("fgaus","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +[3]",0.35,0.9);
   fSpect = new TSpectrum(10);
   fMethod = PrtManager::Instance()->GetRunType();
-  fSavePath="data/reco";
+  prt_savepath="data/reco";
 
   for(Int_t i=0; i<5; i++){
     fLnDiff[i] = new TH1F(Form("LnDiff_%d",i),  ";ln L(K) - ln L(#pi);entries [#]",100,-500,500);
@@ -310,7 +310,7 @@ void PrtLutReco::Run(Int_t start, Int_t end){
     std::cout<<Form("SPR=%2.2F N=%2.2f",spr,nph)<<std::endl; 
   }else{
     //if(!fVerbose) gROOT->SetBatch(1);
-    canvasAdd("r_lhood",800,400);
+    prt_canvasAdd("r_lhood",800,400);
     prt_normalize(fLnDiff[2],fLnDiff[3]);
     fLnDiff[3]->SetLineColor(2);
 
@@ -335,7 +335,7 @@ void PrtLutReco::Run(Int_t start, Int_t end){
     fLnDiff[3]->Draw();
     fLnDiff[2]->SetLineColor(4);
     fLnDiff[2]->Draw("same");
-    canvasSave(1,0);
+    prt_canvasSave(1,0);
     //waitPrimitive("r_lhood","w");
     if(fVerbose) gROOT->SetBatch(0);
   }
@@ -371,19 +371,19 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
     
     Bool_t storePics(false);
     if(fVerbose>1){
-      canvasAdd(Form("tdiff_%d",a),800,400);
+      prt_canvasAdd(Form("tdiff_%d",a),800,400);
       fHistDiff->GetXaxis()->SetTitle("calculated time - measured time [ns]");
       fHistDiff->GetYaxis()->SetTitle("entries [ns]");
       fHistDiff->SetTitle(Form("theta %d", a));
       fHistDiff->Draw();
       
-      canvasAdd(Form("tangle_%d",a),800,400);
+      prt_canvasAdd(Form("tangle_%d",a),800,400);
       fHist->GetXaxis()->SetTitle("#theta_{C} [rad]");
       fHist->GetYaxis()->SetTitle("Entries [#]");
       fHist->SetTitle(Form("theta %d", a));
       fHist->Draw();
 
-      canvasSave(1,0);
+      prt_canvasSave(1,0);
       
       if(fVerbose==3){
 	TCanvas* c2 = new TCanvas("c2","c2",0,0,800,500);

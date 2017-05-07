@@ -45,7 +45,7 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/src/*.h)
 #
 set (CMAKE_CXX_FLAGS "-std=gnu++11")
 add_executable(eicdirc PrtDirc.cxx ${sources} PrtDict.cxx ${headers})
-target_link_libraries(eicdirc -lGLU ${Geant4_LIBRARIES} ${ROOT_LIBRARIES} -lSpectrum)
+target_link_libraries(eicdirc -lGLU ${Geant4_LIBRARIES} ${ROOT_LIBRARIES} -lSpectrum -lHistPainter)
 add_library(prtdirclib SHARED ../src/PrtHit.cxx ../src/PrtEvent.cxx ../src/PrtLutNode.cxx ../src/PrtTrackInfo.cxx  ../src/PrtPhotonInfo.cxx ../src/PrtAmbiguityInfo.cxx PrtDict.cxx ../src/PrtHit.h ../src/PrtEvent.h ../src/PrtLutNode.h ../src/PrtTrackInfo.h  ../src/PrtPhotonInfo.h ../src/PrtAmbiguityInfo.h)
 
 #----------------------------------------------------------------------------

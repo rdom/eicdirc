@@ -105,7 +105,7 @@ int main(int argc,char** argv)
   if(geomAng.size())   PrtManager::Instance()->SetAngle(atof(geomAng));
 
   if(runtype == 2 || runtype==3 || runtype==4){
-    PrtLutReco * reco = new PrtLutReco(infile,lutfile,verbose);
+    PrtLutReco * reco = new PrtLutReco(infile.c_str(),lutfile.c_str(),verbose);
     reco->Run(firstevent, atoi(events));
     return 0;
   }

@@ -1,44 +1,17 @@
-// #include "TROOT.h"
-// #include "TSystem.h"
-// #include "TStyle.h"
-// #include "TCanvas.h"
-// #include "TPad.h"
-// #include "TH1.h"
-// #include "TH2.h"
-// #include "TF1.h"
-// #include "TFile.h"
-// #include "TTree.h"
-// #include "TClonesArray.h"
-// #include "TVector3.h"
-// #include "TMath.h"
-// #include "TChain.h"
-
-// #include <vector>
-// #include <iostream>
-
-// #include "prt/PrtHit.h"
-// #include "prt/PrtEvent.h" 
+#include "../src/PrtHit.h"
+#include "../src/PrtEvent.h" 
 
 #include "../../prttools/prttools.C"
 
-const Int_t nmcp = 15;
+const Int_t nmcp = 150;
 const Int_t nrow = 3;
 const Int_t ncol = 5;
 
 TH2D* hist[nmcp];
 
 void drawMcp(TString path = ".", TString name = ""){
-  fSavePath = "load";
+  prt_savepath = "load";
   
-  const Int_t NRGBs = 5;
-  const Int_t NCont = 255;
-  Double_t stops[NRGBs] = { 0.00, 0.34, 0.61, 0.84, 1.00 };
-  Double_t red[NRGBs]   = { 0.00, 0.00, 0.87, 1.00, 0.51 };
-  Double_t green[NRGBs] = { 0.00, 0.81, 1.00, 0.20, 0.00 };
-  Double_t blue[NRGBs]  = { 0.51, 1.00, 0.12, 0.00, 0.00 };
-  TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
-  gStyle->SetNumberContours(NCont);
-
   //gStyle->SetOptStat(0);
   Int_t referenceTime, referenceChannel;
   TH2F *hist1 = new TH2F("hHist",";y [cm];x [cm]",500,-20,20,500,-2,32 );
@@ -46,7 +19,8 @@ void drawMcp(TString path = ".", TString name = ""){
 
   hist1->SetStats(0);
   hVertex->SetStats(0);
-
+  prt_setRootPalette(1);
+  
   TH1F *hTime  = new TH1F("hTime",";time [ns];entries [#]",500,0,150);
   Int_t angle, startInd = 0;
 
@@ -116,16 +90,16 @@ void drawMcp(TString path = ".", TString name = ""){
  //    hist[i]->SetMaximum(max);
  // }
 
- canvasAdd(Form("loadi_%d",angle),800,500);
+ prt_canvasAdd(Form("loadi_%d",angle),800,500);
  hist1->Draw("colz");
  TGaxis::SetMaxDigits(3);
  gStyle->SetOptStat(111);
 
- canvasAdd(Form("time_%d",angle),800,500);
+ prt_canvasAdd(Form("time_%d",angle),800,500);
  hTime->SetTitle(0);
  hTime->Draw();
 
- canvasSave(1,0); 
+ prt_canvasSave(1,0); 
 }
 
 
