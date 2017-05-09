@@ -60,7 +60,6 @@ set(Prt_SCRIPTS
     icons.mac
     run.png
     vis.mac
-    brun
   )
 
 foreach(_script ${Prt_SCRIPTS})
