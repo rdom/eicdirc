@@ -61,7 +61,9 @@ public:
   void SetShift(double val){ fShift = val; }
   void SetDisplayOpt(int val){ fDispalyOpt = val; }
   void SetTimeRes(double val){ fTimeRes = val; }
-
+  void SetMixPiK(bool val){fMixPiK = val;}
+  
+  
   // Accessors
   int GetRunType(){ return fRunType; }
   int GetPhysList(){ return fPhysList; }
@@ -83,6 +85,8 @@ public:
   double GetTimeRes(){ return fTimeRes; }
   TTree *GetTree(){ return fTree; }
   TString GetOutName(){return fOutName;}
+  bool GetMixPiK(){ return fMixPiK; }
+
   
 private: 
   int fRunType;
@@ -106,6 +110,8 @@ private:
   int fDispalyOpt;
   double fTimeRes;
   TString fOutName;
+  bool fMixPiK;
+  
 };
 
 #endif

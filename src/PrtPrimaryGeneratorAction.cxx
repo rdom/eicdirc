@@ -25,9 +25,10 @@ PrtPrimaryGeneratorAction::PrtPrimaryGeneratorAction()
   //default kinematic
   //
   G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
-  G4ParticleDefinition* particle = particleTable->FindParticle("e+");
+  fParticleK = particleTable->FindParticle("proton");
+  fParticlePi = particleTable->FindParticle("pi+");
 
-  fParticleGun->SetParticleDefinition(particle);
+  fParticleGun->SetParticleDefinition(fParticlePi);
   fParticleGun->SetParticleTime(0.0*ns);
   fParticleGun->SetParticlePosition(G4ThreeVector(0.0*cm,0.0*cm,0.0*cm));
   fParticleGun->SetParticleMomentumDirection(G4ThreeVector(1.,0.,0.));
@@ -48,6 +49,16 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   G4double radiatorW = PrtManager::Instance()->GetRadiatorW();
   G4double radiatorH = PrtManager::Instance()->GetRadiatorH();
 
+  if(PrtManager::Instance()->GetMixPiK()){
+    if(PrtManager::Instance()->GetParticle()==211 || PrtManager::Instance()->GetParticle()==0){
+      fParticleGun->SetParticleDefinition(fParticleK);
+      PrtManager::Instance()->SetParticle(321);
+    }else{
+      fParticleGun->SetParticleDefinition(fParticlePi);
+      PrtManager::Instance()->SetParticle(211);
+    }
+  }
+  
   PrtManager::Instance()->AddEvent(PrtEvent());
   if(PrtManager::Instance()->GetRunType() == 0 || PrtManager::Instance()->GetRunType() == 10){ // simulation
     G4ThreeVector vec(0,0,1);

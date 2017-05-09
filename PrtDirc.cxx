@@ -157,6 +157,8 @@ int main(int argc,char** argv)
   if(particle=="kaon+") pdgid = 321;
   if(particle=="mu-") pdgid = 13;
   if(particle=="e-") pdgid = 11;
+  if(particle=="mix") PrtManager::Instance()->SetMixPiK(true);
+  
   PrtManager::Instance()->SetParticle(pdgid);
   UImanager->ApplyCommand("/gun/particle "+particle);
   UImanager->ApplyCommand("/gun/momentumAmp "+momentum);
