@@ -382,6 +382,12 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     fNpix1 = 32;//fMcpActive[1]/pixSize-1;
     fNpix2 = 32;// fMcpActive[1]/pixSize-1;
 
+    fNpix1 = 17;
+    fNpix2 = 17;
+
+    std::cout<<"fNpix1="<<fNpix1 << " fNpix1="<<fNpix1 <<std::endl;
+    
+    
     // The MCP Pixel
     G4Box* gPixel = new G4Box("gPixel",0.5*fMcpActive[0]/fNpix1,0.5*fMcpActive[1]/fNpix2,fMcpActive[2]/16.);
     lPixel = new G4LogicalVolume(gPixel,BarMaterial,"lPixel",0,0,0);

@@ -14,7 +14,8 @@ void drawMcp(TString path = ".", TString name = ""){
   
   //gStyle->SetOptStat(0);
   Int_t referenceTime, referenceChannel;
-  TH2F *hist1 = new TH2F("hHist",";y [cm];x [cm]",500,-20,20,500,-2,32 );
+  TH2F *hist1 = new TH2F("hHist1",";y [cm];x [cm]",500,-20,20,500,-2,32 );
+  TH2F *hist2 = new TH2F("hHist2",";y [cm];x [cm]",500,-20,20,500,-2,32 );
   TH2F *hVertex = new TH2F("hVertex","",5000,-2,2, 1000,-10,10 );
 
   hist1->SetStats(0);
@@ -22,7 +23,7 @@ void drawMcp(TString path = ".", TString name = ""){
   prt_setRootPalette(1);
   
   TH1F *hTime  = new TH1F("hTime",";time [ns];entries [#]",500,0,150);
-  Int_t angle, startInd = 0;
+  Int_t pdg(0), angle(0), startInd(0);
 
   for(int i=0; i<nmcp;i++){
     hist[i] = new TH2D( Form("mcp - %d", i+startInd),Form("%d", i+startInd),8,0.,8.,8,0.,8.);
@@ -41,20 +42,23 @@ void drawMcp(TString path = ".", TString name = ""){
   PrtEvent* fEvent = 0;
   PrtHit hit;
   TChain *ch = new TChain("data");
-  ch->Add("../build/hits.root");
+  ch->Add("hits.root");
   ch->SetBranchAddress("PrtEvent", &fEvent);
   std::cout<<"ch->GetEntries()  "<< ch->GetEntries()<<std::endl;
  
-  for (Int_t ievent=0; ievent<ch->GetEntries(); ievent++){
+  for (Int_t ievent=0; ievent< ch->GetEntries()
+	 ; ievent++){
     ch->GetEntry(ievent);
     if(ievent%100==0) cout<<"Event # "<<ievent<<endl;
     for(Int_t h=0; h<fEvent->GetHitSize(); h++){
       hit = fEvent->GetHit(h);
+      pdg = fEvent->GetParticle();
       angle =fEvent->GetAngle() + 0.01;
       
       hist[hit.GetMcpId()-startInd]->Fill((hit.GetPixelId()-startInd)/8,
 					  (hit.GetPixelId()-startInd)%8);
-      hist1->Fill(hit.GetGlobalPos().Y()/10.,hit.GetGlobalPos().X()/10.);
+      if(pdg==211) hist1->Fill(hit.GetGlobalPos().Y()/10.,hit.GetGlobalPos().X()/10.);
+      if(pdg==321) hist2->Fill(hit.GetGlobalPos().Y()/10.,hit.GetGlobalPos().X()/10.);
       hTime->Fill(hit.GetLeadTime());
     }
   }  
@@ -91,7 +95,10 @@ void drawMcp(TString path = ".", TString name = ""){
  // }
 
  prt_canvasAdd(Form("loadi_%d",angle),800,500);
- hist1->Draw("colz");
+ hist1->SetMarkerColor(4);
+ hist2->SetMarkerColor(2);
+ hist1->Draw();
+ hist2->Draw("same");
  TGaxis::SetMaxDigits(3);
  gStyle->SetOptStat(111);
 

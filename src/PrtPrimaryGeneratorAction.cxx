@@ -25,7 +25,7 @@ PrtPrimaryGeneratorAction::PrtPrimaryGeneratorAction()
   //default kinematic
   //
   G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
-  fParticleK = particleTable->FindParticle("proton");
+  fParticleK = particleTable->FindParticle("kaon+");
   fParticlePi = particleTable->FindParticle("pi+");
 
   fParticleGun->SetParticleDefinition(fParticlePi);

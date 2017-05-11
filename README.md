@@ -44,11 +44,12 @@ example:
 -e    number of simulated events
 
 -x    particle type
-              "pi+" 
+              "pi+"
               "proton"
               "kaon"
                  ...
-              "opticalphoton"   
+              "opticalphoton"
+              "mix" 
 
 -p    particle momentum [GeV/c]
 

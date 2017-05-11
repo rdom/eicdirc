@@ -51,7 +51,7 @@ int main(int argc,char** argv)
   TApplication theApp("App", 0, 0);
   
   G4String macro, events, geometry,evType, radiator, physlist, outfile, 
-    session,geomAng,batchmode,lensId,particle("proton"),momentum("3.5 GeV"),timeRes,displayOpt,
+    session,geomAng,batchmode,lensId,particle("pi+"),momentum("3.5 GeV"),timeRes,displayOpt,
     beamDimension, mcpLayout, infile = "hits.root", lutfile = "../data/lut_avr.root";
   G4int firstevent(0), runtype(0), verbose(0);
 
@@ -157,7 +157,10 @@ int main(int argc,char** argv)
   if(particle=="kaon+") pdgid = 321;
   if(particle=="mu-") pdgid = 13;
   if(particle=="e-") pdgid = 11;
-  if(particle=="mix") PrtManager::Instance()->SetMixPiK(true);
+  if(particle=="mix"){
+    PrtManager::Instance()->SetMixPiK(true);
+    particle="pi+";
+  }
   
   PrtManager::Instance()->SetParticle(pdgid);
   UImanager->ApplyCommand("/gun/particle "+particle);

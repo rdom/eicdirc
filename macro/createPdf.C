@@ -40,12 +40,9 @@ TF1 * fitpdf(TH1F *h){
   return gaust;
 }
 
-void createPdf(TString path="../build/hits.root"){//beam_15177135523S.root
-  fSavePath = "data/pdf";
-  PrtInit(path,1);
-  gStyle->SetOptStat(0);
-  CreateMap();
-
+void createPdf(TString in="hits.root"){
+  if(!prt_init(in,1,"data/createPdf")) return;
+   
   const Int_t nch(15000);
   TH1F *hlef[nch], *hles[nch];
 
@@ -55,38 +52,34 @@ void createPdf(TString path="../build/hits.root"){//beam_15177135523S.root
   }
   
   Double_t time;
-  PrtHit fHit;
-  Int_t totalf(0),totals(0), ch, entries = fCh->GetEntries();
-  Int_t start = (path.Contains("C.root"))? 10000 : 0; 
-  for (Int_t ievent=start; ievent<entries; ievent++){
-    PrtNextEvent(ievent,1000);
-    std::cout<<"ievent "<<ievent <<std::endl;    
-    Int_t nHits =prt_event->GetHitSize();
-    
-    for(Int_t i=0; i<nHits; i++){
-      fHit = prt_event->GetHit(i);
-      ch=fHit.GetPixelId();      
-      time = fHit.GetLeadTime(); //+gRandom->Gaus(0,0.3);
-       
-      if(prt_event->GetParticle()==321){
+  PrtHit hit;
+  Int_t pdg(0), totalf(0),totals(0), ch;
+  for (Int_t e=2000; e<prt_entries; e++){ //prt_entries
+    prt_nextEvent(e,1000);
+    pdg =prt_event->GetParticle();
+    for(Int_t i=0; i<prt_event->GetHitSize(); i++){
+      hit = prt_event->GetHit(i);
+      ch=hit.GetPixelId();      
+      time = hit.GetLeadTime();//+gRandom->Gaus(0,0.1);
+      if(pdg==321){
 	//totalf++;
 	hlef[ch]->Fill(time);
       }
-      if(prt_event->GetParticle()==211){
+      if(pdg==211){
 	//totals++;
 	hles[ch]->Fill(time);
       }
     }
-    if(prt_event->GetParticle()==321) totalf++;
-    if(prt_event->GetParticle()==211 ) totals++;
+    if(pdg==321) totalf++;
+    if(pdg==211 ) totals++;
   }
 
   std::cout<<"#1 "<< totalf <<"  #2 "<<totals <<std::endl;
-  TCanvas *cExport = new TCanvas("cExport","cExport",0,0,800,400);
+  //TCanvas *cExport = new TCanvas("cExport","cExport",0,0,800,400);
   
   if(totalf>0 && totals>0) {
-    path.ReplaceAll(".root",".pdf.root");
-    TFile efile(path,"RECREATE");
+    in.ReplaceAll(".root",".pdf.root");
+    TFile efile(in,"RECREATE");
     
     for(Int_t i=0; i<nch; i++){
       hlef[i]->Scale(1/(Double_t)totalf);
@@ -97,35 +90,34 @@ void createPdf(TString path="../build/hits.root"){//beam_15177135523S.root
       hlef[i]->Write();
       hles[i]->Write();
       
-      if(false){
-      	cExport->cd();
-      	//	canvasAdd(Form("pdf_%d",i),800,500);
-      	cExport->SetName(Form("pdf_%d",i));
-      	//canvasAdd(cExport);
-      	//hlef[i]->GetYaxis()->SetRangeUser(0,1.5);
-	prt_normalize(hlef[i],hles[i]);
-	axisTime800x500(hlef[i]);
-	axisTime800x500(hles[i]);
-	hlef[i]->SetLineColor(2);
-      	hlef[i]->Draw();
-      	hles[i]->SetLineColor(4);
-      	hles[i]->Draw("same");
-      	// // f->Draw();
-      	// s->SetLineColor(4);
-      	// s->Draw("same");
-      	cExport->Print(fSavePath+Form("/pdf_mcp%d_pix_%d.png",map_mcp[i],map_pix[i]));
-      	//canvasSave(1,0);
-      	//canvasDel(cExport->GetName());
-      }
+      // if(false){
+      // 	cExport->cd();
+      // 	//	canvasAdd(Form("pdf_%d",i),800,500);
+      // 	cExport->SetName(Form("pdf_%d",i));
+      // 	//canvasAdd(cExport);
+      // 	//hlef[i]->GetYaxis()->SetRangeUser(0,1.5);
+      // 	prt_normalize(hlef[i],hles[i]);
+      // 	prt_axisTime800x500(hlef[i]);
+      // 	prt_axisTime800x500(hles[i]);
+      // 	hlef[i]->SetLineColor(2);
+      // 	hlef[i]->Draw();
+      // 	hles[i]->SetLineColor(4);
+      // 	hles[i]->Draw("same");
+      // 	// // f->Draw();
+      // 	// s->SetLineColor(4);
+      // 	// s->Draw("same");
+      // 	cExport->Print(prt_savepath+Form("/pdf_mcp%d_pix_%d.png",map_mcp[i],map_pix[i]));
+      // 	//canvasSave(1,0);
+      // 	//canvasDel(cExport->GetName());
+      // }
     }
     
     efile.Write();
     efile.Close();
   }
- 
-  writeString(fSavePath+"/digi.csv", drawDigi("m,p,v\n",2,-2,-2));
-  cDigi->SetName("hits");
-  canvasAdd(cDigi);
-  
-  canvasSave(1,0);
+
+  // prt_drawDigi("m,p,v\n",prt_geometry,0,0);
+  // prt_cdigi->SetName("hits");
+  // prt_canvasAdd(prt_cdigi);
+  // prt_canvasSave(1,0);
 }
