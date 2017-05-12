@@ -143,10 +143,9 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma
 
   TFile fc(prt_savepath+"/reco_"+name,"recreate");
   TTree *tc = new TTree("reco","reco");
-  tc->Branch("theta",&prt_theta,"prt_theta/D");
+  tc->Branch("theta",&prt_theta,"prt_theta/I");
   tc->Branch("sep",&sep,"sep/D");
   tc->Branch("sigma",&sigma,"sigma/D");
-  sigma/=10.;
   tc->Fill();
   tc->Write();
 }
