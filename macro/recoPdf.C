@@ -20,6 +20,8 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma
   TH1F *hl2 = new TH1F("hl2","pdf;LE time [ns]; entries [#]", 2000,0,100);
   TH1F *hl3 = new TH1F("hl3","pdf;LE time [ns]; entries [#]", 2000,0,100);
 
+  TH1F *hnph = new TH1F("hnph",";multiplicity [#]; entries [#]", 200,0,200);
+  
   TRandom rand;
   const Int_t nch(15000);
   TF1 *pdff[nch],*pdfs[nch];
@@ -45,7 +47,7 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma
   TVirtualFitter *fitter;
   Double_t time,timeres(-1);
   PrtHit hit;
-  Int_t totalf(0),totals(0), ch(0), pdg(0);
+  Int_t tnph(0),totalf(0),totals(0), ch(0), pdg(0);
   
   for (Int_t ievent=0; ievent<4000; ievent++){
     prt_nextEvent(ievent,100);
@@ -53,6 +55,7 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma
     pdg = prt_event->GetParticle();
     Double_t aminf,amins, sum(0),sumf(0),sums(0);
     Int_t nHits =prt_event->GetHitSize();
+    tnph = 0;
     
     for(Int_t i=0; i<nHits; i++){
       hit = prt_event->GetHit(i);
@@ -60,9 +63,10 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma
       time = hit.GetLeadTime() + rand.Gaus(0,sigma);
 
       if(time<5 || time>100) continue;
+      
       aminf = hpdff[ch]->GetBinContent(hpdff[ch]->FindBin(time)); 
       amins = hpdfs[ch]->GetBinContent(hpdfs[ch]->FindBin(time));
-      
+      tnph++;
       
       Double_t noise = 0.2e-3; //1e-7;
       sumf+=TMath::Log((aminf+noise));
@@ -88,6 +92,7 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma
       if(prt_event->GetParticle()==211) hl2->Fill(time);
 
     }
+    hnph->Fill(tnph);
     sum = sumf-sums;
     if(fabs(sum)<0.1) continue;
     
@@ -98,8 +103,15 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma
      
   }
 
-  TString name = Form("%d_%1.1f.root",prt_theta,sigma);
-  prt_canvasAdd("ll_"+name,800,400);
+
+  
+  TString name = Form("%d_%1.2f",prt_theta,sigma);
+
+  prt_canvasAdd("nph_"+name,800,400);
+  hnph->Draw();  
+  Int_t nph = prt_fit(hnph,50,20,50).X();
+  
+  prt_canvasAdd("sep_"+name,800,400);
 
   prt_normalize(hllf,hlls);
   
@@ -119,7 +131,7 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma
   }
   Double_t sep = (fabs(m1-m2))/(0.5*(s1+s2));
   std::cout<<in<<" separation "<< sep <<std::endl;
-  hllf->SetTitle(Form("separation = %1.1f",sep));
+  hllf->SetTitle(Form("#theta = %d       #sigma = %1.2f",prt_theta, sep));
 
   
   hllf->SetLineColor(2);
@@ -132,20 +144,21 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma
   hl3->Scale(1/hl3->GetMaximum());
 
   prt_normalize(hl1,hl2);
-  prt_canvasAdd("hl_"+name,800,500);
+  prt_canvasAdd("tim_"+name,800,500);
   hl1->Draw();
   hl2->SetLineColor(4);
   hl2->Draw("same");
   hl3->SetLineColor(2);
   hl3->Draw("same");
-  prt_canvasSave(0,0);
+  prt_canvasSave(2,0);
 
 
-  TFile fc(prt_savepath+"/reco_"+name,"recreate");
+  TFile fc(prt_savepath+"/res_"+name+".root","recreate");
   TTree *tc = new TTree("reco","reco");
   tc->Branch("theta",&prt_theta,"prt_theta/I");
   tc->Branch("sep",&sep,"sep/D");
   tc->Branch("sigma",&sigma,"sigma/D");
+  tc->Branch("nph",&nph,"nph/I");
   tc->Fill();
   tc->Write();
 }
