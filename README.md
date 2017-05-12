@@ -36,7 +36,8 @@ example:
 -l    focusing system
                 0    no lens
                 1    spherical lens
-                3    3-layer lens
+                3    3-layer spherical lens
+                6    3-layer cylindrical lens
                 10   ideal lens (thickness = 0, ideal focusing)
 
 -a    angle between particle beam and bar radiator
