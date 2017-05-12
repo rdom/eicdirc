@@ -6,9 +6,9 @@
 #include <TKey.h>
 #include <TRandom.h>
 
-void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma=0.1){
+void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma=0.1, TString nameid=""){
 
-  if(!prt_init(in,1,"data/recoPdf")) return;
+  if(!prt_init(in,1,"data/recoPdf"+nameid)) return;
   TGaxis::SetMaxDigits(4);
   
   TCanvas *cc = new TCanvas("cc","cc");
