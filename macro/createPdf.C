@@ -54,7 +54,7 @@ void createPdf(TString in="hits.root"){
   Double_t time;
   PrtHit hit;
   Int_t pdg(0), totalf(0),totals(0), ch;
-  for (Int_t e=2000; e<prt_entries; e++){ //prt_entries
+  for (Int_t e=4000; e<prt_entries; e++){ //prt_entries
     prt_nextEvent(e,1000);
     pdg =prt_event->GetParticle();
     for(Int_t i=0; i<prt_event->GetHitSize(); i++){

@@ -47,7 +47,7 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma
   PrtHit hit;
   Int_t totalf(0),totals(0), ch(0), pdg(0);
   
-  for (Int_t ievent=0; ievent<2000; ievent++){
+  for (Int_t ievent=0; ievent<4000; ievent++){
     prt_nextEvent(ievent,100);
     timeres = prt_event->GetTimeRes();
     pdg = prt_event->GetParticle();
@@ -98,7 +98,7 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma
      
   }
 
-  TString name = Form("tis_%1.1f_%1.1f.root",prt_theta,sigma);
+  TString name = Form("%d_%1.1f.root",prt_theta,sigma);
   prt_canvasAdd("ll_"+name,800,400);
 
   prt_normalize(hllf,hlls);
