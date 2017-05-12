@@ -64,6 +64,7 @@ private:
   G4double fNpix2;
   G4int fGeomId;
   G4int fMcpLayout;
+  G4int fLensId;
   G4double fdTilt;
   G4double fNBar;
   G4double fHall[3];
