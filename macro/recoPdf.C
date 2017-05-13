@@ -6,7 +6,7 @@
 #include <TKey.h>
 #include <TRandom.h>
 
-void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma=0.1, TString nameid=""){
+void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma=0.1, TString nameid="", Double_t r1=0, Double_t r2=0){
 
   if(!prt_init(in,1,"data/recoPdf"+nameid)) return;
   TGaxis::SetMaxDigits(4);
@@ -159,6 +159,8 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma
   tc->Branch("sep",&sep,"sep/D");
   tc->Branch("sigma",&sigma,"sigma/D");
   tc->Branch("nph",&nph,"nph/I");
+  tc->Branch("r1",&r1,"r1/D");
+  tc->Branch("r2",&r2,"r2/D");
   tc->Fill();
   tc->Write();
 }
