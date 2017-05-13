@@ -59,6 +59,8 @@ public:
   void SetMomentum(TVector3 val){ fMomentum = val; if(fRunType==0 || fRunType==10) fEvent->SetMomentum(fMomentum);}
   void SetCurrentCherenkov(double val){ fCurrentCherenkov = val; }
   void SetShift(double val){ fShift = val; }
+  void SetTest1(double val){ fTest1 = val; }
+  void SetTest2(double val){ fTest2 = val; }
   void SetDisplayOpt(int val){ fDispalyOpt = val; }
   void SetTimeRes(double val){ fTimeRes = val; }
   void SetMixPiK(bool val){fMixPiK = val;}
@@ -81,6 +83,8 @@ public:
   TVector3 GetMomentum(){ return fMomentum; }
   double GetCurrentCherenkov(){ return fCurrentCherenkov; }
   double GetShift(){ return fShift; }
+  double GetTest1(){ return fTest1; }
+  double GetTest2(){ return fTest2; }
   int GetDisplayOpt(){ return fDispalyOpt; }
   double GetTimeRes(){ return fTimeRes; }
   TTree *GetTree(){ return fTree; }
@@ -107,6 +111,8 @@ private:
   TClonesArray *fTrackInfoArray;
   double fCurrentCherenkov;
   double fShift;
+  double fTest1;
+  double fTest2;
   int fDispalyOpt;
   double fTimeRes;
   TString fOutName;

@@ -49,6 +49,8 @@ PrtManager::PrtManager(G4String outfile, G4int runtype)
   fEvType = 0;
   fAngle = 0;
   fShift = 150;
+  fTest1 = 0;
+  fTest2 = 0;
   fDispalyOpt = 0;
   fTimeRes = 0;
   fLens = 0;
@@ -74,6 +76,8 @@ void PrtManager::AddEvent(PrtEvent event){
     // fEvent->SetRadiatorL(fRadiatorL);
     // fEvent->SetRadiatorW(fRadiatorW);
     // fEvent->SetRadiatorH(fRadiatorH);
+    fEvent->SetTest1(fTest1);
+    fEvent->SetTest2(fTest2);
     fEvent->SetParticle(fParticle);
     fEvent->SetMomentum(fMomentum);
     fEvent->SetGeometry(fGeometry);

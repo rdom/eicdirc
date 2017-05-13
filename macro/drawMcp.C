@@ -57,8 +57,9 @@ void drawMcp(TString path = ".", TString name = ""){
       
       hist[hit.GetMcpId()-startInd]->Fill((hit.GetPixelId()-startInd)/8,
 					  (hit.GetPixelId()-startInd)%8);
-      if(pdg==211) hist1->Fill(hit.GetGlobalPos().Y()/10.,hit.GetGlobalPos().X()/10.);
-      if(pdg==321) hist2->Fill(hit.GetGlobalPos().Y()/10.,hit.GetGlobalPos().X()/10.);
+      hist1->Fill(hit.GetGlobalPos().Y()/10.,hit.GetGlobalPos().X()/10.);
+      // if(pdg==211) hist1->Fill(hit.GetGlobalPos().Y()/10.,hit.GetGlobalPos().X()/10.);
+      // if(pdg==321) hist2->Fill(hit.GetGlobalPos().Y()/10.,hit.GetGlobalPos().X()/10.);
       hTime->Fill(hit.GetLeadTime());
     }
   }  
@@ -97,8 +98,8 @@ void drawMcp(TString path = ".", TString name = ""){
  prt_canvasAdd(Form("loadi_%d",angle),800,500);
  hist1->SetMarkerColor(4);
  hist2->SetMarkerColor(2);
- hist1->Draw();
- hist2->Draw("same");
+ hist1->Draw("colz");
+ // hist2->Draw("same");
  TGaxis::SetMaxDigits(3);
  gStyle->SetOptStat(111);
 

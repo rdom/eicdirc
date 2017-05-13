@@ -180,13 +180,13 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   if(fLensId == 3){ // 3-component spherical lens
     G4double lensMinThikness = 2; 
   
-    G4double r1 = 0; //PrtManager::Instance()->GetTest1();
-    G4double r2 = 0; //PrtManager::Instance()->GetTest2();
+    G4double r1 = PrtManager::Instance()->GetTest1();
+    G4double r2 = PrtManager::Instance()->GetTest2();
   
     r1 = (r1==0)? 47.8: r1;
     r2 = (r2==0)? 29.1: r2;
-    r1=80;
-    r2=35;
+    // r1=80;
+    // r2=35;
 
     G4double shight = 40;
     G4double bwidth = fLens[2]-lensMinThikness*2;
@@ -222,10 +222,9 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   if(fLensId == 6){ // 3-component cylindrical lens
     G4double lensMinThikness = 2.0;
 
-    G4double r1 = 0; //PrtManager::Instance()->GetTest1();
-    G4double r2 = 0; //PrtManager::Instance()->GetTest2();
+    G4double r1 = PrtManager::Instance()->GetTest1();
+    G4double r2 = PrtManager::Instance()->GetTest2();
 
-    fLens[2]=10;
     lensMinThikness = 2;
     G4double layer12 = lensMinThikness*2;
 
@@ -234,7 +233,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
 
     r1 = (r1==0)? 33: r1;
     r2 = (r2==0)? 24: r2;
-    G4double shight = 20;
+    G4double shight = 25;
 
     G4ThreeVector zTrans1(0, 0, -r1-fLens[2]/2.+r1-sqrt(r1*r1-shight/2.*shight/2.) +lensMinThikness);
     G4ThreeVector zTrans2(0, 0, -r2-fLens[2]/2.+r2-sqrt(r2*r2-shight/2.*shight/2.) +layer12);
@@ -262,9 +261,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     lLens1 = new G4LogicalVolume(gLens1,BarMaterial,"lLens1",0,0,0);
     lLens2 = new G4LogicalVolume(gLens2,Nlak33aMaterial,"lLens2",0,0,0);
     lLens3 = new G4LogicalVolume(gLens3,BarMaterial,"lLens3",0,0,0);
-  }
-  
-
+  }  
   
   if(fLensId != 0 && fLensId != 10){
     if(fNBar==1){
