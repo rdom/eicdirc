@@ -12,7 +12,7 @@
 #include <TFile.h>
 #include <TTree.h>
 #include <TChain.h>
-#include <TCanvas.h>
+#include <TCanvas.h>``
 #include <TH1F.h>
 #include "TClonesArray.h"
 
@@ -63,7 +63,7 @@ public:
   void SetTest2(double val){ fTest2 = val; }
   void SetDisplayOpt(int val){ fDispalyOpt = val; }
   void SetTimeRes(double val){ fTimeRes = val; }
-  void SetMixPiK(bool val){fMixPiK = val;}
+  void SetMix(int val){fMix = val;}
   
   
   // Accessors
@@ -89,7 +89,7 @@ public:
   double GetTimeRes(){ return fTimeRes; }
   TTree *GetTree(){ return fTree; }
   TString GetOutName(){return fOutName;}
-  bool GetMixPiK(){ return fMixPiK; }
+  int GetMix(){ return fMix; }
 
   
 private: 
@@ -116,7 +116,7 @@ private:
   int fDispalyOpt;
   double fTimeRes;
   TString fOutName;
-  bool fMixPiK;
+  int fMix;
   
 };
 

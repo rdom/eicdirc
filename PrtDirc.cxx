@@ -162,8 +162,13 @@ int main(int argc,char** argv)
   if(particle=="kaon+") pdgid = 321;
   if(particle=="mu-") pdgid = 13;
   if(particle=="e-") pdgid = 11;
-  if(particle=="mix"){
-    PrtManager::Instance()->SetMixPiK(true);
+  if(particle=="mix_pik"){
+    PrtManager::Instance()->SetMix(1);
+    particle="pi+";
+  }
+
+  if(particle=="mix_pie"){
+    PrtManager::Instance()->SetMix(2);
     particle="pi+";
   }
   
