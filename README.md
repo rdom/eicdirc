@@ -50,7 +50,8 @@ example:
               "kaon"
                  ...
               "opticalphoton"
-              "mix" 
+              "mix_pik" 1 pion 1 kaon mix
+	      "mix_pie" 1 pion 1 electron mix
 
 -p    particle momentum [GeV/c]
 
