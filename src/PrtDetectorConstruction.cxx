@@ -2,6 +2,7 @@
 #include "PrtDetectorConstruction.h"
 
 #include "G4Material.hh"
+#include "G4SDManager.hh"
 #include "G4Element.hh"
 #include "G4LogicalBorderSurface.hh"
 #include "G4LogicalSkinSurface.hh"
@@ -861,12 +862,15 @@ void PrtDetectorConstruction::SetVisualization(){
 void PrtDetectorConstruction::ConstructSDandField(){
   // Sensitive detectors
   PrtPixelSD* pixelSD = new PrtPixelSD("PixelSD", "PixelHitsCollection", 0);
+  G4SDManager::GetSDMpointer()->AddNewDetector(pixelSD);
   SetSensitiveDetector("lPixel",pixelSD);
   PrtPrizmSD* prizmSD = new PrtPrizmSD("PrizmSD", "PrizmHitsCollection", 0);
-
+  
   if(PrtManager::Instance()->GetEvType() == 0 ){
+    G4SDManager::GetSDMpointer()->AddNewDetector(prizmSD);
     SetSensitiveDetector("lPrizm",prizmSD);
   }else{
+    G4SDManager::GetSDMpointer()->AddNewDetector(prizmSD);
     SetSensitiveDetector("lPrizmT1",prizmSD);
   }
   // Magnetic field
@@ -951,8 +955,6 @@ void PrtDetectorConstruction::DrawHitBox(int id){
     
   }
 
-
-
   G4LogicalVolume * lHit;
   G4VisAttributes *waHit;
   G4Box* gHit;
@@ -991,7 +993,6 @@ void PrtDetectorConstruction::DrawHitBox(int id){
   G4RunManager::GetRunManager()->GeometryHasBeenModified();
   G4UImanager::GetUIpointer()->ApplyCommand("/vis/scene/notifyHandlers");
 }
-
 
 void PrtDetectorConstruction::SetLens(G4int id){
  
