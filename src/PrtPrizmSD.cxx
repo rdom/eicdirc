@@ -73,6 +73,7 @@ G4bool PrtPrizmSD::ProcessHits(G4Step* aStep, G4TouchableHistory* hist)
       = theNavigator->GetLocalToGlobalTransform().TransformAxis(theLocalNormal);
     normalId = theGlobalNormal.x() + 10*theGlobalNormal.y() + 100*theGlobalNormal.z();
   }
+  
   newHit->SetNormalId(normalId);
 
   fHitsCollection->insert( newHit );

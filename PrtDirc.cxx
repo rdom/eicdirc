@@ -48,6 +48,9 @@ int main(int argc,char** argv)
     return 1;
   }
 
+#ifdef G4MULTITHREADED
+  G4int nThreads = 1;
+#endif
   TApplication theApp("App", 0, 0);
   
   G4String macro, events, geometry,evType, radiator, physlist, outfile, 
@@ -82,6 +85,11 @@ int main(int argc,char** argv)
     else if ( G4String(argv[i]) == "-d" ) displayOpt= argv[i+1];
     else if ( G4String(argv[i]) == "-tr" ) timeRes   = argv[i+1];
     else if ( G4String(argv[i]) == "-v" ) verbose   = atoi(argv[i+1]);
+#ifdef G4MULTITHREADED
+    else if ( G4String(argv[i]) == "-t" ) {
+      nThreads = G4UIcommand::ConvertToInt(argv[i+1]);
+    }
+#endif
     else {
       PrintUsage();
       return 1;
@@ -116,11 +124,16 @@ int main(int argc,char** argv)
   }
 
   // Choose the Random engine
-  G4Random::setTheEngine(new CLHEP::RanecuEngine);
+  G4Random::setTheEngine(new CLHEP::RanecuEngine);   
+#ifdef G4MULTITHREADED
+  G4MTRunManager * runManager = new G4MTRunManager;
+  if ( nThreads > 0 ) runManager->SetNumberOfThreads(nThreads);
+#else
+  G4RunManager * runManager = new G4RunManager;
+#endif
+  
   std::cout<<"SEED "<<myseed <<std::endl;
   G4Random::setTheSeed(myseed);
-  G4RunManager * runManager = new G4RunManager;
-
 
   // Detector construction
   runManager-> SetUserInitialization(new PrtDetectorConstruction());
@@ -162,8 +175,13 @@ int main(int argc,char** argv)
   if(particle=="kaon+") pdgid = 321;
   if(particle=="mu-") pdgid = 13;
   if(particle=="e-") pdgid = 11;
-  if(particle=="mix"){
-    PrtManager::Instance()->SetMixPiK(true);
+  if(particle=="mix_pik"){
+    PrtManager::Instance()->SetMix(1);
+    particle="pi+";
+  }
+
+  if(particle=="mix_pie"){
+    PrtManager::Instance()->SetMix(2);
     particle="pi+";
   }
   

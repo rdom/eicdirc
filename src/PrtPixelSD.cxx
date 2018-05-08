@@ -89,7 +89,7 @@ G4bool PrtPixelSD::ProcessHits(G4Step* step, G4TouchableHistory* hist){
   TVector3 momentum(g4mom.x(),g4mom.y(),g4mom.z());
   TVector3 position(g4pos.x(),g4pos.y(),g4pos.z());
 
-  // information form prizm
+  // information from prizm
   G4SDManager* fSDM = G4SDManager::GetSDMpointer();
   G4RunManager* fRM = G4RunManager::GetRunManager();
   G4int collectionID = fSDM->GetCollectionID("PrizmHitsCollection");
