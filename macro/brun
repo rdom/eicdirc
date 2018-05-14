@@ -7,7 +7,7 @@ tseed=$(($(date +%s%N)/1000000-1393400000000))
 
 echo $tseed
 
-for i in {0..7}; do ../build/eicdirc -r $tseed$i -o h_b$i.root -s 0 -a 30 -x "mix" -p 6  -w 0 -g 1 -h 9 -e 2000 -c 3 -l 6 -b 1  > l_b$i.log & done
+for i in {0..7}; do ../build/eicdirc -r $tseed$i -o h_b$i.root -s 0 -a 30 -x "mix" -p 6  -w 0 -g 1 -h 11 -e 100 -c 4 -l 3 -b 1  > l_b$i.log & done
 
 sleep 1
 

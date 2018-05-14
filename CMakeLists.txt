@@ -23,7 +23,14 @@ include(${Geant4_USE_FILE})
 #----------------------------------------------------------------------------
 # Find ROOT (required package)
 #
+#find_package(ROOT REQUIRED)
+list(APPEND CMAKE_MODULE_PATH $ENV{ROOTSYS}/etc/cmake)
+list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
+
 find_package(ROOT REQUIRED)
+include_directories(${ROOT_INCLUDE_DIR})
+
+
 
 #----------------------------------------------------------------------------
 # Generate dictionary for root
@@ -45,7 +52,7 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/src/*.h)
 #
 #set (CMAKE_CXX_FLAGS "-std=gnu++11")
 add_executable(eicdirc PrtDirc.cxx ${sources} PrtDict.cxx ${headers})
-target_link_libraries(eicdirc -lGLU ${Geant4_LIBRARIES} ${ROOT_LIBRARIES} -lSpectrum -lHistPainter)
+target_link_libraries(eicdirc -lGLU ${Geant4_LIBRARIES} ${ROOT_LIBRARIES} -L/home/hex/install/root-6.12.06/lib -lSpectrum -lHistPainter)
 add_library(prtdirclib SHARED ../src/PrtHit.cxx ../src/PrtEvent.cxx ../src/PrtLutNode.cxx ../src/PrtTrackInfo.cxx  ../src/PrtPhotonInfo.cxx ../src/PrtAmbiguityInfo.cxx PrtDict.cxx ../src/PrtHit.h ../src/PrtEvent.h ../src/PrtLutNode.h ../src/PrtTrackInfo.h  ../src/PrtPhotonInfo.h ../src/PrtAmbiguityInfo.h)
 
 #----------------------------------------------------------------------------

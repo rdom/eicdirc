@@ -14,8 +14,8 @@
 
 PrtPrimaryGeneratorAction::PrtPrimaryGeneratorAction()
  : G4VUserPrimaryGeneratorAction(), 
-   fParticleGun(0)
-{
+   fParticleGun(0){
+  
   G4int n_particle = 1;
   fParticleGun = new G4ParticleGun(n_particle);
 
@@ -36,14 +36,12 @@ PrtPrimaryGeneratorAction::PrtPrimaryGeneratorAction()
   fParticleGun->SetParticleEnergy(500.0*keV);
 }
 
-PrtPrimaryGeneratorAction::~PrtPrimaryGeneratorAction()
-{
+PrtPrimaryGeneratorAction::~PrtPrimaryGeneratorAction(){
   delete fParticleGun;
   delete fGunMessenger;
 }
 
-void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
-{ 
+void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
   G4double x,y,z;
   G4double angle = PrtManager::Instance()->GetAngle();
   G4double radiatorL = PrtManager::Instance()->GetRadiatorL();
@@ -79,8 +77,12 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     // if(id==3)  vec.setPhi(250*deg);
 
     // // else{
-    if(angle>0)  vec.setTheta(angle);
-    else{
+    if(angle>0){
+      double trackresolution=0.001;
+      //smear track resolution
+      vec.setTheta(G4RandGauss::shoot(angle,trackresolution));
+      vec.setPhi(G4RandGauss::shoot(0,trackresolution));
+    }else{
       G4double theta = M_PI*G4UniformRand();
       if(theta>140*deg) theta-=40*deg;
       if(theta<20*deg) theta+=20*deg;
@@ -132,15 +134,14 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   PrtManager::Instance()->SetMomentum(TVector3(dir.x(),dir.y(),dir.z()));
 }
 
-void PrtPrimaryGeneratorAction::SetOptPhotonPolar()
-{
+void PrtPrimaryGeneratorAction::SetOptPhotonPolar(){
  G4double angle = G4UniformRand() * 360.0*deg;
  SetOptPhotonPolar(angle);
 }
 
-void PrtPrimaryGeneratorAction::SetOptPhotonPolar(G4double angle)
-{
- if (fParticleGun->GetParticleDefinition()->GetParticleName()!="opticalphoton")
+void PrtPrimaryGeneratorAction::SetOptPhotonPolar(G4double angle){
+
+  if (fParticleGun->GetParticleDefinition()->GetParticleName()!="opticalphoton")
    {
      G4cout << "--> warning from PrimaryGeneratorAction::SetOptPhotonPolar() :"
        "the particleGun is not an opticalphoton " << 

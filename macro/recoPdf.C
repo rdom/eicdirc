@@ -15,7 +15,6 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma
   TH1F *hllf= new TH1F("hllf","hllf;ln L(K) - ln L(#pi); entries [#]",200,-50,50);
   TH1F *hlls= new TH1F("hlls","hlls;ln L(K) - ln L(#pi); entries [#]",200,-50,50);
 
-
   TH1F *hl1 = new TH1F("hl1","pdf;LE time [ns]; entries [#]", 2000,0,100);
   TH1F *hl2 = new TH1F("hl2","pdf;LE time [ns]; entries [#]", 2000,0,100);
   TH1F *hl3 = new TH1F("hl3","pdf;LE time [ns]; entries [#]", 2000,0,100);
