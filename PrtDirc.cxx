@@ -110,7 +110,7 @@ int main(int argc,char** argv)
   if(radiator.size()) PrtManager::Instance()->SetRadiator(atoi(radiator));
   if(lensId.size())   PrtManager::Instance()->SetLens(atoi(lensId));
   if(mcpLayout.size())PrtManager::Instance()->SetMcpLayout(atoi(mcpLayout));
-  if(beamDimension.size()) PrtManager::Instance()->SetBeamDimension(atoi(beamDimension));
+  if(beamDimension.size()) PrtManager::Instance()->SetBeamDimension(atof(beamDimension));
   if(testVal1.size())   PrtManager::Instance()->SetTest1(atof(testVal1));
   if(testVal2.size())   PrtManager::Instance()->SetTest2(atof(testVal2));
   if(displayOpt.size())   PrtManager::Instance()->SetDisplayOpt(atoi(displayOpt));

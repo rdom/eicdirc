@@ -47,7 +47,7 @@ public:
   void SetPhysList(int val){ fPhysList = val; }
   void SetGeometry(int val){ fGeometry = val; }
   void SetEvType(int val){ fEvType = val; }
-  void SetBeamDimension(int val){ fBeamDimension = val; }
+  void SetBeamDimension(double val){ fBeamDimension = val; }
   void SetRadiator(int val){ fRadiator = val; }
   void SetLens(int val){ fLens = val; }
   void SetMcpLayout(int val){ fMcpLayout = val; }
@@ -71,7 +71,7 @@ public:
   int GetPhysList(){ return fPhysList; }
   int GetGeometry(){ return fGeometry; }
   int GetEvType(){ return fEvType; }
-  int GetBeamDinsion(){ return fBeamDimension; }
+  double GetBeamDimension(){ return fBeamDimension; }
   int GetRadiator(){ return fRadiator; }
   int GetLens(){ return fLens; }
   int GetMcpLayout(){ return fMcpLayout; }
@@ -105,7 +105,7 @@ private:
   double fRadiatorW;
   double fRadiatorH;
   int fParticle;
-  int fBeamDimension;
+  double fBeamDimension;
   TVector3 fMomentum;
   TClonesArray *fLut;
   TClonesArray *fTrackInfoArray;

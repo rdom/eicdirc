@@ -47,7 +47,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
   G4double radiatorL = PrtManager::Instance()->GetRadiatorL();
   G4double radiatorW = PrtManager::Instance()->GetRadiatorW();
   G4double radiatorH = PrtManager::Instance()->GetRadiatorH();
-
+  
   if(PrtManager::Instance()->GetMix()){
     if(PrtManager::Instance()->GetParticle()==211 || PrtManager::Instance()->GetParticle()==0){
       if(PrtManager::Instance()->GetMix()==1){
@@ -78,10 +78,14 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
 
     // // else{
     if(angle>0){
-      double trackresolution=0.001;
-      //smear track resolution
-      vec.setTheta(G4RandGauss::shoot(angle,trackresolution));
-      vec.setPhi(G4RandGauss::shoot(0,trackresolution));
+      double trackresolution=PrtManager::Instance()->GetBeamDimension();
+      if(trackresolution<0.00001){
+	vec.setTheta(angle);
+      }else{
+	//smear track resolution
+	vec.setTheta(G4RandGauss::shoot(angle,trackresolution));
+	vec.setPhi(G4RandGauss::shoot(0,trackresolution));
+      }
     }else{
       G4double theta = M_PI*G4UniformRand();
       if(theta>140*deg) theta-=40*deg;
@@ -93,8 +97,8 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
    
     fParticleGun->SetParticleMomentumDirection(vec);
   }
-
-  if(PrtManager::Instance()->GetBeamDinsion() == 1){ // smearing and divergence
+  
+  if(PrtManager::Instance()->GetBeamDimension() == 1){ // smearing and divergence
     G4double sigma = 1*cm;
     z = fParticleGun->GetParticlePosition().z();
     x = G4RandGauss::shoot(0,sigma);
