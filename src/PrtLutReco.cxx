@@ -172,7 +172,7 @@ void PrtLutReco::Run(Int_t start, Int_t end){
       Double_t theta0 = rotatedmom.Angle(dir0);
       fHist5->Fill(theta0*TMath::Sin(phi0),theta0*TMath::Cos(phi0));      
 
-      Int_t sensorId = 100*fHit.GetMcpId()+fHit.GetPixelId();
+      Int_t sensorId = 300*fHit.GetMcpId()+fHit.GetPixelId();
 
       PrtLutNode *node = (PrtLutNode*) fLut->At(sensorId);
       Int_t size = node->Entries();

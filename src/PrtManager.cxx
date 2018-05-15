@@ -98,7 +98,7 @@ void PrtManager::AddHit(PrtHit hit){
     }
   }
   if(fRunType==1 || fRunType==5){
-    int id = 100*hit.GetMcpId() + hit.GetPixelId();
+    int id = 300*hit.GetMcpId() + hit.GetPixelId();
     ((PrtLutNode*)(fLut->At(id)))->
       AddEntry(id, fMomentum, hit.GetPathInPrizm(),
 	       hit.GetNreflectionsInPrizm(),

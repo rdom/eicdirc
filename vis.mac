@@ -111,11 +111,17 @@
 #/vis/viewer/save
 
 
-#side
-/vis/viewer/set/viewpointVector 0 1 0.00000001
-/vis/viewer/set/upVector 0 -1 0
+# #side
+# /vis/viewer/set/viewpointVector 0 1 0.00000001
+# /vis/viewer/set/upVector 0 -1 0
 
 #lens
 /vis/viewer/zoomTo 20
 /vis/viewer/set/viewpointThetaPhi 129.792  1.39204  deg
 /vis/viewer/set/targetPoint 100 20 210 cm
+
+#lens side
+/vis/viewer/set/projection orthogonal
+/vis/viewer/zoomTo 20
+/vis/viewer/set/targetPoint 0.0320439 -0.457095 2.17725 m  
+/vis/viewer/set/viewpointThetaPhi 90  90  deg

@@ -59,7 +59,7 @@ void createPdf(TString in="hits.root"){
     pdg =prt_event->GetParticle();
     for(Int_t i=0; i<prt_event->GetHitSize(); i++){
       hit = prt_event->GetHit(i);
-      ch=hit.GetPixelId();      
+      ch=300*hit.GetMcpId()+hit.GetPixelId();      
       time = hit.GetLeadTime();//+gRandom->Gaus(0,0.1);
       if(pdg==321){
 	//totalf++;

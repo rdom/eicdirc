@@ -111,8 +111,11 @@ G4bool PrtPixelSD::ProcessHits(G4Step* step, G4TouchableHistory* hist){
  
   PrtHit hit;
   //hit.SetPrizmId(prizmId);
-  hit.SetMcpId(touchable->GetReplicaNumber(1));
-  hit.SetPixelId(touchable->GetReplicaNumber(0));
+  int mcp = touchable->GetReplicaNumber(1);
+  int pix = touchable->GetReplicaNumber(0);
+  hit.SetMcpId(mcp);
+  hit.SetPixelId(pix);
+  hit.SetChannel(300*mcp+pix);
   hit.SetGlobalPos(globalPos);
   hit.SetLocalPos(localPos);
   hit.SetDigiPos(digiPos);

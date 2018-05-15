@@ -110,7 +110,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
   if(PrtManager::Instance()->GetRunType() == 1){ // LUT generation
     
     G4double barShift=0; // 390/12./2;
-    fParticleGun->SetParticlePosition(G4ThreeVector(0,barShift,radiatorL/2.-0.1));
+    fParticleGun->SetParticlePosition(G4ThreeVector(0,barShift,radiatorL/2.-0.5));
     G4double angle = -G4UniformRand()*M_PI;
     G4ThreeVector vec(0,0,-1);
     vec.setTheta(acos(G4UniformRand()));

@@ -58,7 +58,8 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma
     
     for(Int_t i=0; i<nHits; i++){
       hit = prt_event->GetHit(i);
-      ch = hit.GetPixelId();
+      ch=300*hit.GetMcpId()+hit.GetPixelId();
+      
       time = hit.GetLeadTime() + rand.Gaus(0,sigma);
 
       if(time<5 || time>100) continue;

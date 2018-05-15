@@ -88,7 +88,7 @@ PrtDetectorConstruction::PrtDetectorConstruction()
 
   
 
-  PrtManager::Instance()->SetRadiatorL(fBar[2]);
+  //  PrtManager::Instance()->SetRadiatorL(fBar[2]);
   PrtManager::Instance()->SetRadiatorW(fBar[1]);
   PrtManager::Instance()->SetRadiatorH(fBar[0]);			  
   fPrtRot = new G4RotationMatrix();
@@ -118,6 +118,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
 
   double gluethickness=0.05;
   double dirclength=fBar[2]*4+gluethickness*4;
+  PrtManager::Instance()->SetRadiatorL(dirclength);
   // The DIRC
   G4Box* gDirc = new G4Box("gDirc",400.,300.,0.5*dirclength+350);
   lDirc = new G4LogicalVolume(gDirc,defaultMaterial,"lDirc",0,0,0);

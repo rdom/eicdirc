@@ -1,19 +1,14 @@
 
-
-void lutmean(TString baseFile = "../data/lut")
-{
- 
-  gInterpreter->GenerateDictionary("vector<TVector3>","TVector3.h"); 
-  
+void lutmean(TString baseFile = "../data/lut"){  
   TString inFile =baseFile+".root";
   TString outFile =baseFile+"_avr.root";
 
   TFile* f = new TFile(inFile);
   TTree *t=(TTree *) f->Get("prtlut") ;
-  TClonesArray* fLut;
-  t->SetBranchAddress("LUT",&fLut); 
+  TClonesArray* fLut = new TClonesArray("PrtLutNode");
+  t->SetBranchAddress("LUT",&fLut);
   t->GetEntry(0);
-
+ 
  
   TFile *fFileNew = TFile::Open(outFile, "RECREATE");
   TClonesArray *fLutNew;
@@ -42,7 +37,7 @@ void lutmean(TString baseFile = "../data/lut")
   TVector3 dir, dir2, sum;
   Double_t angle, minangle,pathid,time,sumt;
   PrtLutNode *node;
-
+  
   for (Int_t inode=0; inode<fLut->GetEntriesFast(); inode++){
     if(inode%1000==0) cout<<"Node # "<<inode<<endl;
     node= (PrtLutNode*) fLut->At(inode);
@@ -95,6 +90,7 @@ void lutmean(TString baseFile = "../data/lut")
       //if(vArray[j].size()<5) continue;
       sum *= 1/(Double_t)vArray[j].size();
       sumt *= 1./(Double_t)tArray[j].size();
+      std::cout<<"inode "<<inode << " "<<node->GetDetectorId() <<std::endl;
       
       ((PrtLutNode*)(fLutNew->At(inode)))->AddEntry(node->GetDetectorId(), sum,j,j,sumt, node->GetDigiPos(),node->GetDigiPos()); 
     }
