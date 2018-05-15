@@ -69,9 +69,10 @@ G4bool PrtPrizmSD::ProcessHits(G4Step* aStep, G4TouchableHistory* hist)
   G4bool valid;
   G4ThreeVector theLocalNormal = theNavigator->GetLocalExitNormal(&valid);
   if (valid ){
-    G4ThreeVector theGlobalNormal 
-      = theNavigator->GetLocalToGlobalTransform().TransformAxis(theLocalNormal);
-    normalId = theGlobalNormal.x() + 10*theGlobalNormal.y() + 100*theGlobalNormal.z();
+    // G4ThreeVector theGlobalNormal 
+    //   = theNavigator->GetLocalToGlobalTransform().TransformAxis(theLocalNormal);
+    // normalId = theGlobalNormal.x() + 10*theGlobalNormal.y() + 100*theGlobalNormal.z();
+    normalId = theLocalNormal.x() + 10*theLocalNormal.y() + 100*theLocalNormal.z();     
   }
   
   newHit->SetNormalId(normalId);

@@ -8,4 +8,4 @@
 #     ../build/eicdirc -s 1 -o ../data/lut_d$i.root -x "opticalphoton" -p "3.18 eV" -w 0 -g 1 -h 11 -e 500000 -c 4 -l 3 -d 0 -r $i -b 1 &
 # done
 
-../build/eicdirc -s 1 -o ../data/lut.root -x "opticalphoton" -p "3.18 eV" -w 0 -g 1 -h 11 -e 5000000 -c 4 -l 3 -d 0 -r 12341234 -b 1 &
+../build/eicdirc -s 1 -o ../data/lut.root -x "opticalphoton" -p "3.18 eV" -w 0 -g 1 -h 11 -e 5000000 -c 3 -l 3 -d 0 -r 12341234 -b 1 &

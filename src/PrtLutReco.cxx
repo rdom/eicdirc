@@ -183,9 +183,12 @@ void PrtLutReco::Run(Int_t start, Int_t end){
       // rotatedmom.RotateY(-fAngle/180.*TMath::Pi());
       // std::cout<<"fAngle   "<<fAngle <<std::endl;
       // rotatedmom.Print();
-    
+
+      double path = fHit.GetPathInPrizm();
       for(int i=0; i<size; i++){
 	dird = node->GetEntry(i);
+	//if(fabs(path-node->GetPathId(i))>0.001) continue;
+	
 	evtime = node->GetTime(i);
 	for(int u=0; u<4; u++){
 	  if(u == 0) dir = dird;

@@ -105,10 +105,10 @@ G4bool PrtPixelSD::ProcessHits(G4Step* step, G4TouchableHistory* hist){
     if(prizmId==-1) prizmId =phit->GetPrizmID();
     if(phit->GetTrackID()==track->GetTrackID()) {
       refl++;
-      pathId += phit->GetNormalId()*1000*refl;
+      pathId += phit->GetNormalId()+1000*refl;
     }
   }
- 
+  
   PrtHit hit;
   //hit.SetPrizmId(prizmId);
   int mcp = touchable->GetReplicaNumber(1);

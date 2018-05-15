@@ -54,7 +54,7 @@ void lutmean(TString baseFile = "../data/lut"){
 
       bool newid = true;
       for(int j=0; j<pArray.size(); j++){
-	if(pathid == pArray[j]){
+	if(fabs(pathid-pArray[j])<0.0001){
 	  vArray[j].push_back(dir);
 	  tArray[j].push_back(time);
 	  newid= false;
@@ -90,9 +90,8 @@ void lutmean(TString baseFile = "../data/lut"){
       //if(vArray[j].size()<5) continue;
       sum *= 1/(Double_t)vArray[j].size();
       sumt *= 1./(Double_t)tArray[j].size();
-      std::cout<<"inode "<<inode << " "<<node->GetDetectorId() <<std::endl;
       
-      ((PrtLutNode*)(fLutNew->At(inode)))->AddEntry(node->GetDetectorId(), sum,j,j,sumt, node->GetDigiPos(),node->GetDigiPos()); 
+      ((PrtLutNode*)(fLutNew->At(inode)))->AddEntry(node->GetDetectorId(), sum,pArray[j],node->GetNRefl(0),sumt, node->GetDigiPos(),node->GetDigiPos()); 
     }
     for(int i=0; i<100; i++) {vArray[i].clear();  tArray[i].clear();}
     pArray.clear();
