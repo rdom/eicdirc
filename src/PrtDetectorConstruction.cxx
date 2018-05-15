@@ -233,7 +233,10 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     G4SubtractionSolid*  gLens3 = new G4SubtractionSolid("Lens3", gLenst, gsphere2,new G4RotationMatrix(),zTrans2);
     
     lLens1 = new G4LogicalVolume(gLens1,BarMaterial,"lLens1",0,0,0);
-    lLens2 = new G4LogicalVolume(gLens2,Nlak33aMaterial,"lLens2",0,0,0); //Nlak33aMaterial //PbF2Material
+    int tt = PrtManager::Instance()->GetVerbose();
+    if(tt==0) lLens2 = new G4LogicalVolume(gLens2,Nlak33aMaterial,"lLens2",0,0,0); //Nlak33aMaterial //PbF2Material //SapphireMaterial
+    if(tt==1) lLens2 = new G4LogicalVolume(gLens2,PbF2Material,"lLens2",0,0,0);
+    if(tt==2) lLens2 = new G4LogicalVolume(gLens2,SapphireMaterial,"lLens2",0,0,0);
     lLens3 = new G4LogicalVolume(gLens3,BarMaterial,"lLens3",0,0,0);
   }
 
@@ -627,10 +630,14 @@ void PrtDetectorConstruction::DefineMaterials(){
   Nlak33aMaterial->AddElement(Si, natoms=1);
   Nlak33aMaterial->AddElement(O , natoms=2);
 
-  PbF2Material  = new G4Material("PbF2",density= 4.220*g/cm3, ncomponents=2);
+  PbF2Material  = new G4Material("PbF2",density= 3.97*g/cm3, ncomponents=2);
   PbF2Material->AddElement(Si, natoms=1);
   PbF2Material->AddElement(O , natoms=2);
 
+  SapphireMaterial  = new G4Material("Sapphire",density= 4.220*g/cm3, ncomponents=2);
+  SapphireMaterial->AddElement(Al, natoms=2);
+  SapphireMaterial->AddElement(O , natoms=3);
+  
   G4Material* Vacuum = new G4Material("interGalactic", 1., 1.008*g/mole, 
 				      1.e-25*g/cm3, kStateGas, 
 				      2.73*kelvin, 3.e-18*pascal);
@@ -685,9 +692,18 @@ void PrtDetectorConstruction::DefineMaterials(){
   
   G4int n_PbF2=56;
   G4double en_PbF2[] = {1.55 ,1.569,1.59 ,1.61 ,1.631,1.653,1.675,1.698,1.722,1.746,1.771,1.797,1.823,1.851,1.879,1.907,1.937,1.968,2    ,2.033,2.066,2.101,2.138,2.175,2.214,2.254,2.296,2.339,2.384,2.431,2.48 ,2.53 ,2.583,2.638,2.695,2.755,2.818,2.883,2.952,3.024,3.1  ,3.179,3.263,3.351,3.444,3.542,3.647,3.757,3.875,3.999,4.133,4.275,4.428,4.592,4.769,4.959};
-
-  G4double ab_PbF2[]= {407  ,403.3,379.1,406.3,409.7,408.9,406.7,404.7,391.7,397.7,409.6,403.7,403.8,409.7,404.9,404.2,407.1,411.1,403.1,406.1,415.4,399.1,405.8,408.2,385.7,405.6,405.2,401.6,402.6,407.1,417.7,401.1,389.9,411.9,400.9,398.3,402.1,408.7,384.8,415.8,413.1,385.7,353.7,319.1,293.6,261.9,233.6,204.4,178.3,147.6,118.2,78.7 ,51.6 ,41.5 ,24.3 ,8.8};
+  G4double ab_PbF2[]= {407,403.3,379.1,406.3,409.7,408.9,406.7,404.7,391.7,397.7,409.6,403.7,403.8,409.7,404.9,404.2,407.1,411.1,403.1,406.1,415.4,399.1,405.8,408.2,385.7,405.6,405.2,401.6,402.6,407.1,417.7,401.1,389.9,411.9,400.9,398.3,402.1,408.7,384.8,415.8,413.1,385.7,353.7,319.1,293.6,261.9,233.6,204.4,178.3,147.6,118.2,78.7 ,51.6 ,41.5 ,24.3 ,8.8};
   G4double ref_PbF2[]= {1.749,1.749,1.75 ,1.75 ,1.751,1.752,1.752,1.753,1.754,1.754,1.755,1.756,1.757,1.757,1.758,1.759,1.76 ,1.761,1.762,1.764,1.765,1.766,1.768,1.769,1.771,1.772,1.774,1.776,1.778,1.78 ,1.782,1.785,1.787,1.79 ,1.793,1.796,1.8  ,1.804,1.808,1.813,1.818,1.824,1.83 ,1.837,1.845,1.854,1.865,1.877,1.892,1.91 ,1.937,1.991,1.38 ,1.915,1.971,2.019};
+
+  const G4int n_Sapphire=57;
+  G4double en_Sapphire[] = {1.02212,1.05518,1.09045,1.12610,1.16307,1.20023,1.23984,1.28043,1.32221,1.36561,1.41019,1.45641,1.50393,1.55310,1.60393,1.65643,1.71059,1.76665,1.82437,1.88397,1.94576,2.00946,2.07504,2.14283,2.21321,2.28542,2.36025,2.43727,2.51693,2.59924,2.68480,2.77245,2.86337,2.95693,3.05379,3.15320,3.25674,3.36273,3.47294,3.58646,3.70433,3.82549,3.94979,4.07976,4.21285,4.35032,4.49380,4.64012,4.79258,4.94946,5.11064,5.27816,5.44985,5.62797,5.81266,6.00407,6.19920};
+  G4double ref_Sapphire[] = {1.75188,1.75253,1.75319,1.75382,1.75444,1.75505,1.75567,1.75629,1.75691,1.75754,1.75818,1.75883,1.75949,1.76017,1.76088,1.76160,1.76235,1.76314,1.76395,1.76480,1.76570,1.76664,1.76763,1.76867,1.76978,1.77095,1.77219,1.77350,1.77490,1.77639,1.77799,1.77968,1.78150,1.78343,1.78551,1.78772,1.79011,1.79265,1.79540,1.79835,1.80154,1.80497,1.80864,1.81266,1.81696,1.82163,1.82674,1.83223,1.83825,1.84480,1.85191,1.85975,1.86829,1.87774,1.88822,1.89988,1.91270};
+
+  G4double ab_Sapphire[n_Sapphire];
+  //crystan standard grade 2mm
+  G4double transmitance_Sapphire[]= {0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.85,0.85,0.85,0.85,0.85,0.85,0.85,0.85,0.85,0.85,0.85,0.85,0.85,0.85,0.85,0.85,0.85,0.85,0.84,0.84,0.84,0.84,0.84,0.84,0.84,0.84,0.84,0.83,0.80,0.67,0.47,0.23,0.22};
+  for(int i=0;i<n_Sapphire;i++)  ab_Sapphire[i] = (-1)/log(transmitance_Sapphire[i])*2*mm;
+
   
   /*************************** ABSORPTION COEFFICIENTS *****************************/
 
@@ -740,7 +756,9 @@ void PrtDetectorConstruction::DefineMaterials(){
     QuartzAbsorption[i] = (-1)/log(QuartzAbsorption[i])*100*cm;
     KamLandOilAbsorption[i] = (-1)/log(KamLandOilAbsorption[i])*50*cm;
   }
+ 
 
+  
   /**************************** REFRACTIVE INDEXES ****************************/
   
   // only phase refractive indexes are necessary -> g4 calculates group itself !!
@@ -806,6 +824,13 @@ void PrtDetectorConstruction::DefineMaterials(){
   PbF2MPT->AddProperty("ABSLENGTH",en_PbF2, ab_PbF2, n_PbF2);
   PbF2Material->SetMaterialPropertiesTable(PbF2MPT);
 
+  // Sapphire
+  G4MaterialPropertiesTable* SapphireMPT = new G4MaterialPropertiesTable();
+  SapphireMPT->AddProperty("RINDEX", en_Sapphire, ref_Sapphire, n_Sapphire);
+  SapphireMPT->AddProperty("ABSLENGTH",en_Sapphire, ab_Sapphire, n_Sapphire);
+  SapphireMaterial->SetMaterialPropertiesTable(SapphireMPT);
+
+  
   // Epotek Glue                                        
   G4MaterialPropertiesTable* EpotekMPT = new G4MaterialPropertiesTable();
   EpotekMPT->AddProperty("RINDEX", PhotonEnergy, EpotekRefractiveIndex, num);

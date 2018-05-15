@@ -64,6 +64,7 @@ public:
   void SetDisplayOpt(int val){ fDispalyOpt = val; }
   void SetTimeRes(double val){ fTimeRes = val; }
   void SetMix(int val){fMix = val;}
+  void SetVerbose(int val){fVerbose = val;}
   
   
   // Accessors
@@ -90,6 +91,7 @@ public:
   TTree *GetTree(){ return fTree; }
   TString GetOutName(){return fOutName;}
   int GetMix(){ return fMix; }
+  int GetVerbose(){ return fVerbose; }
 
   
 private: 
@@ -117,6 +119,7 @@ private:
   double fTimeRes;
   TString fOutName;
   int fMix;
+  int fVerbose;
   
 };
 

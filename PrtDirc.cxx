@@ -116,7 +116,8 @@ int main(int argc,char** argv)
   if(displayOpt.size())   PrtManager::Instance()->SetDisplayOpt(atoi(displayOpt));
   if(timeRes.size())   PrtManager::Instance()->SetTimeRes(atof(timeRes));
   if(geomAng.size())   PrtManager::Instance()->SetAngle(atof(geomAng));
-
+  PrtManager::Instance()->SetVerbose(verbose);
+  
   if(runtype == 2 || runtype==3 || runtype==4){
     PrtLutReco * reco = new PrtLutReco(infile.c_str(),lutfile.c_str(),verbose);
     reco->Run(firstevent, atoi(events));

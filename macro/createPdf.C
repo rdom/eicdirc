@@ -40,7 +40,7 @@ TF1 * fitpdf(TH1F *h){
   return gaust;
 }
 
-void createPdf(TString in="hits.root"){
+void createPdf(TString in="hits.root",int endevent=0){
   if(!prt_init(in,1,"data/createPdf")) return;
    
   const Int_t nch(15000);
@@ -72,6 +72,7 @@ void createPdf(TString in="hits.root"){
     }
     if(pdg==321) totalf++;
     if(pdg==211 ) totals++;
+    if(totalf>end || totals>end) break;
   }
 
   std::cout<<"#1 "<< totalf <<"  #2 "<<totals <<std::endl;

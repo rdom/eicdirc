@@ -58,6 +58,7 @@ private:
   G4Material*        epotekMaterial;  
   G4Material*        Nlak33aMaterial;
   G4Material*        PbF2Material;
+  G4Material*        SapphireMaterial;
   G4Material*        frontMaterial;
   
   G4int fNRow;
