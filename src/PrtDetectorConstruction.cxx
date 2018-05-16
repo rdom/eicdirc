@@ -47,7 +47,11 @@ PrtDetectorConstruction::PrtDetectorConstruction()
   //fBar[0] = 17; fBar[1] = 32; fBar[2] = 1050*4; //4200;
   //fMirror[0] = 20; fMirror[1] = 40; fMirror[2] =1;
   //fPrizm[0] = 170; fPrizm[1] = 300; fPrizm[2] = 30+300*tan(37*deg); fPrizm[3] = 30;
-  fPrizm[0] = 390; fPrizm[1] = 300; fPrizm[3] = 50; fPrizm[2]= fPrizm[3]+300*tan(38*deg);
+  //fPrizm[0] = 390; fPrizm[1] = 300; fPrizm[3] = 50; fPrizm[2]= fPrizm[3]+300*tan(32*deg);
+  fPrizm[0] = 360; fPrizm[1] = 300; fPrizm[3] = 50; fPrizm[2]= fPrizm[3]+300*tan(32*deg);
+  //420
+  
+  std::cout<<"fPrizm[2] "<<fPrizm[2]<<std::endl;
   
   fdTilt = 80*deg;
   fPrizmT[0] = 390;
@@ -126,7 +130,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   lFd = new G4LogicalVolume(gFd,defaultMaterial,"lFd",0,0,0);
   
   G4int fNBoxes = (PrtManager::Instance()->GetGeometry() == 0)? 16 :1;
-  G4double radius = 1000;
+  G4double radius = 970;
   G4double tphi, dphi = 22.5*deg; //22.5*deg;
   G4int BoxId = 0;
 
@@ -446,10 +450,10 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     // alternative mcp pmt
     // The MCP
 
-    fMcpTotal[1]=fPrizm[0]/6.-1;
-    fMcpTotal[0]=fPrizm[2]/4.-5;
-    fMcpActive[1]= fMcpTotal[1];
-    fMcpActive[0]= fMcpTotal[0];
+    // fMcpTotal[1]=fPrizm[0]/6.-1;
+    // fMcpTotal[0]=fPrizm[2]/4.-5;
+    // fMcpActive[1]= fMcpTotal[1];
+    // fMcpActive[0]= fMcpTotal[0];
     
     G4Box* gMcp = new G4Box("gMcp",fMcpTotal[0]/2.,fMcpTotal[1]/2.,fMcpTotal[2]/2.);
     lMcp = new G4LogicalVolume(gMcp,BarMaterial,"lMcp",0,0,0);
@@ -460,8 +464,8 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     fNpix1 = 32;//fMcpActive[1]/pixSize-1;
     fNpix2 = 32;// fMcpActive[1]/pixSize-1;
 
-    fNpix1 = 17;
-    fNpix2 = 17;
+    fNpix1 = 16;
+    fNpix2 = 16;
 
     std::cout<<"fNpix1="<<fNpix1 << " fNpix1="<<fNpix1 <<std::endl;
     
@@ -480,8 +484,8 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     }
  
     int mcpId = 0;
-    G4double gapx = (fPrizm[2]-4*fMcpTotal[0])/5.;
-    G4double gapy = (fPrizm[0]-6*fMcpTotal[1])/7.;
+    G4double gapx = (fPrizm[2]-fNCol*fMcpTotal[0])/(double)(fNCol+1);
+    G4double gapy = (fPrizm[0]-fNRow*fMcpTotal[1])/(double)(fNRow+1);
     for(int i=0; i<fNCol; i++){
       for(int j=0; j<fNRow; j++){
 	double shiftx = i*(fMcpTotal[0]+gapx)-fPrizm[3]/2.+fMcpTotal[0]/2+gapx;
@@ -701,8 +705,8 @@ void PrtDetectorConstruction::DefineMaterials(){
 
   G4double ab_Sapphire[n_Sapphire];
   //crystan standard grade 2mm
-  G4double transmitance_Sapphire[]= {0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.86,0.85,0.85,0.85,0.85,0.85,0.85,0.85,0.85,0.85,0.85,0.85,0.85,0.85,0.85,0.85,0.85,0.85,0.85,0.84,0.84,0.84,0.84,0.84,0.84,0.84,0.84,0.84,0.83,0.80,0.67,0.47,0.23,0.22};
-  for(int i=0;i<n_Sapphire;i++)  ab_Sapphire[i] = (-1)/log(transmitance_Sapphire[i])*2*mm;
+  G4double transmitance_Sapphire[]= {0.845,0.844,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.842,0.842,0.842,0.842,0.838,0.838,0.838,0.838,0.838,0.838,0.836,0.836,0.836,0.836,0.834,0.834,0.833,0.832,0.832,0.831,0.831,0.83,0.828,0.828,0.828,0.828,0.828,0.828,0.828,0.828,0.828,0.825,0.80,0.67,0.47,0.23,0.22};
+  for(int i=0;i<n_Sapphire;i++)  ab_Sapphire[i] = (-1)/log(transmitance_Sapphire[i]+2*0.077007)*2*mm;
 
   
   /*************************** ABSORPTION COEFFICIENTS *****************************/
@@ -863,21 +867,27 @@ void PrtDetectorConstruction::SetVisualization(){
   waBar->SetVisibility(true);
   lBar->SetVisAttributes(waBar);
 
+  G4VisAttributes *waGlue = new G4VisAttributes(G4Colour(0.,0.4,0.9,0.1));
+  waGlue->SetVisibility(true);
+  lGlue->SetVisAttributes(waGlue);
+
+  
   G4VisAttributes *waMirror = new G4VisAttributes(G4Colour(1.,1.,0.9,0.2));
   waMirror->SetVisibility(true);
   lMirror->SetVisAttributes(waMirror);
 
   G4double transp = 1.0;
   G4VisAttributes * vaLens = new G4VisAttributes(G4Colour(0.,1.,1.,transp));
-  //  vaLens->SetForceWireframe(true);
+  vaLens->SetForceWireframe(true);
   //vaLens->SetForceAuxEdgeVisible(true);
-  //vaLens->SetForceLineSegmentsPerCircle(50);
+  //vaLens->SetForceLineSegmentsPerCircle(10);
   //vaLens->SetLineWidth(4);
 
   if(fLensId==2 || fLensId==3 || fLensId==6 ){
     lLens1->SetVisAttributes(vaLens);
     G4VisAttributes * vaLens2 = new G4VisAttributes(&vaLens);
     vaLens2->SetColour(G4Colour(0.,0.5,1.,transp));
+    vaLens2->SetForceWireframe(true);
     lLens2->SetVisAttributes(vaLens2);
     if(fLensId==3 || fLensId==6) lLens3->SetVisAttributes(vaLens);
   }
@@ -896,7 +906,7 @@ void PrtDetectorConstruction::SetVisualization(){
   lMcp->SetVisAttributes(waMcp);
 
   G4VisAttributes *waPixel = new G4VisAttributes(G4Colour(1.0,0.0,0.1,0.3));
-  //waPixel->SetForceWireframe(true);
+  waPixel->SetForceWireframe(true);
   if(fMcpLayout==3) waPixel->SetVisibility(false);
   else waPixel->SetVisibility(true);
   lPixel->SetVisAttributes(waPixel);
