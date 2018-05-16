@@ -40,7 +40,7 @@ TF1 * fitpdf(TH1F *h){
   return gaust;
 }
 
-void createPdf(TString in="hits.root",int endevent=0){
+void createPdf(TString in="hits.root",int end=0){
   if(!prt_init(in,1,"data/createPdf")) return;
    
   const Int_t nch(15000);
@@ -53,6 +53,7 @@ void createPdf(TString in="hits.root",int endevent=0){
   
   Double_t time;
   PrtHit hit;
+  if(end==0) end=prt_entries;
   Int_t pdg(0), totalf(0),totals(0), ch;
   for (Int_t e=0; e<prt_entries; e++){ //prt_entries
     prt_nextEvent(e,1000);
