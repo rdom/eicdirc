@@ -124,7 +124,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   double dirclength=fBar[2]*4+gluethickness*4;
   PrtManager::Instance()->SetRadiatorL(dirclength);
   // The DIRC
-  G4Box* gDirc = new G4Box("gDirc",400.,300.,0.5*dirclength+350);
+  G4Box* gDirc = new G4Box("gDirc",400.,300.,0.5*dirclength+550);
   lDirc = new G4LogicalVolume(gDirc,defaultMaterial,"lDirc",0,0,0);
   G4Box* gFd = new G4Box("gFd",0.5*fFd[1],0.5*fFd[0],0.5*fFd[2]);
   lFd = new G4LogicalVolume(gFd,defaultMaterial,"lFd",0,0,0);
@@ -287,9 +287,17 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     lLens2 = new G4LogicalVolume(gLens2,Nlak33aMaterial,"lLens2",0,0,0);
     lLens3 = new G4LogicalVolume(gLens3,BarMaterial,"lLens3",0,0,0);
   }  
-  
+
+  if(fLensId ==100){
+    fLens[2]=200;
+    G4Box *gLens3 = new G4Box("gLens1",fBar[0]/2.,fPrizm[0]/2.,100);
+    lLens3 = new G4LogicalVolume(gLens3,BarMaterial,"lLens3",0,0,0);	
+  }
+      
   if(fLensId != 0 && fLensId != 10){
-    if(fNBar==1 && fLensId==3){
+    if(fLensId==100){
+      new G4PVPlacement(0,G4ThreeVector(0,0,0.5*dirclength+fLens[2]/2.),lLens3,"wLens3", lDirc,false,0);
+    }else if(fNBar==1 && fLensId==3){
       for(int i=0; i<11; i++){
 	double shifty = i*(fLens[1]+0.0)-fPrizm[0]/2. + fLens[1]/2.;
 	new G4PVPlacement(0,G4ThreeVector(0,shifty,0.5*dirclength+fLens[2]/2.),lLens1,"wLens1", lDirc,false,i);
@@ -312,7 +320,6 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
 	new G4PVPlacement(0,G4ThreeVector(0,0,0.5*dirclength+fLens[2]/2.),lLens3,"wLens3", lDirc,false,0);	
       }
     }
-
 
     // new G4PVPlacement(0,G4ThreeVector(0,0,0.5*dirclength+fLens[2]/2.),lLens1,"wLens1", lDirc,false,0);
     // new G4PVPlacement(0,G4ThreeVector(0,0,0.5*dirclength+fLens[2]/2.),lLens2,"wLens2", lDirc,false,0);
@@ -353,7 +360,6 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   }
 
   new G4PVPlacement(fdrot,G4ThreeVector(0.5*fFd[1]-0.5*fPrizm[3]-evshiftx,0,evshiftz),lFd,"wFd", lDirc,false,0);
-  
 
   if(fMcpLayout==1){
     // standard mcp pmt layout
@@ -883,6 +889,8 @@ void PrtDetectorConstruction::SetVisualization(){
   //vaLens->SetForceLineSegmentsPerCircle(10);
   //vaLens->SetLineWidth(4);
 
+  if(fLensId==100 )lLens3->SetVisAttributes(vaLens);    
+  
   if(fLensId==2 || fLensId==3 || fLensId==6 ){
     lLens1->SetVisAttributes(vaLens);
     G4VisAttributes * vaLens2 = new G4VisAttributes(&vaLens);

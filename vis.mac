@@ -114,18 +114,18 @@
 
 #/vis/viewer/save
 
-#mcp
-/vis/viewer/set/viewpointVector -1 0 0.00000001
-/vis/viewer/set/upVector 0 1
-/vis/viewer/set/viewpointThetaPhi 9  41  deg
-/vis/viewer/zoomTo 6
-/vis/viewer/set/targetPoint 88.5358 -17.0546 18.8692 cm 
+# #mcp
+# /vis/viewer/set/viewpointVector -1 0 0.00000001
+# /vis/viewer/set/upVector 0 1
+# /vis/viewer/set/viewpointThetaPhi 9  41  deg
+# /vis/viewer/zoomTo 6
+# /vis/viewer/set/targetPoint 88.5358 -17.0546 18.8692 cm 
 
 
-# #lens
-# /vis/viewer/zoomTo 20
-# /vis/viewer/set/viewpointThetaPhi 129.792  1.39204  deg
-# /vis/viewer/set/targetPoint 100 20 210 cm
+#lens
+/vis/viewer/zoomTo 20
+/vis/viewer/set/viewpointThetaPhi 129.792  1.39204  deg
+/vis/viewer/set/targetPoint 100 20 210 cm
 
 # #lens side
 # /vis/viewer/set/projection orthogonal
