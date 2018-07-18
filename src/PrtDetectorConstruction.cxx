@@ -130,7 +130,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   lFd = new G4LogicalVolume(gFd,defaultMaterial,"lFd",0,0,0);
   
   G4int fNBoxes = (PrtManager::Instance()->GetGeometry() == 0)? 16 :1;
-  G4double radius = 970;
+  fRadius = 970;
   G4double tphi, dphi = 22.5*deg; //22.5*deg;
   G4int BoxId = 0;
 
@@ -140,8 +140,8 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   }else{ 
     for(int i=0; i<fNBoxes; i++){
       tphi = dphi*i; 
-      G4double dx = radius * cos(tphi);
-      G4double dy = radius * sin(tphi);
+      G4double dx = fRadius * cos(tphi);
+      G4double dy = fRadius * sin(tphi);
 
       G4RotationMatrix *tRot = new G4RotationMatrix();
       tRot->rotateZ(-tphi);     
@@ -474,8 +474,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     fNpix2 = 16;
 
     std::cout<<"fNpix1="<<fNpix1 << " fNpix1="<<fNpix1 <<std::endl;
-    
-    
+        
     // The MCP Pixel
     G4Box* gPixel = new G4Box("gPixel",0.5*fMcpActive[0]/fNpix1,0.5*fMcpActive[1]/fNpix2,fMcpActive[2]/16.);
     lPixel = new G4LogicalVolume(gPixel,BarMaterial,"lPixel",0,0,0);
@@ -908,12 +907,12 @@ void PrtDetectorConstruction::SetVisualization(){
   lPrizmT2->SetVisAttributes(waPrizm);
  
   //G4VisAttributes *waMcp = new G4VisAttributes(G4Colour(0.1,0.1,0.9,0.3));
-  G4VisAttributes *waMcp = new G4VisAttributes(G4Colour(1.0,0.,0.1,0.7));
-  //  waMcp->SetForceWireframe(true);
+  G4VisAttributes *waMcp = new G4VisAttributes(G4Colour(1.0,0.,0.1,0.4));
+  //waMcp->SetForceWireframe(true);
   waMcp->SetForceSolid(true);
   lMcp->SetVisAttributes(waMcp);
 
-  G4VisAttributes *waPixel = new G4VisAttributes(G4Colour(1.0,0.0,0.1,0.3));
+  G4VisAttributes *waPixel = new G4VisAttributes(G4Colour(0.7,0.0,0.1,0.5));
   waPixel->SetForceWireframe(true);
   if(fMcpLayout==3) waPixel->SetVisibility(false);
   else waPixel->SetVisibility(true);
@@ -948,8 +947,8 @@ void PrtDetectorConstruction::SetRotation(G4double angle){
 
 
 void PrtDetectorConstruction::DrawHitBox(int id){
-  Int_t dispopt = PrtManager::Instance()->GetDisplayOpt();
- 
+
+  Int_t dispopt = PrtManager::Instance()->GetDisplayOpt(); 
   if(dispopt!=1 && dispopt!=2 ) return;
 
   PrtEvent *event = new PrtEvent();
@@ -969,24 +968,27 @@ void PrtDetectorConstruction::DrawHitBox(int id){
   Int_t nevent = tree->GetEntries();
   std::cout<<"nevent  "<< nevent <<std::endl;
   
-  int pix(0),prizm(0);
-  const int maxpixel(50000);
-  int load[16][maxpixel]={{0}};
-  for (Int_t i=0;i<nevent;i++) {
+  int pix(0),mcp(0),prizm(0);
+  int hload[1][24][6150]={{{0}}};
+
+  for(int i=0;i<nevent;i++) {
     tree->GetEvent(i);    
-    for(Int_t h=0; h<event->GetHitSize(); h++){
+    for(int h=0; h<event->GetHitSize(); h++){
       hit = event->GetHit(h);
       pix=hit.GetPixelId();
+      mcp=hit.GetMcpId();
       prizm=0;//hit.GetPrizmId();
-      if(prizm<0) continue;
-      load[prizm][pix]++;
+      if(prizm<0 || pix<0 || pix>6150|| mcp<0) continue;
+      hload[prizm][mcp][pix]++;
     }
   }
-
+  
   int maxload[16]={0};
-  for(Int_t p=0; p<16; p++){
-    for(Int_t i=0; i<maxpixel; i++){
-      if(maxload[p]<load[p][i]) maxload[p] =  load[p][i];
+  for(int p=0; p<1; p++){
+    for(int m=0; m<24; m++){
+      for(int i=0; i<6150; i++){
+	if(maxload[p]<hload[p][m][i]) maxload[p] =  hload[p][m][i];
+      }
     }
   }
 
@@ -996,16 +998,14 @@ void PrtDetectorConstruction::DrawHitBox(int id){
   G4VisAttributes *waDircHit = new G4VisAttributes(G4Colour(1.,1.,0.9,0.2));
   waDircHit->SetVisibility(false);
 	  
-  G4double radius = 1000;
   G4double tphi, dphi = 22.5*deg;
   G4int BoxId = 0;
   G4LogicalVolume *lDircHit[16]; 
   for(int i=0; i<16; i++){
-    // if(i!=1) continue;
-    tphi = dphi*i; 
-    G4double dx = (radius+(fPrizm[2]/2.-fPrizm[3]/2.)) * cos(tphi);
-    G4double dy = (radius+(fPrizm[2]/2.-fPrizm[3]/2.)) * sin(tphi);
-    G4ThreeVector dirc = G4ThreeVector(dx,dy,-500+fBar[2]/2.+fPrizm[1]+fMcpActive[2]/2.+fLens[2]);
+    tphi = dphi*i;
+    G4double dx = fRadius * cos(tphi);
+    G4double dy = fRadius * sin(tphi);
+    G4ThreeVector dirc = G4ThreeVector(dx,dy,0.5*fBar[2]*4+fPrizm[1]+fMcpActive[2]/2.+fLens[2]);
 
     G4Box* gDircHit = new G4Box("gDircHit",400.,300.,10);
     lDircHit[i] = new G4LogicalVolume(gDircHit,defaultMaterial,Form("lDircHit%d",i),0,0,0);
@@ -1020,34 +1020,38 @@ void PrtDetectorConstruction::DrawHitBox(int id){
   G4LogicalVolume * lHit;
   G4VisAttributes *waHit;
   G4Box* gHit;
-  for(int p=0; p<16; p++){
-    int pixelId=0;
-    for(int i=0; i<fNpix1; i++){
-      for(int j=0; j<fNpix2; j++){
-	double colorid = load[p][pixelId]/(double)maxload[p];
-	if(colorid>1) colorid=1;
-	double hight = colorid*5;
-	int cid = colorid*255;
-	if(cid>1){
-	
-	  gHit = new G4Box("gHit",0.5*fPrizm[2]/fNpix1,0.5*fPrizm[0]/fNpix2,hight+0.2);
-	  lHit = new G4LogicalVolume(gHit,BarMaterial,"lHit",0,0,0);
-	  waHit = new G4VisAttributes(G4Colour(rgbcolors[cid][0]/255.,rgbcolors[cid][1]/255.,rgbcolors[cid][2]/255.,1.0));
-	  waHit->SetForceSolid(true);
-	  lHit->SetVisAttributes(waHit);
+  for(int p=0; p<1; p++){
+    int mcp = 0;
+    G4double gapx = (fPrizm[2]-fNCol*fMcpTotal[0])/(double)(fNCol+1);
+    G4double gapy = (fPrizm[0]-fNRow*fMcpTotal[1])/(double)(fNRow+1);
+    for(int i=0; i<fNCol; i++){
+      for(int j=0; j<fNRow; j++){
+  	double shiftx = i*(fMcpTotal[0]+gapx)-fPrizm[3]/2.+fMcpTotal[0]/2+gapx;
+  	double shifty = j*(fMcpTotal[1]+gapy)-fPrizm[0]/2.+fMcpTotal[1]/2+gapy;      
+  	int pixelId=0;
+  	for(int j1=0; j1<fNpix2; j1++){
+  	  for(int i1=0; i1<fNpix1; i1++){
+	    
+  	    double colorid = hload[p][mcp][pixelId]/(double)maxload[p];
+  	    if(colorid>1) colorid=1;
+  	    double hight = colorid*5;
+  	    int cid = colorid*255;
+  	    if(cid>1){	
+  	      gHit = new G4Box("gHit",0.5*fMcpActive[0]/fNpix1,0.5*fMcpActive[1]/fNpix2,hight+0.2);
+  	      lHit = new G4LogicalVolume(gHit,BarMaterial,"lHit",0,0,0);
+  	      waHit = new G4VisAttributes(G4Colour(rgbcolors[cid][0]/255.,rgbcolors[cid][1]/255.,rgbcolors[cid][2]/255.,1.0));
+  	      waHit->SetForceSolid(true);
+  	      lHit->SetVisAttributes(waHit);
 
-	  double shiftx = i*(fPrizm[2]/fNpix1) - fPrizm[2]/2.+fPrizm[2]/(2*fNpix1);
-	  double shifty = j*(fPrizm[0]/fNpix2) - fPrizm[0]/2.+fPrizm[0]/(2*fNpix2);
-	  //	lDirc->GetDaughter(0)
-	  //	  pDirc[2]->GetLogicalVolume()->SetVisAttributes(waHit);
-
-
-
-	  G4ThreeVector pix = G4ThreeVector(shiftx,shifty,hight);
-	  new G4PVPlacement(0,pix,lHit,"wDircHit",lDircHit[p],false,pixelId);
- 
-	}
-	pixelId++;
+	      double shiftx1 = shiftx+i1*(fMcpActive[0]/fNpix1)-fMcpActive[0]/2.+0.5*fMcpActive[0]/fNpix1;
+	      double shifty1 = shifty+j1*(fMcpActive[1]/fNpix2)-fMcpActive[1]/2.+0.5*fMcpActive[1]/fNpix2;
+  	      G4ThreeVector pix = G4ThreeVector(shiftx1,shifty1,hight);
+  	      new G4PVPlacement(0,pix,lHit,"wDircHit",lDircHit[p],false,pixelId);
+  	    }
+  	    pixelId++;
+  	  }
+  	}
+  	mcp++;
       }
     }
   }
