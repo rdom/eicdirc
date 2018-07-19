@@ -62,10 +62,10 @@
 
 /vis/modeling/trajectories/create/drawByParticleID
 /vis/modeling/trajectories/drawByParticleID-0/set opticalphoton yellow
-#/vis/modeling/trajectories/drawByParticleID-0/setRGBA opticalphoton 1 0.843 0 0.4
+/vis/modeling/trajectories/drawByParticleID-0/setRGBA opticalphoton 1 0.8 0 0.3
 /vis/modeling/trajectories/drawByParticleID-0/setRGBA e+ 1 0 1 1
 /vis/modeling/trajectories/drawByParticleID-0/default/setDrawStepPts true
-/vis/modeling/trajectories/drawByParticleID-0/default/setStepPtsSize 0.1
+/vis/modeling/trajectories/drawByParticleID-0/default/setStepPtsSize 2
 
 
 # (if too many tracks cause core dump => /tracking/storeTrajectory 0)
