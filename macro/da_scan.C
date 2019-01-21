@@ -1,6 +1,6 @@
 #include "../../prttools/prttools.C"
 void da_scan(TString inFile = "r_spr.root", TString outFile="c_spr.root"){
-  fSavePath = "auto";
+  prt_savepath ="data/da_scan";
   TChain ch("dirc"); ch.Add(inFile);
   Double_t cangle,spr,trr,nph,par1,par2,par3,par4,par5,par6,test1,test2,theta,phi; 
 
@@ -95,28 +95,20 @@ void da_scan(TString inFile = "r_spr.root", TString outFile="c_spr.root"){
   gNph->GetYaxis()->SetTitleOffset(0.7);
 
 
-  gSpr->GetXaxis()->SetTitle("#theta_{track} [#circ]");
-  gNph->GetXaxis()->SetTitle("#theta_{track} [#circ]");
-  gTrr->GetXaxis()->SetTitle("#theta_{track} [#circ]");
+  gSpr->GetXaxis()->SetTitle("#theta_{track} [deg]");
+  gNph->GetXaxis()->SetTitle("#theta_{track} [deg]");
+  gTrr->GetXaxis()->SetTitle("#theta_{track} [deg]");
 
-  TFile *file = new TFile(outFile,"RECREATE");
-  TCanvas* c1 = new TCanvas("spr","spr",800,500);c1->SetBottomMargin(0.12);
+  prt_canvasAdd("spr",800,500);
   gSpr->Draw("APL");
-  canvasAdd(c1);
-  TCanvas* c2 = new TCanvas("nph","nph",800,500);c2->SetBottomMargin(0.12);
+
+  prt_canvasAdd("nph",800,500);
   gNph->Draw("APL");
-  canvasAdd(c2);
-  TCanvas* c3 = new TCanvas("trr","trr",800,500);c3->SetBottomMargin(0.12);
+  
+  prt_canvasAdd("trr",800,500);
   gTrr->Draw("APL");
   gTrr1->Draw("same PL");
   gTrr2->Draw("same PL");
   
-  canvasAdd(c3);
-  canvasSave(0,1);
-  
-  file->cd();
-  c1->Write();
-  c2->Write();
-  c3->Write();
-  file->Close();
+  prt_canvasSave();  
 }

@@ -31,7 +31,7 @@ PrtPrimaryGeneratorAction::PrtPrimaryGeneratorAction()
 
   fParticleGun->SetParticleDefinition(fParticlePi);
   fParticleGun->SetParticleTime(0.0*ns);
-  fParticleGun->SetParticlePosition(G4ThreeVector(0.0*cm,0.0*cm,0.0*cm));
+  fParticleGun->SetParticlePosition(G4ThreeVector(0.0*cm,0.0*cm,0.05*cm));
   fParticleGun->SetParticleMomentumDirection(G4ThreeVector(1.,0.,0.));
   fParticleGun->SetParticleEnergy(500.0*keV);
 }
