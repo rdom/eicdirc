@@ -16,44 +16,33 @@ else()
 endif()
 
 #----------------------------------------------------------------------------
-# Setup Geant4 include directories and compile definitions
-#
-include(${Geant4_USE_FILE})
-
-#----------------------------------------------------------------------------
 # Find ROOT (required package)
 #
-#find_package(ROOT REQUIRED)
-list(APPEND CMAKE_MODULE_PATH $ENV{ROOTSYS}/etc/cmake)
-list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
-
 find_package(ROOT REQUIRED)
-include_directories(${ROOT_INCLUDE_DIR})
-
-
-
-#----------------------------------------------------------------------------
-# Generate dictionary for root
-#
-execute_process(COMMAND rootcint -f PrtDict.cxx -c ../src/PrtHit.h ../src/PrtEvent.h ../src/PrtLutNode.h ../src/PrtTrackInfo.h  ../src/PrtPhotonInfo.h ../src/PrtAmbiguityInfo.h ../src/PrtLinkDef.h)
-
 
 #----------------------------------------------------------------------------
 # Locate sources and headers for this project
-#
-include_directories(${PROJECT_SOURCE_DIR}/src
-                    ${Geant4_INCLUDE_DIR}
-		    ${ROOT_INCLUDE_DIR})
+include_directories(SYSTEM ${Geant4_INCLUDE_DIR} ${ROOT_INCLUDE_DIRS})
+include_directories(${PROJECT_SOURCE_DIR}/src)
+
+include(${ROOT_USE_FILE})
+include(${Geant4_USE_FILE})
+
 file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cxx)
 file(GLOB headers ${PROJECT_SOURCE_DIR}/src/*.h)
+
+#----------------------------------------------------------------------------
+# Generate dictionary for root
+ROOT_GENERATE_DICTIONARY(G__Prt PrtHit.h PrtEvent.h PrtLutNode.h PrtAmbiguityInfo.h PrtPhotonInfo.h PrtTrackInfo.h LINKDEF src/PrtLinkDef.h MODULE Prt)
+add_library(Prt SHARED src/PrtHit.cxx src/PrtEvent.cxx src/PrtLutNode.cxx src/PrtAmbiguityInfo.cxx src/PrtPhotonInfo.cxx src/PrtTrackInfo.cxx G__Prt.cxx)
+
 
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4 libraries
 #
 #set (CMAKE_CXX_FLAGS "-std=gnu++11")
-add_executable(eicdirc PrtDirc.cxx ${sources} PrtDict.cxx ${headers})
-target_link_libraries(eicdirc -lGLU ${Geant4_LIBRARIES} ${ROOT_LIBRARIES} -L/home/hex/install/root-6.12.06/lib -lSpectrum -lHistPainter)
-add_library(prtdirclib SHARED ../src/PrtHit.cxx ../src/PrtEvent.cxx ../src/PrtLutNode.cxx ../src/PrtTrackInfo.cxx  ../src/PrtPhotonInfo.cxx ../src/PrtAmbiguityInfo.cxx PrtDict.cxx ../src/PrtHit.h ../src/PrtEvent.h ../src/PrtLutNode.h ../src/PrtTrackInfo.h  ../src/PrtPhotonInfo.h ../src/PrtAmbiguityInfo.h)
+add_executable(eicdirc PrtDirc.cxx ${sources})
+target_link_libraries(eicdirc -lGLU ${Geant4_LIBRARIES} ${ROOT_LIBRARIES} Prt -lSpectrum -lHistPainter)
 
 #----------------------------------------------------------------------------
 # Copy all scripts to the build directory, i.e. the directory in which we
