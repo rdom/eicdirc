@@ -44,6 +44,8 @@ private:
   G4LogicalVolume* lPrizmT2;
   G4LogicalVolume* lMcp;
   G4LogicalVolume* lPixel;
+  G4LogicalVolume* lExpVol;
+  G4LogicalVolume* lGlueE;
   G4VPhysicalVolume*   pDirc[100];
 
   G4VPhysicalVolume* wBar;

@@ -22,8 +22,9 @@ public:
 
   void AddHit(PrtHit hit);
   PrtHit GetHit(Int_t ind) { return fHitArray[ind]; }
+  std::vector<PrtHit> GetHits() { return fHitArray; }    
   TString PrintInfo();
-
+  
   // Accessors 
   Int_t GetDecoderId() const { return fDecoderId; }
   Int_t GetId() const { return fId; }

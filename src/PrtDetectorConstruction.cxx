@@ -153,12 +153,16 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   G4Box *gBar = new G4Box("gBar",fBar[0]/2.,fBar[1]/2.,fBar[2]/2.);
   lBar = new G4LogicalVolume(gBar,BarMaterial,"lBar",0,0,0);
   //wBar =  new G4PVPlacement(0,G4ThreeVector(0,0,0),lBar,"wBar", lDirc,false,0);
+  G4Box *gExpVol = new G4Box("gExpVol",fBar[0]/2.,fPrizm[0]/2.,fBar[2]/2.);
+  lExpVol = new G4LogicalVolume(gExpVol,BarMaterial,"lExpVol",0,0,0);
 
+  
   // Glue
   G4Box *gGlue = new G4Box("gGlue",fBar[0]/2.,fBar[1]/2.,0.5*gluethickness);
   lGlue = new G4LogicalVolume(gGlue,epotekMaterial,"lGlue",0,0,0);
+  G4Box *gGlueE = new G4Box("gGlueE",fBar[0]/2.,fPrizm[0]/2.,0.5*gluethickness);
+  lGlueE = new G4LogicalVolume(gGlueE,epotekMaterial,"lGlueE",0,0,0);
 
-  
   bool plate = false;
   if(fNBar==1){
     for(int j=0;j<4; j++){
@@ -167,12 +171,20 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
       wGlue =  new G4PVPlacement(0,G4ThreeVector(0,0,z+0.5*(1050+gluethickness)),lGlue,"wGlue", lDirc,false,0);
     }
   }else{
-    int id=0;
+    int id=0, nparts=4;
+    if(PrtManager::Instance()->GetGeometry()==3){
+      double sh=0;
+      if(fLensId == 6) sh = fLens[2];
+      nparts=3;
+      double z = -0.5*dirclength+0.5*1050+(1050+gluethickness)*3;
+      new G4PVPlacement(0,G4ThreeVector(0,0,z+sh),lExpVol,"wExpVol",lDirc,false,id);      
+      new G4PVPlacement(0,G4ThreeVector(0,0,z+0.5*(1050+gluethickness)+sh),lGlueE,"wGlue", lDirc,false,id);
+    }
     for(int i=0; i<fNBar; i++){
-      double shifty = i*(fBar[1]+0.01)-fPrizm[0]/2. + fBar[1]/2.;
-      for(int j=0;j<4; j++){
+      double shifty = i*(fBar[1]+0.01)-fPrizm[0]/2. + fBar[1]/2.; 
+      for(int j=0;j<nparts; j++){
 	double z = -0.5*dirclength+0.5*1050+(1050+gluethickness)*j;
-	pDirc[i] = new G4PVPlacement(0,G4ThreeVector(0,shifty,z),lBar,"wBar",lDirc,false,id);      
+	pDirc[i] = new G4PVPlacement(0,G4ThreeVector(0,shifty,z),lBar,"wBar",lDirc,false,id);
 	wGlue = new G4PVPlacement(0,G4ThreeVector(0,shifty,z+0.5*(1050+gluethickness)),lGlue,"wGlue", lDirc,false,id);
 	id++;
       }
@@ -260,6 +272,11 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     r2 = (r2==0)? 24: r2;
     G4double shight = 25;
 
+    if(PrtManager::Instance()->GetGeometry()==3){
+      r1 = 1000;
+      r2 = 400;
+    }
+    
     G4ThreeVector zTrans1(0, 0, -r1-fLens[2]/2.+r1-sqrt(r1*r1-shight/2.*shight/2.) +lensMinThikness);
     G4ThreeVector zTrans2(0, 0, -r2-fLens[2]/2.+r2-sqrt(r2*r2-shight/2.*shight/2.) +layer12);
 
@@ -315,9 +332,11 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
 	}
       }
       if(fLensId==6){
-	new G4PVPlacement(0,G4ThreeVector(0,0,0.5*dirclength+fLens[2]/2.),lLens1,"wLens1", lDirc,false,0);
-	new G4PVPlacement(0,G4ThreeVector(0,0,0.5*dirclength+fLens[2]/2.),lLens2,"wLens2", lDirc,false,0);
-	new G4PVPlacement(0,G4ThreeVector(0,0,0.5*dirclength+fLens[2]/2.),lLens3,"wLens3", lDirc,false,0);	
+	double sh=0;
+	if(PrtManager::Instance()->GetGeometry()==3) sh = 1050+gluethickness; 
+	new G4PVPlacement(0,G4ThreeVector(0,0,0.5*dirclength+fLens[2]/2.-sh),lLens1,"wLens1", lDirc,false,0);
+	new G4PVPlacement(0,G4ThreeVector(0,0,0.5*dirclength+fLens[2]/2.-sh),lLens2,"wLens2", lDirc,false,0);
+	new G4PVPlacement(0,G4ThreeVector(0,0,0.5*dirclength+fLens[2]/2.-sh),lLens3,"wLens3", lDirc,false,0);	
       }
     }
 
@@ -871,11 +890,12 @@ void PrtDetectorConstruction::SetVisualization(){
   G4VisAttributes *waBar = new G4VisAttributes(G4Colour(0.,1.,0.9,0.05)); //0.05
   waBar->SetVisibility(true);
   lBar->SetVisAttributes(waBar);
+  lExpVol->SetVisAttributes(waBar);
 
   G4VisAttributes *waGlue = new G4VisAttributes(G4Colour(0.,0.4,0.9,0.1));
   waGlue->SetVisibility(true);
   lGlue->SetVisAttributes(waGlue);
-
+  lGlueE->SetVisAttributes(waGlue);
   
   G4VisAttributes *waMirror = new G4VisAttributes(G4Colour(1.,1.,0.9,0.2));
   waMirror->SetVisibility(true);
