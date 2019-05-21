@@ -36,7 +36,6 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/src/*.h)
 ROOT_GENERATE_DICTIONARY(G__Prt PrtHit.h PrtEvent.h PrtLutNode.h PrtAmbiguityInfo.h PrtPhotonInfo.h PrtTrackInfo.h LINKDEF src/PrtLinkDef.h MODULE Prt)
 add_library(Prt SHARED src/PrtHit.cxx src/PrtEvent.cxx src/PrtLutNode.cxx src/PrtAmbiguityInfo.cxx src/PrtPhotonInfo.cxx src/PrtTrackInfo.cxx G__Prt.cxx)
 
-
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4 libraries
 #

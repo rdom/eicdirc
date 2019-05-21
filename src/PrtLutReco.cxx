@@ -47,6 +47,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, Int_t verbose){
   fVerbose = verbose;
   fChain = new TChain("data");
   fChain->Add(infile);
+  fEvent=new PrtEvent();
   fChain->SetBranchAddress("PrtEvent", &fEvent);
 
   fFile = new TFile(lutfile);
