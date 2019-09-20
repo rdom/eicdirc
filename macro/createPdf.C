@@ -40,7 +40,7 @@ TF1 * fitpdf(TH1F *h){
   return gaust;
 }
 
-void createPdf(TString in="hits.root",int end=0){
+void createPdf(TString in="hits.root",int end=0, int pid=321){
   if(!prt_init(in,1,"data/createPdf")) return;
    
   const Int_t nch(8000);
@@ -62,8 +62,7 @@ void createPdf(TString in="hits.root",int end=0){
       hit = prt_event->GetHit(i);
       ch=300*hit.GetMcpId()+hit.GetPixelId();      
       time = hit.GetLeadTime();//+gRandom->Gaus(0,0.1);
-      //      if(pdg==321){
-      if(pdg==2212){
+      if(pdg==pid){
 	//totalf++;
 	hlef[ch]->Fill(time);
       }
@@ -72,8 +71,7 @@ void createPdf(TString in="hits.root",int end=0){
 	hles[ch]->Fill(time);
       }
     }
-    //if(pdg==321) totalf++;
-    if(pdg==2212) totalf++;
+    if(pdg==pid) totalf++;
     if(pdg==211 ) totals++;
     if(totalf>end || totals>end) break;
   }
