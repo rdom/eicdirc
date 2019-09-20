@@ -12,9 +12,8 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma
   TGaxis::SetMaxDigits(4);
   
   TCanvas *cc = new TCanvas("cc","cc");
-  TH1F *hllf= new TH1F("hllf","hllf;ln L(K) - ln L(#pi); entries [#]",160,-40,40);
-  TH1F *hlls= new TH1F("hlls","hlls;ln L(K) - ln L(#pi); entries [#]",160,-40,40);
-
+  TH1F *hllf= new TH1F("hllf","hllf;ln L(K) - ln L(#pi); entries [#]",200,-50,50);
+  TH1F *hlls= new TH1F("hlls","hlls;ln L(K) - ln L(#pi); entries [#]",200,-50,50);  
   TH1F *hl1 = new TH1F("hl1","pdf;LE time [ns]; entries [#]", 2000,0,100);
   TH1F *hl2 = new TH1F("hl2","pdf;LE time [ns]; entries [#]", 2000,0,100);
   TH1F *hl3 = new TH1F("hl3","pdf;LE time [ns]; entries [#]", 2000,0,100);
@@ -22,7 +21,7 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma
   TH1F *hnph = new TH1F("hnph",";multiplicity [#]; entries [#]", 200,0,200);
   
   TRandom rand;
-  const Int_t nch(15000);
+  const Int_t nch(8000);
   TF1 *pdff[nch],*pdfs[nch];
   TH1F *hpdff[nch],*hpdfs[nch];
   TFile f(pdf);
@@ -72,7 +71,8 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma
       amins = hpdfs[ch]->GetBinContent(hpdfs[ch]->FindBin(time));
       tnph++;
       
-      Double_t noise = 0.2e-3; //1e-7;
+      //      Double_t noise = 0.2e-3; //1e-7;
+      Double_t noise = 1e-5; //1e-7;
       sumf+=TMath::Log((aminf+noise));
       sums+=TMath::Log((amins+noise));    
 
@@ -92,7 +92,7 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma
       // 	cc->WaitPrimitive();
       // }
 
-      if(prt_event->GetParticle()==321) hl1->Fill(time);
+      if(prt_event->GetParticle()==2212) hl1->Fill(time);
       if(prt_event->GetParticle()==211) hl2->Fill(time);
 
     }
@@ -100,15 +100,15 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma
     sum = sumf-sums;
     if(fabs(sum)<0.1) continue;
     
-    //std::cout<<"sum ===========  "<<sum  << "  "<< sumf<< "  "<< sums<<std::endl;
+    //    std::cout<<"sum ===========  "<<sum  << "  "<< sumf<< "  "<< sums<<std::endl;
     
-    if(prt_event->GetParticle()==321) hllf->Fill(sum);
+    if(prt_event->GetParticle()==2212) hllf->Fill(sum);
     if(prt_event->GetParticle()==211) hlls->Fill(sum);
      
   }
 
-
   gStyle->SetOptStat(0);
+
   TString name = Form("%d_%1.2f",prt_theta,sigma);
 
   prt_canvasAdd("nph_"+name,800,400);

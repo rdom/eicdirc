@@ -28,6 +28,7 @@ PrtPrimaryGeneratorAction::PrtPrimaryGeneratorAction()
   fParticleK = particleTable->FindParticle("kaon+");
   fParticlePi = particleTable->FindParticle("pi+");
   fParticleE = particleTable->FindParticle("e-");
+  fParticleMu = particleTable->FindParticle("mu-");
 
   fParticleGun->SetParticleDefinition(fParticlePi);
   fParticleGun->SetParticleTime(0.0*ns);
@@ -50,12 +51,16 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
   
   if(PrtManager::Instance()->GetMix()){
     if(PrtManager::Instance()->GetParticle()==211 || PrtManager::Instance()->GetParticle()==0){
+
       if(PrtManager::Instance()->GetMix()==1){
 	fParticleGun->SetParticleDefinition(fParticleK);
 	PrtManager::Instance()->SetParticle(321);
-      }else{
+      }else if(PrtManager::Instance()->GetMix()==2){
 	fParticleGun->SetParticleDefinition(fParticleE);
-	PrtManager::Instance()->SetParticle(11);
+	PrtManager::Instance()->SetParticle(11);	
+      }else if(PrtManager::Instance()->GetMix()==3){
+	fParticleGun->SetParticleDefinition(fParticleMu);
+	PrtManager::Instance()->SetParticle(13);
       }
     }else{
       fParticleGun->SetParticleDefinition(fParticlePi);

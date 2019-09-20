@@ -180,11 +180,15 @@ int main(int argc,char** argv)
     PrtManager::Instance()->SetMix(1);
     particle="pi+";
   }
-
   if(particle=="mix_pie"){
     PrtManager::Instance()->SetMix(2);
     particle="pi+";
   }
+  if(particle=="mix_pimu"){
+    PrtManager::Instance()->SetMix(3);
+    particle="pi+";
+  }
+
   
   PrtManager::Instance()->SetParticle(pdgid);
   UImanager->ApplyCommand("/gun/particle "+particle);
