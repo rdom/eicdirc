@@ -33,7 +33,7 @@ using std::endl;
 
 TH1F*  fHist1 = new TH1F("Time1","1", 1000,0,20);
 TH1F*  fHist2 = new TH1F("Time2","2", 1000,-10,10);
-TH1F*  fHistDiff = new TH1F("TimeDiff","calculated time - measured time [ns];entries [#]", 500,-10,10);
+TH1F*  fHistDiff[3];
 TH2F*  fHist3 = new TH2F("Time3","3", 500,5,80, 500,5,60);
 TH2F*  fHist4 = new TH2F("Time4","4", 200,-1,1, 200,-1,1);
 TH2F*  fHist5 = new TH2F("Time5","5", 200,-1,1, 200,-1,1);
@@ -56,16 +56,23 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, Int_t verbose){
   fTree->SetBranchAddress("LUT",&fLut); 
   fTree->GetEntry(0);
 
-  fHist = new TH1F("chrenkov_angle_hist","chrenkov_angle_hist", 100,0.7,0.9); //200
+  fHist = new TH1F("chrenkov_angle_hist","chrenkov_angle_hist", 150,0.5,0.9); //200
   fFit = new TF1("fgaus","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +[3]",0.35,0.9);
   fSpect = new TSpectrum(10);
   fMethod = PrtManager::Instance()->GetRunType();
   prt_savepath="data/reco";
 
-  for(Int_t i=0; i<5; i++){
-    fLnDiff[i] = new TH1F(Form("LnDiff_%d",i),  ";ln L(K) - ln L(#pi);entries [#]",100,-500,500);
+  int col[]={kRed+1,kBlue+1,kBlack};
+  for(int i=0; i<3; i++){
+    fHistDiff[i] = new TH1F("TimeDiff","calculated time - measured time [ns];entries [#]", 500,-10,10);
+    fHistDiff[i]->SetLineColor(col[i]);
+  }  
+  for(int i=0; i<5; i++){
+    fLnDiff[i] = new TH1F(Form("LnDiff_%d",i),  ";ln L(K) - ln L(#pi);entries [#]",100,-50,50);
     fFunc[i] = new TF1(Form("gaus_%d",i),"[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2])",0.7,0.9);
   }
+
+  
 
   cout << "-I- PrtLutReco: Intialization successfull" << endl;
 }
@@ -116,6 +123,9 @@ void PrtLutReco::Run(Int_t start, Int_t end){
   timeRes = PrtManager::Instance()->GetTimeRes();
   Int_t nEvents = fChain->GetEntries();
   if(end==0) end = nEvents;
+
+  double time_cut_d=0.8;
+  double time_cut_r=1.8;
   
   std::cout<<"Run started for ["<<start<<","<<end <<"]"<<std::endl;
 
@@ -140,7 +150,7 @@ void PrtLutReco::Run(Int_t start, Int_t end){
     TVector3 rotatedmom = fEvent->GetMomentum().Unit();
     Int_t pdg[]={11,13,211,321,2212};
     Double_t mass[] = {0.000511,0.1056584,0.139570,0.49368,0.9382723};
-    Double_t angle1(0), angle2(0),sum1(0),sum2(0), sigma(0.007),range(5*sigma),noise(0.3);
+    Double_t angle1(0), angle2(0),sum1(0),sum2(0), sigma(0.007),range(3*sigma),noise(0.3);
 
     for(Int_t i=0; i<5; i++){
       fAngle[i] = acos(sqrt(mom*mom + mass[i]*mass[i])/mom/1.4738)+0.002; //1.4738 = 370 = 3.35
@@ -204,14 +214,17 @@ void PrtLutReco::Run(Int_t start, Int_t end){
 	  luttheta = dir.Theta();	
 	  if(luttheta > TMath::Pi()/2.) luttheta = TMath::Pi()-luttheta;
 	  
-	  if(!reflected) bartime = lenz/cos(luttheta)/198.; 
-	  else bartime = (2*4200 - lenz)/cos(luttheta)/198.; 
+	  if(!reflected) bartime = lenz/cos(luttheta)/197.0; //198 
+	  else bartime = (2*4200 - lenz)/cos(luttheta)/197.0; 
 	
 	  fHist1->Fill(hitTime);
 	  par4=(bartime + evtime)-hitTime;
-	  fHistDiff->Fill(par4);
+	  fHistDiff[reflected]->Fill(par4);
+	  fHistDiff[2]->Fill(par4);
+	  
 	  fHist3->Fill(fabs((bartime + evtime)),hitTime);
-	  if(fabs((bartime + evtime)-hitTime)>timeRes) continue;
+	  if(fabs(par4)>(reflected ? time_cut_r : time_cut_d)) continue;
+	  
 	  tangle = rotatedmom.Angle(dir);
 	  //if(  tangle>TMath::Pi()/2.) tangle = TMath::Pi()-tangle;
 
@@ -224,7 +237,7 @@ void PrtLutReco::Run(Int_t start, Int_t end){
 
 	  if(tangle > minChangle && tangle < maxChangle){
 	    fHist->Fill(tangle);
-
+	    
 	    // Double_t phi = rotatedmom.Phi()-dir.Phi();
 	    // if(TMath::Abs(tangle-0.82)<0.015)  fHistDiff->Fill(par4);
 
@@ -242,7 +255,7 @@ void PrtLutReco::Run(Int_t start, Int_t end){
 	  sum2 += -TMath::Log(fFunc[3]->Eval(tangle)+noise);
 	}
       }
-
+      
       //if(isGoodHit)
 	nsHits++;
 
@@ -262,6 +275,17 @@ void PrtLutReco::Run(Int_t start, Int_t end){
     }
 
     if(fVerbose==1){
+      prt_canvasAdd("ff",800,400);
+      if(fHist->GetMaximum()>0) fHist->Scale(1/fHist->GetMaximum());
+      fHist->Draw("hist");
+      fFunc[2]->SetLineColor(4);
+      fFunc[2]->Draw("same");
+      fFunc[3]->SetLineColor(2);
+      fFunc[3]->Draw("same");      
+      prt_waitPrimitive("ff");
+      prt_canvasDel("ff");
+
+
       FindPeak(cangle,spr,fEvent->GetAngle()+0.01);
       nph = nsHits;
       nsHits=0;
@@ -270,17 +294,8 @@ void PrtLutReco::Run(Int_t start, Int_t end){
       theta = fEvent->GetAngle();
       par3 = fEvent->GetTest2();
       
-      // canvasAdd("ff",800,400);
-      // //fHist->Scale(1/fHist->GetMaximum());
-      // fHist->Draw();
-      // fFunc[2]->Draw("same");
-      // fFunc[3]->SetLineColor(4);
-      // fFunc[3]->Draw("same");
-      
-      // waitPrimitive("ff");
-      // canvasDel("ff");
       // fHist->Reset();
-      tree.Fill();
+      // tree.Fill();
     }
     
     //FindPeak(cangle,spr);
@@ -366,30 +381,29 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
     // fFit->SetParameter(2,0.005); // width
 
     fFit->FixParameter(2,0.009); // width
-    fHist->Fit("fgaus","","",cherenkovreco-0.07,cherenkovreco+0.07);
+    fHist->Fit("fgaus","","",cherenkovreco-0.04,cherenkovreco+0.04);
     fFit->ReleaseParameter(2); // width
-    fHist->Fit("fgaus","M","",cherenkovreco-0.07,cherenkovreco+0.07);
+    fHist->Fit("fgaus","M","",cherenkovreco-0.04,cherenkovreco+0.04);
     cherenkovreco = fFit->GetParameter(1);
     spr = fFit->GetParameter(2); 
     if(fVerbose>2) gROOT->SetBatch(0);
     
-    Bool_t storePics(false);
     if(fVerbose>1){
       prt_canvasAdd(Form("tdiff_%d",a),800,400);
-      fHistDiff->GetXaxis()->SetTitle("calculated time - measured time [ns]");
-      fHistDiff->GetYaxis()->SetTitle("entries [ns]");
-      fHistDiff->SetTitle(Form("theta %d", a));
-      fHistDiff->Draw();
+      for(int i=2; i>=0; i--){
+	fHistDiff[i]->SetTitle(Form("theta %d", a));
+	fHistDiff[i]->Draw(i==2?"":"same");
+      }
       
       prt_canvasAdd(Form("tangle_%d",a),800,400);
       fHist->GetXaxis()->SetTitle("#theta_{C} [rad]");
       fHist->GetYaxis()->SetTitle("Entries [#]");
       fHist->SetTitle(Form("theta %d", a));
       fHist->Draw();
-
+      prt_waitPrimitive(Form("tangle_%d",a));
       prt_canvasSave(1,0);
       
-      if(fVerbose==3){
+      if(fVerbose==4){
 	TCanvas* c2 = new TCanvas("c2","c2",0,0,800,500);
 	// c2->Divide(2,1);
 	//c2->cd(1);
@@ -447,7 +461,7 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
   fHist2->Reset();
   fHist3->Reset();
   fHist4->Reset();
-  fHistDiff->Reset();
+  for(int i=0; i<3; i++) fHistDiff[i]->Reset();
   
   return (cherenkovreco>0 && cherenkovreco<1);
 }

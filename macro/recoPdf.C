@@ -8,12 +8,12 @@
 
 void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma=0.1, TString nameid="", Double_t r1=0, Double_t r2=0){
 
-  if(!prt_init(in,1,"data/recoPdf"+nameid)) return;
+  if(!prt_init(in,1,"data/recoPdf_"+nameid)) return;
   TGaxis::SetMaxDigits(4);
   
   TCanvas *cc = new TCanvas("cc","cc");
-  TH1F *hllf= new TH1F("hllf","hllf;ln L(K) - ln L(#pi); entries [#]",200,-50,50);
-  TH1F *hlls= new TH1F("hlls","hlls;ln L(K) - ln L(#pi); entries [#]",200,-50,50);
+  TH1F *hllf= new TH1F("hllf","hllf;ln L(K) - ln L(#pi); entries [#]",160,-40,40);
+  TH1F *hlls= new TH1F("hlls","hlls;ln L(K) - ln L(#pi); entries [#]",160,-40,40);
 
   TH1F *hl1 = new TH1F("hl1","pdf;LE time [ns]; entries [#]", 2000,0,100);
   TH1F *hl2 = new TH1F("hl2","pdf;LE time [ns]; entries [#]", 2000,0,100);
@@ -56,13 +56,17 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma
     Int_t nHits =prt_event->GetHitSize();
     tnph = 0;
     
+    if(prt_event->GetParticle()==321 && hllf->GetEntries()>1700)continue;
+    if(prt_event->GetParticle()==211 && hlls->GetEntries()>1700) continue;  
+
     for(Int_t i=0; i<nHits; i++){
       hit = prt_event->GetHit(i);
       ch=300*hit.GetMcpId()+hit.GetPixelId();
       
       time = hit.GetLeadTime() + rand.Gaus(0,sigma);
+      //if(prt_event->GetParticle()==321) time += 0.01;
 
-      if(time<5 || time>100) continue;
+      //if(time<5 || time>100) continue;
       
       aminf = hpdff[ch]->GetBinContent(hpdff[ch]->FindBin(time)); 
       amins = hpdfs[ch]->GetBinContent(hpdfs[ch]->FindBin(time));
@@ -104,14 +108,14 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma
   }
 
 
-  
+  gStyle->SetOptStat(0);
   TString name = Form("%d_%1.2f",prt_theta,sigma);
 
   prt_canvasAdd("nph_"+name,800,400);
   hnph->Draw();  
   Int_t nph = prt_fit(hnph,50,20,50).X();
   
-  prt_canvasAdd("sep_"+name,800,400);
+  prt_canvasAdd("sep_"+name,600,500);
 
   prt_normalize(hllf,hlls);
   
@@ -120,12 +124,14 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma
   if(hllf->GetEntries()>10){
     hllf->Fit("gaus","Sq");
     ff = hllf->GetFunction("gaus");
+    ff->SetLineColor(1);
     m1=ff->GetParameter(1);
     s1=ff->GetParameter(2);
   }
   if(hlls->GetEntries()>10){
     hlls->Fit("gaus","Sq");
     ff = hlls->GetFunction("gaus");
+    ff->SetLineColor(1);
     m2=ff->GetParameter(1);
     s2=ff->GetParameter(2);
   }
