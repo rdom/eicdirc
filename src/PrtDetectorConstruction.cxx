@@ -27,6 +27,7 @@
 
 
 #include "PrtManager.h"
+#include "PrtBarSD.h"
 #include "PrtPrizmSD.h"
 #include "PrtPixelSD.h"
 
@@ -954,6 +955,11 @@ void PrtDetectorConstruction::ConstructSDandField(){
     G4SDManager::GetSDMpointer()->AddNewDetector(prizmSD);
     SetSensitiveDetector("lPrizmT1",prizmSD);
   }
+
+  PrtBarSD* barSD = new PrtBarSD("BarSD", "BarHitsCollection", 0);
+  G4SDManager::GetSDMpointer()->AddNewDetector(barSD);
+  SetSensitiveDetector("lBar",barSD);
+  
   // Magnetic field
 }
 

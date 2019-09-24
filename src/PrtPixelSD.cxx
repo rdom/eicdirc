@@ -9,6 +9,7 @@
 
 #include "PrtEvent.h"
 #include "PrtPrizmHit.h"
+#include "PrtBarHit.h"
 
 #include "PrtRunAction.h"
 #include "PrtManager.h"
@@ -107,6 +108,20 @@ G4bool PrtPixelSD::ProcessHits(G4Step* step, G4TouchableHistory* hist){
       refl++;
       pathId += phit->GetNormalId()+1000*refl;
     }
+  }
+
+  
+  // information from bar
+  G4int collectionID_bar = fSDM->GetCollectionID("BarHitsCollection");
+  PrtBarHitsCollection* barCol = (PrtBarHitsCollection*)(HCofEvent->GetHC(collectionID_bar));  
+  std::cout<<"==================== barCol->entries() "<<barCol->entries()<<std::endl;
+  G4ThreeVector bmom1;
+  for (G4int i=0;i<barCol->entries();i++){
+    PrtBarHit* phit = (*barCol)[i];
+    G4ThreeVector bmom = phit->GetMom();
+    if(i==0)  bmom1 = phit->GetMom();
+    std::cout<<"bmom "<<bmom<< " "<<bmom.angle(bmom1) <<std::endl;
+    
   }
   
   PrtHit hit;
