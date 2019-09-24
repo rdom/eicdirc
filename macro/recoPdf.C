@@ -6,14 +6,14 @@
 #include <TKey.h>
 #include <TRandom.h>
 
-void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma=0.1, TString nameid="", Double_t r1=0, Double_t r2=0){
+void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma=0.1, int pid =321, TString nameid="", Double_t r1=0, Double_t r2=0){
 
   if(!prt_init(in,1,"data/recoPdf_"+nameid)) return;
   TGaxis::SetMaxDigits(4);
   
   TCanvas *cc = new TCanvas("cc","cc");
-  TH1F *hllf= new TH1F("hllf","hllf;ln L(K) - ln L(#pi); entries [#]",200,-50,50);
-  TH1F *hlls= new TH1F("hlls","hlls;ln L(K) - ln L(#pi); entries [#]",200,-50,50);  
+  TH1F *hllf= new TH1F("hllf","hllf;ln L(K) - ln L(#pi); entries [#]",120,-60,60);
+  TH1F *hlls= new TH1F("hlls","hlls;ln L(K) - ln L(#pi); entries [#]",120,-60,60);  
   TH1F *hl1 = new TH1F("hl1","pdf;LE time [ns]; entries [#]", 2000,0,100);
   TH1F *hl2 = new TH1F("hl2","pdf;LE time [ns]; entries [#]", 2000,0,100);
   TH1F *hl3 = new TH1F("hl3","pdf;LE time [ns]; entries [#]", 2000,0,100);
@@ -38,6 +38,8 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma
     if(rebin >0) hpdfs[i]->Rebin(rebin);
     integ1+= hpdff[i]->Integral();
     integ2+= hpdfs[i]->Integral();
+    hpdff[i]->Smooth(1);
+    hpdfs[i]->Smooth(1);
     hl3->Add(hpdff[i]);
     hl3->Add(hpdfs[i]);
   }
@@ -55,24 +57,24 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma
     Int_t nHits =prt_event->GetHitSize();
     tnph = 0;
     
-    if(prt_event->GetParticle()==321 && hllf->GetEntries()>1700)continue;
-    if(prt_event->GetParticle()==211 && hlls->GetEntries()>1700) continue;  
+    if(prt_event->GetParticle()==pid && hllf->GetEntries()>1800)continue;
+    if(prt_event->GetParticle()==211 && hlls->GetEntries()>1800) continue;  
 
     for(Int_t i=0; i<nHits; i++){
       hit = prt_event->GetHit(i);
       ch=300*hit.GetMcpId()+hit.GetPixelId();
       
       time = hit.GetLeadTime() + rand.Gaus(0,sigma);
-      //if(prt_event->GetParticle()==321) time += 0.01;
-
+      //if(prt_event->GetParticle()==pid) time +=0.01; // remove TOF difference;
+      
       //if(time<5 || time>100) continue;
       
       aminf = hpdff[ch]->GetBinContent(hpdff[ch]->FindBin(time)); 
       amins = hpdfs[ch]->GetBinContent(hpdfs[ch]->FindBin(time));
       tnph++;
       
-      //      Double_t noise = 0.2e-3; //1e-7;
-      Double_t noise = 1e-5; //1e-7;
+      Double_t noise = 1e-4; //1e-7;
+      //Double_t noise = 1e-5; //1e-7;
       sumf+=TMath::Log((aminf+noise));
       sums+=TMath::Log((amins+noise));    
 
@@ -82,9 +84,9 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma
       // {
       // 	prt_normalize(hpdff[ch],hpdfs[ch]);
       // 	hpdff[ch]->SetLineColor(2);
-      // 	hpdff[ch]->Draw();
+      // 	hpdff[ch]->Draw("hist");
       // 	hpdfs[ch]->SetLineColor(4);
-      // 	hpdfs[ch]->Draw("same");
+      // 	hpdfs[ch]->Draw("hist same");
       // 	cc->Update();
       // 	TLine *line = new TLine(time,0,time,cc->GetUymax());
       // 	line->Draw("same");
@@ -92,7 +94,7 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma
       // 	cc->WaitPrimitive();
       // }
 
-      if(prt_event->GetParticle()==2212) hl1->Fill(time);
+      if(prt_event->GetParticle()==pid) hl1->Fill(time);
       if(prt_event->GetParticle()==211) hl2->Fill(time);
 
     }
@@ -102,7 +104,7 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma
     
     //    std::cout<<"sum ===========  "<<sum  << "  "<< sumf<< "  "<< sums<<std::endl;
     
-    if(prt_event->GetParticle()==2212) hllf->Fill(sum);
+    if(prt_event->GetParticle()==pid) hllf->Fill(sum);
     if(prt_event->GetParticle()==211) hlls->Fill(sum);
      
   }
