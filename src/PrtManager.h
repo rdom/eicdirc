@@ -35,6 +35,7 @@ public:
   ~PrtManager(){};
   static PrtManager* Instance(G4String outfile="hits.root", G4int runtype=0);
   void Save()             { fRootFile->Write(); }
+  void Cd()             { fRootFile->cd(); }
   void Fill();
   void FillLut();
   void AddEvent(PrtEvent event);

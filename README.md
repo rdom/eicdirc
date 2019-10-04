@@ -41,6 +41,7 @@ example:
                 10   ideal lens (thickness = 0, ideal focusing)
 
 -a    angle between particle beam and bar radiator
+      if a == 0 then a = [30,160]
 
 -e    number of simulated events
 

@@ -6,14 +6,14 @@
 #include <TKey.h>
 #include <TRandom.h>
 
-void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma=0.1, int pid =321, TString nameid="", Double_t r1=0, Double_t r2=0){
+void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t timeres=0.1, int pid =321, TString nameid="", Double_t r1=0, Double_t r2=0){
 
   if(!prt_init(in,1,"data/recoPdf_"+nameid)) return;
   TGaxis::SetMaxDigits(4);
   
   TCanvas *cc = new TCanvas("cc","cc");
-  TH1F *hllf= new TH1F("hllf","hllf;ln L(K) - ln L(#pi); entries [#]",120,-60,60);
-  TH1F *hlls= new TH1F("hlls","hlls;ln L(K) - ln L(#pi); entries [#]",120,-60,60);  
+  TH1F *hllf= new TH1F("hllf","hllf;ln L(K) - ln L(#pi); entries [#]",180,-100,100);
+  TH1F *hlls= new TH1F("hlls","hlls;ln L(K) - ln L(#pi); entries [#]",180,-100,100);  
   TH1F *hl1 = new TH1F("hl1","pdf;LE time [ns]; entries [#]", 2000,0,100);
   TH1F *hl2 = new TH1F("hl2","pdf;LE time [ns]; entries [#]", 2000,0,100);
   TH1F *hl3 = new TH1F("hl3","pdf;LE time [ns]; entries [#]", 2000,0,100);
@@ -26,7 +26,7 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma
   TH1F *hpdff[nch],*hpdfs[nch];
   TFile f(pdf);
 
-  Int_t rebin=sigma/(100/2000.);
+  Int_t rebin=timeres/(100/2000.);
   std::cout<<"rebin "<<rebin <<std::endl;
   
   if(rebin >0) hl3->Rebin(rebin);
@@ -64,7 +64,7 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma
       hit = prt_event->GetHit(i);
       ch=300*hit.GetMcpId()+hit.GetPixelId();
       
-      time = hit.GetLeadTime() + rand.Gaus(0,sigma);
+      time = hit.GetLeadTime() + rand.Gaus(0,timeres);
       //if(prt_event->GetParticle()==pid) time +=0.01; // remove TOF difference;
       
       //if(time<5 || time>100) continue;
@@ -111,7 +111,7 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma
 
   gStyle->SetOptStat(0);
 
-  TString name = Form("%d_%1.2f",prt_theta,sigma);
+  TString name = Form("%d_%1.2f",prt_theta,timeres);
 
   prt_canvasAdd("nph_"+name,800,400);
   hnph->Draw();  
@@ -163,9 +163,9 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t sigma
 
   TFile fc(prt_savepath+"/res_"+name+".root","recreate");
   TTree *tc = new TTree("reco","reco");
-  tc->Branch("theta",&prt_theta,"prt_theta/I");
+  tc->Branch("theta",&prt_theta,"prt_theta/D");
   tc->Branch("sep",&sep,"sep/D");
-  tc->Branch("sigma",&sigma,"sigma/D");
+  tc->Branch("timeres",&timeres,"timeres/D");
   tc->Branch("nph",&nph,"nph/I");
   tc->Branch("r1",&r1,"r1/D");
   tc->Branch("r2",&r2,"r2/D");
