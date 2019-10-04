@@ -93,8 +93,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
       }
     }else{      
       G4double theta = M_PI*G4UniformRand();
-      if(theta>160*deg) theta-=20*deg;
-      if(theta<30*deg) theta+=30*deg;
+      theta = acos((cos(30*deg)-cos(160*deg))*G4UniformRand()+cos(160*deg));      
       theta = G4RandGauss::shoot(theta,trackresolution);
       vec.setTheta(M_PI-theta);
       vec.setPhi(G4RandGauss::shoot(0,trackresolution));
