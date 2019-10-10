@@ -55,7 +55,7 @@ int main(int argc,char** argv)
   
   G4String macro, events, geometry,evType, radiator, physlist, outfile, 
     session,geomAng,batchmode,lensId,particle("pi+"),momentum("3.5 GeV"),timeRes,displayOpt,
-    beamDimension, mcpLayout, infile = "hits.root", lutfile = "../data/lut_avr.root",
+    beamDimension,zpos, mcpLayout, infile = "hits.root", lutfile = "../data/lut_avr.root",
     testVal1,testVal2;
   G4int firstevent(0), runtype(0), verbose(0);
 
@@ -79,6 +79,7 @@ int main(int argc,char** argv)
     else if ( G4String(argv[i]) == "-w" ) physlist  = argv[i+1];
     else if ( G4String(argv[i]) == "-s" ) runtype   = atoi(argv[i+1]);
     else if ( G4String(argv[i]) == "-z" ) beamDimension  = argv[i+1];
+    else if ( G4String(argv[i]) == "-zpos" ) zpos  = argv[i+1];
     else if ( G4String(argv[i]) == "-c" ) mcpLayout = argv[i+1];
     else if ( G4String(argv[i]) == "-t1" ) testVal1   = argv[i+1];
     else if ( G4String(argv[i]) == "-t2" ) testVal2   = argv[i+1];
@@ -111,6 +112,7 @@ int main(int argc,char** argv)
   if(lensId.size())   PrtManager::Instance()->SetLens(atoi(lensId));
   if(mcpLayout.size())PrtManager::Instance()->SetMcpLayout(atoi(mcpLayout));
   if(beamDimension.size()) PrtManager::Instance()->SetBeamDimension(atof(beamDimension));
+  if(zpos.size()) PrtManager::Instance()->SetZPos(atof(zpos));
   if(testVal1.size())   PrtManager::Instance()->SetTest1(atof(testVal1));
   if(testVal2.size())   PrtManager::Instance()->SetTest2(atof(testVal2));
   if(displayOpt.size())   PrtManager::Instance()->SetDisplayOpt(atoi(displayOpt));

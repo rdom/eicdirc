@@ -45,6 +45,7 @@ PrtPrimaryGeneratorAction::~PrtPrimaryGeneratorAction(){
 void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
   G4double x,y,z;
   G4double angle = PrtManager::Instance()->GetAngle();
+  G4double zpos = PrtManager::Instance()->GetZPos();
   G4double radiatorL = PrtManager::Instance()->GetRadiatorL();
   G4double radiatorW = PrtManager::Instance()->GetRadiatorW();
   G4double radiatorH = PrtManager::Instance()->GetRadiatorH();
@@ -99,6 +100,10 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
       vec.setPhi(G4RandGauss::shoot(0,trackresolution));
       // vec.setPhi(2*M_PI*G4UniformRand());
     }
+    
+    fParticleGun->SetParticlePosition(G4ThreeVector(0,0,zpos));
+    PrtManager::Instance()->Event()->SetPosition(TVector3(0,0,zpos));
+      
     // // }
    
     fParticleGun->SetParticleMomentumDirection(vec);

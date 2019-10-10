@@ -37,7 +37,8 @@ TH1F*  fHistDiff[3];
 TH2F*  fHist3 = new TH2F("Time3","3", 500,5,80, 500,5,60);
 TH2F*  fHist4 = new TH2F("Time4","4", 200,-1,1, 200,-1,1);
 TH2F*  fHist5 = new TH2F("Time5","5", 200,-1,1, 200,-1,1);
-TH1F*  fFindTime = new TH1F("ft","ft",2000,-100,100);
+TH1F*  fFindTime = new TH1F("ft",";t_{measured}-t_{calculated} [ns];entries [#]",2000,-100,100);
+TH1F*  fFindTimeA[20];
 TH1F*  fFindTimeRes = new TH1F("ftr","ftr",100,-2,2);
 
 Int_t gg_i(0);
@@ -74,8 +75,10 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, Int_t verbose){
     fFunc[i] = new TF1(Form("gaus_%d",i),"[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2])",0.7,0.9);
   }
 
+  for(int i=0; i<20; i++){
+    fFindTimeA[i] = new TH1F(Form("fta_%d",i),";t_{measured}-t_{calculated} [ns];entries [#]",200,-10,10);
+  }
   
-
   cout << "-I- PrtLutReco: Intialization successfull" << endl;
 }
 
@@ -370,6 +373,18 @@ void PrtLutReco::Run(Int_t start, Int_t end){
   prt_canvasAdd(Form("ctimeres_%d",int(fEvent->GetAngle()+0.01)),800,400);
   fFindTimeRes->Draw();
 
+  double rr[20];
+  for(int i=0; i<20; i++){
+    TGaxis::SetMaxDigits(3);      
+    prt_canvasAdd(Form("cta_%d",i),800,400);
+    rr[i] = prt_fit(fFindTimeA[i],4,20,2.5,1,1).Y();
+    fFindTimeA[i]->Draw();
+  }
+  for(int i=0; i<20; i++){
+    std::cout<<(i?",":"")<<rr[i]<<std::endl;
+  }
+  
+  
   ctimeRes = prt_fit(fFindTimeRes).Y();
   if(fVerbose>1){
     gPad->Modified();
@@ -377,7 +392,7 @@ void PrtLutReco::Run(Int_t start, Int_t end){
     gPad->WaitPrimitive();  
   }
 
-  prt_canvasSave(1,0);
+  prt_canvasSave(0,0);
   
   tree.Fill();
   tree.Write();
@@ -559,8 +574,6 @@ void PrtLutReco::FitRing(Double_t& x0, Double_t& y0, Double_t& theta){
 Int_t PrtLutReco::FindPdg(Double_t mom, Double_t cangle){
   Int_t pdg[]={11,13,211,321,2212};
   Double_t mass[] = {0.000511,0.1056584,0.139570,0.49368,0.9382723};
-  // Int_t pdg[]={211,321,2212};
-  // Double_t mass[] = {0.139570,0.49368,0.9382723};
   Double_t tdiff, diff=100;
   Int_t minid=0;
   for(Int_t i=0; i<5; i++){
@@ -573,13 +586,14 @@ Int_t PrtLutReco::FindPdg(Double_t mom, Double_t cangle){
   return pdg[minid]; 
 }
 
+int gggg=0;
 double PrtLutReco::FindStartTime(PrtEvent *evt){
   TVector3 fnX1 = TVector3 (1,0,0);   
   TVector3 fnY1 = TVector3( 0,1,0);
   TVector3 dir,dird,cdir = evt->GetMomentum().Unit();
   double tangle,bartime,lenz,luttheta,htime,ctime,evtime,dirz;
   bool reflected;
-  double shift = prt_rand.Uniform(-50,50);
+  double shift = 0; //prt_rand.Uniform(-50,50);
     
   for(PrtHit hit : evt->GetHits()) {
     htime = hit.GetLeadTime()+shift;
@@ -616,32 +630,35 @@ double PrtLutReco::FindStartTime(PrtEvent *evt){
 
 	tangle = cdir.Angle(dir);
 
-	if(tangle > fAngle[3]-0.02 && tangle <  fAngle[2]+0.02)
-	  fFindTime->Fill(ctime-htime);
+	if(tangle > fAngle[3]-0.02 && tangle <  fAngle[2]+0.02){
+	  fFindTime->Fill(htime-ctime);
+	  int bin = 0.2*htime;
+	  if(bin<20) fFindTimeA[bin]->Fill(htime-ctime);
+	}
 	
 	if(tangle > 0.35 && tangle < 0.9){
 	  fHist->Fill(tangle);	    
 	}
       }
-    }      
+    }
   }
 
 
   if(!fVerbose) gROOT->SetBatch(1);
-
-  TCanvas* cft;
-  if(fVerbose==1) cft = new TCanvas("cft","cft",0,0,800,500);
+  
+  if(fVerbose==1) prt_canvasAdd(Form("hstime_%d",gggg),800,400);
   double mean = prt_fit(fFindTime).X();
   std::cout<<"mean "<<mean<<" "<<shift<<std::endl;  
-  if(fVerbose==1){
-    fFindTime->Draw();
-    cft->Modified();
-    cft->Update();
-    cft->WaitPrimitive();
-  }
+  // if(fVerbose==1){
+  //   gStyle->SetOptStat(1001111);
+  //   fFindTime->Draw();
+  //   // prt_waitPrimitive(Form("hstime_%d",gggg));
+  //   prt_canvasSave(0,0,1);
+  //   gggg++;    
+  // }
   
   fFindTimeRes->Fill(mean+shift);
-  fFindTime->Reset();                                                                  
+  fFindTime->Reset();                                                      
   return mean;
 }
 

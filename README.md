@@ -72,6 +72,10 @@ example:
                0    standard (default)
                1    display hit occupancy of current run
                2    display hit occupancy of occuhits.root (need to be generated)
+
+-zpos target's Z offset 
+
+
 ```
 
 ##Example of script usage from macro folder
