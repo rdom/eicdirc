@@ -40,6 +40,9 @@ TH2F*  fHist5 = new TH2F("Time5","5", 200,-1,1, 200,-1,1);
 TH1F*  fFindTime = new TH1F("ft",";t_{measured}-t_{calculated} [ns];entries [#]",2000,-100,100);
 TH1F*  fFindTimeA[20];
 TH1F*  fFindTimeRes = new TH1F("ftr","ftr",100,-2,2);
+TH2F*  fdtt = new TH2F("dtt",";t_{measured}-t_{calculated} [ns];#theta_{l} [deg]", 1000,-2,2, 1000,0,90);
+TH2F*  fdtl = new TH2F("dtl",";t_{measured}-t_{calculated} [ns];path length [m]", 1000,-2,2, 1000,0,10);
+TH2F*  fdtp = new TH2F("dtp",";#theta_{l} [deg];path length [m]", 1000,0,90, 1000,0,10);
 
 Int_t gg_i(0);
 TGraph gg_gr;
@@ -76,7 +79,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, Int_t verbose){
   }
 
   for(int i=0; i<20; i++){
-    fFindTimeA[i] = new TH1F(Form("fta_%d",i),";t_{measured}-t_{calculated} [ns];entries [#]",200,-10,10);
+    fFindTimeA[i] = new TH1F(Form("fta_%d",i),";t_{measured}-t_{calculated} [ns];entries [#]",1000,-10,10);
   }
   
   cout << "-I- PrtLutReco: Intialization successfull" << endl;
@@ -164,9 +167,7 @@ void PrtLutReco::Run(Int_t start, Int_t end){
       fFunc[i]->SetParameter(2,sigma);
     }
 
-    double stime = FindStartTime(fEvent);
-    std::cout<<"stime "<<stime<<std::endl; 
-    
+    double stime = FindStartTime(fEvent);    
     for(Int_t h=0; h<nHits; h++) {
       PrtPhotonInfo photoninfo;
       fHit = fEvent->GetHit(h);
@@ -377,7 +378,7 @@ void PrtLutReco::Run(Int_t start, Int_t end){
   for(int i=0; i<20; i++){
     TGaxis::SetMaxDigits(3);      
     prt_canvasAdd(Form("cta_%d",i),800,400);
-    rr[i] = prt_fit(fFindTimeA[i],4,20,2.5,1,1).Y();
+    rr[i] = prt_fit(fFindTimeA[i],6,20,4,1,0).Y();
     fFindTimeA[i]->Draw();
   }
   for(int i=0; i<20; i++){
@@ -392,6 +393,17 @@ void PrtLutReco::Run(Int_t start, Int_t end){
     gPad->WaitPrimitive();  
   }
 
+  gStyle->SetOptStat(0);
+  prt_canvasAdd("fdtt",800,500);
+  fdtt->Draw("colz");
+
+  prt_canvasAdd("fdtl",800,500);
+  fdtl->Draw("colz");
+
+  prt_canvasAdd("fdtp",800,500);
+  fdtp->Draw("colz");
+
+  
   prt_canvasSave(0,0);
   
   tree.Fill();
@@ -594,7 +606,8 @@ double PrtLutReco::FindStartTime(PrtEvent *evt){
   double tangle,bartime,lenz,luttheta,htime,ctime,evtime,dirz;
   bool reflected;
   double shift = 0; //prt_rand.Uniform(-50,50);
-    
+  double speed = 0.1985;
+  
   for(PrtHit hit : evt->GetHits()) {
     htime = hit.GetLeadTime()+shift;
     lenz = 2100-hit.GetPosition().Z();
@@ -603,13 +616,16 @@ double PrtLutReco::FindStartTime(PrtEvent *evt){
     if(dirz<0) reflected = kTRUE;
     else reflected = kFALSE;
 
+    if(reflected) continue;
+
     int ch = 300*hit.GetMcpId()+hit.GetPixelId();
     bool isGoodHit(false);      
     double path = hit.GetPathInPrizm();
     PrtLutNode *node = (PrtLutNode*) fLut->At(ch);
     int size = node->Entries();
-      
+    
     for(int i=0; i<size; i++){
+      if(fabs(path-node->GetPathId(i))>0.001) continue;
       dird = node->GetEntry(i);
       evtime = node->GetTime(i);
 
@@ -622,9 +638,9 @@ double PrtLutReco::FindStartTime(PrtEvent *evt){
 	if(dir.Angle(fnX1) < fCriticalAngle || dir.Angle(fnY1) < fCriticalAngle) continue;
 
 	luttheta = dir.Theta();	
-	if(luttheta > TMath::PiOver2()) luttheta = TMath::Pi()-luttheta;	 
-	if(!reflected) bartime = lenz/cos(luttheta)/197.0;
-	else bartime = (2*4200 - lenz)/cos(luttheta)/197.0; 
+	//if(luttheta > TMath::PiOver2()) luttheta = TMath::Pi()-luttheta;	 
+	if(!reflected) bartime = lenz/cos(luttheta)/(1000*speed);
+	else bartime = (2*4200 - lenz)/cos(luttheta)/(1000*speed);
 
 	double ctime = fabs((bartime + evtime));
 
@@ -632,6 +648,9 @@ double PrtLutReco::FindStartTime(PrtEvent *evt){
 
 	if(tangle > fAngle[3]-0.02 && tangle <  fAngle[2]+0.02){
 	  fFindTime->Fill(htime-ctime);
+	  fdtt->Fill(htime-ctime,luttheta*TMath::RadToDeg());
+	  fdtl->Fill(htime-ctime,speed*htime);
+	  fdtp->Fill(luttheta*TMath::RadToDeg(),speed*htime);
 	  int bin = 0.2*htime;
 	  if(bin<20) fFindTimeA[bin]->Fill(htime-ctime);
 	}
@@ -647,8 +666,7 @@ double PrtLutReco::FindStartTime(PrtEvent *evt){
   if(!fVerbose) gROOT->SetBatch(1);
   
   if(fVerbose==1) prt_canvasAdd(Form("hstime_%d",gggg),800,400);
-  double mean = prt_fit(fFindTime).X();
-  std::cout<<"mean "<<mean<<" "<<shift<<std::endl;  
+  double mean = prt_fit(fFindTime,3,20,2,1,0,"QN").X();
   // if(fVerbose==1){
   //   gStyle->SetOptStat(1001111);
   //   fFindTime->Draw();

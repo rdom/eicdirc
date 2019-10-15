@@ -32,7 +32,7 @@ PrtPrimaryGeneratorAction::PrtPrimaryGeneratorAction()
 
   fParticleGun->SetParticleDefinition(fParticlePi);
   fParticleGun->SetParticleTime(0.0*ns);
-  fParticleGun->SetParticlePosition(G4ThreeVector(0.0*cm,0.0*cm,0.5*cm));
+  fParticleGun->SetParticlePosition(G4ThreeVector(0.0*cm,0.0*cm,-0.5*cm));
   fParticleGun->SetParticleMomentumDirection(G4ThreeVector(1.,0.,0.));
   fParticleGun->SetParticleEnergy(500.0*keV);
 }
@@ -85,7 +85,8 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
     // // else{
     double trackresolution=PrtManager::Instance()->GetBeamDimension();
     if(angle>0){
-      if(trackresolution<0.00001){
+      std::cout<<"angle "<<angle*TMath::RadToDeg()<<std::endl;
+      if(trackresolution<0.00001){	
 	vec.setTheta(angle);
       }else{
 	//smear track resolution
@@ -94,11 +95,12 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
       }
     }else{      
       G4double theta = M_PI*G4UniformRand();
-      theta = acos((cos(30*deg)-cos(160*deg))*G4UniformRand()+cos(160*deg));      
+      theta = acos((cos(30*deg)-cos(150*deg))*G4UniformRand()+cos(150*deg));
       theta = G4RandGauss::shoot(theta,trackresolution);
       vec.setTheta(M_PI-theta);
       vec.setPhi(G4RandGauss::shoot(0,trackresolution));
       // vec.setPhi(2*M_PI*G4UniformRand());
+      PrtManager::Instance()->Event()->SetAngle(theta/deg);
     }
     
     fParticleGun->SetParticlePosition(G4ThreeVector(0,0,zpos));

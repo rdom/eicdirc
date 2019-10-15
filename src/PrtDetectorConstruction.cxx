@@ -158,11 +158,17 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   lExpVol = new G4LogicalVolume(gExpVol,BarMaterial,"lExpVol",0,0,0);
 
   
+  // // Glue
+  // G4Box *gGlue = new G4Box("gGlue",fBar[0]/2.,fBar[1]/2.,0.5*gluethickness);
+  // lGlue = new G4LogicalVolume(gGlue,epotekMaterial,"lGlue",0,0,0);
+  // G4Box *gGlueE = new G4Box("gGlueE",fBar[0]/2.,fPrizm[0]/2.,0.5*gluethickness);
+  // lGlueE = new G4LogicalVolume(gGlueE,epotekMaterial,"lGlueE",0,0,0);
+
   // Glue
   G4Box *gGlue = new G4Box("gGlue",fBar[0]/2.,fBar[1]/2.,0.5*gluethickness);
-  lGlue = new G4LogicalVolume(gGlue,epotekMaterial,"lGlue",0,0,0);
+  lGlue = new G4LogicalVolume(gGlue,BarMaterial,"lGlue",0,0,0);
   G4Box *gGlueE = new G4Box("gGlueE",fBar[0]/2.,fPrizm[0]/2.,0.5*gluethickness);
-  lGlueE = new G4LogicalVolume(gGlueE,epotekMaterial,"lGlueE",0,0,0);
+  lGlueE = new G4LogicalVolume(gGlueE,BarMaterial,"lGlueE",0,0,0);
 
   bool plate = false;
   if(fNBar==1){
@@ -636,7 +642,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
 
 void PrtDetectorConstruction::DefineMaterials(){
   G4String symbol;             //a=mass of a mole;
-  G4double a, z,  density;      //z=mean number of protons;  
+  G4double a, z, density;      //z=mean number of protons;  
 
   G4int ncomponents, natoms;
   G4double fractionmass;
