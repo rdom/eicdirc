@@ -147,7 +147,7 @@ void PrtLutReco::Run(Int_t start, Int_t end){
 
     if(fMethod==2 && tofPid!=211) continue;
     
-    std::cout<<"Event # "<< ievent << " has "<< nHits <<" hits"<<std::endl;
+    if(ievent%1000==0) std::cout<<"Event # "<< ievent << " has "<< nHits <<" hits"<<std::endl;
     PrtTrackInfo trackinfo;
     trackinfo.AddInfo(fEvent->PrintInfo()+"\n Basic reco informaion: \n");
     
@@ -387,11 +387,11 @@ void PrtLutReco::Run(Int_t start, Int_t end){
   
   
   ctimeRes = prt_fit(fFindTimeRes).Y();
-  if(fVerbose>1){
-    gPad->Modified();
-    gPad->Update();
-    gPad->WaitPrimitive();  
-  }
+  // if(fVerbose>1){
+  //   gPad->Modified();
+  //   gPad->Update();
+  //   gPad->WaitPrimitive();  
+  // }
 
   gStyle->SetOptStat(0);
   prt_canvasAdd("fdtt",800,500);
@@ -400,10 +400,14 @@ void PrtLutReco::Run(Int_t start, Int_t end){
   prt_canvasAdd("fdtl",800,500);
   fdtl->Draw("colz");
 
-  prt_canvasAdd("fdtp",800,500);
-  fdtp->Draw("colz");
+  prt_fitslices(fdtl,-2,2,2,10,0)->Draw("pl same");
+  prt_fitslices(fdtl,-2,2,2,10,2)->Draw("pl same");
+  prt_fitslices(fdtl,-2,2,2,10,3)->Draw("pl same");
 
   
+  prt_canvasAdd("fdtp",800,500);
+  fdtp->Draw("colz");
+    
   prt_canvasSave(0,0);
   
   tree.Fill();
@@ -606,7 +610,7 @@ double PrtLutReco::FindStartTime(PrtEvent *evt){
   double tangle,bartime,lenz,luttheta,htime,ctime,evtime,dirz;
   bool reflected;
   double shift = 0; //prt_rand.Uniform(-50,50);
-  double speed = 0.1985;
+  double speed = 0.1988;
   
   for(PrtHit hit : evt->GetHits()) {
     htime = hit.GetLeadTime()+shift;
@@ -616,7 +620,7 @@ double PrtLutReco::FindStartTime(PrtEvent *evt){
     if(dirz<0) reflected = kTRUE;
     else reflected = kFALSE;
 
-    if(reflected) continue;
+    //if(reflected) continue;
 
     int ch = 300*hit.GetMcpId()+hit.GetPixelId();
     bool isGoodHit(false);      
@@ -625,7 +629,7 @@ double PrtLutReco::FindStartTime(PrtEvent *evt){
     int size = node->Entries();
     
     for(int i=0; i<size; i++){
-      if(fabs(path-node->GetPathId(i))>0.001) continue;
+      // if(fabs(path-node->GetPathId(i))>0.001) continue;
       dird = node->GetEntry(i);
       evtime = node->GetTime(i);
 
