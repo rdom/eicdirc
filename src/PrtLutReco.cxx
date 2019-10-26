@@ -41,8 +41,8 @@ TH1F*  fFindTime = new TH1F("ft",";t_{measured}-t_{calculated} [ns];entries [#]"
 TH1F*  fFindTimeA[20];
 TH1F*  fFindTimeRes = new TH1F("ftr","ftr",100,-2,2);
 TH2F*  fdtt = new TH2F("dtt",";t_{measured}-t_{calculated} [ns];#theta_{l} [deg]", 1000,-2,2, 1000,0,90);
-TH2F*  fdtl = new TH2F("dtl",";t_{measured}-t_{calculated} [ns];path length [m]", 1000,-2,2, 1000,0,10);
-TH2F*  fdtp = new TH2F("dtp",";#theta_{l} [deg];path length [m]", 1000,0,90, 1000,0,10);
+TH2F*  fdtl = new TH2F("dtl",";t_{measured}-t_{calculated} [ns];path length [m]", 1000,-2,2, 1000,0,15);
+TH2F*  fdtp = new TH2F("dtp",";#theta_{l} [deg];path length [m]", 1000,0,90, 1000,0,15);
 
 Int_t gg_i(0);
 TGraph gg_gr;
@@ -396,18 +396,21 @@ void PrtLutReco::Run(Int_t start, Int_t end){
   gStyle->SetOptStat(0);
   prt_canvasAdd("fdtt",800,500);
   fdtt->Draw("colz");
+  fdtt->SetMaximum(0.8*fdtt->GetMaximum());
 
   prt_canvasAdd("fdtl",800,500);
   fdtl->Draw("colz");
+  fdtl->SetMaximum(0.8*fdtl->GetMaximum());
 
-  prt_fitslices(fdtl,-2,2,2,10,0)->Draw("pl same");
-  prt_fitslices(fdtl,-2,2,2,10,2)->Draw("pl same");
-  prt_fitslices(fdtl,-2,2,2,10,3)->Draw("pl same");
+  // prt_fitslices(fdtl,-2,2,2,2,0)->Draw("pl same");
+  // prt_fitslices(fdtl,-2,2,2,2,2)->Draw("pl same");
+  // prt_fitslices(fdtl,-2,2,2,2,3)->Draw("pl same");
 
   
   prt_canvasAdd("fdtp",800,500);
   fdtp->Draw("colz");
-    
+  fdtp->SetMaximum(0.8*fdtp->GetMaximum());
+  
   prt_canvasSave(0,0);
   
   tree.Fill();
@@ -642,7 +645,7 @@ double PrtLutReco::FindStartTime(PrtEvent *evt){
 	if(dir.Angle(fnX1) < fCriticalAngle || dir.Angle(fnY1) < fCriticalAngle) continue;
 
 	luttheta = dir.Theta();	
-	//if(luttheta > TMath::PiOver2()) luttheta = TMath::Pi()-luttheta;	 
+	if(luttheta > TMath::PiOver2()) luttheta = TMath::Pi()-luttheta;	 
 	if(!reflected) bartime = lenz/cos(luttheta)/(1000*speed);
 	else bartime = (2*4200 - lenz)/cos(luttheta)/(1000*speed);
 

@@ -45,13 +45,13 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t timer
   }
 
   TVirtualFitter *fitter;
-  Double_t time,timeres(-1);
+  Double_t time;
   PrtHit hit;
   Int_t tnph(0),totalf(0),totals(0), ch(0), pdg(0);
   
   for (Int_t ievent=0; ievent<4000; ievent++){
     prt_nextEvent(ievent,100);
-    timeres = prt_event->GetTimeRes();
+    //timeres = prt_event->GetTimeRes();
     pdg = prt_event->GetParticle();
     Double_t aminf,amins, sum(0),sumf(0),sums(0);
     Int_t nHits =prt_event->GetHitSize();
@@ -139,7 +139,7 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t timer
   }
   Double_t sep = (fabs(m1-m2))/(0.5*(s1+s2));
   std::cout<<in<<" separation "<< sep <<std::endl;
-  hllf->SetTitle(Form("#theta = %d       #sigma = %1.2f",prt_theta, sep));
+  hllf->SetTitle(Form("#theta = %1.2f       #sigma = %1.2f",prt_theta, sep));
 
   
   hllf->SetLineColor(2);
