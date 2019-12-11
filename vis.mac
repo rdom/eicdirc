@@ -102,7 +102,7 @@
 #/vis/viewer/set/background 1 1 1 0
 /vis/viewer/set/background 0 0 0 0
 /vis/viewer/set/hiddenMarker 
-/vis/geometry/set/forceLineSegmentsPerCircle all 0 20
+/vis/geometry/set/forceLineSegmentsPerCircle all 0 50
 
 
 # /vis/viewer/set/globalLineWidthScale 1.5
@@ -122,10 +122,10 @@
 # /vis/viewer/set/targetPoint 88.5358 -17.0546 18.8692 cm 
 
 
-#lens
-/vis/viewer/zoomTo 20
-/vis/viewer/set/viewpointThetaPhi 129.792  1.39204  deg
-/vis/viewer/set/targetPoint 100 20 210 cm
+# #lens
+# /vis/viewer/zoomTo 20
+# /vis/viewer/set/viewpointThetaPhi 129.792  1.39204  deg
+# /vis/viewer/set/targetPoint 100 20 210 cm
 
 # #lens side
 # /vis/viewer/set/projection orthogonal
