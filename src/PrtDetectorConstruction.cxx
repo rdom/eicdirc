@@ -27,6 +27,7 @@
 
 
 #include "PrtManager.h"
+#include "PrtBarSD.h"
 #include "PrtPrizmSD.h"
 #include "PrtPixelSD.h"
 
@@ -43,7 +44,7 @@ PrtDetectorConstruction::PrtDetectorConstruction()
   fNBar = PrtManager::Instance()->GetRadiator();
   if(fNBar<0) fNBar=1;
 
-  fHall[0] = 1000; fHall[1] = 1000; fHall[2] = 3000;
+  fHall[0] = 1500; fHall[1] = 1500; fHall[2] = 3000;
   //fBar[0] = 17; fBar[1] = 32; fBar[2] = 1050*4; //4200;
   //fMirror[0] = 20; fMirror[1] = 40; fMirror[2] =1;
   //fPrizm[0] = 170; fPrizm[1] = 300; fPrizm[2] = 30+300*tan(37*deg); fPrizm[3] = 30;
@@ -635,7 +636,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
 
 void PrtDetectorConstruction::DefineMaterials(){
   G4String symbol;             //a=mass of a mole;
-  G4double a, z,  density;      //z=mean number of protons;  
+  G4double a, z, density;      //z=mean number of protons;  
 
   G4int ncomponents, natoms;
   G4double fractionmass;
@@ -954,6 +955,11 @@ void PrtDetectorConstruction::ConstructSDandField(){
     G4SDManager::GetSDMpointer()->AddNewDetector(prizmSD);
     SetSensitiveDetector("lPrizmT1",prizmSD);
   }
+
+  PrtBarSD* barSD = new PrtBarSD("BarSD", "BarHitsCollection", 0);
+  G4SDManager::GetSDMpointer()->AddNewDetector(barSD);
+  SetSensitiveDetector("lBar",barSD);
+  
   // Magnetic field
 }
 

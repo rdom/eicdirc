@@ -35,6 +35,7 @@ private:
   Bool_t FindPeak(Double_t& cherenkovreco, Double_t& spr,Int_t a);
   Int_t FindPdg(Double_t mom, Double_t cangle);
   void FitRing(Double_t& x0, Double_t& y0, Double_t& theta);
+  double FindStartTime(PrtEvent *e);
   Int_t fDetectorID;  
   Double_t fBboxNum,fPipehAngle,fDphi,fBarPhi;
 
@@ -62,6 +63,7 @@ private:
   Double_t fAngle[5];
   TF1 *fFunc[5];
   TH1F *fLnDiff[5];
+  double fCriticalAngle;
 };
 
 #endif

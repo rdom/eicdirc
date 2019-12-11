@@ -35,6 +35,7 @@ public:
   ~PrtManager(){};
   static PrtManager* Instance(G4String outfile="hits.root", G4int runtype=0);
   void Save()             { fRootFile->Write(); }
+  void Cd()             { fRootFile->cd(); }
   void Fill();
   void FillLut();
   void AddEvent(PrtEvent event);
@@ -48,6 +49,7 @@ public:
   void SetGeometry(int val){ fGeometry = val; }
   void SetEvType(int val){ fEvType = val; }
   void SetBeamDimension(double val){ fBeamDimension = val; }
+  void SetZPos(double val){ fZPos = val; }
   void SetRadiator(int val){ fRadiator = val; }
   void SetLens(int val){ fLens = val; }
   void SetMcpLayout(int val){ fMcpLayout = val; }
@@ -73,6 +75,7 @@ public:
   int GetGeometry(){ return fGeometry; }
   int GetEvType(){ return fEvType; }
   double GetBeamDimension(){ return fBeamDimension; }
+  double GetZPos(){ return fZPos; }
   int GetRadiator(){ return fRadiator; }
   int GetLens(){ return fLens; }
   int GetMcpLayout(){ return fMcpLayout; }
@@ -108,6 +111,7 @@ private:
   double fRadiatorH;
   int fParticle;
   double fBeamDimension;
+  double fZPos;
   TVector3 fMomentum;
   TClonesArray *fLut;
   TClonesArray *fTrackInfoArray;

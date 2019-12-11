@@ -23,7 +23,7 @@ class PrtStackingAction : public G4UserStackingAction
     G4int fScintillationCounter;
     G4int fCerenkovCounter; 
     TRandom* fRand;
-    TGraph* fDetEff;
+    TGraph* fDetEff[2];
 };
 
 #endif

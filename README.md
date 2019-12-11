@@ -41,6 +41,7 @@ example:
                 10   ideal lens (thickness = 0, ideal focusing)
 
 -a    angle between particle beam and bar radiator
+      if a == 0 then a = [30,160]
 
 -e    number of simulated events
 
@@ -50,14 +51,15 @@ example:
               "kaon"
                  ...
               "opticalphoton"
-              "mix_pik" 1 pion 1 kaon mix
-	      "mix_pie" 1 pion 1 electron mix
+              "mix_pik"  1 pion 1 kaon mix
+	      "mix_pie"  1 pion 1 electron mix
+	      "mix_pimu" 1 pion 1 muon mix
 
 -p    particle momentum [GeV/c]
 
 -w    physical list
                 0    standard
-                1    without multiple scattering
+                1    without multiple scattering, ionisation and bremsstrahlung
                 10   monochromatic Cherenkov light
                 11   10 + 1 
 
@@ -70,6 +72,10 @@ example:
                0    standard (default)
                1    display hit occupancy of current run
                2    display hit occupancy of occuhits.root (need to be generated)
+
+-zpos target's Z offset 
+
+
 ```
 
 ##Example of script usage from macro folder

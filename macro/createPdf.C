@@ -40,10 +40,10 @@ TF1 * fitpdf(TH1F *h){
   return gaust;
 }
 
-void createPdf(TString in="hits.root",int end=0){
+void createPdf(TString in="hits.root",int end=0, int pid=321){
   if(!prt_init(in,1,"data/createPdf")) return;
    
-  const Int_t nch(15000);
+  const Int_t nch(8000);
   TH1F *hlef[nch], *hles[nch];
 
   for(Int_t i=0; i<nch; i++){
@@ -55,14 +55,15 @@ void createPdf(TString in="hits.root",int end=0){
   PrtHit hit;
   if(end==0) end=prt_entries;
   Int_t pdg(0), totalf(0),totals(0), ch;
-  for (Int_t e=0; e<prt_entries; e++){ //prt_entries
+  for (Int_t e=4000; e<prt_entries; e++){ //prt_entries
     prt_nextEvent(e,1000);
     pdg =prt_event->GetParticle();
     for(Int_t i=0; i<prt_event->GetHitSize(); i++){
       hit = prt_event->GetHit(i);
       ch=300*hit.GetMcpId()+hit.GetPixelId();      
-      time = hit.GetLeadTime();//+gRandom->Gaus(0,0.1);
-      if(pdg==321){
+      time = hit.GetLeadTime()+gRandom->Gaus(0,0.1);
+      //if(prt_event->GetParticle()==pid) time +=0.01; // remove TOF difference;
+      if(pdg==pid){
 	//totalf++;
 	hlef[ch]->Fill(time);
       }
@@ -71,7 +72,7 @@ void createPdf(TString in="hits.root",int end=0){
 	hles[ch]->Fill(time);
       }
     }
-    if(pdg==321) totalf++;
+    if(pdg==pid) totalf++;
     if(pdg==211 ) totals++;
     if(totalf>end || totals>end) break;
   }

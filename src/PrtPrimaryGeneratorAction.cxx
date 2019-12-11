@@ -28,10 +28,11 @@ PrtPrimaryGeneratorAction::PrtPrimaryGeneratorAction()
   fParticleK = particleTable->FindParticle("kaon+");
   fParticlePi = particleTable->FindParticle("pi+");
   fParticleE = particleTable->FindParticle("e-");
+  fParticleMu = particleTable->FindParticle("mu-");
 
   fParticleGun->SetParticleDefinition(fParticlePi);
   fParticleGun->SetParticleTime(0.0*ns);
-  fParticleGun->SetParticlePosition(G4ThreeVector(0.0*cm,0.0*cm,0.05*cm));
+  fParticleGun->SetParticlePosition(G4ThreeVector(0.0*cm,0.0*cm,-0.5*cm));
   fParticleGun->SetParticleMomentumDirection(G4ThreeVector(1.,0.,0.));
   fParticleGun->SetParticleEnergy(500.0*keV);
 }
@@ -44,18 +45,23 @@ PrtPrimaryGeneratorAction::~PrtPrimaryGeneratorAction(){
 void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
   G4double x,y,z;
   G4double angle = PrtManager::Instance()->GetAngle();
+  G4double zpos = PrtManager::Instance()->GetZPos();
   G4double radiatorL = PrtManager::Instance()->GetRadiatorL();
   G4double radiatorW = PrtManager::Instance()->GetRadiatorW();
   G4double radiatorH = PrtManager::Instance()->GetRadiatorH();
   
   if(PrtManager::Instance()->GetMix()){
     if(PrtManager::Instance()->GetParticle()==211 || PrtManager::Instance()->GetParticle()==0){
+
       if(PrtManager::Instance()->GetMix()==1){
 	fParticleGun->SetParticleDefinition(fParticleK);
 	PrtManager::Instance()->SetParticle(321);
-      }else{
+      }else if(PrtManager::Instance()->GetMix()==2){
 	fParticleGun->SetParticleDefinition(fParticleE);
-	PrtManager::Instance()->SetParticle(11);
+	PrtManager::Instance()->SetParticle(11);	
+      }else if(PrtManager::Instance()->GetMix()==3){
+	fParticleGun->SetParticleDefinition(fParticleMu);
+	PrtManager::Instance()->SetParticle(13);
       }
     }else{
       fParticleGun->SetParticleDefinition(fParticlePi);
@@ -77,9 +83,10 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
     // if(id==3)  vec.setPhi(250*deg);
 
     // // else{
+    double trackresolution=PrtManager::Instance()->GetBeamDimension();
     if(angle>0){
-      double trackresolution=PrtManager::Instance()->GetBeamDimension();
-      if(trackresolution<0.00001){
+      std::cout<<"angle "<<angle*TMath::RadToDeg()<<std::endl;
+      if(trackresolution<0.00001){	
 	vec.setTheta(angle);
       }else{
 	//smear track resolution
@@ -88,11 +95,17 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
       }
     }else{      
       G4double theta = M_PI*G4UniformRand();
-      if(theta>140*deg) theta-=40*deg;
-      if(theta<20*deg) theta+=20*deg;
+      theta = acos((cos(30*deg)-cos(150*deg))*G4UniformRand()+cos(150*deg));
+      theta = G4RandGauss::shoot(theta,trackresolution);
       vec.setTheta(M_PI-theta);
-      vec.setPhi(2*M_PI*G4UniformRand());
+      vec.setPhi(G4RandGauss::shoot(0,trackresolution));
+      // vec.setPhi(2*M_PI*G4UniformRand());
+      PrtManager::Instance()->Event()->SetAngle(theta/deg);
     }
+    
+    fParticleGun->SetParticlePosition(G4ThreeVector(0,0,zpos));
+    PrtManager::Instance()->Event()->SetPosition(TVector3(0,0,zpos));
+      
     // // }
    
     fParticleGun->SetParticleMomentumDirection(vec);

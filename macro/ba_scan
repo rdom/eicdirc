@@ -155,6 +155,6 @@ waitForMe "1"
 printf "\r$statusline [-] done [$(($(date +%s) - start_time)) s]         \n"
     
 sleep 2
-hadd r_spr${tseed}.root r_b${tseed}_*_spr.root
+hadd r_spr${tseed}.root r_b${tseed}_*.root
 rm r_b${tseed}_*.root
 

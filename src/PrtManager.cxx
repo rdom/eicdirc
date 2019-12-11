@@ -34,11 +34,11 @@ PrtManager::PrtManager(G4String outfile, G4int runtype)
     }    
   }
 
-  if(fRunType==2  || fRunType==3 || fRunType==4){
-    fTree = new TTree("recodata","Reconstructed info for the prototype");
-    fTrackInfoArray = new TClonesArray("PrtTrackInfo");
-    fTree->Branch("PrtTrackInfo",&fTrackInfoArray,256000,3); 
-  }
+  // if(fRunType==2  || fRunType==3 || fRunType==4){
+  //   fTree = new TTree("recodata","Reconstructed info for the prototype");
+  //   fTrackInfoArray = new TClonesArray("PrtTrackInfo");
+  //   fTree->Branch("PrtTrackInfo",&fTrackInfoArray,256000,3); 
+  // }
   
   // fHist = new TH1F("id", "name", 100, 0., 100);
 
@@ -56,6 +56,7 @@ PrtManager::PrtManager(G4String outfile, G4int runtype)
   fLens = 0;
   fMcpLayout = 0;
   fBeamDimension = 0;
+  fZPos = 0.05;
   fRadiator = 1;
   fMix = 0; // no mix
   std::cout<<"PrtManager has been successfully initialized. " <<std::endl;
