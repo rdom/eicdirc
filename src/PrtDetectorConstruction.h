@@ -68,7 +68,8 @@ private:
   G4double fRadius;
   G4double fNpix1;
   G4double fNpix2;
-  G4int fGeomId;
+  G4int fGeomType;
+  G4int fEvType;
   G4int fMcpLayout;
   G4int fLensId;
   G4double fdTilt;

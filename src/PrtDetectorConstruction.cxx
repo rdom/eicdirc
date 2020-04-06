@@ -34,10 +34,11 @@
 PrtDetectorConstruction::PrtDetectorConstruction()
   : G4VUserDetectorConstruction(){
 
-  fGeomId = PrtManager::Instance()->GetGeometry();
+  fGeomType = PrtManager::Instance()->GetGeometry();  
+  fEvType = PrtManager::Instance()->GetEvType();
+  
   fMcpLayout = PrtManager::Instance()->GetMcpLayout();
   fLensId = PrtManager::Instance()->GetLens();
-  //fGeomId=2014; // 2012
 
   fNRow = 6;
   fNCol = 4;
@@ -87,7 +88,7 @@ PrtDetectorConstruction::PrtDetectorConstruction()
     fLens[0] = fPrizm[3]; fLens[1] = fPrizm[0]; fLens[2]=12;
   }
 
-  if(PrtManager::Instance()->GetEvType() == 1){
+  if(fEvType == 4){
     fFd[1]=fPrizmT[4];
   }
 
@@ -117,7 +118,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   G4Box* gFront = new G4Box("gFront",200.,200.,5);
   lFront = new G4LogicalVolume(gFront,frontMaterial,"lFront",0,0,0);
   
-  if(PrtManager::Instance()->GetGeometry() == 3){
+  if(fEvType == 3){
     // new G4PVPlacement(0,G4ThreeVector(0,0,-1200),lFront,"wFront",lExpHall,false,0);
   }
 
@@ -130,7 +131,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   G4Box* gFd = new G4Box("gFd",0.5*fFd[1],0.5*fFd[0],0.5*fFd[2]);
   lFd = new G4LogicalVolume(gFd,defaultMaterial,"lFd",0,0,0);
   
-  G4int fNBoxes = (PrtManager::Instance()->GetGeometry() == 0)? 16 :1;
+  G4int fNBoxes = (fGeomType == 0)? 16 :1;
   fRadius = 970;
   G4double tphi, dphi = 22.5*deg; //22.5*deg;
   G4int BoxId = 0;
@@ -173,7 +174,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     }
   }else{
     int id=0, nparts=4;
-    if(PrtManager::Instance()->GetGeometry()==3){
+    if(fEvType==3){
       double sh=0;
       if(fLensId == 6) sh = fLens[2];
       nparts=3;
@@ -273,7 +274,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     r2 = (r2==0)? 24: r2;
     G4double shight = 25;
 
-    if(PrtManager::Instance()->GetGeometry()==3){
+    if(fEvType==3){
       r1 = 1000;
       r2 = 400;
     }
@@ -334,7 +335,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
       }
       if(fLensId==6){
 	double sh=0;
-	if(PrtManager::Instance()->GetGeometry()==3) sh = 1050+gluethickness; 
+	if(fEvType==3) sh = 1050+gluethickness; 
 	new G4PVPlacement(0,G4ThreeVector(0,0,0.5*dirclength+fLens[2]/2.-sh),lLens1,"wLens1", lDirc,false,0);
 	new G4PVPlacement(0,G4ThreeVector(0,0,0.5*dirclength+fLens[2]/2.-sh),lLens2,"wLens2", lDirc,false,0);
 	new G4PVPlacement(0,G4ThreeVector(0,0,0.5*dirclength+fLens[2]/2.-sh),lLens3,"wLens3", lDirc,false,0);	
@@ -363,10 +364,10 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   G4RotationMatrix *fdrot = new G4RotationMatrix();
   G4double evshiftz = 0.5*dirclength+fPrizm[1]+fMcpActive[2]/2.+fLens[2];
   G4double evshiftx = 0;
-  if(PrtManager::Instance()->GetEvType() == 0 ){
+  if(fEvType != 4 ){
     fPrismShift = G4ThreeVector((fPrizm[2]+fPrizm[3])/4.-fPrizm[3]/2.,0,0.5*dirclength+fPrizm[1]/2.+fLens[2]);
     new G4PVPlacement(xRot,fPrismShift,lPrizm,"wPrizm", lDirc,false,0);
-  }else {
+  }else { // tilted EV
     fPrismShift = G4ThreeVector((fPrizmT[2]+fPrizmT[3])/4.-fPrizmT[3]/2.,0,0.5*dirclength+fPrizmT[1]/2.+fLens[2]);
     new G4PVPlacement(xRot,fPrismShift,lPrizmT1,"wPrizm", lDirc,false,0);
     fPrismShift = G4ThreeVector((fPrizmT[2]+0.0001)/4.-0.0001/2.-0.5*fPrizm[3],0,fPrizmT[1]+0.5*dirclength+fPrizmT[5]/2.+fLens[2]);
@@ -697,7 +698,7 @@ void PrtDetectorConstruction::DefineMaterials(){
 
 
   // assign main materials
-  if(PrtManager::Instance()->GetGeometry() < 10) defaultMaterial = Vacuum;
+  if(fGeomType < 10) defaultMaterial = Vacuum;
   else defaultMaterial = Air; //Vacuum // material of world
   frontMaterial =  CarbonFiber; 
   BarMaterial = SiO2; // material of all Bars, Quartz and Window
@@ -948,7 +949,7 @@ void PrtDetectorConstruction::ConstructSDandField(){
   SetSensitiveDetector("lPixel",pixelSD);
   PrtPrizmSD* prizmSD = new PrtPrizmSD("PrizmSD", "PrizmHitsCollection", 0);
   
-  if(PrtManager::Instance()->GetEvType() == 0 ){
+  if(fEvType != 4 ){
     G4SDManager::GetSDMpointer()->AddNewDetector(prizmSD);
     SetSensitiveDetector("lPrizm",prizmSD);
   }else{

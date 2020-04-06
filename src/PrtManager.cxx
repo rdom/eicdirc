@@ -45,7 +45,7 @@ PrtManager::PrtManager(G4String outfile, G4int runtype)
   fPhysList = 0;
   fParticle = 0;
   fMomentum = TVector3(2,0,0);
-  fGeometry = 3;
+  fGeometry = 1;
   fEvType = 0;
   fAngle = 0;
   fShift = 150;

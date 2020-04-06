@@ -68,6 +68,7 @@ int main(int argc,char** argv)
     else if ( G4String(argv[i]) == "-i" ) infile    = argv[i+1];
     else if ( G4String(argv[i]) == "-u" ) lutfile   = argv[i+1];
     else if ( G4String(argv[i]) == "-g" ) geometry  = argv[i+1];
+    else if ( G4String(argv[i]) == "-ev" )  evType  = argv[i+1];
     else if ( G4String(argv[i]) == "-h" ) radiator  = argv[i+1];
     else if ( G4String(argv[i]) == "-a" ) geomAng   = argv[i+1];
     else if ( G4String(argv[i]) == "-b" ) batchmode = argv[i+1];
@@ -124,8 +125,8 @@ int main(int argc,char** argv)
     PrtLutReco * reco = new PrtLutReco(infile.c_str(),lutfile.c_str(),verbose);
     reco->Run(firstevent, atoi(events));
     return 0;
-  }
-
+  }  
+  
   // Choose the Random engine
   G4Random::setTheEngine(new CLHEP::RanecuEngine);   
 #ifdef G4MULTITHREADED
