@@ -42,6 +42,8 @@ private:
   G4LogicalVolume* lPrizm;
   G4LogicalVolume* lPrizmT1;
   G4LogicalVolume* lPrizmT2;
+  G4LogicalVolume* lWedge;
+  G4LogicalVolume* lWindow;
   G4LogicalVolume* lMcp;
   G4LogicalVolume* lPixel;
   G4LogicalVolume* lExpVol;
@@ -68,6 +70,7 @@ private:
   G4double fRadius;
   G4double fNpix1;
   G4double fNpix2;
+  G4double fBoxWidth;
   G4int fGeomType;
   G4int fEvType;
   G4int fMcpLayout;
