@@ -85,7 +85,6 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
     // // else{
     double trackresolution=PrtManager::Instance()->GetBeamDimension();
     if(angle>0){
-      std::cout<<"angle "<<angle*TMath::RadToDeg()<<std::endl;
       if(trackresolution<0.00001){	
 	vec.setTheta(angle);
       }else{

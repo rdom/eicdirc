@@ -35,18 +35,20 @@ void PrtSteppingAction::UserSteppingAction(const G4Step* step)
   }
 
   G4Track* track = step->GetTrack();
-  int parentId = track->GetParentID(); 
+  int parentId = track->GetParentID();
+
+
+  if(step->GetPostStepPoint()->GetPhysicalVolume()==0) return;
   
   //if(step->GetPreStepPoint()->GetPhysicalVolume()->GetName()=="Bar" && step->GetPostStepPoint()->GetPhysicalVolume()->GetName()=="ExpHall" ) track->SetTrackStatus(fStopAndKill);
   if(step->GetPreStepPoint()->GetPhysicalVolume()->GetName()=="wMcp" && step->GetPostStepPoint()->GetPhysicalVolume()->GetName()=="wDirc" ) track->SetTrackStatus(fStopAndKill);
   if(step->GetPreStepPoint()->GetPhysicalVolume()->GetName()=="wFd" && step->GetPostStepPoint()->GetPhysicalVolume()->GetName()=="wDirc" ) track->SetTrackStatus(fStopAndKill);
   //if(step->GetPreStepPoint()->GetPosition().x()>10 ) track->SetTrackStatus(fStopAndKill);
 
+    
   G4String ParticleName = track->GetDynamicParticle()->
                                  GetParticleDefinition()->GetParticleName();
-
- 
-  
+    
   //std::cout<<"ParticleName "<<ParticleName <<std::endl;
   
   if (ParticleName == "opticalphoton") return;
@@ -67,5 +69,6 @@ void PrtSteppingAction::UserSteppingAction(const G4Step* step)
         }
      }
   }
+  
 }
 
