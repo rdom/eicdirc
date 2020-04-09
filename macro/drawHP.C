@@ -13,14 +13,15 @@ void drawHP(TString infile="../build/hits.root"){
       int mcp = hit.GetMcpId();
       int pix = hit.GetPixelId()-1;
       //int ch = map_mpc[mcp][pix];
-      double time = hit.GetLeadTime();      
-      //prt_hdigi[mcp]->Fill(pix/16, pix%16);
-      prt_hdigi[mcp]->Fill(pix%16, pix/16);
+      double time = hit.GetLeadTime();
+      prt_hdigi[mcp]->Fill(pix/16, pix%16);
+      //prt_hdigi[mcp]->Fill(pix%16, pix/16);
     }
   }
 
-  prt_drawDigi("",2031,0,0);
+  //prt_drawDigi("",2031,0,0);
+  prt_drawDigi("",2032,0,0); 
   prt_canvasAdd(prt_cdigi);
-  prt_canvasSave(0);
+  //  prt_canvasSave(0);
 }
 

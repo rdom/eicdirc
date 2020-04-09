@@ -26,7 +26,7 @@ public:
   PrtLutNode (Int_t detectorId);
 
   // Copy constructor 
-  PrtLutNode (PrtLutNode& node) { *this = node; }  
+  // PrtLutNode (PrtLutNode& node) { *this = node; }  
 
   // Modifiers
   void AddEntry(Int_t nodeId, TVector3 dir, Double_t pathid, Int_t nrefl, Double_t time, TVector3 hitpos, TVector3 digipos);

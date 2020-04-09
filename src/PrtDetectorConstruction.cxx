@@ -34,14 +34,14 @@
 PrtDetectorConstruction::PrtDetectorConstruction()
   : G4VUserDetectorConstruction(){
 
-  fGeomId = PrtManager::Instance()->GetGeometry();
+  fGeomType = PrtManager::Instance()->GetGeometry();  
+  fEvType = PrtManager::Instance()->GetEvType();  
   fMcpLayout = PrtManager::Instance()->GetMcpLayout();
   fLensId = PrtManager::Instance()->GetLens();
-  //fGeomId=2014; // 2012
-
+  fNBar = PrtManager::Instance()->GetRadiator();
+  
   fNRow = 6;
   fNCol = 4;
-  fNBar = PrtManager::Instance()->GetRadiator();
   if(fNBar<0) fNBar=1;
 
   fHall[0] = 1500; fHall[1] = 1500; fHall[2] = 3000;
@@ -62,7 +62,6 @@ PrtDetectorConstruction::PrtDetectorConstruction()
   fPrizmT[4] = 290;
   fPrizmT[5] = 290*cos(fdTilt);
 
-  fFd[0] = fPrizm[0]; fFd[1]=fPrizm[2]; fFd[2] =1;
   
   fMirror[0] = 20; fMirror[1] = fPrizm[0]; fMirror[2] =1;
   //  fPrizm[0] = 170; fPrizm[1] = 300; fPrizm[2] = 50+300*tan(45*deg); fPrizm[3] = 50;
@@ -71,7 +70,26 @@ PrtDetectorConstruction::PrtDetectorConstruction()
   fMcpTotal[0] = fMcpTotal[1] = 53+4; fMcpTotal[2]=1;
   fMcpActive[0] = fMcpActive[1] = 53; fMcpActive[2]=1;
   fLens[0] = fLens[1] = 40; fLens[2]=10;
+  fRadius = 970;
+  
+  fBoxWidth = fPrizm[0];
+  
+  if(fEvType==1){ //BaBar
+    fBar[0] = 17.25; fBar[1] = 35; fBar[2] = 1050;
+    fNBar = 12;
+    fRadius = 1150;
+    fLensId = 0;
+    fBoxWidth = fNBar*(fBar[1]+0.15);
+    fNRow = 7;
+  }
+  
+  fFd[0] = fBoxWidth; fFd[1]=fPrizm[2]; fFd[2] =1;
 
+  
+  if(fEvType == 4){
+    fFd[1]=fPrizmT[4];
+  }  
+  
   if(fLensId == 0 || fLensId==10){
     fLens[2] =0;
   }
@@ -85,13 +103,7 @@ PrtDetectorConstruction::PrtDetectorConstruction()
 
   if(fLensId == 6){
     fLens[0] = fPrizm[3]; fLens[1] = fPrizm[0]; fLens[2]=12;
-  }
-
-  if(PrtManager::Instance()->GetEvType() == 1){
-    fFd[1]=fPrizmT[4];
-  }
-
-  
+  }  
 
   //  PrtManager::Instance()->SetRadiatorL(fBar[2]);
   PrtManager::Instance()->SetRadiatorW(fBar[1]);
@@ -105,7 +117,7 @@ PrtDetectorConstruction::~PrtDetectorConstruction(){}
 
 G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   DefineMaterials();
-
+    
   // ------------- Volumes --------------
 
   // The experimental Hall
@@ -113,27 +125,17 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   lExpHall = new G4LogicalVolume(gExpHall,defaultMaterial,"lExpHall",0,0,0);
   G4VPhysicalVolume* wExpHall  = new G4PVPlacement(0,G4ThreeVector(),lExpHall,"gExpHall",0,false,0);
 
-  // The front material
-  G4Box* gFront = new G4Box("gFront",200.,200.,5);
-  lFront = new G4LogicalVolume(gFront,frontMaterial,"lFront",0,0,0);
-  
-  if(PrtManager::Instance()->GetGeometry() == 3){
-    // new G4PVPlacement(0,G4ThreeVector(0,0,-1200),lFront,"wFront",lExpHall,false,0);
-  }
-
   double gluethickness=0.05;
   double dirclength=fBar[2]*4+gluethickness*4;
   PrtManager::Instance()->SetRadiatorL(dirclength);
   // The DIRC
-  G4Box* gDirc = new G4Box("gDirc",400.,300.,0.5*dirclength+550);
+  G4Box* gDirc = new G4Box("gDirc",500,300,0.5*dirclength+550);
   lDirc = new G4LogicalVolume(gDirc,defaultMaterial,"lDirc",0,0,0);
   G4Box* gFd = new G4Box("gFd",0.5*fFd[1],0.5*fFd[0],0.5*fFd[2]);
   lFd = new G4LogicalVolume(gFd,defaultMaterial,"lFd",0,0,0);
   
-  G4int fNBoxes = (PrtManager::Instance()->GetGeometry() == 0)? 16 :1;
-  fRadius = 970;
+  G4int fNBoxes = (fGeomType == 0)? 16 :1;
   G4double tphi, dphi = 22.5*deg; //22.5*deg;
-  G4int BoxId = 0;
 
   if(PrtManager::Instance()->GetRunType()==1){ 
     // LUT
@@ -146,7 +148,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
 
       G4RotationMatrix *tRot = new G4RotationMatrix();
       tRot->rotateZ(-tphi);     
-      new G4PVPlacement(tRot,G4ThreeVector(dx,dy,0),lDirc,"wDirc",lExpHall,false,i); //G4ThreeVector(dx,dy,-500)
+      new G4PVPlacement(tRot,G4ThreeVector(dx,dy,0),lDirc,"wDirc",lExpHall,false,i);
     }
   }
   
@@ -154,45 +156,42 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   G4Box *gBar = new G4Box("gBar",fBar[0]/2.,fBar[1]/2.,fBar[2]/2.);
   lBar = new G4LogicalVolume(gBar,BarMaterial,"lBar",0,0,0);
   //wBar =  new G4PVPlacement(0,G4ThreeVector(0,0,0),lBar,"wBar", lDirc,false,0);
-  G4Box *gExpVol = new G4Box("gExpVol",fBar[0]/2.,fPrizm[0]/2.,fBar[2]/2.);
+  G4Box *gExpVol = new G4Box("gExpVol",fBar[0]/2.,0.5*fBoxWidth,fBar[2]/2.);
   lExpVol = new G4LogicalVolume(gExpVol,BarMaterial,"lExpVol",0,0,0);
-
   
   // Glue
   G4Box *gGlue = new G4Box("gGlue",fBar[0]/2.,fBar[1]/2.,0.5*gluethickness);
   lGlue = new G4LogicalVolume(gGlue,epotekMaterial,"lGlue",0,0,0);
-  G4Box *gGlueE = new G4Box("gGlueE",fBar[0]/2.,fPrizm[0]/2.,0.5*gluethickness);
+  G4Box *gGlueE = new G4Box("gGlueE",fBar[0]/2.,0.5*fBoxWidth,0.5*gluethickness);
   lGlueE = new G4LogicalVolume(gGlueE,epotekMaterial,"lGlueE",0,0,0);
 
-  bool plate = false;
   if(fNBar==1){
     for(int j=0;j<4; j++){
-      double z = -0.5*dirclength+0.5*1050+(1050+gluethickness)*j;
+      double z = -0.5*dirclength+0.5*fBar[2]+(fBar[2]+gluethickness)*j;
       wBar =  new G4PVPlacement(0,G4ThreeVector(0,0,z),lBar,"wBar", lDirc,false,0);
-      wGlue =  new G4PVPlacement(0,G4ThreeVector(0,0,z+0.5*(1050+gluethickness)),lGlue,"wGlue", lDirc,false,0);
+      wGlue =  new G4PVPlacement(0,G4ThreeVector(0,0,z+0.5*(fBar[2]+gluethickness)),lGlue,"wGlue", lDirc,false,0);
     }
   }else{
     int id=0, nparts=4;
-    if(PrtManager::Instance()->GetGeometry()==3){
+    if(fEvType==3){
       double sh=0;
       if(fLensId == 6) sh = fLens[2];
       nparts=3;
-      double z = -0.5*dirclength+0.5*1050+(1050+gluethickness)*3;
+      double z = -0.5*dirclength+0.5*fBar[2]+(fBar[2]+gluethickness)*3;
       new G4PVPlacement(0,G4ThreeVector(0,0,z+sh),lExpVol,"wExpVol",lDirc,false,id);      
-      new G4PVPlacement(0,G4ThreeVector(0,0,z+0.5*(1050+gluethickness)+sh),lGlueE,"wGlue", lDirc,false,id);
+      new G4PVPlacement(0,G4ThreeVector(0,0,z+0.5*(fBar[2]+gluethickness)+sh),lGlueE,"wGlue", lDirc,false,id);
     }
     for(int i=0; i<fNBar; i++){
-      double shifty = i*(fBar[1]+0.01)-fPrizm[0]/2. + fBar[1]/2.; 
+      double shifty = i*(fBar[1]+0.15)- 0.5*fBoxWidth + fBar[1]/2.; 
       for(int j=0;j<nparts; j++){
-	double z = -0.5*dirclength+0.5*1050+(1050+gluethickness)*j;
+	double z = -0.5*dirclength+0.5*fBar[2]+(fBar[2]+gluethickness)*j;
 	pDirc[i] = new G4PVPlacement(0,G4ThreeVector(0,shifty,z),lBar,"wBar",lDirc,false,id);
-	wGlue = new G4PVPlacement(0,G4ThreeVector(0,shifty,z+0.5*(1050+gluethickness)),lGlue,"wGlue", lDirc,false,id);
+	wGlue = new G4PVPlacement(0,G4ThreeVector(0,shifty,z+0.5*(fBar[2]+gluethickness)),lGlue,"wGlue", lDirc,false,id);
 	id++;
       }
     }
   }
   
-
   // The Mirror
   G4Box* gMirror = new G4Box("gMirror",fMirror[0]/2.,fMirror[1]/2.,fMirror[2]/2.);
   lMirror = new G4LogicalVolume(gMirror,MirrorMaterial,"lMirror",0,0,0);
@@ -225,13 +224,12 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     // r2=35;
 
     G4double shight = 40;
-    G4double bwidth = fLens[2]-lensMinThikness*2;
 
     G4ThreeVector zTrans1(0, 0, -r1-fLens[2]/2.+r1-sqrt(r1*r1-shight/2.*shight/2.) +lensMinThikness);
     G4ThreeVector zTrans2(0, 0, -r2-fLens[2]/2.+r2-sqrt(r2*r2-shight/2.*shight/2.) +lensMinThikness*2);
 
     G4Box* gfbox = new G4Box("Fbox",fLens[0]/2.,fLens[1]/2.,fLens[2]/2.);
-    G4Box* gfsbox = new G4Box("Fsbox",shight/2.,fLens[1]/2.,fLens[2]/2.);
+    //G4Box* gfsbox = new G4Box("Fsbox",shight/2.,fLens[1]/2.,fLens[2]/2.);
     G4Tubs* gfstube = new G4Tubs("ftube",0,shight/2.,fLens[2]/2.,0,360*deg);
 
     G4Sphere* gsphere1 = new G4Sphere("Sphere1",0,r1,0,360*deg,0,360*deg);
@@ -273,7 +271,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     r2 = (r2==0)? 24: r2;
     G4double shight = 25;
 
-    if(PrtManager::Instance()->GetGeometry()==3){
+    if(fEvType==3){
       r1 = 1000;
       r2 = 400;
     }
@@ -308,7 +306,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
 
   if(fLensId ==100){
     fLens[2]=200;
-    G4Box *gLens3 = new G4Box("gLens1",fBar[0]/2.,fPrizm[0]/2.,100);
+    G4Box *gLens3 = new G4Box("gLens1",fBar[0]/2.,0.5*fBoxWidth,100);
     lLens3 = new G4LogicalVolume(gLens3,BarMaterial,"lLens3",0,0,0);	
   }
       
@@ -317,14 +315,14 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
       new G4PVPlacement(0,G4ThreeVector(0,0,0.5*dirclength+fLens[2]/2.),lLens3,"wLens3", lDirc,false,0);
     }else if(fNBar==1 && fLensId==3){
       for(int i=0; i<11; i++){
-	double shifty = i*(fLens[1]+0.0)-fPrizm[0]/2. + fLens[1]/2.;
+	double shifty = i*(fLens[1]+0.0)-0.5*fBoxWidth + fLens[1]/2.;
 	new G4PVPlacement(0,G4ThreeVector(0,shifty,0.5*dirclength+fLens[2]/2.),lLens1,"wLens1", lDirc,false,i);
 	new G4PVPlacement(0,G4ThreeVector(0,shifty,0.5*dirclength+fLens[2]/2.),lLens2,"wLens2", lDirc,false,i);
 	new G4PVPlacement(0,G4ThreeVector(0,shifty,0.5*dirclength+fLens[2]/2.),lLens3,"wLens3", lDirc,false,i);	
       }
     }else{
       for(int i=0; i<fNBar; i++){
-	double shifty = i*(fBar[1]+0.0)-fPrizm[0]/2. + fBar[1]/2.;
+	double shifty = i*(fBar[1]+0.0)- 0.5*fBoxWidth + fBar[1]/2.;
 
 	if(fLensId!=6){
 	  new G4PVPlacement(0,G4ThreeVector(0,shifty,0.5*dirclength+fLens[2]/2.),lLens1,"wLens1", lDirc,false,i);
@@ -334,7 +332,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
       }
       if(fLensId==6){
 	double sh=0;
-	if(PrtManager::Instance()->GetGeometry()==3) sh = 1050+gluethickness; 
+	if(fEvType==3) sh = fBar[2]+gluethickness; 
 	new G4PVPlacement(0,G4ThreeVector(0,0,0.5*dirclength+fLens[2]/2.-sh),lLens1,"wLens1", lDirc,false,0);
 	new G4PVPlacement(0,G4ThreeVector(0,0,0.5*dirclength+fLens[2]/2.-sh),lLens2,"wLens2", lDirc,false,0);
 	new G4PVPlacement(0,G4ThreeVector(0,0,0.5*dirclength+fLens[2]/2.-sh),lLens3,"wLens3", lDirc,false,0);	
@@ -363,23 +361,101 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   G4RotationMatrix *fdrot = new G4RotationMatrix();
   G4double evshiftz = 0.5*dirclength+fPrizm[1]+fMcpActive[2]/2.+fLens[2];
   G4double evshiftx = 0;
-  if(PrtManager::Instance()->GetEvType() == 0 ){
-    fPrismShift = G4ThreeVector((fPrizm[2]+fPrizm[3])/4.-fPrizm[3]/2.,0,0.5*dirclength+fPrizm[1]/2.+fLens[2]);
-    new G4PVPlacement(xRot,fPrismShift,lPrizm,"wPrizm", lDirc,false,0);
-  }else {
+
+  if(fEvType == 1){ // focusing prism
+    
+    double fWindow[]={124,437,9.6};
+    double fWedge[]={33.25,91,79.537,27.0};
+    double fSWedge[]={fBoxWidth,60,119,85};
+    double fBlock[]={fBoxWidth,180,480,330};    
+
+    double currentz = 0.5*dirclength;
+    
+    double fdH = fWedge[1]*tan(0.006); // 6 mrad tilt
+    fWedge[2] = tan(30./180.*M_PI)*91. + 27. - fdH; // update the side of the prizm assuming bottom tilt
+    double theta = atan((fWedge[2]+2*fdH-fWedge[3])/2./fWedge[1]);
+    G4Trap* gWedge = new G4Trap("gWedge",fWedge[1]/2., theta, 0.,fWedge[0]/2., fWedge[2]/2., fWedge[2]/2., 0.,
+				fWedge[0]/2., fWedge[3]/2., fWedge[3]/2., 0.);
+    lWedge = new G4LogicalVolume(gWedge, BarMaterial,"lWedge",0,0,0);
+    G4RotationMatrix* tRot = new G4RotationMatrix();
+    tRot->rotateY(M_PI);
+
+    // window
+    G4Box* gWindow = new G4Box("gWindow",0.5*fWindow[0],0.5*fWindow[1],0.5*fWindow[2]);
+    lWindow = new G4LogicalVolume(gWindow,BarMaterial,"lWindow",0,0,0);
+
+    for(int i=0; i<fNBar; i++){
+      double yshift = 0.5*fBoxWidth-0.5*fBar[1]-(fBar[1]+0.15)*i;
+      fPrismShift = G4ThreeVector((fWedge[2]+fWedge[3])/4.-0.5*fWedge[3],yshift,currentz+0.5*fWedge[1]);
+      new G4PVPlacement(tRot,fPrismShift,lWedge,"wWedge", lDirc,false,i);
+    }
+    currentz += fWedge[1];    
+    
+    new G4PVPlacement(0,G4ThreeVector(30,0,currentz+0.5*fWindow[2]),lWindow,"wWindow",lDirc,false,0);
+    currentz += fWindow[2];
+
+    // second wedge
+    G4Trap* gSWedge = new G4Trap("gSWedge",fSWedge[0],fSWedge[1],fSWedge[2],fSWedge[3]);
+    lSWedge = new G4LogicalVolume(gSWedge, BarMaterial,"lSWedge",0,0,0);
+    G4RotationMatrix* xwRot = new G4RotationMatrix();
+    xwRot->rotateX(0.5*M_PI);
+    new G4PVPlacement(xwRot,G4ThreeVector((fSWedge[2]+fSWedge[3])/4.-0.5*fWedge[3],0,currentz+0.5*fSWedge[1]),lSWedge,"wSWedge", lDirc,false,0);
+    currentz += fSWedge[1];
+     
+    // focusing block    
+    auto gBlockA = new G4Trap("gBlockA",fBlock[0],fBlock[1],fBlock[2],fBlock[3]);
+
+    double cradius = PrtManager::Instance()->GetTest1(); //1100
+    double cpos = 250;
+
+    double mxcor=200;
+    double mycor=15;
+    
+    G4Tubs* gCyl  = new G4Tubs("gCyl",0,cradius,fBoxWidth,0*deg,360*deg);
+    G4RotationMatrix* cRot = new G4RotationMatrix();
+    auto cTrans = G4ThreeVector(mxcor+cpos-((fBlock[2]+fBlock[3])/4.),mycor-cradius+0.5*fBlock[1],0);
+    auto gBlock = new G4IntersectionSolid("gBlock",gBlockA,gCyl,cRot,cTrans);
+
+    double mirrorthickness = 1;
+    cTrans.setY(cTrans.getY()-mirrorthickness);
+
+    auto gFmirror = new G4SubtractionSolid("gFmirror",gBlock,gCyl,new G4RotationMatrix(),cTrans);  
+    lFmirror = new G4LogicalVolume(gFmirror, MirrorMaterial,"lFmirror",0,0,0); 
+    
+    fPrismShift = G4ThreeVector((fBlock[2]+fBlock[3])/4.-0.5*fWedge[3],0,currentz+0.5*fBlock[1]);
+    xRot->rotateX(M_PI);
+    
+    lBlock = new G4LogicalVolume(gBlock, BarMaterial,"lBlock",0,0,0);
+    new G4PVPlacement(xRot,fPrismShift,lBlock,"wBlock", lDirc,false,0);
+    
+    fPrismShift.setZ(fPrismShift.getZ()+mirrorthickness);
+    new G4PVPlacement(xRot,fPrismShift,lFmirror,"wFmirror", lDirc,false,0);
+
+    // PMT plane
+    double pmtrot = atan((fBlock[3]-fBlock[2])/fBlock[1]);
+    fdrot->rotateY(0.5*M_PI-pmtrot);
+    new G4PVPlacement(fdrot,
+		      G4ThreeVector(0.5*(fBlock[2]+fBlock[3])-0.5*fWedge[3],0,currentz+0.5*fBlock[1]),
+		      lFd,"wFd", lDirc,false,0);    
+  }
+  else if(fEvType == 4){ // tilted prism
     fPrismShift = G4ThreeVector((fPrizmT[2]+fPrizmT[3])/4.-fPrizmT[3]/2.,0,0.5*dirclength+fPrizmT[1]/2.+fLens[2]);
     new G4PVPlacement(xRot,fPrismShift,lPrizmT1,"wPrizm", lDirc,false,0);
     fPrismShift = G4ThreeVector((fPrizmT[2]+0.0001)/4.-0.0001/2.-0.5*fPrizm[3],0,fPrizmT[1]+0.5*dirclength+fPrizmT[5]/2.+fLens[2]);
     G4RotationMatrix* yRot = new G4RotationMatrix();
-    yRot->rotateX(-M_PI/2.*rad);
+    yRot->rotateX(-0.5*M_PI*rad);
     fdRot->rotateY(fdTilt);
     fdrot->rotateY(fdTilt-90*deg);
     evshiftz =0.5*dirclength+fLens[2] + fPrizmT[1]+0.5*fPrizmT[5] + 0.5*fFd[2]*sin(fdTilt); 
     evshiftx=0.5*fPrizmT[4]*(1-sin(fdTilt)) - 0.5*fFd[2]*cos(fdTilt);
     new G4PVPlacement(yRot,fPrismShift,lPrizmT2,"wPrizm", lDirc,false,0);
+    new G4PVPlacement(fdrot,G4ThreeVector(0.5*fFd[1]-0.5*fPrizm[3]-evshiftx,0,evshiftz),lFd,"wFd", lDirc,false,0);
   }
-
-  new G4PVPlacement(fdrot,G4ThreeVector(0.5*fFd[1]-0.5*fPrizm[3]-evshiftx,0,evshiftz),lFd,"wFd", lDirc,false,0);
+  else{ // normal prism
+    fPrismShift = G4ThreeVector((fPrizm[2]+fPrizm[3])/4.-0.5*fPrizm[3],0,0.5*(dirclength+fPrizm[1])+fLens[2]);
+    new G4PVPlacement(xRot,fPrismShift,lPrizm,"wPrizm", lDirc,false,0);
+    new G4PVPlacement(fdrot,G4ThreeVector(0.5*fFd[1]-0.5*fPrizm[3]-evshiftx,0,evshiftz),lFd,"wFd", lDirc,false,0);
+  }
 
   if(fMcpLayout==1){
     // standard mcp pmt layout
@@ -412,7 +488,6 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     }
   }
   if(fMcpLayout==0){
-    // only mcps
     // The MCP
     G4Box* gMcp = new G4Box("gMcp",fPrizm[2]/2.,fPrizm[0]/2.,fMcpTotal[2]/2.);
     lMcp = new G4LogicalVolume(gMcp,BarMaterial,"lMcp",0,0,0);
@@ -423,7 +498,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     G4Box* gPixel = new G4Box("gPixel",fMcpTotal[0]/2.,fMcpTotal[1]/2.,fMcpTotal[2]/16.);
     lPixel = new G4LogicalVolume(gPixel,BarMaterial,"lPixel",0,0,0);
 
-    double disx = (fPrizm[0]-fNpix2*fMcpTotal[0])/(double)fNpix2;
+    //double disx = (fPrizm[0]-fNpix2*fMcpTotal[0])/(double)fNpix2;
     double disy = (fPrizm[1]-fNpix1*fMcpTotal[0])/(double)(fNpix1+1);
     if(true){
       int pixelId=0;
@@ -437,7 +512,6 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     }else{
       new G4PVPlacement(fdRot,G4ThreeVector(0,0,0),lPixel,"wPixel", lMcp,false,1);
     } 
-    // new G4PVPlacement(fdRot,G4ThreeVector(fPrizm[2]/2.-fPrizm[3]/2.,0,fBar[2]/2.+fPrizm[1]+fMcpActive[2]/2.+fLens[2]),lMcp,"wMcp", lDirc,false,1);
     new G4PVPlacement(0,G4ThreeVector(0,0,0),lMcp,"wMcp", lFd,false,1);
   }
   if(fMcpLayout==3){
@@ -485,8 +559,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     lMcp = new G4LogicalVolume(gMcp,BarMaterial,"lMcp",0,0,0);
 
 
-    G4double pixSize = 6*mm;
-    
+    //G4double pixSize = 6*mm;    
     fNpix1 = 32;//fMcpActive[1]/pixSize-1;
     fNpix2 = 32;// fMcpActive[1]/pixSize-1;
 
@@ -510,125 +583,131 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
  
     int mcpId = 0;
     G4double gapx = (fPrizm[2]-fNCol*fMcpTotal[0])/(double)(fNCol+1);
-    G4double gapy = (fPrizm[0]-fNRow*fMcpTotal[1])/(double)(fNRow+1);
+    G4double gapy = (fBoxWidth-fNRow*fMcpTotal[1])/(double)(fNRow+1);
     for(int i=0; i<fNCol; i++){
       for(int j=0; j<fNRow; j++){
-	double shiftx = i*(fMcpTotal[0]+gapx)-fPrizm[3]/2.+fMcpTotal[0]/2+gapx;
-	double shifty = j*(fMcpTotal[1]+gapy)-fPrizm[0]/2.+fMcpTotal[1]/2+gapy;
-	new G4PVPlacement(0,G4ThreeVector(shiftx,shifty,0.5*dirclength+fPrizm[1]+fMcpActive[2]/2.+fLens[2]),lMcp,"wMcp", lDirc,false,mcpId++);
+	// double shiftx = i*(fMcpTotal[0]+gapx)-0.5*(fPrizm[3]-fMcpTotal[0])+gapx;
+	// double shifty = j*(fMcpTotal[1]+gapy)-0.5*(fBoxWidth-fMcpTotal[1])+gapy;
+	// new G4PVPlacement(0,G4ThreeVector(shiftx,shifty,0.5*dirclength+fPrizm[1]+fMcpActive[2]/2.+fLens[2]),lMcp,"wMcp", lDirc,false,mcpId++);
+
+	double shiftx = i*(fMcpTotal[0]+gapx)-0.5*(fFd[1]-fMcpTotal[0])+gapx;
+	double shifty = j*(fMcpTotal[1]+gapy)-0.5*(fBoxWidth-fMcpTotal[1])+gapy;
+	new G4PVPlacement(0,G4ThreeVector(shiftx,shifty,0),lMcp,"wMcp", lFd,false,mcpId++);
       }
     }
-
   }
 
-  const G4int num = 36; 
-  G4double WaveLength[num];
-  G4double PhotonEnergy[num];
-  G4double PMTReflectivity[num];
-  G4double EfficiencyMirrors[num];
-  const G4double LambdaE = 2.0 * 3.14159265358979323846 * 1.973269602e-16 * m * GeV;
-  for(int i=0;i<num;i++){
-    WaveLength[i]= (300 +i*10)*nanometer;
-    PhotonEnergy[num-(i+1)]= LambdaE/WaveLength[i];
-    PMTReflectivity[i]=0.;
-    EfficiencyMirrors[i]=0; 
-  }
+  {
+    const G4int num = 36; 
+    G4double WaveLength[num];
+    G4double PhotonEnergy[num];
+    G4double PMTReflectivity[num];
+    G4double EfficiencyMirrors[num];
+    const G4double LambdaE = 2.0 * 3.14159265358979323846 * 1.973269602e-16 * m * GeV;
+    for(int i=0;i<num;i++){
+      WaveLength[i]= (300 +i*10)*nanometer;
+      PhotonEnergy[num-(i+1)]= LambdaE/WaveLength[i];
+      PMTReflectivity[i]=0.;
+      EfficiencyMirrors[i]=0; 
+    }
 
-  /***************** QUANTUM EFFICIENCY OF BURLE AND HAMAMTSU PMT'S *****/
+    /***************** QUANTUM EFFICIENCY OF BURLE AND HAMAMTSU PMT'S *****/
 
-  //ideal pmt quantum efficiency
-  G4double QuantumEfficiencyIdial[num]=
-    {1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,
-     1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,
-     1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,
-     1.0,1.0,1.0,1.0,1.0,1.0};
+    //ideal pmt quantum efficiency
+    G4double QuantumEfficiencyIdial[num]=
+      {1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,
+       1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,
+       1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,
+       1.0,1.0,1.0,1.0,1.0,1.0};
 
-  // Burle PMT's 
-  G4double QuantumEfficiencyB[num] =
-    {0.,0.001,0.002,0.005,0.01,0.015,0.02,0.03,0.04,0.05,0.06,
-     0.07,0.09,0.1,0.13,0.15,0.17,0.2,0.24,0.26,0.28,0.282,0.284,0.286,
-     0.288,0.29,0.28,0.26,0.24,0.22,0.20,0.18,0.15,0.13,0.12,0.10};
+    // Burle PMT's 
+    G4double QuantumEfficiencyB[num] =
+      {0.,0.001,0.002,0.005,0.01,0.015,0.02,0.03,0.04,0.05,0.06,
+       0.07,0.09,0.1,0.13,0.15,0.17,0.2,0.24,0.26,0.28,0.282,0.284,0.286,
+       0.288,0.29,0.28,0.26,0.24,0.22,0.20,0.18,0.15,0.13,0.12,0.10};
   
-  //hamamatsu pmt quantum efficiency
-  G4double QuantumEfficiencyPMT[num]=
-    {0.001,0.002,0.004,0.007,0.011,0.015,0.020,0.026,0.033,0.040,0.045,
-     0.056,0.067,0.085,0.109,0.129,0.138,0.147,0.158,0.170,
-     0.181,0.188,0.196,0.203,0.206,0.212,0.218,0.219,0.225,0.230,
-     0.228,0.222,0.217,0.210,0.199,0.177};
+    //hamamatsu pmt quantum efficiency
+    G4double QuantumEfficiencyPMT[num]=
+      {0.001,0.002,0.004,0.007,0.011,0.015,0.020,0.026,0.033,0.040,0.045,
+       0.056,0.067,0.085,0.109,0.129,0.138,0.147,0.158,0.170,
+       0.181,0.188,0.196,0.203,0.206,0.212,0.218,0.219,0.225,0.230,
+       0.228,0.222,0.217,0.210,0.199,0.177};
 
-  // these quantum efficiencies have to be multiplied by geometry
-  //   efficiency of given PMT's
-  //   for Hamamatsu by factor 0.7
-  //   for Burle by factor 0.45 
-  for(G4int k=0;k<36;k++){
+    // these quantum efficiencies have to be multiplied by geometry
+    //   efficiency of given PMT's
+    //   for Hamamatsu by factor 0.7
+    //   for Burle by factor 0.45 
+    for(G4int k=0;k<36;k++){
       QuantumEfficiencyB[k] =  QuantumEfficiencyB[k] * 0.45 ;
       QuantumEfficiencyPMT[k] =  QuantumEfficiencyPMT[k] *.7;
     }
  
-  // G4double QuantumEfficiency[num]= 
-  //    { 1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,
-  //      1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,
-  //      1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.};
+    // G4double QuantumEfficiency[num]= 
+    //    { 1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,
+    //      1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,
+    //      1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.};
 
-  //  G4double QuantumEfficiencyPMT[num] =
-  //    { 1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,
-  //      1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,
-  //      1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.};
+    //  G4double QuantumEfficiencyPMT[num] =
+    //    { 1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,
+    //      1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,
+    //      1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.};
   
-  /* define quantum efficiency for burle PMT's - the same efficiency is 
-     assigned to pads and also to slots !!!! */
+    /* define quantum efficiency for burle PMT's - the same efficiency is 
+       assigned to pads and also to slots !!!! */
     
-  //burle pmt - bigger slots => logicPad
-  G4MaterialPropertiesTable* PhotocatodBurleMPT = new G4MaterialPropertiesTable();
-  PhotocatodBurleMPT->AddProperty("EFFICIENCY",  PhotonEnergy,QuantumEfficiencyB,num);
-  PhotocatodBurleMPT->AddProperty("REFLECTIVITY",PhotonEnergy,PMTReflectivity,num);
+    //burle pmt - bigger slots => logicPad
+    G4MaterialPropertiesTable* PhotocatodBurleMPT = new G4MaterialPropertiesTable();
+    PhotocatodBurleMPT->AddProperty("EFFICIENCY",  PhotonEnergy,QuantumEfficiencyB,num);
+    PhotocatodBurleMPT->AddProperty("REFLECTIVITY",PhotonEnergy,PMTReflectivity,num);
 
  
-  G4OpticalSurface* BurlePMTOpSurface= 
-    new G4OpticalSurface("BurlePMTOpSurface",glisur,polished,
-			 dielectric_metal);
-  BurlePMTOpSurface->SetMaterialPropertiesTable(PhotocatodBurleMPT);
+    G4OpticalSurface* BurlePMTOpSurface= 
+      new G4OpticalSurface("BurlePMTOpSurface",glisur,polished,
+			   dielectric_metal);
+    BurlePMTOpSurface->SetMaterialPropertiesTable(PhotocatodBurleMPT);
 
-  // // assignment for pad
-  // if(burle)
-  //   new G4LogicalSkinSurface("BurlePMTSurface",logicBurPad,BurlePMTOpSurface); 
+    // // assignment for pad
+    // if(burle)
+    //   new G4LogicalSkinSurface("BurlePMTSurface",logicBurPad,BurlePMTOpSurface); 
 
-  // if(burle1)
-  //   new G4LogicalSkinSurface("Burle1PMTSurface",logicBur1Pad,BurlePMTOpSurface); 
+    // if(burle1)
+    //   new G4LogicalSkinSurface("Burle1PMTSurface",logicBur1Pad,BurlePMTOpSurface); 
 
-  /* hamamatsu pmt's - smaller slots => quantum efficiency again
-     assign to slot and pad */
+    /* hamamatsu pmt's - smaller slots => quantum efficiency again
+       assign to slot and pad */
   
-  fQuantumEfficiency = QuantumEfficiencyIdial;
-  G4MaterialPropertiesTable* PhotocatodHamamatsuMPT = new G4MaterialPropertiesTable();
-  PhotocatodHamamatsuMPT->AddProperty("EFFICIENCY",  PhotonEnergy,fQuantumEfficiency,num);
-  PhotocatodHamamatsuMPT->AddProperty("REFLECTIVITY",PhotonEnergy,PMTReflectivity,num);
+    fQuantumEfficiency = QuantumEfficiencyIdial;
+    G4MaterialPropertiesTable* PhotocatodHamamatsuMPT = new G4MaterialPropertiesTable();
+    PhotocatodHamamatsuMPT->AddProperty("EFFICIENCY",  PhotonEnergy,fQuantumEfficiency,num);
+    PhotocatodHamamatsuMPT->AddProperty("REFLECTIVITY",PhotonEnergy,PMTReflectivity,num);
 
-  G4OpticalSurface* HamamatsuPMTOpSurface= 
-    new G4OpticalSurface("HamamatsuPMTOpSurface",glisur,polished,dielectric_metal);
-  HamamatsuPMTOpSurface->SetMaterialPropertiesTable(PhotocatodHamamatsuMPT);
+    G4OpticalSurface* HamamatsuPMTOpSurface= 
+      new G4OpticalSurface("HamamatsuPMTOpSurface",glisur,polished,dielectric_metal);
+    HamamatsuPMTOpSurface->SetMaterialPropertiesTable(PhotocatodHamamatsuMPT);
 
-  // // assignment to pad
-  // if(hamamatsu8500)
-  new G4LogicalSkinSurface("HamamatsuPMTSurface",lPixel,HamamatsuPMTOpSurface);
+    // // assignment to pad
+    // if(hamamatsu8500)
+    new G4LogicalSkinSurface("HamamatsuPMTSurface",lPixel,HamamatsuPMTOpSurface);
 
-  // Mirror
-  G4OpticalSurface* MirrorOpSurface= 
-    new G4OpticalSurface("MirrorOpSurface",glisur,polished,dielectric_metal);
+    // Mirror
+    G4OpticalSurface* MirrorOpSurface= 
+      new G4OpticalSurface("MirrorOpSurface",glisur,polished,dielectric_metal);
   
-  G4double ReflectivityMirrorBar[num]={
-    0.8755,0.882,0.889,0.895,0.9,0.9025,0.91,0.913,0.9165,0.92,0.923,
-    0.9245,0.9285,0.932,0.934,0.935,0.936,0.9385,0.9395,0.94,
-    0.9405,0.9405,0.9405,0.9405,0.94,0.9385,0.936,0.934,
-    0.931,0.9295,0.928,0.928,0.921,0.92,0.927,0.9215};
+    G4double ReflectivityMirrorBar[num]={
+					 0.8755,0.882,0.889,0.895,0.9,0.9025,0.91,0.913,0.9165,0.92,0.923,
+					 0.9245,0.9285,0.932,0.934,0.935,0.936,0.9385,0.9395,0.94,
+					 0.9405,0.9405,0.9405,0.9405,0.94,0.9385,0.936,0.934,
+					 0.931,0.9295,0.928,0.928,0.921,0.92,0.927,0.9215};
 
-  G4MaterialPropertiesTable *MirrorMPT = new G4MaterialPropertiesTable();
-  MirrorMPT->AddProperty("REFLECTIVITY", PhotonEnergy, ReflectivityMirrorBar, num);
-  MirrorMPT->AddProperty("EFFICIENCY", PhotonEnergy, EfficiencyMirrors,   num);
+    G4MaterialPropertiesTable *MirrorMPT = new G4MaterialPropertiesTable();
+    MirrorMPT->AddProperty("REFLECTIVITY", PhotonEnergy, ReflectivityMirrorBar, num);
+    MirrorMPT->AddProperty("EFFICIENCY", PhotonEnergy, EfficiencyMirrors,   num);
   
-  MirrorOpSurface->SetMaterialPropertiesTable(MirrorMPT);
-  new G4LogicalSkinSurface("MirrorSurface", lMirror,MirrorOpSurface);
-
+    MirrorOpSurface->SetMaterialPropertiesTable(MirrorMPT);
+    new G4LogicalSkinSurface("MirrorSurface", lMirror,MirrorOpSurface);
+    new G4LogicalSkinSurface("MirrorSurfaceF", lFmirror,MirrorOpSurface);
+  }
+  
   SetVisualization();
 
   return wExpHall;
@@ -697,7 +776,7 @@ void PrtDetectorConstruction::DefineMaterials(){
 
 
   // assign main materials
-  if(PrtManager::Instance()->GetGeometry() < 10) defaultMaterial = Vacuum;
+  if(fGeomType < 10) defaultMaterial = Vacuum;
   else defaultMaterial = Air; //Vacuum // material of world
   frontMaterial =  CarbonFiber; 
   BarMaterial = SiO2; // material of all Bars, Quartz and Window
@@ -871,9 +950,6 @@ void PrtDetectorConstruction::DefineMaterials(){
 
 void PrtDetectorConstruction::SetVisualization(){
 
-  G4Colour blue = G4Colour(0.0,0.0,1.0);
-  G4Colour green = G4Colour(0.0,1.0,.0);
-  G4Colour red = G4Colour(1.0,0.0,.0); 
   G4Colour DircColour = G4Colour(1.,1.0,0.);
 
   G4VisAttributes *waExpHall = new G4VisAttributes(DircColour);
@@ -892,7 +968,8 @@ void PrtDetectorConstruction::SetVisualization(){
   waBar->SetVisibility(true);
   lBar->SetVisAttributes(waBar);
   lExpVol->SetVisAttributes(waBar);
-
+  if(lWedge) lWedge->SetVisAttributes(waBar);  
+  
   G4VisAttributes *waGlue = new G4VisAttributes(G4Colour(0.,0.4,0.9,0.1));
   waGlue->SetVisibility(true);
   lGlue->SetVisAttributes(waGlue);
@@ -901,6 +978,7 @@ void PrtDetectorConstruction::SetVisualization(){
   G4VisAttributes *waMirror = new G4VisAttributes(G4Colour(1.,1.,0.9,0.2));
   waMirror->SetVisibility(true);
   lMirror->SetVisAttributes(waMirror);
+  if(lFmirror) lFmirror->SetVisAttributes(waMirror);
 
   G4double transp = 1.0;
   G4VisAttributes * vaLens = new G4VisAttributes(G4Colour(0.,1.,1.,transp));
@@ -913,7 +991,7 @@ void PrtDetectorConstruction::SetVisualization(){
   
   if(fLensId==2 || fLensId==3 || fLensId==6 ){
     lLens1->SetVisAttributes(vaLens);
-    G4VisAttributes * vaLens2 = new G4VisAttributes(&vaLens);
+    G4VisAttributes * vaLens2 = new G4VisAttributes(G4Colour(0.,1.,1.,transp));
     vaLens2->SetColour(G4Colour(0.,0.5,1.,transp));
     vaLens2->SetForceWireframe(true);
     lLens2->SetVisAttributes(vaLens2);
@@ -926,7 +1004,10 @@ void PrtDetectorConstruction::SetVisualization(){
   lPrizm->SetVisAttributes(waPrizm);
   lPrizmT1->SetVisAttributes(waPrizm);
   lPrizmT2->SetVisAttributes(waPrizm);
- 
+  if(lBlock) lBlock->SetVisAttributes(waPrizm); 
+  if(lWindow) lWindow->SetVisAttributes(waPrizm);
+  if(lSWedge) lSWedge->SetVisAttributes(waPrizm);
+  
   //G4VisAttributes *waMcp = new G4VisAttributes(G4Colour(0.1,0.1,0.9,0.3));
   G4VisAttributes *waMcp = new G4VisAttributes(G4Colour(1.0,0.,0.1,0.4));
   //waMcp->SetForceWireframe(true);
@@ -947,15 +1028,21 @@ void PrtDetectorConstruction::ConstructSDandField(){
   G4SDManager::GetSDMpointer()->AddNewDetector(pixelSD);
   SetSensitiveDetector("lPixel",pixelSD);
   PrtPrizmSD* prizmSD = new PrtPrizmSD("PrizmSD", "PrizmHitsCollection", 0);
+  G4SDManager::GetSDMpointer()->AddNewDetector(prizmSD);
+      
   
-  if(PrtManager::Instance()->GetEvType() == 0 ){
-    G4SDManager::GetSDMpointer()->AddNewDetector(prizmSD);
+  if(fEvType == 0 ){
     SetSensitiveDetector("lPrizm",prizmSD);
-  }else{
-    G4SDManager::GetSDMpointer()->AddNewDetector(prizmSD);
+  }
+  else if(fEvType == 1){
+    SetSensitiveDetector("lWedge",prizmSD);
+    SetSensitiveDetector("lSWedge",prizmSD);
+    SetSensitiveDetector("lBlock",prizmSD);
+  }
+  else if(fEvType == 4){
     SetSensitiveDetector("lPrizmT1",prizmSD);
   }
-
+  
   PrtBarSD* barSD = new PrtBarSD("BarSD", "BarHitsCollection", 0);
   G4SDManager::GetSDMpointer()->AddNewDetector(barSD);
   SetSensitiveDetector("lBar",barSD);
@@ -970,7 +1057,6 @@ void PrtDetectorConstruction::SetRotation(G4double angle){
 
   G4RunManager::GetRunManager()->GeometryHasBeenModified();
 }
-
 
 void PrtDetectorConstruction::DrawHitBox(int id){
 
@@ -992,7 +1078,7 @@ void PrtDetectorConstruction::DrawHitBox(int id){
   branch->SetAddress(&event);
   
   Int_t nevent = tree->GetEntries();
-  std::cout<<"nevent  "<< nevent <<std::endl;
+  std::cout<<id<<" nevent  "<< nevent <<std::endl;
   
   int pix(0),mcp(0),prizm(0);
   int hload[1][24][6150]={{{0}}};
@@ -1011,9 +1097,9 @@ void PrtDetectorConstruction::DrawHitBox(int id){
   
   int maxload[16]={0};
   for(int p=0; p<1; p++){
-    for(int m=0; m<24; m++){
+    for(int im=0; im<24; im++){
       for(int i=0; i<6150; i++){
-	if(maxload[p]<hload[p][m][i]) maxload[p] =  hload[p][m][i];
+	if(maxload[p]<hload[p][im][i]) maxload[p] =  hload[p][im][i];
       }
     }
   }
@@ -1025,7 +1111,6 @@ void PrtDetectorConstruction::DrawHitBox(int id){
   waDircHit->SetVisibility(false);
 	  
   G4double tphi, dphi = 22.5*deg;
-  G4int BoxId = 0;
   G4LogicalVolume *lDircHit[16]; 
   for(int i=0; i<16; i++){
     tphi = dphi*i;
@@ -1047,7 +1132,7 @@ void PrtDetectorConstruction::DrawHitBox(int id){
   G4VisAttributes *waHit;
   G4Box* gHit;
   for(int p=0; p<1; p++){
-    int mcp = 0;
+    mcp = 0;
     G4double gapx = (fPrizm[2]-fNCol*fMcpTotal[0])/(double)(fNCol+1);
     G4double gapy = (fPrizm[0]-fNRow*fMcpTotal[1])/(double)(fNRow+1);
     for(int i=0; i<fNCol; i++){
@@ -1071,8 +1156,8 @@ void PrtDetectorConstruction::DrawHitBox(int id){
 
 	      double shiftx1 = shiftx+i1*(fMcpActive[0]/fNpix1)-fMcpActive[0]/2.+0.5*fMcpActive[0]/fNpix1;
 	      double shifty1 = shifty+j1*(fMcpActive[1]/fNpix2)-fMcpActive[1]/2.+0.5*fMcpActive[1]/fNpix2;
-  	      G4ThreeVector pix = G4ThreeVector(shiftx1,shifty1,hight);
-  	      new G4PVPlacement(0,pix,lHit,"wDircHit",lDircHit[p],false,pixelId);
+  	      auto vpix = G4ThreeVector(shiftx1,shifty1,hight);
+  	      new G4PVPlacement(0,vpix,lHit,"wDircHit",lDircHit[p],false,pixelId);
   	    }
   	    pixelId++;
   	  }
@@ -1091,7 +1176,7 @@ void PrtDetectorConstruction::SetLens(G4int id){
   // if(id==0){
   //   fPrismShift.setZ(fPrismShift.z()-fLens[2]);
   // }
-  // std::cout<<"id  "<<id <<std::endl;
+  std::cout<<"id  "<<id <<std::endl;
   
   // G4RunManager::GetRunManager()->GeometryHasBeenModified();
 }
@@ -1120,6 +1205,8 @@ void PrtDetectorConstruction::SetQuantumEfficiency(G4int id){
   
   if(id == 0 ) fQuantumEfficiency = QuantumEfficiencyIdial;
   if(id == 1 ) fQuantumEfficiency = QuantumEfficiencyPMT;
+  if(id == 2 ) fQuantumEfficiency = QuantumEfficiencyB;
 
   G4RunManager::GetRunManager()->GeometryHasBeenModified();
+
 }

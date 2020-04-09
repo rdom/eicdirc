@@ -85,7 +85,6 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
     // // else{
     double trackresolution=PrtManager::Instance()->GetBeamDimension();
     if(angle>0){
-      std::cout<<"angle "<<angle*TMath::RadToDeg()<<std::endl;
       if(trackresolution<0.00001){	
 	vec.setTheta(angle);
       }else{
@@ -102,6 +101,8 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
       // vec.setPhi(2*M_PI*G4UniformRand());
       PrtManager::Instance()->Event()->SetAngle(theta/deg);
     }
+
+    if(PrtManager::Instance()->GetEvType()==1) vec.rotateZ(0.016); // hit the middle of the BaBar bar 
     
     fParticleGun->SetParticlePosition(G4ThreeVector(0,0,zpos));
     PrtManager::Instance()->Event()->SetPosition(TVector3(0,0,zpos));
@@ -123,6 +124,8 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
   if(PrtManager::Instance()->GetRunType() == 1){ // LUT generation
     
     G4double barShift=0; // 390/12./2;
+    if(PrtManager::Instance()->GetEvType()==1) barShift = 0.5*35;
+    
     fParticleGun->SetParticlePosition(G4ThreeVector(0,barShift,radiatorL/2.-0.5));
     G4double angle = -G4UniformRand()*M_PI;
     G4ThreeVector vec(0,0,-1);

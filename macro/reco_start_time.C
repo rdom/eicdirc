@@ -5,7 +5,7 @@
 #include <TVirtualFitter.h>
 #include <TKey.h>
 
-void reco_start_time(TString in="hits.root", TString pdf="hits.pdf.root", double timeres=0.1, int pid =321, TString nameid="", double var1=0, double var2=0){
+void reco_start_time(TString in="hits.root", TString pdf="hits.pdf.root", double timeres=0.1, int pid =321, TString nameid="0", double var1=0, double var2=0){
 
   if(!prt_init(in,1,"data/reco_start_time_"+nameid)) return;
   TGaxis::SetMaxDigits(4);
@@ -22,8 +22,8 @@ void reco_start_time(TString in="hits.root", TString pdf="hits.pdf.root", double
   TH1F *hlhf= new TH1F("hlhf","hllf;ln L(K) - ln L(#pi); entries [#]",200,-5,5);
   TH1F *hlhs= new TH1F("hlhs","hlls;ln L(K) - ln L(#pi); entries [#]",200,-5,5);
   TH1F *hnph = new TH1F("hnph",";multiplicity [#]; entries [#]", 200,0,200);
-  TH1F *hmeanf = new TH1F("hmeanf","hmean",400,-2,2);
-  TH1F *hmeans = new TH1F("hmeans","hmean",400,-2,2);
+  TH1F *hmeanf = new TH1F("hmeanf",";reconstructed time shift [ns]; entries [#]",200,-1,1);
+  TH1F *hmeans = new TH1F("hmeans",";reconstructed time shift [ns]; entries [#]",200,-1,1);
   hlhf->GetXaxis()->SetRangeUser(-4,4);
   
   const int nch(8000);
@@ -64,7 +64,7 @@ void reco_start_time(TString in="hits.root", TString pdf="hits.pdf.root", double
     hnph->Fill(prt_event->GetHitSize());
     
     int pp = 0;
-    for(double s=-5; s<5; s=s+0.05){      
+    for(double s=-5; s<5; s=s+0.2){      
       sumf=0; sums=0;
       for(PrtHit hit : prt_event->GetHits()){
 	ch=300*hit.GetMcpId()+hit.GetPixelId();      
@@ -88,18 +88,22 @@ void reco_start_time(TString in="hits.root", TString pdf="hits.pdf.root", double
     }
 
     TF1 *flh =new TF1("flh","gaus(0)+pol1(3)",-4,4);
-    flh->SetParameters(1,0,1,1,1);
-    flh->SetParameters(1,0,1,1,1);
+    flh->SetParameters(1,0,0.3,1,1);
+    flh->SetParameters(1,0,0.3,1,1);
     flh->SetParLimits(1,-1,1);
     flh->SetParLimits(2,0.5,5);
+    
     hlhf->Fit("flh","","",-4,4);
-
     double mean = flh->GetParameter(1);
     hmeanf->Fill(mean);
+    
     hlhs->Fit("flh","","",-4,4);
     mean = flh->GetParameter(1);
     hmeans->Fill(mean);
-
+    // double err[100]={1};
+    // // hlhf->SetError(err);
+    // hlhf->SetMarkerStyle(20);
+    // hlhf->Draw("");
     // gPad->Update();
     // gPad->WaitPrimitive();
     hlhf->Reset();
@@ -139,7 +143,7 @@ void reco_start_time(TString in="hits.root", TString pdf="hits.pdf.root", double
   hnph->Draw();  
   double nph = prt_fit(hnph,50,20,50).X();
 
-  prt_canvasAdd("mean_"+name,600,500);
+  prt_canvasAdd("mean_"+name,800,400);
   var1 = prt_fit(hmeanf,5,20,5).Y();
   var2 = prt_fit(hmeans,5,20,5).Y();
   double var3 = prt_fit(hmeanf,5,20,5).X();

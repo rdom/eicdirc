@@ -32,10 +32,11 @@ void lutmean(TString baseFile = "../data/lut"){
 
   std::vector<TVector3> vArray[100];
   std::vector<Double_t> tArray[100];
-  std::vector<Double_t> pArray;
+  std::vector<Long_t> pArray;
   
   TVector3 dir, dir2, sum;
-  Double_t angle, minangle,pathid,time,sumt;
+  Double_t angle,minangle,time,sumt;
+  Long_t pathid;
   PrtLutNode *node;
   
   for (Int_t inode=0; inode<fLut->GetEntriesFast(); inode++){
@@ -54,7 +55,7 @@ void lutmean(TString baseFile = "../data/lut"){
 
       bool newid = true;
       for(int j=0; j<pArray.size(); j++){
-	if(fabs(pathid-pArray[j])<0.0001){
+	if(pathid==pArray[j]){
 	  vArray[j].push_back(dir);
 	  tArray[j].push_back(time);
 	  newid= false;

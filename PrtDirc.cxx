@@ -54,7 +54,7 @@ int main(int argc,char** argv)
   TApplication theApp("App", 0, 0);
   
   G4String macro, events, geometry,evType, radiator, physlist, outfile, 
-    session,geomAng,batchmode,lensId,particle("pi+"),momentum("3.5 GeV"),timeRes,displayOpt,
+    session,geomAng,batchmode,lensId,particle("pi+"),momentum("3.5 GeV"),timeRes,timeCut,displayOpt,
     beamDimension,zpos, mcpLayout, infile = "hits.root", lutfile = "../data/lut_avr.root",
     testVal1,testVal2;
   G4int firstevent(0), runtype(0), verbose(0);
@@ -68,6 +68,7 @@ int main(int argc,char** argv)
     else if ( G4String(argv[i]) == "-i" ) infile    = argv[i+1];
     else if ( G4String(argv[i]) == "-u" ) lutfile   = argv[i+1];
     else if ( G4String(argv[i]) == "-g" ) geometry  = argv[i+1];
+    else if ( G4String(argv[i]) == "-ev" )  evType  = argv[i+1];
     else if ( G4String(argv[i]) == "-h" ) radiator  = argv[i+1];
     else if ( G4String(argv[i]) == "-a" ) geomAng   = argv[i+1];
     else if ( G4String(argv[i]) == "-b" ) batchmode = argv[i+1];
@@ -85,6 +86,7 @@ int main(int argc,char** argv)
     else if ( G4String(argv[i]) == "-t2" ) testVal2   = argv[i+1];
     else if ( G4String(argv[i]) == "-d" ) displayOpt= argv[i+1];
     else if ( G4String(argv[i]) == "-tr" ) timeRes   = argv[i+1];
+    else if ( G4String(argv[i]) == "-tc" ) timeCut   = argv[i+1];
     else if ( G4String(argv[i]) == "-v" ) verbose   = atoi(argv[i+1]);
 #ifdef G4MULTITHREADED
     else if ( G4String(argv[i]) == "-t" ) {
@@ -117,6 +119,7 @@ int main(int argc,char** argv)
   if(testVal2.size())   PrtManager::Instance()->SetTest2(atof(testVal2));
   if(displayOpt.size())   PrtManager::Instance()->SetDisplayOpt(atoi(displayOpt));
   if(timeRes.size())   PrtManager::Instance()->SetTimeRes(atof(timeRes));
+  if(timeCut.size())   PrtManager::Instance()->SetTimeCut(atof(timeCut));
   if(geomAng.size())   PrtManager::Instance()->SetAngle(atof(geomAng));
   PrtManager::Instance()->SetVerbose(verbose);
   
@@ -124,8 +127,8 @@ int main(int argc,char** argv)
     PrtLutReco * reco = new PrtLutReco(infile.c_str(),lutfile.c_str(),verbose);
     reco->Run(firstevent, atoi(events));
     return 0;
-  }
-
+  }  
+  
   // Choose the Random engine
   G4Random::setTheEngine(new CLHEP::RanecuEngine);   
 #ifdef G4MULTITHREADED

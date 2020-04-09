@@ -23,12 +23,18 @@ example:
 
 -g    geometry configuration
                 0    whole DIRC
-                1    one barbox
-	        2    tilted EV	
+                1    one barbox (default)
+
+
+-ev   expansion volume type
+	        0    prism with lenses (default)
+                1    BaBar wedge with focusing prism
+                3    prism with plate
+		4    tilted EV	
 
 -h    number of bars in one radiator box
 
--c   MCP layout
+-c    MCP layout
                 0    4x6 standard MCPs (pixel size == mcp size)
                 1    4x6 standard MCPs (6.4x6.4 pixels)
 		3    one MCP cover all FD plain (custom pixel size)
