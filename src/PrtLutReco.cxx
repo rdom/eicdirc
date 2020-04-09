@@ -446,7 +446,7 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
     if(fVerbose>2) gROOT->SetBatch(0);
     
     if(fVerbose>1){
-      TString nid = Form("_%d",a);
+      TString nid = Form("_%d_%d",a,PrtManager::Instance()->GetTest1());
 
       { // cherenkov angle
 	prt_canvasAdd("tangle"+nid,800,400);
