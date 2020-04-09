@@ -446,7 +446,7 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
     if(fVerbose>2) gROOT->SetBatch(0);
     
     if(fVerbose>1){
-      TString nid = Form("_%d_%d",a,PrtManager::Instance()->GetTest1());
+      TString nid = Form("_%d_%d",a,(int)PrtManager::Instance()->GetTest1());
 
       { // cherenkov angle
 	prt_canvasAdd("tangle"+nid,800,400);
@@ -493,34 +493,34 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
       }
 
       { // corrections
-	if(fabs(fCorr[0])<0.00000001 && fabs(fCorr[7])<0.00000001){
-	  std::cout<<"Writing "<<fCorrFile<<std::endl;
+	// if(fabs(fCorr[0])<0.00000001 && fabs(fCorr[7])<0.00000001){
+	//   std::cout<<"Writing "<<fCorrFile<<std::endl;
 	  
-	  TFile fc(fCorrFile,"recreate");
-	  TTree *tc = new TTree("corr","corr");
-	  int pmt;
-	  double corr;
-	  tc->Branch("pmt",&pmt,"pmt/I");
-	  tc->Branch("corr",&corr,"corr/D");
+	//   TFile fc(fCorrFile,"recreate");
+	//   TTree *tc = new TTree("corr","corr");
+	//   int pmt;
+	//   double corr;
+	//   tc->Branch("pmt",&pmt,"pmt/I");
+	//   tc->Branch("corr",&corr,"corr/D");
 	
-	  fFit->SetParameter(1,0);    // mean
-	  fFit->SetParLimits(1,-0.012,0.012); // width	
-	  fFit->SetParLimits(2,0.006,0.009); // width		
-	  for(int i=0; i<prt_nmcp; i++){
-	    // prt_canvasAdd(Form("r_tangle_%d",i),800,400);
-	    fHistMcp[i]->Fit("fgaus","MQ","",-0.03,0.03);
-	    pmt = i;
-	    corr= -fFit->GetParameter(1);
-	    tc->Fill();
-	    std::cout<<"if(mcpid=="<< i<<") tangle += "<<corr<<";" <<std::endl;	  
-	    // fHistMcp[i]->Draw();
-	    // drawTheoryLines();	  
-	  }
+	//   fFit->SetParameter(1,0);    // mean
+	//   fFit->SetParLimits(1,-0.012,0.012); // width	
+	//   fFit->SetParLimits(2,0.006,0.009); // width		
+	//   for(int i=0; i<prt_nmcp; i++){
+	//     // prt_canvasAdd(Form("r_tangle_%d",i),800,400);
+	//     fHistMcp[i]->Fit("fgaus","MQ","",-0.03,0.03);
+	//     pmt = i;
+	//     corr= -fFit->GetParameter(1);
+	//     tc->Fill();
+	//     std::cout<<"if(mcpid=="<< i<<") tangle += "<<corr<<";" <<std::endl;	  
+	//     // fHistMcp[i]->Draw();
+	//     // drawTheoryLines();	  
+	//   }
 	  
-	  tc->Write();
-	  fc.Write();
-	  fc.Close();
-	}	
+	//   tc->Write();
+	//   fc.Write();
+	//   fc.Close();
+	// }	
       }
 
       { // time
