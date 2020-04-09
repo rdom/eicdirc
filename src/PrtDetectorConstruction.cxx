@@ -80,7 +80,7 @@ PrtDetectorConstruction::PrtDetectorConstruction()
     fRadius = 1150;
     fLensId = 0;
     fBoxWidth = fNBar*(fBar[1]+0.15);
-    //fNRow = 7;
+    fNRow = 7;
   }
   
   fFd[0] = fBoxWidth; fFd[1]=fPrizm[2]; fFd[2] =1;
@@ -129,7 +129,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   double dirclength=fBar[2]*4+gluethickness*4;
   PrtManager::Instance()->SetRadiatorL(dirclength);
   // The DIRC
-  G4Box* gDirc = new G4Box("gDirc",400.,300.,0.5*dirclength+550);
+  G4Box* gDirc = new G4Box("gDirc",500,300,0.5*dirclength+550);
   lDirc = new G4LogicalVolume(gDirc,defaultMaterial,"lDirc",0,0,0);
   G4Box* gFd = new G4Box("gFd",0.5*fFd[1],0.5*fFd[0],0.5*fFd[2]);
   lFd = new G4LogicalVolume(gFd,defaultMaterial,"lFd",0,0,0);
@@ -148,7 +148,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
 
       G4RotationMatrix *tRot = new G4RotationMatrix();
       tRot->rotateZ(-tphi);     
-      new G4PVPlacement(tRot,G4ThreeVector(dx,dy,0),lDirc,"wDirc",lExpHall,false,i); //G4ThreeVector(dx,dy,-500)
+      new G4PVPlacement(tRot,G4ThreeVector(dx,dy,0),lDirc,"wDirc",lExpHall,false,i);
     }
   }
   
@@ -364,10 +364,13 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
 
   if(fEvType == 1){ // focusing prism
     
-    double fWindow[]={130,425,9.6}; // needs correct numbers
-    double fWedge[]={33.25,91.0,79.537,27.0};
-    double fBlock[]={fBoxWidth,210,480,300};    
-        
+    double fWindow[]={124,437,9.6};
+    double fWedge[]={33.25,91,79.537,27.0};
+    double fSWedge[]={fBoxWidth,60,119,85};
+    double fBlock[]={fBoxWidth,180,480,330};    
+
+    double currentz = 0.5*dirclength;
+    
     double fdH = fWedge[1]*tan(0.006); // 6 mrad tilt
     fWedge[2] = tan(30./180.*M_PI)*91. + 27. - fdH; // update the side of the prizm assuming bottom tilt
     double theta = atan((fWedge[2]+2*fdH-fWedge[3])/2./fWedge[1]);
@@ -375,24 +378,35 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
 				fWedge[0]/2., fWedge[3]/2., fWedge[3]/2., 0.);
     lWedge = new G4LogicalVolume(gWedge, BarMaterial,"lWedge",0,0,0);
     G4RotationMatrix* tRot = new G4RotationMatrix();
-    tRot->rotateY(-M_PI*rad);
-	
+    tRot->rotateY(M_PI);
+
     // window
     G4Box* gWindow = new G4Box("gWindow",0.5*fWindow[0],0.5*fWindow[1],0.5*fWindow[2]);
     lWindow = new G4LogicalVolume(gWindow,BarMaterial,"lWindow",0,0,0);
 
     for(int i=0; i<fNBar; i++){
       double yshift = 0.5*fBoxWidth-0.5*fBar[1]-(fBar[1]+0.15)*i;
-      fPrismShift = G4ThreeVector((fWedge[2]+fWedge[3])/4.-fWedge[3]/2.,yshift,0.5*dirclength+0.5*fWedge[1]);
+      fPrismShift = G4ThreeVector((fWedge[2]+fWedge[3])/4.-0.5*fWedge[3],yshift,currentz+0.5*fWedge[1]);
       new G4PVPlacement(tRot,fPrismShift,lWedge,"wWedge", lDirc,false,i);
     }
-    new G4PVPlacement(0,G4ThreeVector(30,0,0.5*(dirclength+fWindow[2])+fWedge[1]),lWindow,"wWindow",lDirc,false,0);
+    currentz += fWedge[1];    
     
+    new G4PVPlacement(0,G4ThreeVector(30,0,currentz+0.5*fWindow[2]),lWindow,"wWindow",lDirc,false,0);
+    currentz += fWindow[2];
+
+    // second wedge
+    G4Trap* gSWedge = new G4Trap("gSWedge",fSWedge[0],fSWedge[1],fSWedge[2],fSWedge[3]);
+    lSWedge = new G4LogicalVolume(gSWedge, BarMaterial,"lSWedge",0,0,0);
+    G4RotationMatrix* xwRot = new G4RotationMatrix();
+    xwRot->rotateX(0.5*M_PI);
+    new G4PVPlacement(xwRot,G4ThreeVector((fSWedge[2]+fSWedge[3])/4.-0.5*fWedge[3],0,currentz+0.5*fSWedge[1]),lSWedge,"wSWedge", lDirc,false,0);
+    currentz += fSWedge[1];
+     
     // focusing block    
     auto gBlockA = new G4Trap("gBlockA",fBlock[0],fBlock[1],fBlock[2],fBlock[3]);
 
-    double cradius = 800;
-    double cpos = 200;
+    double cradius = 1100;
+    double cpos = 250;
 
     double mxcor=200;
     double mycor=15;
@@ -400,28 +414,28 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     G4Tubs* gCyl  = new G4Tubs("gCyl",0,cradius,fBoxWidth,0*deg,360*deg);
     G4RotationMatrix* cRot = new G4RotationMatrix();
     auto cTrans = G4ThreeVector(mxcor+cpos-((fBlock[2]+fBlock[3])/4.),mycor-cradius+0.5*fBlock[1],0);
-    //cRot->rotateX(M_PI/2.*rad);
-
     auto gBlock = new G4IntersectionSolid("gBlock",gBlockA,gCyl,cRot,cTrans);
 
-    cTrans.setY(cTrans.getY()-2);
+    double mirrorthickness = 1;
+    cTrans.setY(cTrans.getY()-mirrorthickness);
 
     auto gFmirror = new G4SubtractionSolid("gFmirror",gBlock,gCyl,new G4RotationMatrix(),cTrans);  
-    lFmirror = new G4LogicalVolume(gFmirror, MirrorMaterial,"lFmirror",0,0,0);
- 
-    fPrismShift = G4ThreeVector((fBlock[2]+fBlock[3])/4.-0.5*fWindow[0]+30,0,0.5*(dirclength+fBlock[1])+fLens[2]+fWedge[1]+fWindow[2]);
-    xRot->rotateX(180*deg);
+    lFmirror = new G4LogicalVolume(gFmirror, MirrorMaterial,"lFmirror",0,0,0); 
+    
+    fPrismShift = G4ThreeVector((fBlock[2]+fBlock[3])/4.-0.5*fWedge[3],0,currentz+0.5*fBlock[1]);
+    xRot->rotateX(M_PI);
     
     lBlock = new G4LogicalVolume(gBlock, BarMaterial,"lBlock",0,0,0);
-    new G4PVPlacement(xRot,fPrismShift,lBlock,"lBlock", lDirc,false,0);
-    fPrismShift.setZ(fPrismShift.getZ()+2);
-    new G4PVPlacement(xRot,fPrismShift,lFmirror,"lFmirror", lDirc,false,0);
+    new G4PVPlacement(xRot,fPrismShift,lBlock,"wBlock", lDirc,false,0);
+    
+    fPrismShift.setZ(fPrismShift.getZ()+mirrorthickness);
+    new G4PVPlacement(xRot,fPrismShift,lFmirror,"wFmirror", lDirc,false,0);
 
     // PMT plane
     double pmtrot = atan((fBlock[3]-fBlock[2])/fBlock[1]);
     fdrot->rotateY(0.5*M_PI-pmtrot);
     new G4PVPlacement(fdrot,
-		      G4ThreeVector(0.5*(fBlock[2]+fBlock[3])-0.5*fWindow[0]+30,0,0.5*(dirclength+fBlock[1])+fLens[2]+fWedge[1]+fWindow[2]),
+		      G4ThreeVector(0.5*(fBlock[2]+fBlock[3])-0.5*fWedge[3],0,currentz+0.5*fBlock[1]),
 		      lFd,"wFd", lDirc,false,0);    
   }
   else if(fEvType == 4){ // tilted prism
@@ -936,9 +950,6 @@ void PrtDetectorConstruction::DefineMaterials(){
 
 void PrtDetectorConstruction::SetVisualization(){
 
-  // G4Colour blue = G4Colour(0.0,0.0,1.0);
-  // G4Colour green = G4Colour(0.0,1.0,.0);
-  // G4Colour red = G4Colour(1.0,0.0,.0); 
   G4Colour DircColour = G4Colour(1.,1.0,0.);
 
   G4VisAttributes *waExpHall = new G4VisAttributes(DircColour);
@@ -957,9 +968,7 @@ void PrtDetectorConstruction::SetVisualization(){
   waBar->SetVisibility(true);
   lBar->SetVisAttributes(waBar);
   lExpVol->SetVisAttributes(waBar);
-  if(lWedge) lWedge->SetVisAttributes(waBar);
-  if(lWindow) lWindow->SetVisAttributes(waBar);
-    
+  if(lWedge) lWedge->SetVisAttributes(waBar);  
   
   G4VisAttributes *waGlue = new G4VisAttributes(G4Colour(0.,0.4,0.9,0.1));
   waGlue->SetVisibility(true);
@@ -996,6 +1005,8 @@ void PrtDetectorConstruction::SetVisualization(){
   lPrizmT1->SetVisAttributes(waPrizm);
   lPrizmT2->SetVisAttributes(waPrizm);
   if(lBlock) lBlock->SetVisAttributes(waPrizm); 
+  if(lWindow) lWindow->SetVisAttributes(waPrizm);
+  if(lSWedge) lSWedge->SetVisAttributes(waPrizm);
   
   //G4VisAttributes *waMcp = new G4VisAttributes(G4Colour(0.1,0.1,0.9,0.3));
   G4VisAttributes *waMcp = new G4VisAttributes(G4Colour(1.0,0.,0.1,0.4));
@@ -1017,15 +1028,21 @@ void PrtDetectorConstruction::ConstructSDandField(){
   G4SDManager::GetSDMpointer()->AddNewDetector(pixelSD);
   SetSensitiveDetector("lPixel",pixelSD);
   PrtPrizmSD* prizmSD = new PrtPrizmSD("PrizmSD", "PrizmHitsCollection", 0);
+  G4SDManager::GetSDMpointer()->AddNewDetector(prizmSD);
+      
   
-  if(fEvType != 4 ){
-    G4SDManager::GetSDMpointer()->AddNewDetector(prizmSD);
+  if(fEvType == 0 ){
     SetSensitiveDetector("lPrizm",prizmSD);
-  }else{
-    G4SDManager::GetSDMpointer()->AddNewDetector(prizmSD);
+  }
+  else if(fEvType == 1){
+    SetSensitiveDetector("lWedge",prizmSD);
+    SetSensitiveDetector("lSWedge",prizmSD);
+    SetSensitiveDetector("lBlock",prizmSD);
+  }
+  else if(fEvType == 4){
     SetSensitiveDetector("lPrizmT1",prizmSD);
   }
-
+  
   PrtBarSD* barSD = new PrtBarSD("BarSD", "BarHitsCollection", 0);
   G4SDManager::GetSDMpointer()->AddNewDetector(barSD);
   SetSensitiveDetector("lBar",barSD);

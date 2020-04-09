@@ -65,6 +65,7 @@ public:
   void SetTest2(double val){ fTest2 = val; }
   void SetDisplayOpt(int val){ fDispalyOpt = val; }
   void SetTimeRes(double val){ fTimeRes = val; }
+  void SetTimeCut(double val){ fTimeCut = val; }
   void SetMix(int val){fMix = val;}
   void SetVerbose(int val){fVerbose = val;}
   
@@ -91,6 +92,7 @@ public:
   double GetTest2(){ return fTest2; }
   int GetDisplayOpt(){ return fDispalyOpt; }
   double GetTimeRes(){ return fTimeRes; }
+  double GetTimeCut(){ return fTimeCut; }
   TTree *GetTree(){ return fTree; }
   TString GetOutName(){return fOutName;}
   int GetMix(){ return fMix; }
@@ -121,6 +123,7 @@ private:
   double fTest2;
   int fDispalyOpt;
   double fTimeRes;
+  double fTimeCut;
   TString fOutName;
   int fMix;
   int fVerbose;

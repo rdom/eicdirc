@@ -51,35 +51,53 @@ G4bool PrtPrizmSD::ProcessHits(G4Step* aStep, G4TouchableHistory* hist)
   //if (edep==0.) return false;
 
   PrtPrizmHit* newHit = new PrtPrizmHit();
-  G4TouchableHistory* touchable = (G4TouchableHistory*)(aStep->GetPostStepPoint()->GetTouchable());
-  if(touchable->GetVolume()->GetName()=="wDirc"){
+  G4TouchableHistory* touchable = (G4TouchableHistory*)(aStep->GetPreStepPoint()->GetTouchable());
+  G4String vname = touchable->GetVolume()->GetName();
+  
+  if(vname=="wDirc"){
     newHit->SetPrizmID(touchable->GetReplicaNumber());
   }
  
-  newHit->SetTrackID  (aStep->GetTrack()->GetTrackID());
+  newHit->SetTrackID(aStep->GetTrack()->GetTrackID());
   newHit->SetEdep(edep);
-  newHit->SetPos (aStep->GetPostStepPoint()->GetPosition());
+  newHit->SetPos(aStep->GetPostStepPoint()->GetPosition());
 
-  // // store normal to the closest boundary
-  G4Navigator* theNavigator 
-    = G4TransportationManager::GetTransportationManager()
+  // normal to the closest boundary
+  G4Navigator* theNavigator = G4TransportationManager::GetTransportationManager()
     ->GetNavigatorForTracking();
 
-  Double_t normalId = 0;
+  int nid = 0;
   G4bool valid;
-  G4ThreeVector theLocalNormal = theNavigator->GetLocalExitNormal(&valid);
-  if (valid ){
-    // G4ThreeVector theGlobalNormal 
-    //   = theNavigator->GetLocalToGlobalTransform().TransformAxis(theLocalNormal);
-    // normalId = theGlobalNormal.x() + 10*theGlobalNormal.y() + 100*theGlobalNormal.z();
-    normalId = theLocalNormal.x() + 10*theLocalNormal.y() + 100*theLocalNormal.z();     
+  G4ThreeVector normal = theNavigator->GetLocalExitNormal(&valid);
+  G4ThreeVector gnormal = theNavigator->GetLocalToGlobalTransform().TransformAxis(-normal);
+  normal = touchable->GetHistory()->GetTransform(1).TransformAxis(gnormal); // in lDirc
+   
+  if (valid ){    
+    if(PrtManager::Instance()->GetEvType()==1){
+      if(vname=="wWedge"){
+	if(normal.y()> 0.99) nid = 1; // right
+	if(normal.y()<-0.99) nid = 2; // left
+	if(normal.x()>0.99) nid = 3; // bottom
+	if(fabs(normal.x()+0.866025)<0.1 ) nid = 4; // top
+      }
+      else if(vname=="wSWedge" || vname=="wBlock"){      
+	if(normal.y()> 0.99) nid = 1; // right
+	if(normal.y()<-0.99) nid = 2; // left
+	if(normal.x()>0.99) nid = 5; // bottom
+	if(fabs(normal.x()+0.866025)<0.1 ) nid = 6; // top
+	if(normal.z()>0.99) nid = 7; // front
+	if(normal.z()<-0.5 && normal.z()>-0.999) nid = 8; // mirror
+      }
+      if(normal.z()<-0.999) nid =0;
+      // std::cout<<nid<<" "<<vname<<" normal "<<normal<<std::endl;
+    }else{
+      nid = normal.x() + 10*normal.y() + 100*normal.z();
+    }
   }
   
-  newHit->SetNormalId(normalId);
+  newHit->SetNormalId(nid);
 
   fHitsCollection->insert( newHit );
-
-  //newHit->Print();
 
   return true;
 }

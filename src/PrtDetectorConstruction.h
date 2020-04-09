@@ -43,6 +43,7 @@ private:
   G4LogicalVolume* lPrizmT1;
   G4LogicalVolume* lPrizmT2;
   G4LogicalVolume* lWedge;
+  G4LogicalVolume* lSWedge;
   G4LogicalVolume* lBlock;
   G4LogicalVolume* lFmirror;
   G4LogicalVolume* lWindow;

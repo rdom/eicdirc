@@ -53,6 +53,7 @@ PrtManager::PrtManager(G4String outfile, G4int runtype)
   fTest2 = 0;
   fDispalyOpt = 0;
   fTimeRes = 0;
+  fTimeCut = 0;
   fLens = 0;
   fMcpLayout = 0;
   fBeamDimension = 0;
@@ -85,7 +86,7 @@ void PrtManager::AddEvent(PrtEvent event){
     fEvent->SetGeometry(fGeometry);
     // fEvent->SetEvType(fEvType);
     fEvent->SetLens(fLens);
-    fEvent->SetTimeRes(fTimeRes);
+    fEvent->SetTimeRes(fTimeCut);
   }
 }
 

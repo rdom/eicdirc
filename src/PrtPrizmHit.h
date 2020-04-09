@@ -28,7 +28,7 @@ class PrtPrizmHit : public G4VHit
     // Set methods
     void SetPrizmID  (G4int id)         { fPrizmID = id; };
     void SetTrackID  (G4int track)      { fTrackID = track; };
-    void SetNormalId(G4int chamb)       { fNormalId = chamb; };
+    void SetNormalId (G4int chamb)      { fNormalId = chamb; };
     void SetEdep     (G4double de)      { fEdep = de; };
     void SetPos      (G4ThreeVector xyz){ fPos = xyz; };
 

@@ -17,10 +17,11 @@ G4VParticleChange* PrtOpBoundaryProcess::PostStepDoIt(const G4Track& aTrack, con
   // int parentId = aTrack.GetParentID();
   // std::cout<<"parentId   "<<parentId <<std::endl;
   // if(parentId==1) particleChange->ProposeTrackStatus(fStopAndKill);
+
+  double endofbar = 4200/2; //1250/2.;
   
   // ideal focusing
   if(PrtManager::Instance()->GetLens() == 10){
-    double endofbar = 4200/2; //1250/2.;
     G4ThreeVector theGlobalPoint1 = pPostStepPoint->GetPosition();
     G4TouchableHistory* touchable = (G4TouchableHistory*)(pPostStepPoint->GetTouchable());
     G4ThreeVector lpoint =  touchable->GetHistory()->GetTransform( 1 ).TransformPoint(theGlobalPoint1);
@@ -37,7 +38,8 @@ G4VParticleChange* PrtOpBoundaryProcess::PostStepDoIt(const G4Track& aTrack, con
   }
 
   if(PrtManager::Instance()->GetRunType() == 1 && pPostStepPoint->GetPosition().z()<pPreStepPoint->GetPosition().z()){
-    particleChange->ProposeTrackStatus(fStopAndKill);
+    if(PrtManager::Instance()->GetEvType() != 1 ) particleChange->ProposeTrackStatus(fStopAndKill);
+    if(pPreStepPoint->GetPosition().z() < endofbar) particleChange->ProposeTrackStatus(fStopAndKill);
   }
 
   if(aStep.GetPostStepPoint()->GetPhysicalVolume()->GetName()=="wExpVol" && pPostStepPoint->GetPosition().z()<pPreStepPoint->GetPosition().z()){

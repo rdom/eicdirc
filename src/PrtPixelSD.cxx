@@ -98,16 +98,21 @@ G4bool PrtPixelSD::ProcessHits(G4Step* step, G4TouchableHistory* hist){
   G4HCofThisEvent* HCofEvent = currentEvent->GetHCofThisEvent();
   PrtPrizmHitsCollection* prizmCol = (PrtPrizmHitsCollection*)(HCofEvent->GetHC(collectionID));
  
-  Double_t pathId = 0;
-  Int_t refl=-1;
+  Long_t pathId = 0;
+  Int_t refl=0;
   Int_t prizmId=-1;
   for (G4int i=0;i<prizmCol->entries();i++){
     PrtPrizmHit* phit = (*prizmCol)[i];
-    if(prizmId==-1) prizmId =phit->GetPrizmID();
     if(phit->GetTrackID()==track->GetTrackID()) {
+      if(phit->GetNormalId()>0) pathId = pathId*10+phit->GetNormalId();
       refl++;
-      pathId += phit->GetNormalId()+1000*refl;
     }
+    
+    // if(prizmId==-1) prizmId =phit->GetPrizmID();
+    // if(phit->GetTrackID()==track->GetTrackID()) {
+    //   refl++;
+    //   pathId += phit->GetNormalId()+1000*refl;
+    // }
   }
 
   // // information from bar
