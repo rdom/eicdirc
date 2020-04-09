@@ -405,7 +405,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     // focusing block    
     auto gBlockA = new G4Trap("gBlockA",fBlock[0],fBlock[1],fBlock[2],fBlock[3]);
 
-    double cradius = 1100;
+    double cradius = PrtManager::Instance()->GetTest1(); //1100
     double cpos = 250;
 
     double mxcor=200;

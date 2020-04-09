@@ -44,6 +44,10 @@ TH2F*  fdtt = new TH2F("dtt",";t_{measured}-t_{calculated} [ns];#theta_{l} [deg]
 TH2F*  fdtl = new TH2F("dtl",";t_{measured}-t_{calculated} [ns];path length [m]", 1000,-2,2, 1000,0,15);
 TH2F*  fdtp = new TH2F("dtp",";#theta_{l} [deg];path length [m]", 1000,0,90, 1000,0,15);
 
+
+TH1F*  fHistMcp[28];
+double fCorr[28];
+
 Int_t gg_i(0);
 TGraph gg_gr;
 
@@ -81,6 +85,30 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, Int_t verbose){
   for(int i=0; i<20; i++){
     fFindTimeA[i] = new TH1F(Form("fta_%d",i),";t_{measured}-t_{calculated} [ns];entries [#]",1000,-10,10);
   }
+
+  for(int i=0; i<28; i++){
+    fHistMcp[i] = new TH1F(Form("fHistMcp_%d",i),Form("fHistMcp_%d;#theta_{C} [rad];entries [#]",i), 50,-0.05,0.05);
+  }
+
+  // // read corrections
+  // fCorrFile = PrtManager::Instance()->GetOutName()+"_corr.root";
+  // for(int i=0; i<prt_nmcp; i++) fCorr[i]=0;
+  // if(!gSystem->AccessPathName(fCorrFile)){  
+  //   std::cout<<"------- reading  "<<fCorrFile <<std::endl;
+  //   int pmt;
+  //   double corr;
+  //   TChain ch; ch.SetName("corr"); ch.Add(fCorrFile);
+  //   ch.SetBranchAddress("pmt",&pmt);
+  //   ch.SetBranchAddress("corr",&corr);
+  //   for(int i=0; i<ch.GetEntries(); i++){
+  //     ch.GetEvent(i);
+  //     fCorr[pmt] = (fabs(corr)<0.011)? corr: 0.00001;
+  //     std::cout<<"pmt "<<pmt<<"  "<<corr<<std::endl;    
+  //   }
+  // }else{
+  //   std::cout<<"------- corr file not found  "<<fCorrFile <<std::endl;
+  // }
+  
   
   cout << "-I- PrtLutReco: Intialization successfull" << endl;
 }
@@ -232,6 +260,8 @@ void PrtLutReco::Run(Int_t start, Int_t end){
 	  if(fabs(tdiff)>timeCut+luttime*0.03) continue;
 	  fDiff->Fill(hitTime,tdiff);			  
 	  fHist->Fill(tangle);	    
+	  fHistMcp[mcp]->Fill(tangle-fAngle[prt_get_pid(tofPid)]);
+	  
 	  
 	  tangle = rotatedmom.Angle(dir);
 	  //if(  tangle>TMath::Pi()/2.) tangle = TMath::Pi()-tangle;
@@ -242,9 +272,9 @@ void PrtLutReco::Run(Int_t start, Int_t end){
 	    TVector3 rdir = TVector3(-dir.X(),dir.Y(),dir.Z());
 	    TVector3 unitdir3 = rotatedmom.Unit();
 	    rdir.RotateUz(unitdir3);
-	    Double_t phi =  rdir.Phi();
-	    fHist4->Fill(tangle*TMath::Sin(phi),tangle*TMath::Cos(phi));
-	    gg_gr.SetPoint(gg_i,tangle*TMath::Sin(phi),tangle*TMath::Cos(phi));
+	    Double_t cphi =  rdir.Phi();
+	    fHist4->Fill(tangle*TMath::Sin(cphi),tangle*TMath::Cos(cphi));
+	    gg_gr.SetPoint(gg_i,tangle*TMath::Sin(cphi),tangle*TMath::Cos(cphi));
 	    gg_i++;
 	  }
 	  
@@ -462,6 +492,37 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
 	gg_gr.Set(0);
       }
 
+      { // corrections
+	if(fabs(fCorr[0])<0.00000001 && fabs(fCorr[7])<0.00000001){
+	  std::cout<<"Writing "<<fCorrFile<<std::endl;
+	  
+	  TFile fc(fCorrFile,"recreate");
+	  TTree *tc = new TTree("corr","corr");
+	  int pmt;
+	  double corr;
+	  tc->Branch("pmt",&pmt,"pmt/I");
+	  tc->Branch("corr",&corr,"corr/D");
+	
+	  fFit->SetParameter(1,0);    // mean
+	  fFit->SetParLimits(1,-0.012,0.012); // width	
+	  fFit->SetParLimits(2,0.006,0.009); // width		
+	  for(int i=0; i<prt_nmcp; i++){
+	    // prt_canvasAdd(Form("r_tangle_%d",i),800,400);
+	    fHistMcp[i]->Fit("fgaus","MQ","",-0.03,0.03);
+	    pmt = i;
+	    corr= -fFit->GetParameter(1);
+	    tc->Fill();
+	    std::cout<<"if(mcpid=="<< i<<") tangle += "<<corr<<";" <<std::endl;	  
+	    // fHistMcp[i]->Draw();
+	    // drawTheoryLines();	  
+	  }
+	  
+	  tc->Write();
+	  fc.Write();
+	  fc.Close();
+	}	
+      }
+
       { // time
 	prt_canvasAdd("tdiff"+nid,800,400);
 	for(int i=2; i>=0; i--){
@@ -476,6 +537,7 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
       }
 
       prt_canvasSave(1,0);
+     
     }
   }
 
@@ -656,4 +718,22 @@ double PrtLutReco::FindStartTime(PrtEvent *evt){
   return mean;
 }
 
+void PrtLutReco::drawTheoryLines(){
+  gPad->Update();
+  TLine *line = new TLine(0,0,0,1000);
+  line->SetX1(fAngle[3]);
+  line->SetX2(fAngle[3]);
+  line->SetY1(gPad->GetUymin());
+  line->SetY2(gPad->GetUymax());
+  line->SetLineColor(kRed);
+  line->Draw();
+
+  TLine *line1 = new TLine(0,0,0,1000);
+  line1->SetX1(fAngle[2]);
+  line1->SetX2(fAngle[2]);
+  line1->SetY1(gPad->GetUymin());
+  line1->SetY2(gPad->GetUymax());
+  line1->SetLineColor(kBlue);
+  line1->Draw();
+}
 

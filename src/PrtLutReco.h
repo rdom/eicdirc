@@ -30,6 +30,7 @@ public:
   // Destructor
   ~PrtLutReco();
   void Run(Int_t start=0, Int_t end=0);
+  void drawTheoryLines();
 
 private:
   Bool_t FindPeak(Double_t& cherenkovreco, Double_t& spr,Int_t a);
@@ -64,6 +65,7 @@ private:
   TF1 *fFunc[5];
   TH1F *fLnDiff[5];
   double fCriticalAngle;
+  TString fCorrFile;
 };
 
 #endif
