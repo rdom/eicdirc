@@ -13,7 +13,9 @@ echo $tseed
 #for i in {0..9}; do ../build/eicdirc -r $tseed$i -o h_b$i.root  -s 0 -a 30 -x "pi+" -p 6 -w 0 -g 3 -h 11 -l 0 -c 4 -e 0 -d 0 -e 200 -b 1  > l_b$i.log & done
 #for i in {0..9}; do ../build/eicdirc -r $tseed$i -o h_b$i.root  -s 0 -a 30 -x "pi+" -p 6 -w 0 -g 3 -h 11 -l 6 -c 4 -e 0 -d 0 -e 200 -b 1  > l_b$i.log & done
 #for i in {0..9}; do ../build/eicdirc -r $tseed$i -o h_b$i.root  -s 0 -a 30 -x "pi+" -p 6 -w 0 -g 1 -h 1 -l 3 -c 4 -e 0 -d 0 -e 200 -b 1  > l_b$i.log & done
-for i in {0..9}; do ../build/eicdirc -r $tseed$i -o h_b$i.root  -s 0 -a 30 -x "pi+" -p 6 -w 0 -g 3 -h 11 -l 6 -c 4 -e 0 -d 0 -e 100 -b 1  > l_b$i.log & done
+#for i in {0..9}; do ../build/eicdirc -r $tseed$i -o h_b$i.root  -s 0 -a 30 -x "pi+" -p 6 -w 0 -g 3 -h 11 -l 6 -c 4 -e 0 -d 0 -e 100 -b 1  > l_b$i.log & done
+
+for i in {0..11}; do ../build/eicdirc -r $tseed$i -o h_b$i.root  -s 0 -a 30 -x "pi+" -p 6 -w 0 -g 0 -h 11 -l 3 -c 4 -e 0 -d 0 -e 100 -b 1  > l_b$i.log & done
 
 sleep 1
 

@@ -367,7 +367,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     double fWindow[]={124,437,9.6};
     double fWedge[]={33.25,91,79.537,27.0};
     double fSWedge[]={fBoxWidth,60,119,85};
-    double fBlock[]={fBoxWidth,180,480,330};    
+    double fBlock[]={fBoxWidth,180,450,300};    
 
     double currentz = 0.5*dirclength;
     
@@ -405,15 +405,22 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     // focusing block    
     auto gBlockA = new G4Trap("gBlockA",fBlock[0],fBlock[1],fBlock[2],fBlock[3]);
 
-    double cradius = PrtManager::Instance()->GetTest1(); //1100
-    double cpos = 250;
+    double cradius = PrtManager::Instance()->GetTest1();
+    double cangle = PrtManager::Instance()->GetTest2();
 
-    double mxcor=200;
-    double mycor=15;
+    double cpos = 240;
+    double apos = 80;
+    
+    double b=atan((cradius-sqrt(cradius*cradius-cpos*cpos))/cpos)-cangle*TMath::DegToRad(); //atan(apos/cpos);    
+    double mxcor=cradius*(1-cos(b));
+    double mycor=cradius*sin(b);
+
+    std::cout<<b<<" mxcor "<<mxcor <<" "<<mycor<<std::endl;
+    
     
     G4Tubs* gCyl  = new G4Tubs("gCyl",0,cradius,fBoxWidth,0*deg,360*deg);
     G4RotationMatrix* cRot = new G4RotationMatrix();
-    auto cTrans = G4ThreeVector(mxcor+cpos-((fBlock[2]+fBlock[3])/4.),mycor-cradius+0.5*fBlock[1],0);
+    auto cTrans = G4ThreeVector(-mycor+cpos-((fBlock[2]+fBlock[3])/4.),mxcor-cradius+0.5*fBlock[1],0);
     auto gBlock = new G4IntersectionSolid("gBlock",gBlockA,gCyl,cRot,cTrans);
 
     double mirrorthickness = 1;
