@@ -44,11 +44,11 @@ void PrtPrizmSD::Initialize(G4HCofThisEvent* hce)
 }
 
 G4bool PrtPrizmSD::ProcessHits(G4Step* aStep, G4TouchableHistory* hist)
-{   
-  // energy deposit
-  G4double edep = aStep->GetTotalEnergyDeposit();
-
-  //if (edep==0.) return false;
+{
+  G4StepPoint* pPostStepPoint = aStep->GetPostStepPoint();
+  if(pPostStepPoint->GetStepStatus() != fGeomBoundary){ //not at boundary
+    return true;
+  }
 
   PrtPrizmHit* newHit = new PrtPrizmHit();
   G4TouchableHistory* touchable = (G4TouchableHistory*)(aStep->GetPreStepPoint()->GetTouchable());
@@ -59,8 +59,7 @@ G4bool PrtPrizmSD::ProcessHits(G4Step* aStep, G4TouchableHistory* hist)
   }
  
   newHit->SetTrackID(aStep->GetTrack()->GetTrackID());
-  newHit->SetEdep(edep);
-  newHit->SetPos(aStep->GetPostStepPoint()->GetPosition());
+  newHit->SetPos(pPostStepPoint->GetPosition());
 
   // normal to the closest boundary
   G4Navigator* theNavigator = G4TransportationManager::GetTransportationManager()
@@ -71,7 +70,7 @@ G4bool PrtPrizmSD::ProcessHits(G4Step* aStep, G4TouchableHistory* hist)
   G4ThreeVector normal = theNavigator->GetLocalExitNormal(&valid);
   G4ThreeVector gnormal = theNavigator->GetLocalToGlobalTransform().TransformAxis(-normal);
   normal = touchable->GetHistory()->GetTransform(1).TransformAxis(gnormal); // in lDirc
-   
+  
   if (valid ){    
     if(PrtManager::Instance()->GetEvType()==1){
       if(vname=="wWedge"){
