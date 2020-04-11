@@ -133,7 +133,7 @@ void PrtLutReco::Run(Int_t start, Int_t end){
   Int_t nsHits(0),nsEvents(0),studyId(0), nHits(0), ninfit(1);
   
   Double_t theta(0),phi(0), trr(0),  nph(0),
-    par1(0), par2(0), par3(0), par4(0), par5(0), par6(0), timeRes(0),ctimeRes(0), test2(0),test3(0),separation(0),likelihood(0);
+    par1(0), par2(0), par3(0), par4(0), par5(0), par6(0), timeRes(0),ctimeRes(0), test1(0),test2(0),test3(0),separation(0),likelihood(0);
 
   TGaxis::SetMaxDigits(3);
   prt_setRootPalette(1);
@@ -155,12 +155,18 @@ void PrtLutReco::Run(Int_t start, Int_t end){
   tree.Branch("par6",&par6,"par6/D");
   tree.Branch("timeres",&timeRes,"timeRes/D");
   tree.Branch("ctimeres",&ctimeRes,"ctimeRes/D");
+  tree.Branch("test1",&test1,"test1/D");
   tree.Branch("test2",&test2,"test2/D");
   tree.Branch("test3",&test3,"test3/D");
   tree.Branch("theta",&theta,"theta/D");
   tree.Branch("phi",&phi,"phi/D");
 
   timeRes = PrtManager::Instance()->GetTimeRes();
+  test1 = PrtManager::Instance()->GetTest1();
+  test2 = PrtManager::Instance()->GetTest2();
+
+  
+  
   Int_t nEvents = fChain->GetEntries();
   if(end==0) end = nEvents;
 
