@@ -463,33 +463,33 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
       }
       
       { // cherenkov ring
-	prt_canvasAdd("r_cring"+nid,800,400);
+	// prt_canvasAdd("r_cring"+nid,800,400);
 	
-	fHist4->SetStats(0);
-	fHist4->GetXaxis()->SetTitle("#theta_{c}sin(#varphi_{c})");
-	fHist4->GetYaxis()->SetTitle("#theta_{c}cos(#varphi_{c})");
-	fHist4->SetTitle(Form("Calculated from LUT, #theta = %d#circ", a));
-	fHist4->Draw("colz");
-	Double_t x0(0), y0(0), theta(cherenkovreco);
-	FitRing(x0,y0,theta);
-	TVector3 corr(x0,y0,1-TMath::Sqrt(x0*x0+y0*y0));
-	std::cout<<"Tcorr "<< corr.Theta()*1000<< "  Pcorr "<< corr.Phi() <<std::endl;
+	// fHist4->SetStats(0);
+	// fHist4->GetXaxis()->SetTitle("#theta_{c}sin(#varphi_{c})");
+	// fHist4->GetYaxis()->SetTitle("#theta_{c}cos(#varphi_{c})");
+	// fHist4->SetTitle(Form("Calculated from LUT, #theta = %d#circ", a));
+	// fHist4->Draw("colz");
+	// Double_t x0(0), y0(0), theta(cherenkovreco);
+	// FitRing(x0,y0,theta);
+	// TVector3 corr(x0,y0,1-TMath::Sqrt(x0*x0+y0*y0));
+	// std::cout<<"Tcorr "<< corr.Theta()*1000<< "  Pcorr "<< corr.Phi() <<std::endl;
 
-	TLegend *leg = new TLegend(0.5,0.7,0.85,0.87);
-	leg->SetFillStyle(4000); 
-	leg->SetBorderSize(0);
-	leg->AddEntry((TObject*)0,Form("Entries %0.0f",fHist4->GetEntries()),"");
-	leg->AddEntry((TObject*)0,Form("#Delta#theta_{c} %f [mrad]",corr.Theta()*1000),"");
-	leg->AddEntry((TObject*)0,Form("#Delta#varphi_{c} %f [rad]",corr.Phi()),"");
-	leg->Draw();
+	// TLegend *leg = new TLegend(0.5,0.7,0.85,0.87);
+	// leg->SetFillStyle(4000); 
+	// leg->SetBorderSize(0);
+	// leg->AddEntry((TObject*)0,Form("Entries %0.0f",fHist4->GetEntries()),"");
+	// leg->AddEntry((TObject*)0,Form("#Delta#theta_{c} %f [mrad]",corr.Theta()*1000),"");
+	// leg->AddEntry((TObject*)0,Form("#Delta#varphi_{c} %f [rad]",corr.Phi()),"");
+	// leg->Draw();
 
-	TArc *arc = new TArc(x0,y0,theta);
-	arc->SetLineColor(kRed);
-	arc->SetLineWidth(1);
-	arc->SetFillStyle(0);
-	arc->Draw();
-	gg_i=0;
-	gg_gr.Set(0);
+	// TArc *arc = new TArc(x0,y0,theta);
+	// arc->SetLineColor(kRed);
+	// arc->SetLineWidth(1);
+	// arc->SetFillStyle(0);
+	// arc->Draw();
+	// gg_i=0;
+	// gg_gr.Set(0);
       }
 
       { // corrections

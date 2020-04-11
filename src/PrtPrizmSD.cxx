@@ -85,7 +85,8 @@ G4bool PrtPrizmSD::ProcessHits(G4Step* aStep, G4TouchableHistory* hist)
 	if(normal.x()>0.99) nid = 5; // bottom
 	if(fabs(normal.x()+0.866025)<0.1 ) nid = 6; // top
 	if(normal.z()>0.99) nid = 7; // front
-	if(normal.z()<-0.5 && normal.z()>-0.999) nid = 8; // mirror
+	if(normal.z()<-0.5 && normal.z()>-0.999 && normal.x()>0) nid = 8; // mirror
+	if(normal.z()<-0.5 && normal.z()>-0.999 && normal.x()<0) nid = 9; // pd	
       }
       if(normal.z()<-0.999) nid =0;
       // std::cout<<nid<<" "<<vname<<" normal "<<normal<<std::endl;
