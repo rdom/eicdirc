@@ -240,15 +240,12 @@ void PrtLutReco::Run(Int_t start, Int_t end){
       // rotatedmom.Print();
 
       double path = fHit.GetPathInPrizm();
-      TString spath = Form("%ld",path);
-      if(spath.Contains("9")) continue;
-      std::cout<<"spath "<<spath<<std::endl;
+      // TString spath = Form("%ld",path);
+      // if(spath.Contains("9")) continue;
+      // std::cout<<"spath "<<spath<<std::endl;
       
       for(int i=0; i<size; i++){
 	dird = node->GetEntry(i);
-	TString spath1 = Form("%ld",node->GetPathId(i));
-	std::cout<<sensorId<<" spath1 "<<spath1<<" "<<node->GetPathId(i)<<std::endl;
-	if(!spath1.Contains("9")) continue;
 	//if(path!=node->GetPathId(i)) continue;
 	
 	evtime = node->GetTime(i);

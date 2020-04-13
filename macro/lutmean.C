@@ -77,7 +77,7 @@ void lutmean(TString baseFile = "../data/lut"){
 	hTime->Fill(tArray[j][v]);
       }
 
-      if(vArray[j].size()<5) continue;
+      if(vArray[j].size()<1) continue;
       
       //if(hDir->GetStdDev()<0.0001)
       // {
