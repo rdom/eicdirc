@@ -29,7 +29,7 @@ public:
   // PrtLutNode (PrtLutNode& node) { *this = node; }  
 
   // Modifiers
-  void AddEntry(Int_t nodeId, TVector3 dir, Double_t pathid, Int_t nrefl, Double_t time, TVector3 hitpos, TVector3 digipos);
+  void AddEntry(Int_t nodeId, TVector3 dir, Long_t pathid, Int_t nrefl, Double_t time, TVector3 hitpos, TVector3 digipos);
   void SetDigiPos(TVector3 pos){fDigiPos = pos;}
 
   // Accessors
@@ -37,7 +37,7 @@ public:
   Int_t GetDetectorId() { return fDetectorId; }
 
   TVector3 GetEntry(Int_t entry) { return fNodeArray[entry]; }
-  Double_t GetPathId(Int_t entry){ return fPathIdArray[entry]; }
+  Long_t GetPathId(Int_t entry){ return fPathIdArray[entry]; }
   Int_t GetNRefl(Int_t entry){ return fNRefl[entry]; }
   Double_t GetTime(Int_t entry){ return fTimeArray[entry]; }
   TVector3 GetHitPos(Int_t entry){ return fHitPos[entry]; }
@@ -51,7 +51,7 @@ private:
 
   std::vector<TVector3> fNodeArray;
   std::vector<TVector3> fHitPos;
-  std::vector<Double_t> fPathIdArray;
+  std::vector<Long_t> fPathIdArray;
   std::vector<Int_t> fNRefl;
   std::vector<Double_t> fTimeArray;
 

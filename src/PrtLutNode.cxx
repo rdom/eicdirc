@@ -16,7 +16,7 @@ PrtLutNode::PrtLutNode(Int_t nodeId)
   fSize = 0;
 }
 
-void PrtLutNode::AddEntry(Int_t detectorId, TVector3 dir, Double_t pathid, Int_t nrefl, Double_t time, TVector3 hitpos, TVector3 digipos) {
+void PrtLutNode::AddEntry(Int_t detectorId, TVector3 dir, Long_t pathid, Int_t nrefl, Double_t time, TVector3 hitpos, TVector3 digipos) {
   fDetectorId = detectorId; 
   fNodeArray.push_back(dir);
   fPathIdArray.push_back(pathid);

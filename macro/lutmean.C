@@ -77,19 +77,19 @@ void lutmean(TString baseFile = "../data/lut"){
 	hTime->Fill(tArray[j][v]);
       }
 
-      if(vArray[j].size()<2) continue;
+      if(vArray[j].size()<5) continue;
       
       //if(hDir->GetStdDev()<0.0001)
-      {
-	std::cout<<inode<<" "<<pArray[j]<<" hDir->GetStdDev() ================  "<<hDir->GetStdDev()<<std::endl;
+      // {
+      // 	std::cout<<inode<<" "<<pArray[j]<<" hDir->GetStdDev() ================  "<<hDir->GetStdDev()<<std::endl;
 
-	c->cd(1);
-	hTime->Draw();
-	c->cd(2);
-	hDir->Draw();
-	c->Update();
-	c->WaitPrimitive();
-      }
+      // 	c->cd(1);
+      // 	hTime->Draw();
+      // 	c->cd(2);
+      // 	hDir->Draw();
+      // 	c->Update();
+      // 	c->WaitPrimitive();
+      // }
       
       sum *= 1/(Double_t)vArray[j].size();
       sumt *= 1./(Double_t)tArray[j].size();

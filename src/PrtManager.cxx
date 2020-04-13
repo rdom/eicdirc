@@ -113,7 +113,6 @@ void PrtManager::AddTrackInfo(PrtTrackInfo trackinfo){
 }
 
 
-
 void PrtManager::Fill(){
   if(fRunType==0 || fRunType==10){
     fTree->Fill();
