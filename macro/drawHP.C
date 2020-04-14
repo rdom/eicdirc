@@ -19,9 +19,8 @@ void drawHP(TString infile="../build/hits.root"){
     }
   }
 
-  //prt_drawDigi("",2031,0,0);
-  prt_drawDigi("",2032,0,0); 
-  prt_canvasAdd(prt_cdigi);
-  //  prt_canvasSave(0);
+  auto cdigi = prt_drawDigi(2032); //2031
+  prt_canvasAdd(cdigi);
+  prt_canvasSave(0);
 }
 

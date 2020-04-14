@@ -239,14 +239,15 @@ void PrtLutReco::Run(Int_t start, Int_t end){
       // std::cout<<"fAngle   "<<fAngle <<std::endl;
       // rotatedmom.Print();
 
-      double path = fHit.GetPathInPrizm();
-      // TString spath = Form("%ld",path);
-      // if(spath.Contains("9")) continue;
-      // std::cout<<"spath "<<spath<<std::endl;
+      Long_t path = fHit.GetPathInPrizm();
+      TString spath = Form("%ld",path);
+      if(spath.Contains("9")) continue;
+      //if(spath.Length()>8) continue;
+      //std::cout<<"spath "<<spath<<std::endl;
       
       for(int i=0; i<size; i++){
 	dird = node->GetEntry(i);
-	//if(path!=node->GetPathId(i)) continue;
+	if(path!=node->GetPathId(i)) continue;
 	
 	evtime = node->GetTime(i);
 	for(int u=0; u<4; u++){
@@ -271,7 +272,7 @@ void PrtLutReco::Run(Int_t start, Int_t end){
 	  if(fabs(tdiff)>timeCut+luttime*0.03) continue;  fDiff->Fill(hitTime,tdiff);
 	  tangle = rotatedmom.Angle(dir);
 
-	  if(fabs(tdiff)<1.5) tangle -= 0.01*tdiff;	  	        
+	  //if(fabs(tdiff)<1.5) tangle -= 0.01*tdiff;	  	        
 	  //if(tangle>TMath::Pi()/2.) tangle = TMath::Pi()-tangle;
 	  //if(fabs(0.8218-tangle)>0.002) continue;
 	  //if(fabs(0.83-tangle)>0.003) continue;
@@ -474,9 +475,9 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
       }
       
       { //hp
-	prt_drawDigi("",2032);
-	prt_cdigi->SetName("r_hp"+nid);
-	prt_canvasAdd(prt_cdigi);
+	auto cdigi = prt_drawDigi(2032);
+	cdigi->SetName("hp"+nid);
+	prt_canvasAdd(cdigi);
       }
       
       { // cherenkov ring
@@ -542,9 +543,10 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
       
       { // time
 	prt_canvasAdd("tdiff"+nid,800,400);
+	prt_normalizeto(fHistDiff, 2);
 	for(int i=2; i>=0; i--){
 	  fHistDiff[i]->SetTitle(Form("theta %d", a));
-	  fHistDiff[i]->Draw(i==2?"":"same");
+	  fHistDiff[i]->Draw(i==2?"h":"h same");
 	}
 	
 	prt_canvasAdd("r_diff_time"+nid,800,400);
@@ -553,7 +555,7 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
 	prt_waitPrimitive("r_diff_time"+nid);
       }
 
-      prt_canvasSave(1,0);
+      prt_canvasSave(1);
      
     }
   }
