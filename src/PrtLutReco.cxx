@@ -247,7 +247,7 @@ void PrtLutReco::Run(Int_t start, Int_t end){
       
       for(int i=0; i<size; i++){
 	dird = node->GetEntry(i);
-	if(path!=node->GetPathId(i)) continue;
+	//if(path!=node->GetPathId(i)) continue;
 	
 	evtime = node->GetTime(i);
 	for(int u=0; u<4; u++){
