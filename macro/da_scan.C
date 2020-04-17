@@ -1,7 +1,7 @@
 #include "../../prttools/prttools.C"
 void da_scan(TString inFile = "r_spr.root", TString outFile="c_spr.root"){
   prt_savepath ="data/da_scan";
-  TChain ch("dirc"); ch.Add(inFile);
+  TChain ch("reco"); ch.Add(inFile);
   Double_t cangle,spr,trr,nph,par1,par2,par3,par4,par5,par6,test1,test2,theta,phi; 
 
   TGraph *gSpr = new TGraph();
@@ -63,7 +63,7 @@ void da_scan(TString inFile = "r_spr.root", TString outFile="c_spr.root"){
   gTrr2->SetMarkerSize(0.7);
 	  
   gNph->GetYaxis()->SetRangeUser(0,150);
-  gSpr->GetYaxis()->SetRangeUser(0,12);
+  gSpr->GetYaxis()->SetRangeUser(0,25);
   gTrr->GetYaxis()->SetRangeUser(0,2);
 
   gSpr->GetYaxis()->SetTitle("SPR [mrad]");

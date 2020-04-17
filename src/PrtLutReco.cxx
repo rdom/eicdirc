@@ -43,7 +43,7 @@ TH1F*  fFindTimeRes = new TH1F("ftr","ftr",100,-2,2);
 TH2F*  fdtt = new TH2F("dtt",";t_{measured}-t_{calculated} [ns];#theta_{l} [deg]", 1000,-2,2, 1000,0,90);
 TH2F*  fdtl = new TH2F("dtl",";t_{measured}-t_{calculated} [ns];path length [m]", 1000,-2,2, 1000,0,15);
 TH2F*  fdtp = new TH2F("dtp",";#theta_{l} [deg];path length [m]", 1000,0,90, 1000,0,15);
-TH2F*  fdtc = new TH2F("dtc",";t_{measured}-t_{calculated} [ns];#theta_{C} [rad]", 200,-2,2, 200,0.7,0.9);
+TH2F*  fdtc = new TH2F("dtc",";t_{measured}-t_{calculated} [ns];#theta_{C} [rad]", 100,-1,1, 100,0.79,0.86);
 
 
 TH1F*  fHistMcp[28];
@@ -247,7 +247,7 @@ void PrtLutReco::Run(Int_t start, Int_t end){
       
       for(int i=0; i<size; i++){
 	dird = node->GetEntry(i);
-	//if(path!=node->GetPathId(i)) continue;
+	if(path!=node->GetPathId(i)) continue;
 	
 	evtime = node->GetTime(i);
 	for(int u=0; u<4; u++){
@@ -272,7 +272,7 @@ void PrtLutReco::Run(Int_t start, Int_t end){
 	  if(fabs(tdiff)>timeCut+luttime*0.03) continue;  fDiff->Fill(hitTime,tdiff);
 	  tangle = rotatedmom.Angle(dir);
 
-	  //if(fabs(tdiff)<1.5) tangle -= 0.01*tdiff;	  	        
+	  if(fabs(tdiff)<1.5) tangle -= 0.01*tdiff;	  	        
 	  //if(tangle>TMath::Pi()/2.) tangle = TMath::Pi()-tangle;
 	  //if(fabs(0.8218-tangle)>0.002) continue;
 	  //if(fabs(0.83-tangle)>0.003) continue;
@@ -469,6 +469,7 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
 	fHist->Draw();
       }
 
+      gStyle->SetOptStat(0);
       { // chromatic corrections
 	prt_canvasAdd("chrom"+nid,800,400);
 	fdtc->Draw("colz");

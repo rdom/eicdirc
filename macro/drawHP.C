@@ -6,7 +6,7 @@
 
 void drawHP(TString infile="../build/hits.root"){
   
-  if(!prt_init(infile,2,"data/drawHP")) return;
+  if(!prt_init(infile,2)) return;
   for (int ievent=0; ievent<prt_entries; ievent++){
     prt_nextEvent(ievent,1000);
     for(PrtHit hit : prt_event->GetHits()){
@@ -21,6 +21,6 @@ void drawHP(TString infile="../build/hits.root"){
 
   auto cdigi = prt_drawDigi(2032); //2031
   prt_canvasAdd(cdigi);
-  prt_canvasSave(0);
+  prt_canvasSave("data/drawHP",0);
 }
 
