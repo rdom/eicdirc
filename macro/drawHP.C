@@ -12,10 +12,10 @@ void drawHP(TString infile="../build/hits.root"){
     for(PrtHit hit : prt_event->GetHits()){
       int mcp = hit.GetMcpId();
       int pix = hit.GetPixelId();
-      //int ch = map_mpc[mcp][pix];
+      // int ch = map_mpc[mcp][pix];
       double time = hit.GetLeadTime();
       prt_hdigi[mcp]->Fill(pix/16, pix%16);
-      //prt_hdigi[mcp]->Fill(pix%16, pix/16);
+      // prt_hdigi[mcp]->Fill(pix%16, pix/16);
     }
   }
 
