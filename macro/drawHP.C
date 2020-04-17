@@ -18,6 +18,7 @@ void drawHP(TString infile="../build/hits.root"){
       //prt_hdigi[mcp]->Fill(pix%16, pix/16);
     }
   }
+   
 
   auto cdigi = prt_drawDigi(2032); //2031
   prt_canvasAdd(cdigi);
