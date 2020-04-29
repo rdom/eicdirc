@@ -70,6 +70,7 @@ private:
   
   G4int fNRow;
   G4int fNCol;
+  G4int fNBoxes;
   G4double fRadius;
   G4double fNpix1;
   G4double fNpix2;

@@ -73,16 +73,20 @@ PrtDetectorConstruction::PrtDetectorConstruction()
   fRadius = 970;
   
   fBoxWidth = fPrizm[0];
-  
+  fNBoxes = 16;
+
   if(fEvType==1){ //BaBar
     fBar[0] = 17.25; fBar[1] = 35; fBar[2] = 1050;
     fNBar = 12;
-    fRadius = 1150;
+    fRadius = 900;
     fLensId = 0;
     fBoxWidth = fNBar*(fBar[1]+0.15);
     fNRow = 7;
+    fNBoxes =12;
   }
-  
+
+  if(fGeomType == 1)  fNBoxes = 1;
+
   fFd[0] = fBoxWidth; fFd[1]=fPrizm[2]; fFd[2] =1;
 
   
@@ -134,8 +138,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   G4Box* gFd = new G4Box("gFd",0.5*fFd[1],0.5*fFd[0],0.5*fFd[2]);
   lFd = new G4LogicalVolume(gFd,defaultMaterial,"lFd",0,0,0);
   
-  G4int fNBoxes = (fGeomType == 0)? 16 :1;
-  G4double tphi, dphi = 22.5*deg; //22.5*deg;
+  G4double tphi, dphi = 360*deg/(double)fNBoxes;  
 
   if(PrtManager::Instance()->GetRunType()==1){ 
     // LUT
