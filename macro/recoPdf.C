@@ -49,7 +49,7 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t timer
   PrtHit hit;
   Int_t tnph(0),totalf(0),totals(0), ch(0), pdg(0);
   
-  for (Int_t ievent=0; ievent<4000; ievent++){
+  for (Int_t ievent=0; ievent<4000 && ievent<prt_entries; ievent++){
     prt_nextEvent(ievent,100);
     //timeres = prt_event->GetTimeRes();
     pdg = prt_event->GetParticle();
