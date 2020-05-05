@@ -217,8 +217,8 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   if(fLensId == 3){ // 3-component spherical lens
     G4double lensMinThikness = 2; 
   
-    G4double r1 = PrtManager::Instance()->GetTest1();
-    G4double r2 = PrtManager::Instance()->GetTest2();
+    G4double r1 = 0; //PrtManager::Instance()->GetTest1();
+    G4double r2 = 0; //PrtManager::Instance()->GetTest2();
   
     r1 = (r1==0)? 47.8: r1;
     r2 = (r2==0)? 29.1: r2;
@@ -260,8 +260,8 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   if(fLensId == 6){ // 3-component cylindrical lens
     G4double lensMinThikness = 2.0;
 
-    G4double r1 = PrtManager::Instance()->GetTest1();
-    G4double r2 = PrtManager::Instance()->GetTest2();
+    G4double r1 = 0; //PrtManager::Instance()->GetTest1();
+    G4double r2 = 0; //PrtManager::Instance()->GetTest2();
 
     lensMinThikness = 2;
     G4double layer12 = lensMinThikness*2;
