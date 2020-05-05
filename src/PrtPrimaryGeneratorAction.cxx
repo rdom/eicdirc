@@ -46,6 +46,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
   G4double x,y,z;
   G4double angle = PrtManager::Instance()->GetAngle();
   G4double zpos = PrtManager::Instance()->GetZPos();
+  G4double ypos = PrtManager::Instance()->GetTest1();
   G4double radiatorL = PrtManager::Instance()->GetRadiatorL();
   G4double radiatorW = PrtManager::Instance()->GetRadiatorW();
   G4double radiatorH = PrtManager::Instance()->GetRadiatorH();
@@ -110,23 +111,14 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
 
     if(PrtManager::Instance()->GetEvType()==1) vec.rotateZ(0.016); // hit the middle of the BaBar bar 
     
-    fParticleGun->SetParticlePosition(G4ThreeVector(0,0,zpos));
-    PrtManager::Instance()->Event()->SetPosition(TVector3(0,0,zpos));
+    fParticleGun->SetParticlePosition(G4ThreeVector(0,ypos,zpos));
+    PrtManager::Instance()->Event()->SetPosition(TVector3(0,ypos,zpos));
       
     // // }
    
     fParticleGun->SetParticleMomentumDirection(vec);
   }
-  
-  if(PrtManager::Instance()->GetBeamDimension() == 1){ // smearing and divergence
-    G4double sigma = 1*cm;
-    z = fParticleGun->GetParticlePosition().z();
-    x = G4RandGauss::shoot(0,sigma);
-    y = G4RandGauss::shoot(0,sigma);
-    
-    fParticleGun->SetParticlePosition(G4ThreeVector(x,y,z));
-    PrtManager::Instance()->Event()->SetPosition(TVector3(x,y,z));
-  }
+
   if(PrtManager::Instance()->GetRunType() == 1){ // LUT generation
     
     G4double barShift=0; // 390/12./2;
