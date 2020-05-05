@@ -81,6 +81,7 @@ example:
 
 -zpos target's Z offset 
 
+-z    track smearing at vertex [rad]
 
 ```
 
