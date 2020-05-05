@@ -111,7 +111,8 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t timer
 
   gStyle->SetOptStat(0);
 
-  TString name = Form("%1.2f_%1.2f",prt_theta,timeres);
+  //TString name = Form("%1.2f_%1.2f",prt_theta,timeres);
+  TString name = Form("%1.2f_%1.2f",r1,r2);
 
   prt_canvasAdd("nph_"+name,800,400);
   hnph->Draw();  
