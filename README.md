@@ -77,7 +77,7 @@ example:
 -d    display option
                0    standard (default)
                1    display hit occupancy of current run
-               2    display hit occupancy of occuhits.root (need to be generated)
+               2    display hit occupancy of occuhits.root (needs to be generated)
 
 -zpos target's Z offset 
 

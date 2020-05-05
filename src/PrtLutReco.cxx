@@ -43,7 +43,7 @@ TH1F*  fFindTimeRes = new TH1F("ftr","ftr",100,-2,2);
 TH2F*  fdtt = new TH2F("dtt",";t_{measured}-t_{calculated} [ns];#theta_{l} [deg]", 1000,-2,2, 1000,0,90);
 TH2F*  fdtl = new TH2F("dtl",";t_{measured}-t_{calculated} [ns];path length [m]", 1000,-2,2, 1000,0,15);
 TH2F*  fdtp = new TH2F("dtp",";#theta_{l} [deg];path length [m]", 1000,0,90, 1000,0,15);
-TH2F*  fdtc = new TH2F("dtc",";t_{measured}-t_{calculated} [ns];#theta_{C} [rad]", 100,-1,1, 100,0.79,0.86);
+TH2F*  fhChrom = new TH2F("chrom",";t_{measured}-t_{calculated} [ns];#theta_{C} [rad]", 100,-1,1, 100,-20,20);
 
 
 TH1F*  fHistMcp[28];
@@ -75,7 +75,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, Int_t verbose){
 
   int col[]={kRed+1,kBlue+1,kBlack};
   for(int i=0; i<3; i++){
-    fHistDiff[i] = new TH1F("TimeDiff","calculated time - measured time [ns];entries [#]", 500,-10,10);
+    fHistDiff[i] = new TH1F(Form("TimeDiff_%d",i),";t_{measured}-t_{calculated} [ns];entries [#]", 500,-10,10);
     fHistDiff[i]->SetLineColor(col[i]);
   }  
   for(int i=0; i<5; i++){
@@ -182,7 +182,7 @@ void PrtLutReco::Run(Int_t start, Int_t end){
     ntotal+=nHits;
     mom=fEvent->GetMomentum().Mag()/1000.;
     tofPid = fEvent->GetParticle();
-
+    int pid = prt_get_pid(tofPid);
     if(fMethod==2 && tofPid!=211) continue;
     
     if(ievent%1000==0) std::cout<<"Event # "<< ievent << " has "<< nHits <<" hits"<<std::endl;    
@@ -223,6 +223,7 @@ void PrtLutReco::Run(Int_t start, Int_t end){
       Double_t phi0 =  cd.Phi();
       if(dirz<0) reflected = kTRUE;
       else reflected = kFALSE;
+      if(reflected) lenz = 2*4200 - lenz;
 
       Double_t theta0 = rotatedmom.Angle(dir0);
       fHist5->Fill(theta0*TMath::Sin(phi0),theta0*TMath::Cos(phi0));      
@@ -241,7 +242,7 @@ void PrtLutReco::Run(Int_t start, Int_t end){
 
       Long_t path = fHit.GetPathInPrizm();
       TString spath = Form("%ld",path);
-      if(spath.Contains("9")) continue;
+      //if(spath.Contains("9")) continue;
       //if(spath.Length()>8) continue;
       //std::cout<<"spath "<<spath<<std::endl;
       
@@ -261,25 +262,26 @@ void PrtLutReco::Run(Int_t start, Int_t end){
 	  luttheta = dir.Theta();	
 	  if(luttheta > TMath::Pi()/2.) luttheta = TMath::Pi()-luttheta;
 	  
-	  if(!reflected) bartime = lenz/cos(luttheta)/197.0; //198 
-	  else bartime = (2*4200 - lenz)/cos(luttheta)/197.0; 
+	  bartime = lenz/cos(luttheta)/198.5; //198 
 	
 	  fHist1->Fill(hitTime);
 	  double luttime = bartime+evtime;
 	  tdiff = hitTime-luttime;
 	  fHistDiff[reflected]->Fill(tdiff);
 
-	  if(fabs(tdiff)>timeCut+luttime*0.03) continue;  fDiff->Fill(hitTime,tdiff);
+	  if(fabs(tdiff)>timeCut+luttime*0.03) continue;
+	  fDiff->Fill(hitTime,tdiff);
 	  tangle = rotatedmom.Angle(dir);
 
-	  if(fabs(tdiff)<1.5) tangle -= 0.01*tdiff;	  	        
+	  // if(fabs(tdiff)<1.5) tangle += 0.1*tdiff; // chromatic correction
+	  // if(fabs(tdiff)<1.5) tangle -= 0.01*tdiff; // chromatic correction
 	  //if(tangle>TMath::Pi()/2.) tangle = TMath::Pi()-tangle;
 	  //if(fabs(0.8218-tangle)>0.002) continue;
 	  //if(fabs(0.83-tangle)>0.003) continue;
 	  
 	  fHist->Fill(tangle);	    
-	  fHistMcp[mcp]->Fill(tangle-fAngle[prt_get_pid(tofPid)]);	  
-	  fdtc->Fill(tdiff,tangle);		  
+	  fHistMcp[mcp]->Fill(tangle-fAngle[pid]);
+	  fhChrom->Fill(tdiff,(tangle-fAngle[pid])*1000);		  
 	  
 	  if(!(tangle > fAngle[3]-0.02 && tangle <  fAngle[2]+0.02)) continue;
 	  
@@ -404,11 +406,7 @@ void PrtLutReco::Run(Int_t start, Int_t end){
     }  
   
     ctimeRes = prt_fit(fFindTimeRes).Y();
-    if(fVerbose>1){
-      gPad->Modified();
-      gPad->Update();
-      gPad->WaitPrimitive();  
-    }
+ 
 
     gStyle->SetOptStat(0);
     prt_canvasAdd("fdtt",800,500);
@@ -427,6 +425,12 @@ void PrtLutReco::Run(Int_t start, Int_t end){
     prt_canvasAdd("fdtp",800,500);
     fdtp->Draw("colz");
     fdtp->SetMaximum(0.8*fdtp->GetMaximum());
+
+    if(fVerbose>1){
+      gPad->Modified();
+      gPad->Update();
+      gPad->WaitPrimitive();  
+    }
   }
   
   prt_canvasSave(0,0);
@@ -472,7 +476,7 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
       gStyle->SetOptStat(0);
       { // chromatic corrections
 	prt_canvasAdd("chrom"+nid,800,400);
-	fdtc->Draw("colz");
+	fhChrom->Draw("colz");
       }
       
       { //hp
@@ -553,7 +557,7 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
 	prt_canvasAdd("r_diff_time"+nid,800,400);
 	fDiff->Draw("colz");
 	
-	prt_waitPrimitive("r_diff_time"+nid);
+	prt_waitPrimitive("r_diff_time"+nid,"1");
       }
 
       prt_canvasSave(1);
@@ -664,7 +668,7 @@ double PrtLutReco::FindStartTime(PrtEvent *evt){
   double tangle,bartime,lenz,luttheta,htime,ctime,evtime,dirz;
   bool reflected;
   double shift = 0; //prt_rand.Uniform(-50,50);
-  double speed = 0.1988;
+  double speed = 0.1985;
   
   for(PrtHit hit : evt->GetHits()) {
     htime = hit.GetLeadTime()+shift;
@@ -673,7 +677,8 @@ double PrtLutReco::FindStartTime(PrtEvent *evt){
 
     if(dirz<0) reflected = kTRUE;
     else reflected = kFALSE;
-
+    if(reflected) lenz  = 2*4200 - lenz;
+      
     //if(reflected) continue;
 
     int ch = 300*hit.GetMcpId()+hit.GetPixelId();
@@ -697,8 +702,7 @@ double PrtLutReco::FindStartTime(PrtEvent *evt){
 
 	luttheta = dir.Theta();	
 	if(luttheta > TMath::PiOver2()) luttheta = TMath::Pi()-luttheta;	 
-	if(!reflected) bartime = lenz/cos(luttheta)/(1000*speed);
-	else bartime = (2*4200 - lenz)/cos(luttheta)/(1000*speed);
+	bartime = lenz/cos(luttheta)/(1000*speed);
 
 	double ctime = fabs((bartime + evtime));
 
