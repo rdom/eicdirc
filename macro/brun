@@ -15,7 +15,8 @@ echo $tseed
 #for i in {0..9}; do ../build/eicdirc -r $tseed$i -o h_b$i.root  -s 0 -a 30 -x "pi+" -p 6 -w 0 -g 1 -h 1 -l 3 -c 4 -e 0 -d 0 -e 200 -b 1  > l_b$i.log & done
 #for i in {0..9}; do ../build/eicdirc -r $tseed$i -o h_b$i.root  -s 0 -a 30 -x "pi+" -p 6 -w 0 -g 3 -h 11 -l 6 -c 4 -e 0 -d 0 -e 100 -b 1  > l_b$i.log & done
 
-for i in {0..11}; do ../build/eicdirc -r $tseed$i -o h_b$i.root  -s 0 -a 30 -x "pi+" -p 6 -w 0 -g 0 -h 11 -l 3 -c 4 -e 0 -d 0 -e 100 -b 1  > l_b$i.log & done
+#overlay
+for i in {1..4}; do ../build/eicdirc -r $tseed$i -o h_b$i.root  -s 0 -a 30 -x "mix_pik" -p 6.0 -w 11 -h 11 -c 4 -l 3 -z 0 -v 0 -zpos 1 -g 1 -ev 1 -t1 900 -t2 16 -e 200 -b 1  > l_b$i.log & done
 
 sleep 1
 

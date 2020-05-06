@@ -46,7 +46,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
   G4double x,y,z;
   G4double angle = PrtManager::Instance()->GetAngle();
   G4double zpos = PrtManager::Instance()->GetZPos();
-  G4double ypos = PrtManager::Instance()->GetTest1();
+  G4double ypos = 0; //PrtManager::Instance()->GetTest1();
   G4double radiatorL = PrtManager::Instance()->GetRadiatorL();
   G4double radiatorW = PrtManager::Instance()->GetRadiatorW();
   G4double radiatorH = PrtManager::Instance()->GetRadiatorH();

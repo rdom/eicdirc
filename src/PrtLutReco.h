@@ -30,7 +30,7 @@ public:
   // Destructor
   ~PrtLutReco();
   void Run(Int_t start=0, Int_t end=0);
-  void drawTheoryLines();
+  void drawTheoryLines(double mom=6);
 
 private:
   Bool_t FindPeak(Double_t& cherenkovreco, Double_t& spr,Int_t a);

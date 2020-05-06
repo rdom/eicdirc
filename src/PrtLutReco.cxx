@@ -71,7 +71,6 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, Int_t verbose){
   fFit = new TF1("fgaus","[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +[3]",0.35,0.9);
   fSpect = new TSpectrum(10);
   fMethod = PrtManager::Instance()->GetRunType();
-  prt_savepath="data/reco";
 
   int col[]={kRed+1,kBlue+1,kBlack};
   for(int i=0; i<3; i++){
@@ -165,8 +164,6 @@ void PrtLutReco::Run(Int_t start, Int_t end){
   timeRes = PrtManager::Instance()->GetTimeRes();
   test1 = PrtManager::Instance()->GetTest1();
   test2 = PrtManager::Instance()->GetTest2();
-
-  
   
   Int_t nEvents = fChain->GetEntries();
   if(end==0) end = nEvents;
@@ -194,7 +191,7 @@ void PrtLutReco::Run(Int_t start, Int_t end){
     Double_t sum1(0),sum2(0), sigma(0.007),range(3*sigma),noise(0.3);
 
     for(Int_t i=0; i<5; i++){
-      fAngle[i] = acos(sqrt(mom*mom + mass[i]*mass[i])/mom/1.4738)+0.002; //1.4738 = 370 = 3.35
+      fAngle[i] = acos(sqrt(mom*mom + mass[i]*mass[i])/mom/1.4738); //1.4738 = 370 = 3.35
       fFunc[i]->SetParameter(0,1);
       fFunc[i]->SetParameter(1,fAngle[i]);
       fFunc[i]->SetParameter(2,sigma);
@@ -249,6 +246,7 @@ void PrtLutReco::Run(Int_t start, Int_t end){
       for(int i=0; i<size; i++){
 	dird = node->GetEntry(i);
 	if(path!=node->GetPathId(i)) continue;
+	//if(node->GetNRefl(i)>8) continue;
 	
 	evtime = node->GetTime(i);
 	for(int u=0; u<4; u++){
@@ -265,15 +263,16 @@ void PrtLutReco::Run(Int_t start, Int_t end){
 	  bartime = lenz/cos(luttheta)/198.5; //198 
 	
 	  fHist1->Fill(hitTime);
+	  if(hitTime>30) continue;
 	  double luttime = bartime+evtime;
 	  tdiff = hitTime-luttime;
 	  fHistDiff[reflected]->Fill(tdiff);
 
 	  if(fabs(tdiff)>timeCut+luttime*0.03) continue;
 	  fDiff->Fill(hitTime,tdiff);
-	  tangle = rotatedmom.Angle(dir);
+	  tangle = rotatedmom.Angle(dir)+0.0045;
 
-	  // if(fabs(tdiff)<1.5) tangle += 0.1*tdiff; // chromatic correction
+	  if(fabs(tdiff)<1.5) tangle += 0.1*tdiff; // chromatic correction
 	  // if(fabs(tdiff)<1.5) tangle -= 0.01*tdiff; // chromatic correction
 	  //if(tangle>TMath::Pi()/2.) tangle = TMath::Pi()-tangle;
 	  //if(fabs(0.8218-tangle)>0.002) continue;
@@ -381,15 +380,13 @@ void PrtLutReco::Run(Int_t start, Int_t end){
     fLnDiff[3]->Draw();
     fLnDiff[2]->SetLineColor(4);
     fLnDiff[2]->Draw("same");
-    prt_canvasSave(1,0);
+    prt_canvasSave("data/reco");
     //waitPrimitive("r_lhood","w");
     if(fVerbose) gROOT->SetBatch(0);
   }
 
-
   if(!fVerbose) gROOT->SetBatch(1);
 
-  
   if(0){ // draw start time
     prt_canvasAdd(Form("ctimeres_%d",int(fEvent->GetAngle()+0.01)),800,400);
     fFindTimeRes->Draw();
@@ -433,7 +430,7 @@ void PrtLutReco::Run(Int_t start, Int_t end){
     }
   }
   
-  prt_canvasSave(0,0);
+  prt_canvasSave("data/reco",0);
   
   tree.Fill();
   tree.Write();
@@ -471,7 +468,8 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
 	prt_canvasAdd("tangle"+nid,800,400);
 	fHist->SetTitle(Form("theta %d", a));
 	fHist->Draw();
-      }
+	drawTheoryLines(6);
+      }      
 
       gStyle->SetOptStat(0);
       { // chromatic corrections
@@ -560,8 +558,7 @@ Bool_t PrtLutReco::FindPeak(Double_t& cherenkovreco, Double_t& spr, Int_t a){
 	prt_waitPrimitive("r_diff_time"+nid,"1");
       }
 
-      prt_canvasSave(1);
-     
+      prt_canvasSave("data/reco");     
     }
   }
 
@@ -724,7 +721,6 @@ double PrtLutReco::FindStartTime(PrtEvent *evt){
     }
   }
 
-
   if(!fVerbose) gROOT->SetBatch(1);
   
   if(fVerbose==1) prt_canvasAdd(Form("hstime_%d",gggg),800,400);
@@ -733,7 +729,7 @@ double PrtLutReco::FindStartTime(PrtEvent *evt){
   //   gStyle->SetOptStat(1001111);
   //   fFindTime->Draw();
   //   // prt_waitPrimitive(Form("hstime_%d",gggg));
-  //   prt_canvasSave(0,0,1);
+  //   prt_canvasSave("data/reco",0,1);
   //   gggg++;    
   // }
   
@@ -742,8 +738,14 @@ double PrtLutReco::FindStartTime(PrtEvent *evt){
   return mean;
 }
 
-void PrtLutReco::drawTheoryLines(){
+void PrtLutReco::drawTheoryLines(double mom){
   gPad->Update();
+  
+  Double_t mass[] = {0.000511,0.1056584,0.139570,0.49368,0.9382723};
+  for(Int_t i=0; i<5; i++){
+    fAngle[i] = acos(sqrt(mom*mom + mass[i]*mass[i])/mom/1.4738); //1.4738 = 370 = 3.35
+  }
+  
   TLine *line = new TLine(0,0,0,1000);
   line->SetX1(fAngle[3]);
   line->SetX2(fAngle[3]);
