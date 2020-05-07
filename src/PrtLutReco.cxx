@@ -176,6 +176,7 @@ void PrtLutReco::Run(int start, int end){
     fChain->GetEntry(ievent);
     int nHits = fEvent->GetHitSize();
     theta = fEvent->GetAngle();
+    prt_theta = theta;
     ntotal+=nHits;
     mom=fEvent->GetMomentum().Mag()/1000.;
     tofPid = fEvent->GetParticle();
@@ -188,10 +189,10 @@ void PrtLutReco::Run(int start, int end){
     TVector3 rotatedmom = fEvent->GetMomentum().Unit();
     double mass[] = {0.000511,0.1056584,0.139570,0.49368,0.9382723};
     double sum1(0),sum2(0),noise(0.3);
-
-    fSigma=0.008;
-    if(prt_theta<50) fSigma=0.007;
-    if(prt_theta<35) fSigma=0.007;
+ 
+    fSigma=0.006;
+    if(theta<50) fSigma=0.009;
+    if(theta<35) fSigma=0.008;
 
     for(int i=0; i<5; i++){
       fAngle[i] = acos(sqrt(mom*mom + mass[i]*mass[i])/mom/1.4738); //1.4738 = 370 = 3.35
@@ -282,7 +283,7 @@ void PrtLutReco::Run(int start, int end){
 	  // if(theta<50){
 	  //   if(fabs(tdiff)<1.5) tangle -= 0.005*tdiff; // chromatic correction
 	  // }
-	  if(fabs(tdiff)<1.5) tangle -= 0.005*tdiff; // chromatic correction
+	  if(fabs(tdiff)<1.5) tangle -= 0.008*tdiff; // chromatic correction
  
 	  // if(fabs(theta-90)<10){
 	  //   if(reflected && fabs(tdiff)<1) tangle -= 0.0128*tdiff; 
@@ -434,7 +435,7 @@ void PrtLutReco::Run(int start, int end){
   }
 
   if(fVerbose>1){
-    TString nid = Form("_%d_%d",(int)PrtManager::Instance()->GetTest1(),(int)PrtManager::Instance()->GetTest2());
+    TString nid = Form("_%1.2f",prt_theta);
 
     { // cherenkov angle
       prt_canvasAdd("tangle"+nid,800,400);
@@ -445,7 +446,7 @@ void PrtLutReco::Run(int start, int end){
     }      
 
     { // nph
-      prt_canvasAdd("nph",800,400);      
+      prt_canvasAdd("nph"+nid,800,400);      
       for(int h=0; h<5; h++){
 	if(hnph[h]->GetEntries()<20) continue;
 	hnph[h]->Draw((h==2)? "":"same");
@@ -453,7 +454,7 @@ void PrtLutReco::Run(int start, int end){
     }
     
     { // sep
-      prt_canvasAdd("lh",800,400);
+      prt_canvasAdd("lh"+nid,800,400);
       prt_normalize(fLnDiff[2],fLnDiff[3]);
       fLnDiff[3]->SetLineColor(2);
       
@@ -475,7 +476,7 @@ void PrtLutReco::Run(int start, int end){
     }
       
     { // cherenkov ring
-      prt_canvasAdd("ring"+nid,800,400);
+      prt_canvasAdd("ring"+nid,500,500);
 	
       fHist4->SetStats(0);
       fHist4->GetXaxis()->SetTitle("#theta_{c}sin(#varphi_{c})");
@@ -550,7 +551,9 @@ void PrtLutReco::Run(int start, int end){
       fDiff->Draw("colz");	
     }    
 
-    prt_waitPrimitive("lh","none");
+    
+     if(fVerbose>2) prt_waitPrimitive("lh","none");
+
     prt_canvasSave("data/reco");
   }
     
