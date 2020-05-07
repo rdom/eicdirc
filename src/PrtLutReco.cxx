@@ -190,9 +190,9 @@ void PrtLutReco::Run(int start, int end){
     double mass[] = {0.000511,0.1056584,0.139570,0.49368,0.9382723};
     double sum1(0),sum2(0),noise(0.3);
  
-    fSigma=0.006;
-    if(theta<50) fSigma=0.009;
-    if(theta<35) fSigma=0.008;
+    fSigma=0.007;
+    if(theta<50) fSigma=0.005;
+    if(theta<35) fSigma=0.005;
 
     for(int i=0; i<5; i++){
       fAngle[i] = acos(sqrt(mom*mom + mass[i]*mass[i])/mom/1.4738); //1.4738 = 370 = 3.35
@@ -549,10 +549,9 @@ void PrtLutReco::Run(int start, int end){
 	
       prt_canvasAdd("diff"+nid,800,400);
       fDiff->Draw("colz");	
-    }    
-
+    }
     
-     if(fVerbose>2) prt_waitPrimitive("lh","none");
+     if(fVerbose>2) prt_waitPrimitive("lh"+nid,"none");
 
     prt_canvasSave("data/reco");
   }
@@ -577,9 +576,9 @@ bool PrtLutReco::FindPeak(double& cherenkovreco, double& spr){
       // fFit->SetParameter(1,cherenkovreco);   // peak
       fFit->SetParameter(2,0.005); // width
       fFit->FixParameter(2,0.005); // width
-      hthetac[h]->Fit("fgaus","","",cherenkovreco-3*fSigma,cherenkovreco+3*fSigma);
+      hthetac[h]->Fit("fgaus","","",cherenkovreco-2*fSigma,cherenkovreco+2*fSigma);
       fFit->ReleaseParameter(2); // width
-      hthetac[h]->Fit("fgaus","M","",cherenkovreco-3*fSigma,cherenkovreco+3*fSigma);
+      hthetac[h]->Fit("fgaus","M","",cherenkovreco-2*fSigma,cherenkovreco+2*fSigma);
       cherenkovreco = fFit->GetParameter(1);
       spr = fFit->GetParameter(2); 
       if(fVerbose>2) gROOT->SetBatch(0);    
