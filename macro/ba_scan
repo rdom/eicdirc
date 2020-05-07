@@ -118,7 +118,7 @@ if [ ${run} != "2" ]; then
     start_time=$(date +%s)
     statusline="GSim"
     for i in $(eval echo {30..140..${astep}}); do 
-	../build/eicdirc -r $tseed$i -o hdata/h_b$i.root -s 0 -a $i -x "mix_pi" -e $nevents  $simopt -v $verbose -b 1  > /dev/null  &
+	../build/eicdirc -r $tseed$i -o hdata/h_b$i.root -s 0 -a $i -x "mix_pik" -e $nevents  $simopt -v $verbose -b 1  > /dev/null  &
 	waitForMe $threads
     done
     waitForMe 1
