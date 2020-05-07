@@ -18,7 +18,7 @@ void lutmean(TString baseFile = "../data/lut"){
   fLutNew = new TClonesArray("PrtLutNode");
   fTreeNew->Branch("LUT",&fLutNew,256000,2); 
 
-  Int_t Nnodes = 100000;
+  Int_t Nnodes = 10000;
   TClonesArray &fLutaNew = *fLutNew;
   for (Long64_t n=0; n<Nnodes; n++) {
     new((fLutaNew)[n]) PrtLutNode(-1);
@@ -33,10 +33,12 @@ void lutmean(TString baseFile = "../data/lut"){
   std::vector<TVector3> vArray[100];
   std::vector<Double_t> tArray[100];
   std::vector<Long_t> pArray;
+  std::vector<int> rArray;
   
   TVector3 dir, dir2, sum;
   Double_t angle,minangle,time,sumt;
   Long_t pathid;
+  int nrefl;
   PrtLutNode *node;
   
   for (Int_t inode=0; inode<fLut->GetEntriesFast(); inode++){
@@ -47,6 +49,7 @@ void lutmean(TString baseFile = "../data/lut"){
       dir = node->GetEntry(i).Unit();
       time = node->GetTime(i);
       pathid = node->GetPathId(i);
+      nrefl = node->GetNRefl(i);
       
       bool newid = true;
       for(int j=0; j<pArray.size(); j++){
@@ -60,6 +63,7 @@ void lutmean(TString baseFile = "../data/lut"){
 	vArray[pArray.size()].push_back(dir);
 	tArray[pArray.size()].push_back(time);
 	pArray.push_back(pathid);
+	rArray.push_back(nrefl);
       }
     }
     
@@ -77,29 +81,32 @@ void lutmean(TString baseFile = "../data/lut"){
 	hTime->Fill(tArray[j][v]);
       }
 
-      if(vArray[j].size()<1) continue;
+      if(vArray[j].size()<2) continue;
+      if(rArray[j]>15) continue;
       
-      //if(hDir->GetStdDev()<0.0001)
-      // {
-      // 	std::cout<<inode<<" "<<pArray[j]<<" hDir->GetStdDev() ================  "<<hDir->GetStdDev()<<std::endl;
+      if(hDir->GetStdDev()>0.004)
+      {
+      	std::cout<<inode<<" "<<pArray[j]<<" hDir->GetStdDev() ================  "<<hDir->GetStdDev()<<std::endl;
 
-      // 	c->cd(1);
-      // 	hTime->Draw();
-      // 	c->cd(2);
-      // 	hDir->Draw();
-      // 	c->Update();
-      // 	c->WaitPrimitive();
-      // }
+      	c->cd(1);
+      	hTime->Draw();
+      	c->cd(2);
+      	hDir->Draw();
+      	c->Update();
+      	c->WaitPrimitive();
+      }
       
       sum *= 1/(Double_t)vArray[j].size();
       sumt *= 1./(Double_t)tArray[j].size();
+
       
-      ((PrtLutNode*)(fLutNew->At(inode)))->AddEntry(node->GetDetectorId(), sum,pArray[j],node->GetNRefl(0),sumt, node->GetDigiPos(),node->GetDigiPos());
+      ((PrtLutNode*)(fLutNew->At(inode)))->AddEntry(inode, sum,pArray[j],rArray[j],sumt, node->GetDigiPos(),node->GetDigiPos());
       
     }
 
     for(int i=0; i<100; i++) {vArray[i].clear();  tArray[i].clear();}
     pArray.clear();
+    rArray.clear();
   }
 
   fTreeNew->Fill();

@@ -25,21 +25,22 @@ class PrtLutReco{
 public:
 
   // Standard constructors
-  PrtLutReco(TString infile, TString lutfile, Int_t verbose=0);
+  PrtLutReco(TString infile, TString lutfile, int verbose=0);
 
   // Destructor
   ~PrtLutReco();
-  void Run(Int_t start=0, Int_t end=0);
+  void Run(int start=0, int end=0);
   void drawTheoryLines(double mom=6);
 
 private:
-  Bool_t FindPeak(Double_t& cherenkovreco, Double_t& spr,Int_t a);
-  Int_t FindPdg(Double_t mom, Double_t cangle);
-  void FitRing(Double_t& x0, Double_t& y0, Double_t& theta);
+  bool FindPeak(double& cherenkovreco, double& spr);
+  int FindPdg(double mom, double cangle);
+  void FitRing(double& x0, double& y0, double& theta);
   double FindStartTime(PrtEvent *e);
-  Int_t fDetectorID;  
-  Double_t fBboxNum,fPipehAngle,fDphi,fBarPhi;
-
+  int fDetectorID;  
+  double fBboxNum,fPipehAngle,fDphi,fBarPhi;
+  double fSigma;
+  
   TClonesArray *fLut;
   TClonesArray *fTrackInfoArray;
 
@@ -54,14 +55,16 @@ private:
   void SetDefaultParameters();
   
   // Verbosity level
-  Int_t fVerbose;
-  Int_t nevents;
-  Int_t fMethod;
+  int fVerbose;
+  int nevents;
+  int fMethod;
   TString fInputFile;
-  TH1F *fHist;
+
   TF1 *fFit;
   TSpectrum *fSpect;
-  Double_t fAngle[5];
+  TH1F *hthetac[5];
+  TH1F *hnph[5];
+  double fAngle[5];
   TF1 *fFunc[5];
   TH1F *fLnDiff[5];
   double fCriticalAngle;

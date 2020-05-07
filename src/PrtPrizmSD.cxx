@@ -97,7 +97,7 @@ G4bool PrtPrizmSD::ProcessHits(G4Step* aStep, G4TouchableHistory* hist)
   
   newHit->SetNormalId(nid);
 
-  fHitsCollection->insert( newHit );
+  fHitsCollection->insert(newHit);
 
   return true;
 }
