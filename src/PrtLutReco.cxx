@@ -92,7 +92,9 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, int verbose){
   }
 
   // read corrections
-  fCorrFile = PrtManager::Instance()->GetOutName()+"_corr.root";
+
+  
+  fCorrFile = infile+"_corr.root";
   for(int i=0; i<prt_nmcp; i++) fCorr[i]=0;
   if(!gSystem->AccessPathName(fCorrFile)){  
     std::cout<<"------- reading  "<<fCorrFile <<std::endl;
