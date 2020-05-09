@@ -110,8 +110,6 @@ G4bool PrtPixelSD::ProcessHits(G4Step* step, G4TouchableHistory* hist){
       }
     }    
   }
-  // std::cout<<"pathId "<<pathId<<std::endl;
-  
 
   // // information from bar
   // G4int collectionID_bar = fSDM->GetCollectionID("BarHitsCollection");
@@ -122,7 +120,12 @@ G4bool PrtPixelSD::ProcessHits(G4Step* step, G4TouchableHistory* hist){
   //   PrtBarHit* phit = (*barCol)[i];
   //   G4ThreeVector bmom = phit->GetMom();
   //   if(i==0)  bmom1 = phit->GetMom();
-  //   std::cout<<"bmom "<<bmom<< " "<<bmom.angle(bmom1) <<std::endl;    
+  //   std::cout<<i<<" bmom "<<bmom<< " "<<bmom.angle(bmom1) <<std::endl;
+  //   if(bmom.mag()>1000){ 
+  //     PrtHit hit;
+  //     hit.SetLeadTime(bmom.angle(bmom1)*1000);    
+  //     PrtManager::Instance()->AddHit(hit);
+  //   }
   // }
   
   PrtHit hit;
@@ -150,7 +153,6 @@ G4bool PrtPixelSD::ProcessHits(G4Step* step, G4TouchableHistory* hist){
   // time since event created
   //hit.SetTrailTime(0,step->GetPreStepPoint()->GetGlobalTime()*1000); 
  
-
   PrtManager::Instance()->AddHit(hit);
   
   // // Get hit accounting data for this cell

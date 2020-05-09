@@ -47,6 +47,7 @@ void lutmean(TString baseFile = "../data/lut"){
     
     for(int i=0; i<node->Entries(); i++){
       dir = node->GetEntry(i).Unit();
+      if(dir.Y()>0.7) continue;
       time = node->GetTime(i);
       pathid = node->GetPathId(i);
       nrefl = node->GetNRefl(i);

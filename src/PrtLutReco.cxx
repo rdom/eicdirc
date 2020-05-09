@@ -42,7 +42,7 @@ TH1F*  fFindTimeRes = new TH1F("ftr","ftr",100,-2,2);
 TH2F*  fdtt = new TH2F("dtt",";t_{measured}-t_{calculated} [ns];#theta_{l} [deg]", 1000,-2,2, 1000,0,90);
 TH2F*  fdtl = new TH2F("dtl",";t_{measured}-t_{calculated} [ns];path length [m]", 1000,-2,2, 1000,0,15);
 TH2F*  fdtp = new TH2F("dtp",";#theta_{l} [deg];path length [m]", 1000,0,90, 1000,0,15);
-TH2F*  fhChrom = new TH2F("chrom",";t_{measured}-t_{calculated} [ns];#theta_{C} [rad]", 100,-3,3, 100,-30,30);
+TH2F*  fhChrom = new TH2F("chrom",";t_{measured}-t_{calculated} [ns];#theta_{C} [rad]", 100,-2,2, 100,-30,30);
 
 TH1F*  fHistMcp[28];
 double fCorr[28];
@@ -79,7 +79,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, int verbose){
     hnph[h] = new TH1F(Form("nph_%d",h),";detected photons [#];entries [#]", 150,0,150);
     hthetac[h]->SetLineColor(prt_color[h]);
     hnph[h]->SetLineColor(prt_color[h]);
-    fLnDiff[h] = new TH1F(Form("LnDiff_%d",h),  ";ln L(K) - ln L(#pi);entries [#]",120,-60,60);
+    fLnDiff[h] = new TH1F(Form("LnDiff_%d",h),  ";ln L(K) - ln L(#pi);entries [#]",100,-40,40);
     fFunc[h] = new TF1(Form("gaus_%d",h),"[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2])",0.7,0.9);    
   }
 
@@ -225,6 +225,7 @@ void PrtLutReco::Run(int start, int end){
 	lenz = 2*4200 - lenz;
       }else{
 	reflected = false;
+	continue;
       }
 
       double theta0 = rotatedmom.Angle(dir0);
@@ -254,7 +255,7 @@ void PrtLutReco::Run(int start, int end){
 	dird = node->GetEntry(i);
 	Long_t lpath = node->GetPathId(i);
         //if(path!=lpath) continue;
-	//if(lpath!=387) continue;		
+	// if(lpath!=387) continue;		
 	if(node->GetNRefl(i)>12) continue;	
 	
 	evtime = node->GetTime(i);
@@ -276,19 +277,19 @@ void PrtLutReco::Run(int start, int end){
 	  tdiff = hitTime-luttime;
 	  fHistDiff[reflected]->Fill(tdiff);
 
-	  if(fabs(tdiff)>timeCut+luttime*0.02) continue;
+	  if(fabs(tdiff)>timeCut+luttime*0.035) continue;
 	  fDiff->Fill(hitTime,tdiff);
 	  tangle = rotatedmom.Angle(dir)+fCorr[mcp];//45;
 
+	  //if(fabs(tdiff)<2) tangle -= 0.008*tdiff; // chromatic correction
+	  //if(fabs(tdiff)<2) tangle -= 0.009*tdiff; // chromatic correction
+	  
 	  // if(theta<50){
 	  //   if(fabs(tdiff)<1.5) tangle -= 0.005*tdiff; // chromatic correction
-	  // }
-	  if(fabs(tdiff)<1.5) tangle -= 0.008*tdiff; // chromatic correction
- 
+	  // } 
 	  // if(fabs(theta-90)<10){
 	  //   if(reflected && fabs(tdiff)<1) tangle -= 0.0128*tdiff; 
 	  // }
-
 	  //if(fabs(theta-145)<10) if(fabs(tdiff)<1.5) tangle += 0.02*tdiff;
 	  
 	  //if(tangle>TMath::Pi()/2.) tangle = TMath::Pi()-tangle;
@@ -448,6 +449,7 @@ void PrtLutReco::Run(int start, int end){
     { // nph
       prt_canvasAdd("nph"+nid,800,400);      
       for(int h=0; h<5; h++){
+	hnph[h]->SetStats(0);
 	if(hnph[h]->GetEntries()<20) continue;
 	hnph[h]->Draw((h==2)? "":"same");
       }      
@@ -466,6 +468,7 @@ void PrtLutReco::Run(int start, int end){
     
     { // chromatic corrections
       prt_canvasAdd("chrom"+nid,800,400);
+      fhChrom->SetStats(0);
       fhChrom->Draw("colz");
     }
       
@@ -543,11 +546,13 @@ void PrtLutReco::Run(int start, int end){
       prt_canvasAdd("tdiff"+nid,800,400);
       prt_normalizeto(fHistDiff, 2);
       for(int i=2; i>=0; i--){
+	fHistDiff[i]->SetStats(0);
 	fHistDiff[i]->SetTitle(Form("theta %1.2f", prt_theta));
 	fHistDiff[i]->Draw(i==2?"h":"h same");
       }
 	
       prt_canvasAdd("diff"+nid,800,400);
+      fDiff->SetStats(0);
       fDiff->Draw("colz");	
     }
     
@@ -568,14 +573,13 @@ bool PrtLutReco::FindPeak(double& cherenkovreco, double& spr){
   for(int h=0; h<5; h++){    
     if(hthetac[h]->GetEntries()>20 ){
       gROOT->SetBatch(1);
-      int nfound = fSpect->Search(hthetac[h],1,"",0.9); //0.6
-      if(nfound>0) cherenkovreco = fSpect->GetPositionX()[0];
-      else cherenkovreco =  hthetac[h]->GetXaxis()->GetBinCenter(hthetac[h]->GetMaximumBin());
-
+      // int nfound = fSpect->Search(hthetac[h],1,"",0.9); //0.6
+      // if(nfound>0) cherenkovreco = fSpect->GetPositionX()[0];
+      // else cherenkovreco =  hthetac[h]->GetXaxis()->GetBinCenter(hthetac[h]->GetMaximumBin());
+      cherenkovreco = fAngle[2];
       fFit->SetParameters(100,cherenkovreco,0.005,10);   // peak
-      // fFit->SetParameter(1,cherenkovreco);   // peak
       fFit->SetParameter(2,0.005); // width
-      fFit->FixParameter(2,0.005); // width
+      fFit->FixParameter(2,0.008); // width
       hthetac[h]->Fit("fgaus","","",cherenkovreco-2*fSigma,cherenkovreco+2*fSigma);
       fFit->ReleaseParameter(2); // width
       hthetac[h]->Fit("fgaus","M","",cherenkovreco-2*fSigma,cherenkovreco+2*fSigma);

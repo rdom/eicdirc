@@ -99,7 +99,7 @@
 /vis/viewer/set/projection p 40 deg
 /vis/viewer/set/style s
 /vis/viewer/set/hiddenEdge true
-/vis/viewer/set/background 1 1 1 0
+#/vis/viewer/set/background 1 1 1 0
 #/vis/viewer/set/background 0 0 0 0
 /vis/viewer/set/hiddenMarker 
 /vis/geometry/set/forceLineSegmentsPerCircle all 0 100
@@ -143,6 +143,6 @@
 /vis/viewer/set/targetPoint 1.0404 -0.128502 2.17344 m
 
 # whole length
-/vis/viewer/zoomTo 7.0883
-/vis/viewer/set/targetPoint 1.11348 -0.128502 0.164898 m
+# /vis/viewer/zoomTo 7.0883
+# /vis/viewer/set/targetPoint 1.11348 -0.128502 0.164898 m
 #/vis/ogl/export ev_1.png
