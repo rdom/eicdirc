@@ -91,10 +91,17 @@ G4bool PrtPrizmSD::ProcessHits(G4Step* aStep, G4TouchableHistory* hist)
       if(normal.z()<-0.999) nid =0;
       // std::cout<<nid<<" "<<vname<<" normal "<<normal<<std::endl;
     }else{
-      if(normal.y()> 0.99) nid = 1; // right
-      if(normal.y()<-0.99) nid = 2; // left
-      if(normal.x()>0.99) nid = 3; // bottom
-      if(fabs(normal.x()+0.866025)<0.1 ) nid = 4;
+      if(vname=="wPrizm"){
+	if(normal.y()> 0.99) nid = 1; // right
+	if(normal.y()<-0.99) nid = 2; // left
+	if(normal.x()>0.99) nid = 3; // bottom
+	if(fabs(normal.x()+0.866025)<0.1 ) nid = 4;
+      }else if(vname=="wLens3"){
+	if(normal.y()> 0.99) nid = 5; // right
+	if(normal.y()<-0.99) nid = 6; // left
+	if(normal.x()>0.99) nid = 7; // bottom
+	if(normal.x()<-0.99) nid = 8; // top
+      }
     }
   }
   

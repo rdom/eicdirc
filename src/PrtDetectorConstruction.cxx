@@ -1043,6 +1043,7 @@ void PrtDetectorConstruction::ConstructSDandField(){
   
   if(fEvType == 0 ){
     SetSensitiveDetector("lPrizm",prizmSD);
+    SetSensitiveDetector("lLens3",prizmSD);
   }
   else if(fEvType == 1){
     SetSensitiveDetector("lWedge",prizmSD);
