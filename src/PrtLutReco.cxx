@@ -54,6 +54,7 @@ TGraph gg_gr;
 PrtLutReco::PrtLutReco(TString infile, TString lutfile, int verbose){
   fVerbose = verbose;  	  
   fCriticalAngle = asin(1.00028/1.47125); // n_quarzt = 1.47125; //(1.47125 <==> 390nm)
+  fRpid=0; //3
   fChain = new TChain("data");
   fChain->Add(infile);
   fEvent=new PrtEvent();
@@ -79,7 +80,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, int verbose){
     hnph[h] = new TH1F(Form("nph_%d",h),";detected photons [#];entries [#]", 150,0,150);
     hthetac[h]->SetLineColor(prt_color[h]);
     hnph[h]->SetLineColor(prt_color[h]);
-    fLnDiff[h] = new TH1F(Form("LnDiff_%d",h),  ";ln L(K) - ln L(#pi);entries [#]",100,-40,40);
+    fLnDiff[h] = new TH1F(Form("LnDiff_%d",h),  ";ln L(K) - ln L(#pi);entries [#]",100,-140,140);
     fFunc[h] = new TF1(Form("gaus_%d",h),"[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2])",0.7,0.9);    
   }
 
@@ -188,11 +189,11 @@ void PrtLutReco::Run(int start, int end){
     double maxChangle = 0.9;    
     TVector3 rotatedmom = fEvent->GetMomentum().Unit();
     double mass[] = {0.000511,0.1056584,0.139570,0.49368,0.9382723};
-    double sum1(0),sum2(0),noise(0.3);
+    double sum1(0),sum2(0),noise(0.2);
  
     fSigma=0.007;
-    if(theta<50) fSigma=0.005;
-    if(theta<35) fSigma=0.005;
+    // if(theta<50) fSigma=0.005;
+    // if(theta<35) fSigma=0.005;
 
     for(int i=0; i<5; i++){
       fAngle[i] = acos(sqrt(mom*mom + mass[i]*mass[i])/mom/1.4738); //1.4738 = 370 = 3.35
@@ -246,7 +247,6 @@ void PrtLutReco::Run(int start, int end){
       TString spath = Form("%ld",path);
       if(spath.Length()>12) continue;
 
-      // std::cout<<"path "<<spath<<std::endl;
       //if(!spath.EqualTo("87")) continue;
       //if(spath.Contains("9")) continue;
       
@@ -254,7 +254,7 @@ void PrtLutReco::Run(int start, int end){
       for(int i=0; i<size; i++){
 	dird = node->GetEntry(i);
 	Long_t lpath = node->GetPathId(i);
-        //if(path!=lpath) continue;
+	//if(path!=lpath) continue;
 	// if(lpath!=387) continue;		
 	if(node->GetNRefl(i)>12) continue;	
 	
@@ -281,8 +281,7 @@ void PrtLutReco::Run(int start, int end){
 	  fDiff->Fill(hitTime,tdiff);
 	  tangle = rotatedmom.Angle(dir)+fCorr[mcp];//45;
 
-	  //if(fabs(tdiff)<2) tangle -= 0.008*tdiff; // chromatic correction
-	  //if(fabs(tdiff)<2) tangle -= 0.009*tdiff; // chromatic correction
+	  if(fabs(tdiff)<2) tangle -= 0.0098*tdiff; // chromatic correction
 	  
 	  // if(theta<50){
 	  //   if(fabs(tdiff)<1.5) tangle -= 0.005*tdiff; // chromatic correction
@@ -300,7 +299,7 @@ void PrtLutReco::Run(int start, int end){
 	  fHistMcp[mcp]->Fill(tangle-fAngle[pid]);
 	  fhChrom->Fill(tdiff,(tangle-fAngle[pid])*1000);		  
 	  
-	  if(fabs(tangle- fAngle[3])>0.05 && fabs(tangle-fAngle[2])>0.05) continue;
+	  if(fabs(tangle- fAngle[fRpid])>0.05 && fabs(tangle-fAngle[2])>0.05) continue;
 	  
 	  if(tangle > minChangle && tangle < maxChangle){
 	    TVector3 rdir = TVector3(-dir.X(),dir.Y(),dir.Z());
@@ -315,7 +314,7 @@ void PrtLutReco::Run(int start, int end){
 	  isGoodHit=true;
 	  
 	  sum1 += -TMath::Log(fFunc[2]->Eval(tangle)+noise);
-	  sum2 += -TMath::Log(fFunc[3]->Eval(tangle)+noise);
+	  sum2 += -TMath::Log(fFunc[fRpid]->Eval(tangle)+noise);
 	}
       }
       
@@ -327,6 +326,7 @@ void PrtLutReco::Run(int start, int end){
     }
 
     double sum = sum1-sum2;
+
     if(sum!=0) fLnDiff[pid]->Fill(sum);
     if(tnph[pid]>1) hnph[pid]->Fill(tnph[pid]);    
 
@@ -372,16 +372,16 @@ void PrtLutReco::Run(int start, int end){
     std::cout<<Form("SPR=%2.2F N=%2.2f",spr,nph[2])<<std::endl; 
 
     TF1 *ff;
-    double m1,m2,s1,s2; 
-    if(fLnDiff[3]->GetEntries()>10){
-      fLnDiff[3]->Fit("gaus","S");
-      ff = fLnDiff[3]->GetFunction("gaus");
+    double m1,m2,s1,s2;
+    if(fLnDiff[fRpid]->GetEntries()>10){
+      fLnDiff[fRpid]->Fit("gaus","S");
+      ff = fLnDiff[fRpid]->GetFunction("gaus");
       m1=ff->GetParameter(1);
       s1=ff->GetParameter(2);
     }
     if(fLnDiff[2]->GetEntries()>10){
       fLnDiff[2]->Fit("gaus","S");
-      ff = fLnDiff[2]->GetFunction("gaus");
+      ff = fLnDiff[2]->GetFunction("gaus");      
       m2=ff->GetParameter(1);
       s2=ff->GetParameter(2);
     }
@@ -442,26 +442,23 @@ void PrtLutReco::Run(int start, int end){
       prt_canvasAdd("tangle"+nid,800,400);
       hthetac[2]->SetTitle(Form("theta %1.2f", prt_theta));
       hthetac[2]->Draw("");
-      hthetac[3]->Draw("same");
-      drawTheoryLines(6);
+      hthetac[fRpid]->Draw("same");
+      drawTheoryLines(1);
     }      
 
     { // nph
       prt_canvasAdd("nph"+nid,800,400);      
-      for(int h=0; h<5; h++){
-	hnph[h]->SetStats(0);
-	if(hnph[h]->GetEntries()<20) continue;
-	hnph[h]->Draw((h==2)? "":"same");
-      }      
+      hnph[2]->SetStats(0);
+      hnph[2]->Draw();
+      hnph[fRpid]->Draw("same");
     }
     
     { // sep
       prt_canvasAdd("lh"+nid,800,400);
-      prt_normalize(fLnDiff[2],fLnDiff[3]);
-      fLnDiff[3]->SetLineColor(2);
-      
-      fLnDiff[3]->SetName(Form("s_%2.2f",sep));
-      fLnDiff[3]->Draw();
+      prt_normalize(fLnDiff[2],fLnDiff[fRpid]);
+      fLnDiff[fRpid]->SetLineColor(2);      
+      fLnDiff[fRpid]->SetName(Form("s_%2.2f",sep));
+      fLnDiff[fRpid]->Draw();
       fLnDiff[2]->SetLineColor(4);
       fLnDiff[2]->Draw("same");      
     }
@@ -473,7 +470,7 @@ void PrtLutReco::Run(int start, int end){
     }
       
     { // hp
-      auto cdigi = prt_drawDigi(2032);
+      auto cdigi = prt_drawDigi(2030);
       cdigi->SetName("hp"+nid);
       prt_canvasAdd(cdigi);
     }
@@ -486,8 +483,8 @@ void PrtLutReco::Run(int start, int end){
       fHist4->GetYaxis()->SetTitle("#theta_{c}cos(#varphi_{c})");
       fHist4->SetTitle(Form("Calculated from LUT, #theta = %1.2f#circ", prt_theta));
       fHist4->Draw("colz");
-      double x0(0), y0(0), theta(fAngle[2]);
-      FitRing(x0,y0,theta);
+      double x0(0), y0(0);
+      FitRing(x0,y0,fAngle[2]);
       TVector3 corr(x0,y0,1-TMath::Sqrt(x0*x0+y0*y0));
       //std::cout<<"Tcorr "<< corr.Theta()*1000<< "  Pcorr "<< corr.Phi() <<std::endl;
 
@@ -499,7 +496,7 @@ void PrtLutReco::Run(int start, int end){
       leg->AddEntry((TObject*)0,Form("#Delta#varphi_{c} %f [rad]",corr.Phi()),"");
       leg->Draw();
 
-      TArc *arc = new TArc(x0,y0,theta);
+      TArc *arc = new TArc(x0,y0,fAngle[2]);
       arc->SetLineColor(kRed);
       arc->SetLineWidth(1);
       arc->SetFillStyle(0);
@@ -573,16 +570,16 @@ bool PrtLutReco::FindPeak(double& cherenkovreco, double& spr){
   for(int h=0; h<5; h++){    
     if(hthetac[h]->GetEntries()>20 ){
       gROOT->SetBatch(1);
-      // int nfound = fSpect->Search(hthetac[h],1,"",0.9); //0.6
-      // if(nfound>0) cherenkovreco = fSpect->GetPositionX()[0];
-      // else cherenkovreco =  hthetac[h]->GetXaxis()->GetBinCenter(hthetac[h]->GetMaximumBin());
-      cherenkovreco = fAngle[2];
+      int nfound = fSpect->Search(hthetac[h],1,"",0.9); //0.6
+      if(nfound>0) cherenkovreco = fSpect->GetPositionX()[0];
+      else cherenkovreco =  hthetac[h]->GetXaxis()->GetBinCenter(hthetac[h]->GetMaximumBin());
+      // cherenkovreco = fAngle[2];
       fFit->SetParameters(100,cherenkovreco,0.005,10);   // peak
       fFit->SetParameter(2,0.005); // width
       fFit->FixParameter(2,0.008); // width
-      hthetac[h]->Fit("fgaus","","",cherenkovreco-2*fSigma,cherenkovreco+2*fSigma);
+      hthetac[h]->Fit("fgaus","","",cherenkovreco-3*fSigma,cherenkovreco+3*fSigma);
       fFit->ReleaseParameter(2); // width
-      hthetac[h]->Fit("fgaus","M","",cherenkovreco-2*fSigma,cherenkovreco+2*fSigma);
+      hthetac[h]->Fit("fgaus","M","",cherenkovreco-3*fSigma,cherenkovreco+3*fSigma);
       cherenkovreco = fFit->GetParameter(1);
       spr = fFit->GetParameter(2); 
       if(fVerbose>2) gROOT->SetBatch(0);    
@@ -765,8 +762,8 @@ void PrtLutReco::drawTheoryLines(double mom){
   }
   
   TLine *line = new TLine(0,0,0,1000);
-  line->SetX1(fAngle[3]);
-  line->SetX2(fAngle[3]);
+  line->SetX1(fAngle[fRpid]);
+  line->SetX2(fAngle[fRpid]);
   line->SetY1(gPad->GetUymin());
   line->SetY2(gPad->GetUymax());
   line->SetLineColor(kRed);
