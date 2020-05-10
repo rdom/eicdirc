@@ -990,7 +990,7 @@ void PrtDetectorConstruction::SetVisualization(){
   lMirror->SetVisAttributes(waMirror);
   if(lFmirror) lFmirror->SetVisAttributes(waMirror);
 
-  G4double transp = 1.0;
+  G4double transp = 0.4;
   G4VisAttributes * vaLens = new G4VisAttributes(G4Colour(0.,1.,1.,transp));
   vaLens->SetForceWireframe(true);
   //vaLens->SetForceAuxEdgeVisible(true);
@@ -1043,6 +1043,7 @@ void PrtDetectorConstruction::ConstructSDandField(){
   
   if(fEvType == 0 ){
     SetSensitiveDetector("lPrizm",prizmSD);
+    SetSensitiveDetector("lLens2",prizmSD);
     SetSensitiveDetector("lLens3",prizmSD);
   }
   else if(fEvType == 1){

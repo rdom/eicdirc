@@ -101,7 +101,7 @@ G4bool PrtPixelSD::ProcessHits(G4Step* step, G4TouchableHistory* hist){
   Long_t pathId = 0;
   Int_t refl=0;
   Int_t prizmId=-1;
-  for (G4int i=0;i<prizmCol->entries();i++){
+  for (G4int i=1;i<prizmCol->entries();i++){
     PrtPrizmHit* phit = (*prizmCol)[i];
     if(phit->GetTrackID()==track->GetTrackID()) {
       if(phit->GetNormalId()>0){
@@ -109,7 +109,7 @@ G4bool PrtPixelSD::ProcessHits(G4Step* step, G4TouchableHistory* hist){
 	refl++;
       }
     }    
-  }
+  }  
 
   // // information from bar
   // G4int collectionID_bar = fSDM->GetCollectionID("BarHitsCollection");
