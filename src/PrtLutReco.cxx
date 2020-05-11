@@ -192,7 +192,7 @@ void PrtLutReco::Run(int start, int end){
     double sum1(0),sum2(0),noise(0.2);
  
     fSigma=0.007;
-    // if(theta<50) fSigma=0.005;
+    if(fabs(theta-90)<30) fSigma=0.006;
     // if(theta<35) fSigma=0.005;
 
     for(int i=0; i<5; i++){
@@ -234,7 +234,7 @@ void PrtLutReco::Run(int start, int end){
 
       PrtLutNode *node = (PrtLutNode*) fLut->At(sensorId);
       int size = node->Entries();
-      bool isGoodHit(false);
+      bool isGoodHit(false),ipath(false);
       
       // double fAngle =  fEvent->GetAngle()-90;
       // TVector3 rotatedmom = momInBar;
@@ -253,9 +253,9 @@ void PrtLutReco::Run(int start, int end){
       for(int i=0; i<size; i++){
 	dird = node->GetEntry(i);
 	Long_t lpath = node->GetPathId(i);
-	//if(path!=lpath) continue;
+	if(path!=lpath) ipath=1; //continue;
 	// if(lpath!=387) continue;		
-	if(node->GetNRefl(i)>12) continue;	
+	if(node->GetNRefl(i)>10) continue;	
 	
 	evtime = node->GetTime(i);
 	for(int u=0; u<4; u++){
@@ -275,12 +275,14 @@ void PrtLutReco::Run(int start, int end){
 	  double luttime = bartime+evtime;
 	  tdiff = hitTime-luttime;
 	  fHistDiff[reflected]->Fill(tdiff);
+	  if(ipath) fHistDiff[2]->Fill(tdiff);
 
 	  if(fabs(tdiff)>timeCut+luttime*0.035) continue;
 	  fDiff->Fill(hitTime,tdiff);
 	  tangle = rotatedmom.Angle(dir)+fCorr[mcp];//45;
 
-	  if(fabs(tdiff)<2) tangle -= 0.0098*tdiff; // chromatic correction
+	  //  if(fabs(tdiff)<2) tangle -= 0.0098*tdiff; // chromatic correction
+	  if(fabs(tdiff)<2) tangle -= 0.006*tdiff; // chromatic correction
 	  
 	  // if(theta<50){
 	  //   if(fabs(tdiff)<1.5) tangle -= 0.005*tdiff; // chromatic correction
@@ -421,7 +423,6 @@ void PrtLutReco::Run(int start, int end){
     // prt_fitslices(fdtl,-2,2,2,2,0)->Draw("pl same");
     // prt_fitslices(fdtl,-2,2,2,2,2)->Draw("pl same");
     // prt_fitslices(fdtl,-2,2,2,2,3)->Draw("pl same");
-
   
     prt_canvasAdd("fdtp",800,500);
     fdtp->Draw("colz");
@@ -487,7 +488,7 @@ void PrtLutReco::Run(int start, int end){
       TVector3 corr(x0,y0,1-TMath::Sqrt(x0*x0+y0*y0));
       //std::cout<<"Tcorr "<< corr.Theta()*1000<< "  Pcorr "<< corr.Phi() <<std::endl;
 
-      TLegend *leg = new TLegend(0.5,0.7,0.85,0.87);
+      TLegend *leg = new TLegend(0.32,0.42,0.67,0.59);
       leg->SetFillStyle(0); 
       leg->SetBorderSize(0);
       leg->AddEntry((TObject*)0,Form("Entries %0.0f",fHist4->GetEntries()),"");
@@ -505,7 +506,7 @@ void PrtLutReco::Run(int start, int end){
     }
 
     { // corrections
-      if(fabs(fCorr[0])<0.00000001 && fabs(fCorr[10])<0.00000001){
+      if(fabs(fCorr[0])<0.00000001 && fabs(fCorr[10])<0.00000001 && fabs(fCorr[20])<0.00000001){
         std::cout<<"Writing "<<fCorrFile<<std::endl;
 	  
         TFile fc(fCorrFile,"recreate");
@@ -540,13 +541,15 @@ void PrtLutReco::Run(int start, int end){
       
     { // time
       prt_canvasAdd("tdiff"+nid,800,400);
-      prt_normalizeto(fHistDiff, 2);
-      for(int i=2; i>=0; i--){
-	fHistDiff[i]->SetStats(0);
-	fHistDiff[i]->SetTitle(Form("theta %1.2f", prt_theta));
-	fHistDiff[i]->Draw(i==2?"h":"h same");
+      prt_normalizeto(fHistDiff, 3, 1);
+      for(int i=0; i<3; i++){
+	if(fHistDiff[i]->GetEntries()>100){
+	  fHistDiff[i]->SetStats(0);
+	  fHistDiff[i]->SetTitle(Form("theta %1.2f", prt_theta));
+	  fHistDiff[i]->Draw((i==0)?"h":"hsame");
+	}
       }
-	
+      
       prt_canvasAdd("diff"+nid,800,400);
       fDiff->SetStats(0);
       fDiff->Draw("colz");	
