@@ -226,7 +226,6 @@ void PrtLutReco::Run(int start, int end){
 	lenz = 2*4200 - lenz;
       }else{
 	reflected = false;
-	continue;
       }
 
       double theta0 = rotatedmom.Angle(dir0);
