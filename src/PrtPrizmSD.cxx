@@ -71,7 +71,7 @@ G4bool PrtPrizmSD::ProcessHits(G4Step* aStep, G4TouchableHistory* hist)
   G4ThreeVector gnormal = theNavigator->GetLocalToGlobalTransform().TransformAxis(-normal);
   normal = touchable->GetHistory()->GetTransform(1).TransformAxis(gnormal); // in lDirc
   
-  if (valid ){    
+  if (valid){    
     if(PrtManager::Instance()->GetEvType()==1){
       if(vname=="wWedge"){
 	if(normal.y()> 0.99) nid = 1; // right
@@ -88,7 +88,7 @@ G4bool PrtPrizmSD::ProcessHits(G4Step* aStep, G4TouchableHistory* hist)
 	if(normal.z()<-0.5 && normal.z()>-0.999 && normal.x()>0) nid = 8; // mirror
 	if(normal.z()<-0.5 && normal.z()>-0.999 && normal.x()<0) nid = 9; // pd	
       }
-      if(normal.z()<-0.999) nid =0;
+      else if(normal.z()<-0.999) nid =0;
       // std::cout<<nid<<" "<<vname<<" normal "<<normal<<std::endl;
     }else{
       if(vname=="wPrizm"){
@@ -105,6 +105,11 @@ G4bool PrtPrizmSD::ProcessHits(G4Step* aStep, G4TouchableHistory* hist)
 	nid = 9;
       }
     }
+  }
+  
+  if(aStep->GetPreStepPoint()->GetPosition().z()<2100.100001){
+    nid=-5;
+    newHit->SetPos(aStep->GetTrack()->GetMomentum());
   }
   
   newHit->SetNormalId(nid);

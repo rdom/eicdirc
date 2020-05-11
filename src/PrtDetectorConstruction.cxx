@@ -408,8 +408,8 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     // focusing block    
     auto gBlockA = new G4Trap("gBlockA",fBlock[0],fBlock[1],fBlock[2],fBlock[3]);
 
-    double cradius = PrtManager::Instance()->GetTest1();
-    double cangle = PrtManager::Instance()->GetTest2();
+    double cradius = 900; //PrtManager::Instance()->GetTest1();
+    double cangle = 16; //PrtManager::Instance()->GetTest2();
 
     double cpos = 240;
     double apos = 80;
@@ -1039,10 +1039,10 @@ void PrtDetectorConstruction::ConstructSDandField(){
   SetSensitiveDetector("lPixel",pixelSD);
   PrtPrizmSD* prizmSD = new PrtPrizmSD("PrizmSD", "PrizmHitsCollection", 0);
   G4SDManager::GetSDMpointer()->AddNewDetector(prizmSD);
-      
-  
-  if(fEvType == 0 ){
+
+  if(fEvType == 0){
     SetSensitiveDetector("lPrizm",prizmSD);
+    SetSensitiveDetector("lLens1",prizmSD);
     SetSensitiveDetector("lLens2",prizmSD);
     SetSensitiveDetector("lLens3",prizmSD);
   }
