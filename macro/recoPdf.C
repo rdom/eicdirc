@@ -12,8 +12,8 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", Double_t timer
   TGaxis::SetMaxDigits(4);
   
   TCanvas *cc = new TCanvas("cc","cc");
-  TH1F *hllf= new TH1F("hllf","hllf;ln L(K) - ln L(#pi); entries [#]",180,-60,60);
-  TH1F *hlls= new TH1F("hlls","hlls;ln L(K) - ln L(#pi); entries [#]",180,-60,60);  
+  TH1F *hllf= new TH1F("hllf","hllf;ln L(K) - ln L(#pi); entries [#]",180,-120,120);
+  TH1F *hlls= new TH1F("hlls","hlls;ln L(K) - ln L(#pi); entries [#]",180,-120,120);  
   TH1F *hl1 = new TH1F("hl1","pdf;LE time [ns]; entries [#]", 2000,0,100);
   TH1F *hl2 = new TH1F("hl2","pdf;LE time [ns]; entries [#]", 2000,0,100);
   TH1F *hl3 = new TH1F("hl3","pdf;LE time [ns]; entries [#]", 2000,0,100);
