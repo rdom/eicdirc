@@ -77,7 +77,7 @@ G4ClassificationOfNewTrack PrtStackingAction::ClassifyNewTrack(const G4Track * a
       if(true){
 	Double_t lambda = 197.0*2.0*pi/(aTrack->GetMomentum().mag()*1.0E6);          
 	Double_t ra = fRand->Uniform(0., 1.);
-	if(ra > fDetEff[0]->Eval(lambda)){ 
+	if(ra > fDetEff[1]->Eval(lambda)){ 
 	  return fKill;
 	}
       }

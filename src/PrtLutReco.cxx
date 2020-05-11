@@ -234,7 +234,7 @@ void PrtLutReco::Run(int start, int end){
 
       PrtLutNode *node = (PrtLutNode*) fLut->At(sensorId);
       int size = node->Entries();
-      bool isGoodHit(false),ipath(false);
+      bool isGoodHit(false);
       
       // double fAngle =  fEvent->GetAngle()-90;
       // TVector3 rotatedmom = momInBar;
@@ -253,7 +253,8 @@ void PrtLutReco::Run(int start, int end){
       for(int i=0; i<size; i++){
 	dird = node->GetEntry(i);
 	Long_t lpath = node->GetPathId(i);
-	if(path!=lpath) ipath=1; //continue;
+	bool ipath=0;
+	if(path==lpath) ipath=1; //continue;
 	// if(lpath!=387) continue;		
 	if(node->GetNRefl(i)>10) continue;	
 	
@@ -281,8 +282,8 @@ void PrtLutReco::Run(int start, int end){
 	  fDiff->Fill(hitTime,tdiff);
 	  tangle = rotatedmom.Angle(dir)+fCorr[mcp];//45;
 
-	  //  if(fabs(tdiff)<2) tangle -= 0.0098*tdiff; // chromatic correction
-	  if(fabs(tdiff)<2) tangle -= 0.006*tdiff; // chromatic correction
+	  //if(fabs(tdiff)<2) tangle -= 0.0098*tdiff; // chromatic correction
+	  if(fabs(tdiff)<2) tangle -= 0.007*tdiff; // chromatic correction
 	  
 	  // if(theta<50){
 	  //   if(fabs(tdiff)<1.5) tangle -= 0.005*tdiff; // chromatic correction
@@ -541,7 +542,7 @@ void PrtLutReco::Run(int start, int end){
       
     { // time
       prt_canvasAdd("tdiff"+nid,800,400);
-      prt_normalizeto(fHistDiff, 3, 1);
+      prt_normalize(fHistDiff, 3);
       for(int i=0; i<3; i++){
 	if(fHistDiff[i]->GetEntries()>100){
 	  fHistDiff[i]->SetStats(0);
