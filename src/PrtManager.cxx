@@ -100,12 +100,7 @@ void PrtManager::AddHit(PrtHit hit){
   }
   if(fRunType==1 || fRunType==5){
 
-    // std::cout<<"====== "<<std::endl;
-    // fMomentum.Print();
-    // hit.GetMomentum().Print();
-
-    if(fRunType==5)
-      fMomentum = hit.GetMomentum();
+    if(fRunType==5) fMomentum = hit.GetMomentum();
       
     int id = 300*hit.GetMcpId() + hit.GetPixelId();
     ((PrtLutNode*)(fLut->At(id)))->

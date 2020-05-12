@@ -19,21 +19,20 @@
 #include "PrtRunAction.h"
 #include "PrtManager.h"
 
-PrtPrizmSD::PrtPrizmSD(
-                            const G4String& name, 
-                            const G4String& hitsCollectionName,
-                            G4int nofCells)
-  : G4VSensitiveDetector(name), fHitsCollection(NULL)
-{
+PrtPrizmSD::PrtPrizmSD(const G4String& name, 
+		       const G4String& hitsCollectionName,
+		       G4int nofCells)
+  : G4VSensitiveDetector(name), fHitsCollection(NULL){
+  
   collectionName.insert(hitsCollectionName);
 }
 
-PrtPrizmSD::~PrtPrizmSD() 
-{ 
+PrtPrizmSD::~PrtPrizmSD(){
+
 }
 
-void PrtPrizmSD::Initialize(G4HCofThisEvent* hce)
-{ 
+void PrtPrizmSD::Initialize(G4HCofThisEvent* hce){
+  
   // Create hits collection
   fHitsCollection = new PrtPrizmHitsCollection(SensitiveDetectorName, collectionName[0]); 
 
@@ -43,8 +42,8 @@ void PrtPrizmSD::Initialize(G4HCofThisEvent* hce)
   hce->AddHitsCollection( hcID, fHitsCollection );
 }
 
-G4bool PrtPrizmSD::ProcessHits(G4Step* aStep, G4TouchableHistory* hist)
-{
+G4bool PrtPrizmSD::ProcessHits(G4Step* aStep, G4TouchableHistory* hist){
+  
   G4StepPoint* pPostStepPoint = aStep->GetPostStepPoint();
   if(pPostStepPoint->GetStepStatus() != fGeomBoundary){ //not at boundary
     return true;
@@ -89,7 +88,6 @@ G4bool PrtPrizmSD::ProcessHits(G4Step* aStep, G4TouchableHistory* hist)
 	if(normal.z()<-0.5 && normal.z()>-0.999 && normal.x()<0) nid = 9; // pd	
       }
       else if(normal.z()<-0.999) nid =0;
-      // std::cout<<nid<<" "<<vname<<" normal "<<normal<<std::endl;
     }else{
       if(vname=="wPrizm"){
 	if(normal.y()> 0.99) nid = 1; // right
@@ -104,15 +102,13 @@ G4bool PrtPrizmSD::ProcessHits(G4Step* aStep, G4TouchableHistory* hist)
       }else if(vname=="wLens2"){
 	nid = 9;
       }
+
+      if(aStep->GetPreStepPoint()->GetPosition().z()<2100.100001){
+	nid=-5;
+	newHit->SetPos(aStep->GetPostStepPoint()->GetMomentum());
+	newHit->SetEdep(aStep->GetPreStepPoint()->GetLocalTime());
+      }
     }
-  }
-  
-  if(aStep->GetPreStepPoint()->GetPosition().z()<2100.100001){
-    nid=-5;
-    newHit->SetPos(aStep->GetPostStepPoint()->GetMomentum());
-    //std::cout<<aStep->GetPreStepPoint()->GetPosition()<<"  newHit->GetPos() "<<newHit->GetPos()<<std::endl;
-						  
-    newHit->SetEdep(aStep->GetPreStepPoint()->GetLocalTime());
   }
   
   newHit->SetNormalId(nid);
@@ -122,8 +118,7 @@ G4bool PrtPrizmSD::ProcessHits(G4Step* aStep, G4TouchableHistory* hist)
   return true;
 }
 
-void PrtPrizmSD::EndOfEvent(G4HCofThisEvent*)
-{ 
+void PrtPrizmSD::EndOfEvent(G4HCofThisEvent*){
   if ( verboseLevel>1 ) { 
     G4int nofHits = fHitsCollection->entries();
     G4cout << "\n-------->Prizm Hits Collection: in this event they are " << nofHits 

@@ -110,13 +110,14 @@ G4bool PrtPixelSD::ProcessHits(G4Step* step, G4TouchableHistory* hist){
 	momentum.SetXYZ(phit->GetPos().x(),phit->GetPos().y(),phit->GetPos().z());
 	time -= phit->GetEdep();
       }
-      if(phit->GetNormalId()>0){	
-	if(++refl==1) continue;
+      if(phit->GetNormalId()>0){
+	++refl;
+	if(PrtManager::Instance()->GetEvType()==0 && refl==1) continue;
 	pathId = pathId*10+phit->GetNormalId();	
       }
     }
   }
- 
+  
   // // information from bar
   // G4int collectionID_bar = fSDM->GetCollectionID("BarHitsCollection");
   // PrtBarHitsCollection* barCol = (PrtBarHitsCollection*)(HCofEvent->GetHC(collectionID_bar));  

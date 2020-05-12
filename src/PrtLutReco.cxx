@@ -80,7 +80,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, int verbose){
     hnph[h] = new TH1F(Form("nph_%d",h),";detected photons [#];entries [#]", 150,0,150);
     hthetac[h]->SetLineColor(prt_color[h]);
     hnph[h]->SetLineColor(prt_color[h]);
-    fLnDiff[h] = new TH1F(Form("LnDiff_%d",h),  ";ln L(K) - ln L(#pi);entries [#]",100,-140,140);
+    fLnDiff[h] = new TH1F(Form("LnDiff_%d",h),  ";ln L(K) - ln L(#pi);entries [#]",100,-340,340);
     fFunc[h] = new TF1(Form("gaus_%d",h),"[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2])",0.7,0.9);    
   }
 
@@ -244,7 +244,7 @@ void PrtLutReco::Run(int start, int end){
 
       Long_t path = fHit.GetPathInPrizm();
       TString spath = Form("%ld",path);
-      if(spath.Length()>12) continue;
+      if(spath.Length()>8) continue;
 
       //if(!spath.EqualTo("87")) continue;
       //if(spath.Contains("9")) continue;
@@ -256,7 +256,7 @@ void PrtLutReco::Run(int start, int end){
 	bool ipath=0;
 	if(path==lpath) ipath=1; //continue;
 	// if(lpath!=387) continue;		
-	if(node->GetNRefl(i)>12) continue;	
+	if(node->GetNRefl(i)>8) continue;	
 	
 	evtime = node->GetTime(i);
 	for(int u=0; u<4; u++){
@@ -444,7 +444,7 @@ void PrtLutReco::Run(int start, int end){
       hthetac[2]->SetTitle(Form("theta %1.2f", prt_theta));
       hthetac[2]->Draw("");
       hthetac[fRpid]->Draw("same");
-      drawTheoryLines(1);
+      drawTheoryLines(6);
     }      
 
     { // nph
