@@ -192,7 +192,7 @@ void PrtLutReco::Run(int start, int end){
     double sum1(0),sum2(0),noise(0.2);
  
     fSigma=0.007;
-    if(fabs(theta-90)<30) fSigma=0.006;
+    if(fabs(theta-90)<30) fSigma=0.009;
     // if(theta<35) fSigma=0.005;
 
     for(int i=0; i<5; i++){
@@ -282,7 +282,6 @@ void PrtLutReco::Run(int start, int end){
 	  fDiff->Fill(hitTime,tdiff);
 	  tangle = rotatedmom.Angle(dir)+fCorr[mcp];//45;
 
-	  //if(fabs(tdiff)<2) tangle -= 0.0098*tdiff; // chromatic correction
 	  if(fabs(tdiff)<2) tangle -= 0.007*tdiff; // chromatic correction
 	  
 	  // if(theta<50){
