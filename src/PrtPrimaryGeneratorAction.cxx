@@ -50,6 +50,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
   G4double radiatorL = PrtManager::Instance()->GetRadiatorL();
   G4double radiatorW = PrtManager::Instance()->GetRadiatorW();
   G4double radiatorH = PrtManager::Instance()->GetRadiatorH();
+  int runtype = PrtManager::Instance()->GetRunType();
   
   if(PrtManager::Instance()->GetMix()){
     if(PrtManager::Instance()->GetParticle()==211 || PrtManager::Instance()->GetParticle()==0){
@@ -71,7 +72,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
   }
   
   PrtManager::Instance()->AddEvent(PrtEvent());
-  if(PrtManager::Instance()->GetRunType() == 0 || PrtManager::Instance()->GetRunType() == 10){ // simulation
+  if(runtype == 0 || runtype == 10 || runtype == 5){ // simulation
     G4ThreeVector vec(0,0,1);
     //G4int id = anEvent->GetEventID()%5;
     // if(id==0)  vec.setTheta(M_PI-110*deg);
@@ -106,20 +107,20 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
       vec.setTheta(M_PI-theta);
       vec.rotate(2*M_PI*G4UniformRand(), vec0);
 
-      PrtManager::Instance()->Event()->SetAngle(theta/deg);
+      if(runtype != 5) PrtManager::Instance()->Event()->SetAngle(theta/deg);
     }
 
     if(PrtManager::Instance()->GetEvType()==1) vec.rotateZ(0.016); // hit the middle of the BaBar bar 
     
     fParticleGun->SetParticlePosition(G4ThreeVector(0,ypos,zpos));
-    PrtManager::Instance()->Event()->SetPosition(TVector3(0,ypos,zpos));
+    if(runtype != 5) PrtManager::Instance()->Event()->SetPosition(TVector3(0,ypos,zpos));
       
     // // }
    
     fParticleGun->SetParticleMomentumDirection(vec);
   }
 
-  if(PrtManager::Instance()->GetRunType() == 1){ // LUT generation
+  if(runtype == 1){ // LUT generation
     
     G4double barShift=0; // 390/12./2;
     if(PrtManager::Instance()->GetEvType()==1) barShift = 0.5*35;
@@ -133,18 +134,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
     //  vec.rotateY(-M_PI/2.);
     fParticleGun->SetParticleMomentumDirection(vec);
   }
-  if(PrtManager::Instance()->GetRunType() == 5){ // calibration light
-    G4double shift = PrtManager::Instance()->GetShift();
-    
-    fParticleGun->SetParticlePosition(G4ThreeVector(-1250/2.+0.1-shift,0,5+tan(45*M_PI/180.)*shift+25));
-    G4double angle = -G4UniformRand()*M_PI;
-    G4ThreeVector vec(0,0,1);
-    vec.setTheta(acos(G4UniformRand()));
-    vec.setPhi(2*M_PI*G4UniformRand());
-    
-    vec.rotateY(-M_PI/2.);
-    fParticleGun->SetParticleMomentumDirection(vec);
-  }
+
   fParticleGun->GeneratePrimaryVertex(anEvent);
 
   G4ThreeVector dir = fParticleGun->GetParticleMomentumDirection();

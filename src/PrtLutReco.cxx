@@ -54,7 +54,7 @@ TGraph gg_gr;
 PrtLutReco::PrtLutReco(TString infile, TString lutfile, int verbose){
   fVerbose = verbose;  	  
   fCriticalAngle = asin(1.00028/1.47125); // n_quarzt = 1.47125; //(1.47125 <==> 390nm)
-  fRpid=0; //3
+  fRpid=3; //3
   fChain = new TChain("data");
   fChain->Add(infile);
   fEvent=new PrtEvent();
@@ -256,7 +256,7 @@ void PrtLutReco::Run(int start, int end){
 	bool ipath=0;
 	if(path==lpath) ipath=1; //continue;
 	// if(lpath!=387) continue;		
-	if(node->GetNRefl(i)>10) continue;	
+	if(node->GetNRefl(i)>12) continue;	
 	
 	evtime = node->GetTime(i);
 	for(int u=0; u<4; u++){
@@ -471,7 +471,7 @@ void PrtLutReco::Run(int start, int end){
     }
       
     { // hp
-      auto cdigi = prt_drawDigi(2030);
+      auto cdigi = prt_drawDigi(2032); //2030
       cdigi->SetName("hp"+nid);
       prt_canvasAdd(cdigi);
     }

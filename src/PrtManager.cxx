@@ -90,7 +90,6 @@ void PrtManager::AddEvent(PrtEvent event){
   }
 }
 
-
 void PrtManager::AddHit(PrtHit hit){
   if(fRunType==0 || fRunType==10){
     if ( fEvent ){
@@ -100,6 +99,14 @@ void PrtManager::AddHit(PrtHit hit){
     }
   }
   if(fRunType==1 || fRunType==5){
+
+    // std::cout<<"====== "<<std::endl;
+    // fMomentum.Print();
+    // hit.GetMomentum().Print();
+
+    if(fRunType==5)
+      fMomentum = hit.GetMomentum();
+      
     int id = 300*hit.GetMcpId() + hit.GetPixelId();
     ((PrtLutNode*)(fLut->At(id)))->
       AddEntry(id, fMomentum, hit.GetPathInPrizm(),
@@ -111,7 +118,6 @@ void PrtManager::AddHit(PrtHit hit){
 void PrtManager::AddTrackInfo(PrtTrackInfo trackinfo){
   new ((*fTrackInfoArray)[fTrackInfoArray->GetEntriesFast()]) PrtTrackInfo(trackinfo);
 }
-
 
 void PrtManager::Fill(){
   if(fRunType==0 || fRunType==10){

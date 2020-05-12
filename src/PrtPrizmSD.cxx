@@ -109,7 +109,10 @@ G4bool PrtPrizmSD::ProcessHits(G4Step* aStep, G4TouchableHistory* hist)
   
   if(aStep->GetPreStepPoint()->GetPosition().z()<2100.100001){
     nid=-5;
-    newHit->SetPos(aStep->GetTrack()->GetMomentum());
+    newHit->SetPos(aStep->GetPostStepPoint()->GetMomentum());
+    //std::cout<<aStep->GetPreStepPoint()->GetPosition()<<"  newHit->GetPos() "<<newHit->GetPos()<<std::endl;
+						  
+    newHit->SetEdep(aStep->GetPreStepPoint()->GetLocalTime());
   }
   
   newHit->SetNormalId(nid);

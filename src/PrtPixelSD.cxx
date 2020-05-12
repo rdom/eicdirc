@@ -97,7 +97,8 @@ G4bool PrtPixelSD::ProcessHits(G4Step* step, G4TouchableHistory* hist){
   const G4Event* currentEvent = fRM->GetCurrentEvent();
   G4HCofThisEvent* HCofEvent = currentEvent->GetHCofThisEvent();
   PrtPrizmHitsCollection* prizmCol = (PrtPrizmHitsCollection*)(HCofEvent->GetHC(collectionID));
- 
+  double time = step->GetPreStepPoint()->GetLocalTime();
+  
   Long_t pathId = 0;
   Int_t refl=0;
   Int_t prizmId=-1;
@@ -105,8 +106,9 @@ G4bool PrtPixelSD::ProcessHits(G4Step* step, G4TouchableHistory* hist){
   for (G4int i=0;i<prizmCol->entries();i++){
     PrtPrizmHit* phit = (*prizmCol)[i];    
     if(phit->GetTrackID()==track->GetTrackID()) {
-      if(phit->GetNormalId()==-5){
+      if(PrtManager::Instance()->GetRunType()==5 && phit->GetNormalId()==-5){
 	momentum.SetXYZ(phit->GetPos().x(),phit->GetPos().y(),phit->GetPos().z());
+	time -= phit->GetEdep();
       }
       if(phit->GetNormalId()>0){	
 	if(++refl==1) continue;
@@ -114,7 +116,7 @@ G4bool PrtPixelSD::ProcessHits(G4Step* step, G4TouchableHistory* hist){
       }
     }
   }
-
+ 
   // // information from bar
   // G4int collectionID_bar = fSDM->GetCollectionID("BarHitsCollection");
   // PrtBarHitsCollection* barCol = (PrtBarHitsCollection*)(HCofEvent->GetHC(collectionID_bar));  
@@ -150,7 +152,7 @@ G4bool PrtPixelSD::ProcessHits(G4Step* step, G4TouchableHistory* hist){
   hit.SetPathInPrizm(pathId);
   hit.SetCherenkovMC(PrtManager::Instance()->GetCurrentCherenkov());
   // time since track created
-  hit.SetLeadTime(step->GetPreStepPoint()->GetLocalTime());
+  hit.SetLeadTime(time);
   Double_t wavelength = 1.2398/(track->GetMomentum().mag()*1E6)*1000;
   hit.SetTotTime(wavelength); //set photon wavelength
 
@@ -182,8 +184,9 @@ G4bool PrtPixelSD::ProcessHits(G4Step* step, G4TouchableHistory* hist){
 void PrtPixelSD::EndOfEvent(G4HCofThisEvent*)
 { 
   G4int eventNumber = G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID();
-  if(eventNumber%1==0 && (PrtManager::Instance()->GetRunType()==0 || PrtManager::Instance()->GetRunType()==10)) std::cout<<"Event # "<<eventNumber <<std::endl;
-  if(eventNumber%1000==0 && PrtManager::Instance()->GetRunType()!=0  && PrtManager::Instance()->GetRunType()!=10) std::cout<<"Event # "<<eventNumber <<std::endl;
+  int runtype = PrtManager::Instance()->GetRunType();
+  if(eventNumber%1==0 && (runtype==0 || runtype==10)) std::cout<<"Event # "<<eventNumber <<std::endl;
+  if(eventNumber%1000==0 && runtype != 0  && runtype != 10) std::cout<<"Event # "<<eventNumber <<std::endl;
   PrtManager::Instance()->Fill();
   
 }
