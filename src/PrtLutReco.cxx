@@ -43,7 +43,7 @@ TH2F*  fdtt = new TH2F("dtt",";t_{measured}-t_{calculated} [ns];#theta_{l} [deg]
 TH2F*  fdtl = new TH2F("dtl",";t_{measured}-t_{calculated} [ns];path length [m]", 1000,-2,2, 1000,0,15);
 TH2F*  fdtp = new TH2F("dtp",";#theta_{l} [deg];path length [m]", 1000,0,90, 1000,0,15);
 TH2F*  fhChrom = new TH2F("chrom",";t_{measured}-t_{calculated} [ns];#theta_{C} [rad]", 100,-2,2, 100,-30,30);
-TH2F*  fhChromL = new TH2F("chrom",";(t_{measured}-t_{calculated})/L_{path};#theta_{C} [rad]", 100,-0.0002,0.0002, 100,-30,30);
+TH2F*  fhChromL = new TH2F("chroml",";(t_{measured}-t_{calculated})/L_{path};#theta_{C} [rad]", 100,-0.0002,0.0002, 100,-30,30);
 TH1F*  fHistMcp[28];
 double fCorr[28];
 
@@ -54,7 +54,7 @@ TGraph gg_gr;
 PrtLutReco::PrtLutReco(TString infile, TString lutfile, int verbose){
   fVerbose = verbose;  	  
   fCriticalAngle = asin(1.00028/1.47125); // n_quarzt = 1.47125; //(1.47125 <==> 390nm)
-  fRpid=1; //3
+  fRpid=0; //3
   fChain = new TChain("data");
   fChain->Add(infile);
   fEvent=new PrtEvent();
@@ -247,11 +247,12 @@ void PrtLutReco::Run(int start, int end){
 
       Long_t hpath = fHit.GetPathInPrizm();
       TString spath = Form("%ld",hpath);
-      if(spath.Length()>8) continue;
+      //if(spath.Length()>8) continue;
 
+      // std::cout<<"========================= spath "<<spath<<std::endl;
+      
       //if(!spath.EqualTo("87")) continue;
       //if(spath.Contains("1")) continue;
-      
       
       for(int i=0; i<size; i++){
 	dird = node->GetEntry(i);
@@ -259,10 +260,11 @@ void PrtLutReco::Run(int start, int end){
 	TString slpath = Form("%ld",lpath);
 	bool ipath=0;
 	if(hpath==lpath) ipath=1;
-	if(slpath.Contains("3")) continue;
-	//if(!ipath) continue;
+	//if(!slpath.Contains("4")) continue;
+	// std::cout<<"slpath "<<slpath<<std::endl;
+	//if(!ipath) continue;	
 	//if(lpath!=387) continue;		
-	if(node->GetNRefl(i)>8) continue;	
+	//if(node->GetNRefl(i)>8) continue;	
 	
 	evtime = node->GetTime(i);
 	for(int u=0; u<4; u++){
@@ -274,7 +276,7 @@ void PrtLutReco::Run(int start, int end){
 	  if(dir.Angle(fnX1) < fCriticalAngle || dir.Angle(fnY1) < fCriticalAngle) continue;
 
 	  luttheta = dir.Theta();	
-	  if(luttheta > TMath::Pi()/2.) luttheta = TMath::Pi()-luttheta;
+	  if(luttheta > TMath::PiOver2()) luttheta = TMath::Pi()-luttheta;
 	  
 	  bartime = lenz/cos(luttheta)/198.5; //198 
 	
@@ -284,11 +286,14 @@ void PrtLutReco::Run(int start, int end){
 	  fHistDiff[reflected]->Fill(tdiff);
 	  if(ipath) fHistDiff[2]->Fill(tdiff);
 
+
+	  tangle = rotatedmom.Angle(dir)+fCorr[mcp];//45;
+	  if(tangle>TMath::PiOver2()) tangle = TMath::Pi()-tangle;
+ 
+	  if(fabs(tdiff)<2) tangle -= 0.005*tdiff; // chromatic correction
+	  
 	  if(fabs(tdiff)>timeCut+luttime*0.035) continue;
 	  fDiff->Fill(hitTime,tdiff);
-	  tangle = rotatedmom.Angle(dir)+fCorr[mcp];//45;
-
-	  if(fabs(tdiff)<2) tangle -= 0.005*tdiff; // chromatic correction
 	  
 	  // if(theta<50){
 	  //   if(fabs(tdiff)<1.5) tangle -= 0.005*tdiff; // chromatic correction
