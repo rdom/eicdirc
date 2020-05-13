@@ -82,7 +82,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, int verbose){
     hthetac[h]->SetLineColor(prt_color[h]);
     hthetacd[h]->SetLineColor(prt_color[h]);
     hnph[h]->SetLineColor(prt_color[h]);
-    fLnDiff[h] = new TH1F(Form("LnDiff_%d",h),  ";ln L(K) - ln L(#pi);entries [#]",100,-60,60);
+    fLnDiff[h] = new TH1F(Form("LnDiff_%d",h),  ";ln L(K) - ln L(#pi);entries [#]",100,-160,160);
     fFunc[h] = new TF1(Form("gaus_%d",h),"[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2])",0.7,0.9);    
   }
 
