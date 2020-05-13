@@ -29,7 +29,7 @@ echo $tseed
 for i in `LANG=en_us seq 0 0.0002 0.004`; do
     # ../build/eicdirc -r $tseed$i -o h_b$i.root  -s 0 -a 30 -x "mix_pie" -p 1.0 -w 0 -h 11 -c 4 -l 3 -z $i -v 0 -zpos 1 -g 1 -ev 0 -e 2000 -b 1  > l_b$i.log &
 
-    ../build/eicdirc -s 2 -i h_b$i.root -u ../data/lut_avr.root -s 2 -tc 0.2 -t1 $i -v 3  &
+    ../build/eicdirc -s 2 -i h_b$i.root -u ../data/lut_avr.root -s 2 -tc 0.2 -t1 $i -v 2  &
 done
 
 
