@@ -84,7 +84,7 @@ void lutmean(TString baseFile = "../data/lut"){
       if(vArray[j].size()<2) continue;
       if(rArray[j]>15) continue;
       
-      if(hDir->GetStdDev()>0.004)
+      if(hDir->GetStdDev()>0.02)
       {
       	std::cout<<inode<<" "<<pArray[j]<<" hDir->GetStdDev() ================  "<<hDir->GetStdDev()<<std::endl;
 

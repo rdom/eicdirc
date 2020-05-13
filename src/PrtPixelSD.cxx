@@ -128,11 +128,11 @@ G4bool PrtPixelSD::ProcessHits(G4Step* step, G4TouchableHistory* hist){
   //   G4ThreeVector bmom = phit->GetMom();
   //   if(i==0)  bmom1 = phit->GetMom();
   //   std::cout<<i<<" bmom "<<bmom<< " "<<bmom.angle(bmom1) <<std::endl;
-  //   if(bmom.mag()>1000){ 
-  //     PrtHit hit;
-  //     hit.SetLeadTime(bmom.angle(bmom1)*1000);    
-  //     PrtManager::Instance()->AddHit(hit);
-  //   }
+  //   // if(bmom.mag()>1000){ 
+  //   //   PrtHit hit;
+  //   //   hit.SetLeadTime(bmom.angle(bmom1)*1000);    
+  //   //   PrtManager::Instance()->AddHit(hit);
+  //   // }
   // }
   
   PrtHit hit;

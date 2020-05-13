@@ -64,6 +64,7 @@ private:
   TF1 *fFit;
   TSpectrum *fSpect;
   TH1F *hthetac[5];
+  TH1F *hthetacd[5];
   TH1F *hnph[5];
   double fAngle[5];
   TF1 *fFunc[5];

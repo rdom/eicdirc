@@ -174,7 +174,7 @@ int main(int argc,char** argv)
     UImanager->ApplyCommand("/Prt/geom/lensId "+lensId);
   }
  
-  int pdgid = 2212;
+  int pdgid = 0;
   if(particle=="proton") pdgid = 2212;
   if(particle=="pi+") pdgid = 211;
   if(particle=="pi0") pdgid = 111;
