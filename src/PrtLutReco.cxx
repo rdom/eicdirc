@@ -449,7 +449,7 @@ void PrtLutReco::Run(int start, int end){
   }
 
   if(fVerbose>1){
-    TString nid = Form("_%1.2f",prt_theta);
+    TString nid = Form("_%1.2f_%1.4f",prt_theta,test1);
 
     { // cherenkov angle
       prt_canvasAdd("tangle"+nid,800,400);
