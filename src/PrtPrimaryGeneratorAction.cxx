@@ -115,7 +115,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
 	vec.setTheta(angle + G4UniformRand()*0.09-0.045);
 	vec.rotateZ(G4UniformRand()*0.032);
       }
-      if(runtype == 0) vec.rotateZ(0.002); // 0.016 hits the middle of the BaBar bar
+      if(runtype == 0) vec.rotateZ(PrtManager::Instance()->GetTest1()); // 0.016 hits the middle of the BaBar bar
     }
     
     fParticleGun->SetParticlePosition(G4ThreeVector(0,ypos,zpos));

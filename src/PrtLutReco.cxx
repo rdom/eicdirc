@@ -43,7 +43,7 @@ TH2F*  fdtt = new TH2F("dtt",";t_{measured}-t_{calculated} [ns];#theta_{l} [deg]
 TH2F*  fdtl = new TH2F("dtl",";t_{measured}-t_{calculated} [ns];path length [m]", 1000,-2,2, 1000,0,15);
 TH2F*  fdtp = new TH2F("dtp",";#theta_{l} [deg];path length [m]", 1000,0,90, 1000,0,15);
 TH2F*  fhChrom = new TH2F("chrom",";t_{measured}-t_{calculated} [ns];#theta_{C} [rad]", 100,-2,2, 100,-30,30);
-
+TH2F*  fhChromL = new TH2F("chrom",";(t_{measured}-t_{calculated})/L_{path};#theta_{C} [rad]", 100,-0.0002,0.0002, 100,-30,30);
 TH1F*  fHistMcp[28];
 double fCorr[28];
 
@@ -259,10 +259,10 @@ void PrtLutReco::Run(int start, int end){
 	TString slpath = Form("%ld",lpath);
 	bool ipath=0;
 	if(hpath==lpath) ipath=1;
-	//if(slpath.Contains("1")) continue;
+	if(slpath.Contains("3")) continue;
 	//if(!ipath) continue;
 	//if(lpath!=387) continue;		
-	if(node->GetNRefl(i)>12) continue;	
+	if(node->GetNRefl(i)>8) continue;	
 	
 	evtime = node->GetTime(i);
 	for(int u=0; u<4; u++){
@@ -288,7 +288,7 @@ void PrtLutReco::Run(int start, int end){
 	  fDiff->Fill(hitTime,tdiff);
 	  tangle = rotatedmom.Angle(dir)+fCorr[mcp];//45;
 
-	  if(fabs(tdiff)<2) tangle -= 0.0025*tdiff; // chromatic correction
+	  if(fabs(tdiff)<2) tangle -= 0.005*tdiff; // chromatic correction
 	  
 	  // if(theta<50){
 	  //   if(fabs(tdiff)<1.5) tangle -= 0.005*tdiff; // chromatic correction
@@ -305,7 +305,8 @@ void PrtLutReco::Run(int start, int end){
 	  hthetac[pid]->Fill(tangle);
 	  hthetacd[pid]->Fill((tangle-fAngle[pid])*1000);	    
 	  fHistMcp[mcp]->Fill(tangle-fAngle[pid]);
-	  fhChrom->Fill(tdiff,(tangle-fAngle[pid])*1000);		  
+	  fhChrom->Fill(tdiff,(tangle-fAngle[pid])*1000);
+	  fhChromL->Fill(tdiff/(lenz/cos(luttheta)),(tangle-fAngle[pid])*1000);
 	  
 	  if(fabs(tangle- fAngle[fRpid])>0.05 && fabs(tangle-fAngle[2])>0.05) continue;
 
@@ -451,7 +452,7 @@ void PrtLutReco::Run(int start, int end){
 	    
       hthetac[2]->SetTitle(Form("theta %1.2f", prt_theta));
       hthetac[2]->Draw("");
-      hthetac[fRpid]->Draw("same");
+      hthetac[fRpid]->Draw("");
       drawTheoryLines(6);
 
       prt_canvasAdd("tangled"+nid,800,400);
@@ -483,6 +484,10 @@ void PrtLutReco::Run(int start, int end){
       prt_canvasAdd("chrom"+nid,800,400);
       fhChrom->SetStats(0);
       fhChrom->Draw("colz");
+      prt_canvasAdd("chroml"+nid,800,400);
+      fhChromL->SetStats(0);
+      fhChromL->Draw("colz");
+
     }
       
     { // hp
