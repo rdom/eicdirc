@@ -247,10 +247,10 @@ void PrtLutReco::Run(int start, int end){
 
       Long_t hpath = fHit.GetPathInPrizm();
       TString spath = Form("%ld",hpath);
-      if(spath.Length()>12) continue;
+      if(spath.Length()>8) continue;
 
       //if(!spath.EqualTo("87")) continue;
-      if(spath.Contains("5")) continue;
+      //if(spath.Contains("1")) continue;
       
       
       for(int i=0; i<size; i++){
@@ -259,10 +259,10 @@ void PrtLutReco::Run(int start, int end){
 	TString slpath = Form("%ld",lpath);
 	bool ipath=0;
 	if(hpath==lpath) ipath=1;
-	if(slpath.Contains("5")) continue;
+	//if(slpath.Contains("1")) continue;
 	//if(!ipath) continue;
 	//if(lpath!=387) continue;		
-	if(node->GetNRefl(i)>8) continue;	
+	if(node->GetNRefl(i)>12) continue;	
 	
 	evtime = node->GetTime(i);
 	for(int u=0; u<4; u++){
@@ -288,7 +288,7 @@ void PrtLutReco::Run(int start, int end){
 	  fDiff->Fill(hitTime,tdiff);
 	  tangle = rotatedmom.Angle(dir)+fCorr[mcp];//45;
 
-	  if(fabs(tdiff)<2) tangle -= 0.004*tdiff; // chromatic correction
+	  if(fabs(tdiff)<2) tangle -= 0.0025*tdiff; // chromatic correction
 	  
 	  // if(theta<50){
 	  //   if(fabs(tdiff)<1.5) tangle -= 0.005*tdiff; // chromatic correction
@@ -713,7 +713,7 @@ double PrtLutReco::FindStartTime(PrtEvent *evt){
     //if(reflected) continue;
 
     int ch = 300*hit.GetMcpId()+hit.GetPixelId();
-    double path = hit.GetPathInPrizm();
+    //double path = hit.GetPathInPrizm();
     PrtLutNode *node = (PrtLutNode*) fLut->At(ch);
     int size = node->Entries();
     
