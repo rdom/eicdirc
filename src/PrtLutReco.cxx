@@ -192,6 +192,11 @@ void PrtLutReco::Run(int start, int end){
     TVector3 rotatedmom = fEvent->GetMomentum().Unit();
     double mass[] = {0.000511,0.1056584,0.139570,0.49368,0.9382723};
     double sum1(0),sum2(0),noise(0.2);
+
+    // track smearing
+    TVector3 init = rotatedmom;
+    rotatedmom.RotateY(prt_rand.Gaus(0,test1));
+    rotatedmom.Rotate(TMath::Pi(),init);
  
     fSigma=0.007;
     if(fabs(theta-90)<30) fSigma=0.009;
@@ -290,7 +295,7 @@ void PrtLutReco::Run(int start, int end){
 	  tangle = rotatedmom.Angle(dir)+fCorr[mcp];//45;
 	  if(tangle>TMath::PiOver2()) tangle = TMath::Pi()-tangle;
  
-	  if(fabs(tdiff)<2) tangle -= 0.005*tdiff; // chromatic correction
+	  if(fabs(tdiff)<2) tangle -= 0.009*tdiff; // chromatic correction
 	  
 	  if(fabs(tdiff)>timeCut+luttime*0.035) continue;
 	  fDiff->Fill(hitTime,tdiff);

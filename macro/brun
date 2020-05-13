@@ -18,7 +18,7 @@ echo $tseed
 #overlay
 #for i in {1..4}; do ../build/eicdirc -r $tseed$i -o h_b$i.root  -s 0 -a 90 -x "mix_pie" -p 10.0 -w 0 -h 11 -c 4 -l 3 -z 0 -v 0 -zpos 1 -g 1 -ev 1 -t1 900 -t2 16 -e 200 -b 1  > l_b$i.log & done
 
-#for i in {1..4}; do ../build/eicdirc -r $tseed$i -o h_b$i.root  -s 0 -a 30 -x "mix_pie" -p 1.0 -w 0 -h 11 -c 4 -l 3 -z 0.0005 -v 0 -zpos 1 -g 1 -ev 0 -e 500 -b 1  > l_b$i.log & done
+for i in {1..4}; do ../build/eicdirc -r $tseed$i -o h_b$i.root  -s 0 -a 30 -x "mix_pie" -p 1.0 -w 0 -h 11 -c 4 -l 3 -z 0.01 -v 0 -zpos 1 -g 1 -ev 0 -e 400 -b 1  > l_b$i.log & done
 
 
 # phi scan
@@ -26,11 +26,11 @@ echo $tseed
 #     ../build/eicdirc -r $tseed$i -o h_b$i.root  -s 0 -a 90 -x "mu-" -p 10.0 -w 0 -h 11 -c 4 -l 3 -z 0 -v 0 -zpos 1 -g 1 -ev 1 -t1 $i -e 1000 -b 1  > l_b$i.log & 
 # done
 
-for i in `LANG=en_us seq 0 0.0002 0.004`; do
-    # ../build/eicdirc -r $tseed$i -o h_b$i.root  -s 0 -a 30 -x "mix_pie" -p 1.0 -w 0 -h 11 -c 4 -l 3 -z $i -v 0 -zpos 1 -g 1 -ev 0 -e 2000 -b 1  > l_b$i.log &
+# for i in `LANG=en_us seq 0 0.0002 0.004`; do
+#     # ../build/eicdirc -r $tseed$i -o h_b$i.root  -s 0 -a 30 -x "mix_pie" -p 1.0 -w 0 -h 11 -c 4 -l 3 -z $i -v 0 -zpos 1 -g 1 -ev 0 -e 2000 -b 1  > l_b$i.log &
 
-    ../build/eicdirc -s 2 -i h_b$i.root -u ../data/lut_avr.root -s 2 -tc 0.2 -t1 $i -v 2  &
-done
+#     ../build/eicdirc -s 2 -i h_b$i.root -u ../data/lut_avr.root -s 2 -tc 0.2 -t1 $i -v 2  &
+# done
 
 
 
@@ -49,4 +49,4 @@ done
 
 sleep 2
 
-hadd -f hits_pie_w0_0.5.root h_b*.root
+hadd -f hits.root h_b*.root

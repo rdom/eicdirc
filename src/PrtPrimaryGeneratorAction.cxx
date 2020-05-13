@@ -84,7 +84,6 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
     // if(id==3)  vec.setTheta(M_PI-70*deg);
     // if(id==3)  vec.setPhi(250*deg);
 
-    // // else{
     double trackresolution=PrtManager::Instance()->GetBeamDimension();
     if(angle>0){
       if(trackresolution<0.00001){	
@@ -121,7 +120,6 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
     fParticleGun->SetParticlePosition(G4ThreeVector(0,ypos,zpos));
     if(runtype != 5) PrtManager::Instance()->Event()->SetPosition(TVector3(0,ypos,zpos));
       
-    // // }
    
     fParticleGun->SetParticleMomentumDirection(vec);
   }
