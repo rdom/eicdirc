@@ -54,7 +54,7 @@ TGraph gg_gr;
 PrtLutReco::PrtLutReco(TString infile, TString lutfile, int verbose){
   fVerbose = verbose;  	  
   fCriticalAngle = asin(1.00028/1.47125); // n_quarzt = 1.47125; //(1.47125 <==> 390nm)
-  fRpid=0; //3
+  fRpid=1; //3
   fChain = new TChain("data");
   fChain->Add(infile);
   fEvent=new PrtEvent();
