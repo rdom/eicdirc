@@ -59,7 +59,8 @@ private:
   int nevents;
   int fMethod;
   TString fInputFile;
-  int fRpid;
+  int fp1;
+  int fp2;
 
   TF1 *fFit;
   TSpectrum *fSpect;

@@ -29,14 +29,12 @@ show_help(){
         1 - print text messages
         2 - draw plots
      -t 
-        test value
-     -n 
-        silent run"
+        test value"
     echo "$help" 
 }
 
 OPTIND=1 
-while getopts "h?r:j:qs:e:v:t:n" opt; do
+while getopts "h?r:j:qs:e:v:t" opt; do
     case "$opt" in
 	h|\?)
             show_help
@@ -56,8 +54,6 @@ while getopts "h?r:j:qs:e:v:t:n" opt; do
             ;;
 	t)  test1=$OPTARG
             ;;
-	n)  silent=1
-            ;;
     esac
 done
 option=${option:-0}
@@ -68,7 +64,6 @@ astep=${astep:-2}
 run=${run:-0}
 verbose=${verbose:-0}
 test1=${test1:-0}
-silent=${silent:-0}
 
 shift $((OPTIND-1))
 
@@ -93,7 +88,6 @@ waitForMe (){
     done
 }
 
-
 if [ ${run} == "1" ]; then
     seq 0 9 | xargs -I{} -n1 -P10 ../build/eicdirc -o ../data/l_b{}.root -s 1 -r {}{} ${simopt} -x "opticalphoton" -p "3.18 eV"  -e 1000000
     sleep 5
@@ -101,16 +95,6 @@ if [ ${run} == "1" ]; then
     sleep 5
     root -q -b loadlib.C lutmean.C'("../data/lut")' 
     exit
-fi
-
-if [ ${silent} == "1" ]; then
-   for i in $(eval echo {30..140..${astep}}); do 
-       echo ../build/eicdirc -r $tseed$i -o hdata/h_b$i.root -s 0 -a $i -x "pi+" -e $nevents  $simopt -v $verbose -b 1 
-   done
-   for i in $(eval echo {30..140..$astep}); do
-       echo ../build/eicdirc -i hdata/h_b$i.root -o r_b${tseed}_$i.root -s 2 -t $test1 -v $verbose 
-   done
-   exit
 fi
 
 if [ ${run} != "2" ]; then
