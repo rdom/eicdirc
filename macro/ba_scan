@@ -34,7 +34,7 @@ show_help(){
 }
 
 OPTIND=1 
-while getopts "h?r:j:qs:e:v:t" opt; do
+while getopts "h?r:j:qs:e:v:t:" opt; do
     case "$opt" in
 	h|\?)
             show_help
