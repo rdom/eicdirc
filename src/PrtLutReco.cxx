@@ -176,9 +176,9 @@ void PrtLutReco::Run(int start, int end){
   
   std::cout<<"Run started for ["<<start<<","<<end <<"]"<<std::endl;
 
-  int fEvId = 2030;
+  int fEvId = 2032; //2030
 
-  { // identify particle involved 
+  { // identify particles involved 
     fp1=0;
     fp2=0;
     for(int i=0; i<nEvents; i++){
@@ -195,8 +195,7 @@ void PrtLutReco::Run(int start, int end){
       fp1=fp2;
       fp2=t;      
     }
-  }
-  
+  }  
 
   int ntotal=0;
   for (int ievent=0; ievent<nEvents; ievent++){
@@ -214,7 +213,6 @@ void PrtLutReco::Run(int start, int end){
     double minChangle = 0.35;
     double maxChangle = 0.9;    
     TVector3 rotatedmom = fEvent->GetMomentum().Unit();
-    double mass[] = {0.000511,0.1056584,0.139570,0.49368,0.9382723};
     double sum1(0),sum2(0),noise(0.2);
 
     // track smearing
@@ -227,7 +225,7 @@ void PrtLutReco::Run(int start, int end){
     // if(theta<35) fSigma=0.005;
 
     for(int i=0; i<5; i++){
-      fAngle[i] = acos(sqrt(mom*mom + mass[i]*mass[i])/mom/1.4738); //1.4738 = 370 = 3.35
+      fAngle[i] = acos(sqrt(mom*mom + prt_mass[i]*prt_mass[i])/mom/1.4738); //1.4738 = 370 = 3.35
       fFunc[i]->SetParameter(0,1);
       fFunc[i]->SetParameter(1,fAngle[i]);
       fFunc[i]->SetParameter(2,fSigma);
@@ -242,6 +240,7 @@ void PrtLutReco::Run(int start, int end){
       dirz = fHit.GetMomentum().Z();
       int mcp = fHit.GetMcpId();
       int pix = fHit.GetPixelId();
+      int ch = 300*mcp+pix;
 
       TVector3 dir0 = fHit.GetMomentum().Unit();      
       TVector3 cz = TVector3(-rotatedmom.X(),rotatedmom.Y(),rotatedmom.Z());
@@ -262,9 +261,8 @@ void PrtLutReco::Run(int start, int end){
 
       double theta0 = rotatedmom.Angle(dir0);
       fHist5->Fill(theta0*TMath::Sin(phi0),theta0*TMath::Cos(phi0));
-      int sensorId = 300*fHit.GetMcpId()+fHit.GetPixelId();
 
-      PrtLutNode *node = (PrtLutNode*) fLut->At(sensorId);
+      PrtLutNode *node = (PrtLutNode*) fLut->At(ch);
       int size = node->Entries();
       bool isGoodHit(false);
       
@@ -278,7 +276,7 @@ void PrtLutReco::Run(int start, int end){
       TString spath = Form("%ld",hpath);
       //if(spath.Length()>8) continue;
 
-      // std::cout<<"========================= spath "<<spath<<std::endl;
+      std::cout<<ch<<" "<<mcp<<" ========================= spath "<<spath<<std::endl;
       
       //if(!spath.EqualTo("87")) continue;
       //if(spath.Contains("1")) continue;
@@ -290,8 +288,8 @@ void PrtLutReco::Run(int start, int end){
 	bool ipath=0;
 	if(hpath==lpath) ipath=1;
 	//if(!slpath.Contains("4")) continue;
-	// std::cout<<"slpath "<<slpath<<std::endl;
-	//if(!ipath) continue;	
+	std::cout<<"slpath "<<slpath<<std::endl;
+	if(!ipath) continue;	
 	//if(lpath!=387) continue;		
 	//if(node->GetNRefl(i)>8) continue;	
 	
@@ -361,6 +359,7 @@ void PrtLutReco::Run(int start, int end){
       }
       
       if(isGoodHit){
+	std::cout<<"------------- good "<<std::endl;       
 	nsHits++;
 	tnph[pid]++;
 	prt_hdigi[mcp]->Fill(pix/16, pix%16);
@@ -412,7 +411,7 @@ void PrtLutReco::Run(int start, int end){
     std::cout<<Form("SPR=%2.2F N=%2.2f",spr,nph[2])<<std::endl; 
 
     TF1 *ff;
-    double m1,m2,s1,s2;
+    double m1=0,m2=0,s1=1,s2=1;
     if(fLnDiff[fp2]->GetEntries()>10){
       fLnDiff[fp2]->Fit("gaus","S");
       ff = fLnDiff[fp2]->GetFunction("gaus");
@@ -483,8 +482,8 @@ void PrtLutReco::Run(int start, int end){
 	    
       hthetac[fp1]->SetTitle(Form("theta %1.2f", prt_theta));
       hthetac[fp1]->Draw("");
-      hthetac[fp2]->Draw("same");
-      drawTheoryLines(1);
+      hthetac[fp2]->Draw("");
+      drawTheoryLines(6);
 
       prt_canvasAdd("tangled"+nid,800,400);
       prt_normalize(hthetacd, 5);	    
@@ -517,7 +516,6 @@ void PrtLutReco::Run(int start, int end){
       prt_canvasAdd("chroml"+nid,800,400);
       fhChromL->SetStats(0);
       fhChromL->Draw("colz");
-
     }
       
     { // hp
@@ -713,11 +711,10 @@ void PrtLutReco::FitRing(double& x0, double& y0, double& theta){
 
 int PrtLutReco::FindPdg(double mom, double cangle){
   int pdg[]={11,13,211,321,2212};
-  double mass[] = {0.000511,0.1056584,0.139570,0.49368,0.9382723};
   double tdiff, diff=100;
   int minid=0;
   for(int i=0; i<5; i++){
-    tdiff = fabs(cangle - acos(sqrt(mom*mom + mass[i]*mass[i])/mom/1.46907)); //1.46907 - fused silica
+    tdiff = fabs(cangle - acos(sqrt(mom*mom + prt_mass[i]*prt_mass[i])/mom/1.46907)); //1.46907 - fused silica
     if(tdiff<diff){
       diff = tdiff;
       minid = i;
@@ -809,9 +806,8 @@ double PrtLutReco::FindStartTime(PrtEvent *evt){
 void PrtLutReco::drawTheoryLines(double mom){
   gPad->Update();
   
-  double mass[] = {0.000511,0.1056584,0.139570,0.49368,0.9382723};
   for(int i=0; i<5; i++){
-    fAngle[i] = acos(sqrt(mom*mom + mass[i]*mass[i])/mom/1.4738); //1.4738 = 370 = 3.35
+    fAngle[i] = acos(sqrt(mom*mom + prt_mass[i]*prt_mass[i])/mom/1.4738); //1.4738 = 370 = 3.35
   }
   
   TLine *line = new TLine(0,0,0,1000);

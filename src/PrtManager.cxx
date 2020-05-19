@@ -15,7 +15,7 @@ PrtManager::PrtManager(G4String outfile, G4int runtype)
   fOutName = fOutName.Remove(fOutName.Last('.'));
   fRunType = runtype;
   fRootFile = new TFile(filename,"RECREATE");
-
+  
   if(fRunType==0 || fRunType==10){
     fTree = new TTree("data","Prototype hits tree");
     fEvent = new PrtEvent();
