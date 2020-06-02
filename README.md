@@ -1,5 +1,5 @@
 ## Instalation
-
+```
 git clone https://github.com/rdom/prttools
 git clone https://github.com/rdom/eicdirc
 cd eicdirc
@@ -10,7 +10,7 @@ make -j4
 
 #test event display
 ./eicdirc -s 0 -a 30 -x "pi+" -p 6.0 -w 0 -h 11 -c 4 -l 3 -v 0 -zpos 1 -g 1 -ev 0 -e 1
-
+```
 
 
 ## Synopsis
