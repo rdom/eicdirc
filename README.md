@@ -1,11 +1,26 @@
-##Synopsis
+## Instalation
+
+git clone https://github.com/rdom/prttools
+git clone https://github.com/rdom/eicdirc
+cd eicdirc
+mkdir build
+cd build
+cmake ..
+make -j4
+
+#test event display
+./eicdirc -s 0 -a 30 -x "pi+" -p 6.0 -w 0 -h 11 -c 4 -l 3 -v 0 -zpos 1 -g 1 -ev 0 -e 1
+
+
+
+## Synopsis
 ```
 eicdirc [OPTION] [ARGUMENT] ... [OPTION] [ARGUMENT]
 
 example:
 ./eicdirc -a 40 -l 0 -x "pi+" -p 1 -w 0 -g 0 -e 1
 ```
-##Options
+## Options
 ```
 -o    output file name
 -i    input file name
@@ -85,7 +100,7 @@ example:
 
 ```
 
-##Example of script usage from macro folder
+## Example of script usage from macro folder
 ```
 ./ba_scan -j6 -r0 -s5 -e50 -t1 -v0
 root da_scan.C'("r_spr39498736070.root","ttt1.root")'
