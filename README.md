@@ -1,5 +1,7 @@
 ## Instalation
 ```
+#install and initialize geant4 with -DGEANT4_USE_OPENGL_X11=ON -DGEANT4_USE_QT=ON
+
 git clone https://github.com/rdom/prttools
 git clone https://github.com/rdom/eicdirc
 cd eicdirc
