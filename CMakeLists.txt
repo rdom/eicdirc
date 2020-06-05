@@ -31,6 +31,8 @@ include(${Geant4_USE_FILE})
 file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cxx)
 file(GLOB headers ${PROJECT_SOURCE_DIR}/src/*.h)
 
+#MESSAGE(STATUS ${ROOT_LIBRARIES})
+
 #----------------------------------------------------------------------------
 # Generate dictionary for root
 ROOT_GENERATE_DICTIONARY(G__Prt PrtHit.h PrtEvent.h PrtLutNode.h PrtAmbiguityInfo.h PrtPhotonInfo.h PrtTrackInfo.h LINKDEF src/PrtLinkDef.h MODULE Prt)
@@ -43,7 +45,7 @@ target_link_libraries(Prt ${ROOT_LIBRARIES} -lSpectrum -lHistPainter)
 #
 #set (CMAKE_CXX_FLAGS "-std=gnu++11")
 add_executable(eicdirc PrtDirc.cxx ${sources})
-target_link_libraries(eicdirc -lGLU ${Geant4_LIBRARIES} Prt)
+target_link_libraries(eicdirc ${Geant4_LIBRARIES} Prt)
 
 #----------------------------------------------------------------------------
 # Copy all scripts to the build directory, i.e. the directory in which we
