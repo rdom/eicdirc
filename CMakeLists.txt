@@ -36,12 +36,14 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/src/*.h)
 ROOT_GENERATE_DICTIONARY(G__Prt PrtHit.h PrtEvent.h PrtLutNode.h PrtAmbiguityInfo.h PrtPhotonInfo.h PrtTrackInfo.h LINKDEF src/PrtLinkDef.h MODULE Prt)
 add_library(Prt SHARED src/PrtHit.cxx src/PrtEvent.cxx src/PrtLutNode.cxx src/PrtAmbiguityInfo.cxx src/PrtPhotonInfo.cxx src/PrtTrackInfo.cxx G__Prt.cxx)
 
+target_link_libraries(Prt ${ROOT_LIBRARIES} -lSpectrum -lHistPainter)
+
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4 libraries
 #
 #set (CMAKE_CXX_FLAGS "-std=gnu++11")
 add_executable(eicdirc PrtDirc.cxx ${sources})
-target_link_libraries(eicdirc -lGLU ${Geant4_LIBRARIES} ${ROOT_LIBRARIES} Prt -lSpectrum -lHistPainter)
+target_link_libraries(eicdirc -lGLU ${Geant4_LIBRARIES} Prt)
 
 #----------------------------------------------------------------------------
 # Copy all scripts to the build directory, i.e. the directory in which we
