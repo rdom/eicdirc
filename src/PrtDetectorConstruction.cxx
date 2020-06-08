@@ -120,7 +120,7 @@ PrtDetectorConstruction::~PrtDetectorConstruction(){}
 
 G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   DefineMaterials();
-    
+
   // ------------- Volumes --------------
 
   // The experimental Hall
@@ -978,7 +978,6 @@ void PrtDetectorConstruction::SetVisualization(){
   waBar->SetVisibility(true);
   lBar->SetVisAttributes(waBar);
   lExpVol->SetVisAttributes(waBar);
-  if(lWedge) lWedge->SetVisAttributes(waBar);  
   
   G4VisAttributes *waGlue = new G4VisAttributes(G4Colour(0.,0.4,0.9,0.1));
   waGlue->SetVisibility(true);
@@ -988,7 +987,6 @@ void PrtDetectorConstruction::SetVisualization(){
   G4VisAttributes *waMirror = new G4VisAttributes(G4Colour(1.,1.,0.9,0.2));
   waMirror->SetVisibility(true);
   lMirror->SetVisAttributes(waMirror);
-  if(lFmirror) lFmirror->SetVisAttributes(waMirror);
 
   G4double transp = 0.4;
   G4VisAttributes * vaLens = new G4VisAttributes(G4Colour(0.,1.,1.,transp));
@@ -1014,9 +1012,14 @@ void PrtDetectorConstruction::SetVisualization(){
   lPrizm->SetVisAttributes(waPrizm);
   lPrizmT1->SetVisAttributes(waPrizm);
   lPrizmT2->SetVisAttributes(waPrizm);
-  if(lBlock) lBlock->SetVisAttributes(waPrizm); 
-  if(lWindow) lWindow->SetVisAttributes(waPrizm);
-  if(lSWedge) lSWedge->SetVisAttributes(waPrizm);
+
+  if(fEvType == 1){
+    lBlock->SetVisAttributes(waPrizm); 
+    lWindow->SetVisAttributes(waPrizm);
+    lWedge->SetVisAttributes(waBar);  
+    lSWedge->SetVisAttributes(waPrizm);
+    lFmirror->SetVisAttributes(waMirror);
+  }
   
   //G4VisAttributes *waMcp = new G4VisAttributes(G4Colour(0.1,0.1,0.9,0.3));
   G4VisAttributes *waMcp = new G4VisAttributes(G4Colour(1.0,0.,0.1,0.4));
