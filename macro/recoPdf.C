@@ -16,7 +16,7 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", double timeres
   TH1F *hl[5],*hll[5],*hnph[5];
   for(int i=0; i<5; i++){
     hl[i] = new TH1F(Form("hl_%d",i),";LE time [ns]; entries [#]", 2000,0,100);    
-    hll[i]= new TH1F(Form("ll_i%d",i),";ln L("+prt_lname[pid]+") - ln L(#pi); entries [#]",120,-40,40);
+    hll[i]= new TH1F(Form("ll_i%d",i),";ln L("+prt_lname[pid]+") - ln L(#pi); entries [#]",140,-140,140);
     hnph[i] = new TH1F(Form("hnph_%d",i),";multiplicity [#]; entries [#]", 200,0,200);
     hnph[i]->SetLineColor(prt_color[i]);
     hll[i]->SetLineColor(prt_color[i]);
