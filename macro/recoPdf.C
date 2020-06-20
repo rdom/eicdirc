@@ -132,7 +132,7 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", double timeres
   prt_canvasSave(2,0);
 
 
-  TFile fc(prt_savepath+"/res_"+name+".root","recreate");
+  TFile fc(in+"_r.root","recreate");
   TTree *tc = new TTree("reco","reco");
   tc->Branch("theta",&prt_theta,"prt_theta/D");
   tc->Branch("sep",&sep,"sep/D");
