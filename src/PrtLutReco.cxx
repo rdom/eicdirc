@@ -176,7 +176,7 @@ void PrtLutReco::Run(int start, int end){
   
   std::cout<<"Run started for ["<<start<<","<<end <<"]"<<std::endl;
 
-  int fEvId = 2032; //2030
+  int fEvId = 2030; //2032
 
   { // identify particles involved 
     fp1=0;
@@ -229,6 +229,8 @@ void PrtLutReco::Run(int start, int end){
       fFunc[i]->SetParameter(0,1);
       fFunc[i]->SetParameter(1,fAngle[i]);
       fFunc[i]->SetParameter(2,fSigma);
+      // if(i==0) fFunc[i]->SetParameter(2,0.0074);
+      // if(i==2) fFunc[i]->SetParameter(2,0.0064);
     }
 
     //double stime = FindStartTime(fEvent);    
@@ -276,7 +278,7 @@ void PrtLutReco::Run(int start, int end){
       TString spath = Form("%ld",hpath);
       //if(spath.Length()>8) continue;
 
-      std::cout<<ch<<" "<<mcp<<" ========================= spath "<<spath<<std::endl;
+      // std::cout<<ch<<" "<<mcp<<" ========================= spath "<<spath<<std::endl;
       
       //if(!spath.EqualTo("87")) continue;
       //if(spath.Contains("1")) continue;
@@ -287,11 +289,11 @@ void PrtLutReco::Run(int start, int end){
 	TString slpath = Form("%ld",lpath);
 	bool ipath=0;
 	if(hpath==lpath) ipath=1;
-	//if(!slpath.Contains("4")) continue;
-	std::cout<<"slpath "<<slpath<<std::endl;
-	if(!ipath) continue;	
-	//if(lpath!=387) continue;		
-	//if(node->GetNRefl(i)>8) continue;	
+	// if(!slpath.Contains("4")) continue;
+	// std::cout<<"slpath "<<slpath<<std::endl;
+	// if(!ipath) continue;	
+	// if(lpath!=387) continue;		
+	// if(node->GetNRefl(i)>8) continue;	
 	
 	evtime = node->GetTime(i);
 	for(int u=0; u<4; u++){
@@ -359,7 +361,7 @@ void PrtLutReco::Run(int start, int end){
       }
       
       if(isGoodHit){
-	std::cout<<"------------- good "<<std::endl;       
+	// std::cout<<"------------- good "<<std::endl;       
 	nsHits++;
 	tnph[pid]++;
 	prt_hdigi[mcp]->Fill(pix/16, pix%16);
@@ -482,8 +484,8 @@ void PrtLutReco::Run(int start, int end){
 	    
       hthetac[fp1]->SetTitle(Form("theta %1.2f", prt_theta));
       hthetac[fp1]->Draw("");
-      hthetac[fp2]->Draw("");
-      drawTheoryLines(6);
+      hthetac[fp2]->Draw("same");
+      drawTheoryLines(1);
 
       prt_canvasAdd("tangled"+nid,800,400);
       prt_normalize(hthetacd, 5);	    
