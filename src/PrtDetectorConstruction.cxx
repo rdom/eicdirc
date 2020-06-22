@@ -991,10 +991,10 @@ void PrtDetectorConstruction::SetVisualization(){
   G4double transp = 0.4;
   G4VisAttributes * vaLens = new G4VisAttributes(G4Colour(0.,1.,1.,transp));
   vaLens->SetForceWireframe(true);
-  //vaLens->SetForceAuxEdgeVisible(true);
-  //vaLens->SetForceLineSegmentsPerCircle(10);
-  //vaLens->SetLineWidth(4);
-
+  // vaLens->SetForceAuxEdgeVisible(true);
+  // vaLens->SetForceLineSegmentsPerCircle(10);
+  // vaLens->SetLineWidth(4);
+   
   if(fLensId==100 )lLens3->SetVisAttributes(vaLens);    
   
   if(fLensId==2 || fLensId==3 || fLensId==6 ){
@@ -1007,8 +1007,8 @@ void PrtDetectorConstruction::SetVisualization(){
   }
 
   G4VisAttributes *waPrizm = new G4VisAttributes(G4Colour(0.,0.9,0.9,0.4)); //0.4
-  //waPrizm->SetForceAuxEdgeVisible(true);
-  //waPrizm->SetForceSolid(true);
+  // waPrizm->SetForceAuxEdgeVisible(true);
+  // waPrizm->SetForceSolid(true);
   lPrizm->SetVisAttributes(waPrizm);
   lPrizmT1->SetVisAttributes(waPrizm);
   lPrizmT2->SetVisAttributes(waPrizm);
@@ -1021,9 +1021,9 @@ void PrtDetectorConstruction::SetVisualization(){
     lFmirror->SetVisAttributes(waMirror);
   }
   
-  //G4VisAttributes *waMcp = new G4VisAttributes(G4Colour(0.1,0.1,0.9,0.3));
+  // G4VisAttributes *waMcp = new G4VisAttributes(G4Colour(0.1,0.1,0.9,0.3));
   G4VisAttributes *waMcp = new G4VisAttributes(G4Colour(1.0,0.,0.1,0.4));
-  //waMcp->SetForceWireframe(true);
+  // waMcp->SetForceWireframe(true);
   waMcp->SetForceSolid(true);
   lMcp->SetVisAttributes(waMcp);
 

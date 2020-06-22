@@ -102,8 +102,28 @@ example:
 
 ```
 
+## LUT generation
+
+
+
+
+```
+eicdirc -o ../data/lut.root -s 1 -g 1 -h 11 -c 4 -l 3 -v 0 -ev 0 -x "opticalphoton" -p "3.18 eV"  -e 1000000 -b 1
+```
+
+Visualization of 100 events:
+eicdirc -o ../data/lut.root -s 1 -g 1 -h 11 -c 4 -l 3 -v 0 -ev 0 -x "opticalphoton" -p "3.18 eV"  -e 100
+
+![alt text](https://github.com/rdom/eicdirc/raw/master/pic/eicdirc_lut_gen.png)
+
+
+LUT avereging:
+```
+root -q -b loadlib.C lutmean.C'("../data/lut")'
+```
+
 ## Example of script usage from macro folder
 ```
-./ba_scan -j6 -r0 -s5 -e50 -t1 -v0
+ba_scan -j6 -r0 -s5 -e50 -t1 -v0
 root da_scan.C'("r_spr39498736070.root","ttt1.root")'
 ```
