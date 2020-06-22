@@ -104,9 +104,6 @@ example:
 
 ## LUT generation
 
-
-
-
 ```
 eicdirc -o ../data/lut.root -s 1 -g 1 -h 11 -c 4 -l 3 -v 0 -ev 0 -x "opticalphoton" -p "3.18 eV"  -e 1000000 -b 1
 ```
@@ -122,12 +119,12 @@ LUT averaging:
 root -q -b loadlib.C lutmean.C'("../data/lut")'
 ```
 
-Simulation:
+## Simulation:
 ```
 eicdirc -r 1 -o hits.root -s 0 -a 30 -x "mix_pik" -p 6 -w 0 -g 1 -h 11 -c 4 -l 3 -z 0.0005 -v 0 -zpos 1 -ev 0 -b 1 -e 2000
 ```
 
-Reconstruction:
+## Reconstruction:
 ```
 eicdirc s 2 -i hits.root -u ../data/lut_avr.root -s 2 -tc 0.5 -v 3 -e 0 -t1 0.0005
 ```
