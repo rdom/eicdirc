@@ -1,4 +1,4 @@
-## Instalation
+## Installation
 ```
 #install and initialize geant4 with -DGEANT4_USE_OPENGL_X11=ON -DGEANT4_USE_QT=ON
 
@@ -55,7 +55,7 @@ example:
                 0    4x6 standard MCPs (pixel size == mcp size)
                 1    4x6 standard MCPs (6.4x6.4 pixels)
 		3    one MCP cover all FD plain (custom pixel size)
-		4    4x6 MCPs with compact paking and 32x32 pixels (2 mm x 2 mm)
+		4    4x6 MCPs with compact packing and 32x32 pixels (2 mm x 2 mm)
 -l    focusing system
                 0    no lens
                 1    spherical lens
@@ -82,7 +82,7 @@ example:
 
 -w    physical list
                 0    standard
-                1    without multiple scattering, ionisation and bremsstrahlung
+                1    without multiple scattering, ionization and bremsstrahlung
                 10   monochromatic Cherenkov light
                 11   10 + 1 
 
@@ -117,7 +117,7 @@ eicdirc -o ../data/lut.root -s 1 -g 1 -h 11 -c 4 -l 3 -v 0 -ev 0 -x "opticalphot
 ![alt text](https://github.com/rdom/eicdirc/raw/master/pic/eicdirc_lut_gen.png)
 
 
-LUT avereging:
+LUT averaging:
 ```
 root -q -b loadlib.C lutmean.C'("../data/lut")'
 ```
