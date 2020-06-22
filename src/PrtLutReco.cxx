@@ -474,7 +474,10 @@ void PrtLutReco::Run(int start, int end){
       gPad->WaitPrimitive();  
     }
   }
-
+  
+  tree.Fill();
+  tree.Write();  
+  
   if(fVerbose>1){
     TString nid = Form("_%1.2f_%1.4f",prt_theta,test1);
 
@@ -606,13 +609,10 @@ void PrtLutReco::Run(int start, int end){
       fDiff->Draw("colz");	
     }
     
-     if(fVerbose>2) prt_waitPrimitive("lh"+nid,"none");
+    if(fVerbose>2) prt_waitPrimitive("lh"+nid,"none");
 
     prt_canvasSave("data/reco");
-  }
-    
-  tree.Fill();
-  tree.Write();
+  }    
 }
 
 bool PrtLutReco::FindPeak(double& cherenkovreco, double& spr){
