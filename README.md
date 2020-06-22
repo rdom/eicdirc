@@ -122,7 +122,28 @@ LUT averaging:
 root -q -b loadlib.C lutmean.C'("../data/lut")'
 ```
 
+Simulation:
+```
+eicdirc -r 1 -o hits.root -s 0 -a 30 -x "mix_pik" -p 6 -w 0 -g 1 -h 11 -c 4 -l 3 -z 0.0005 -v 0 -zpos 1 -ev 0 -b 1 -e 2000
+```
+
+Reconstruction:
+```
+eicdirc s 2 -i hits.root -u ../data/lut_avr.root -s 2 -tc 0.5 -v 3 -e 0 -t1 0.0005
+```
+
+
 ## Example of script usage from macro folder
+
+hit pattern:
+
+```
+root loadlib.C drawHP.C'("../build/hits.root")'
+```
+Example of 1k of 6 GeV/c pions @ 30 degree:
+![alt text](https://github.com/rdom/eicdirc/raw/master/pic/hp_pi_1k.png)
+
+angle scan:
 ```
 ba_scan -j6 -r0 -s5 -e50 -t1 -v0
 root da_scan.C'("r_spr39498736070.root","ttt1.root")'

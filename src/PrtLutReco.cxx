@@ -485,7 +485,7 @@ void PrtLutReco::Run(int start, int end){
       hthetac[fp1]->SetTitle(Form("theta %1.2f", prt_theta));
       hthetac[fp1]->Draw("");
       hthetac[fp2]->Draw("same");
-      drawTheoryLines(1);
+      drawTheoryLines(6);
 
       prt_canvasAdd("tangled"+nid,800,400);
       prt_normalize(hthetacd, 5);	    
