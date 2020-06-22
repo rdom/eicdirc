@@ -126,7 +126,7 @@ eicdirc -r 1 -o hits.root -s 0 -a 30 -x "mix_pik" -p 6 -w 0 -g 1 -h 11 -c 4 -l 3
 
 ## Reconstruction:
 ```
-eicdirc s 2 -i hits.root -u ../data/lut_avr.root -s 2 -tc 0.5 -v 3 -e 0 -t1 0.0005
+eicdirc -s 2 -i hits.root -u ../data/lut_avr.root -s 2 -tc 0.5 -v 3 -e 0 -t1 0.0005
 ```
 
 
