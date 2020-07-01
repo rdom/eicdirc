@@ -488,7 +488,7 @@ void PrtLutReco::Run(int start, int end){
       hthetac[fp1]->SetTitle(Form("theta %1.2f", prt_theta));
       hthetac[fp1]->Draw("");
       hthetac[fp2]->Draw("same");
-      drawTheoryLines(6);
+      drawTheoryLines(1);
 
       prt_canvasAdd("tangled"+nid,800,400);
       prt_normalize(hthetacd, 5);	    
@@ -506,8 +506,11 @@ void PrtLutReco::Run(int start, int end){
     }
     
     { // sep
+      fLnDiff[fp1]->SetStats(0);
+      fLnDiff[fp2]->SetStats(0);
+	    
       prt_canvasAdd("lh"+nid,800,400);
-      prt_normalize(fLnDiff[2],fLnDiff[fp2]);
+      prt_normalize(fLnDiff, 5);
       fLnDiff[fp2]->SetName(Form("s_%2.2f",sep));
       fLnDiff[fp2]->GetXaxis()->SetTitle("ln L("+prt_lname[fp2]+") - ln L("+prt_lname[fp1]+")");      
       fLnDiff[fp2]->Draw();

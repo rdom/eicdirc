@@ -71,7 +71,7 @@ example:
 -x    particle type
               "pi+"
               "proton"
-              "kaon"
+              "kaon+"
                  ...
               "opticalphoton"
               "mix_pik"  1 pion 1 kaon mix
