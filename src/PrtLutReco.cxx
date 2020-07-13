@@ -128,17 +128,19 @@ PrtLutReco::~PrtLutReco(){
 //-------------- Loop over tracks ------------------------------------------
 void PrtLutReco::Run(int start, int end){
   TVector3 dird, dir, momInBar(0,0,1),posInBar;
-  double mom, cangle,spr,tangle,tdiff,evtime, bartime, lenz,dirz,luttheta, hitTime;
+  double mom,tangle,tdiff,evtime, bartime, lenz,dirz,luttheta, hitTime;
   int tofPid(0),distPid(0),likePid(0);
   bool reflected = kFALSE;
   gStyle->SetOptFit(111);
   
-  TVector3 fnX1 = TVector3 (1,0,0);   
-  TVector3 fnY1 = TVector3( 0,1,0);
+  TVector3 fnX1 = TVector3(1,0,0);   
+  TVector3 fnY1 = TVector3(0,1,0);
   int nsHits(0),nsEvents(0);
-  
-  double theta(0),phi(0), trr(0), nph[5]={0}, par5(0), par6(0),
-    timeRes(0),ctimeRes(0), test1(0),test2(0),test3(0),sep(0);
+
+  double theta(0),phi(0),
+    cangle[5] = {0}, spr[5] = {0}, trr[5] = {0}, nph[5] = {0}, nph_err[5] = {0},
+    par5(0), par6(0),
+    timeRes(0), ctimeRes(0), test1(0), test2(0), test3(0), sep(0), sep_err(0);
 
   TGaxis::SetMaxDigits(3);
   prt_setRootPalette(1);
@@ -150,11 +152,13 @@ void PrtLutReco::Run(int start, int end){
   tree.Branch("tofPid", &tofPid,"tofPid/I");
   tree.Branch("distPid", &distPid,"distPid/I");
   tree.Branch("likePid", &likePid,"likePid/I");
-  tree.Branch("spr", &spr,"spr/D");
-  tree.Branch("trr", &trr,"trr/D");
+  tree.Branch("spr", &spr,"spr[5]/D");
+  tree.Branch("trr", &trr,"trr[5]/D");
   tree.Branch("nph",&nph,"nph[5]/D");
-  tree.Branch("cangle",&cangle,"cangle/D");
+  tree.Branch("nph_err",&nph_err,"nph_err[5]/D");
+  tree.Branch("cangle",&cangle,"cangle[5]/D");
   tree.Branch("sep",&sep,"sep/D");
+  tree.Branch("sep_err",&sep_err,"sep_err/D");
   tree.Branch("par5",&par5,"par5/D");
   tree.Branch("par6",&par6,"par6/D");
   tree.Branch("timeres",&timeRes,"timeRes/D");
@@ -318,8 +322,7 @@ void PrtLutReco::Run(int start, int end){
 	  tangle = rotatedmom.Angle(dir)+fCorr[mcp];//45;
 	  //if(tangle>TMath::PiOver2()) tangle = TMath::Pi()-tangle;
  
-	  if(fabs(tdiff)<2) tangle -= 0.01*tdiff; // chromatic correction
-	  
+	  if(fabs(tdiff)<2) tangle -= 0.01*tdiff; // chromatic correction	  
 	  if(fabs(tdiff)>timeCut+luttime*0.035) continue;
 	  fDiff->Fill(hitTime,tdiff);
 	  
@@ -361,7 +364,6 @@ void PrtLutReco::Run(int start, int end){
       }
       
       if(isGoodHit){
-	// std::cout<<"------------- good "<<std::endl;       
 	nsHits++;
 	tnph[pid]++;
 	prt_hdigi[mcp]->Fill(pix/16, pix%16);
@@ -383,11 +385,8 @@ void PrtLutReco::Run(int start, int end){
       prt_canvasDel("ff");
 
       FindPeak(cangle,spr);
-      spr = spr*1000;
-      //trr = spr/sqrt(tnph[2]);
       theta = fEvent->GetAngle();
       test2 = fEvent->GetTest2();
-      
       hthetac[fp1]->Reset();
     }
     
@@ -402,33 +401,43 @@ void PrtLutReco::Run(int start, int end){
       hnph[h]->Fit("gaus","","S",5,150);
       auto f = hnph[h]->GetFunction("gaus");
       nph[h] = f->GetParameter(1);	
-      //nph_err[h] = f->GetParError(1);
+      nph_err[h] = f->GetParError(1);
     }   
     
-    nph[2] = nsHits/(double)nsEvents;
-    spr = spr*1000;
-    trr = spr/sqrt(nph[2]);
     theta = fEvent->GetAngle();
     test2 = fEvent->GetTest2();
-    std::cout<<Form("SPR=%2.2F N=%2.2f",spr,nph[2])<<std::endl; 
 
     TF1 *ff;
-    double m1=0,m2=0,s1=1,s2=1;
+    double m1,m2,s1,s2,dm1,dm2,ds1,ds2;; 
     if(fLnDiff[fp2]->GetEntries()>10){
       fLnDiff[fp2]->Fit("gaus","S");
       ff = fLnDiff[fp2]->GetFunction("gaus");
       m1=ff->GetParameter(1);
       s1=ff->GetParameter(2);
+      dm1=ff->GetParError(1);
+      ds1=ff->GetParError(2);
     }
     if(fLnDiff[fp1]->GetEntries()>10){
       fLnDiff[fp1]->Fit("gaus","S");
       ff = fLnDiff[fp1]->GetFunction("gaus");      
       m2=ff->GetParameter(1);
       s2=ff->GetParameter(2);
+      dm2=ff->GetParError(1);
+      ds2=ff->GetParError(2);
     }
     sep = (fabs(m2-m1))/(0.5*(s1+s2));
-
-    std::cout<<"sep="<< sep <<" nph[2]= "<<nph[2]<<std::endl;    
+     
+    double e1,e2,e3,e4;
+    e1=2/(s1+s2)*dm1;
+    e2=2/(s1+s2)*dm2;
+    e3=-((2*(m1 + m2))/((s1 + s2)*(s1 + s2)))*ds1;
+    e4=-((2*(m1 + m2))/((s1 + s2)*(s1 + s2)))*ds2;
+    sep_err=sqrt(e1*e1+e2*e2+e3*e3+e4*e4);    
+    
+    std::cout<<Form("%3d : SPR=%2.2f N=%2.2f +/- %2.2f",prt_pdg[fp1],spr[fp1],nph[fp1],nph_err[fp1])<<std::endl;
+    std::cout<<Form("%3d : SPR=%2.2f N=%2.2f +/- %2.2f",prt_pdg[fp2],spr[fp2],nph[fp2],nph_err[fp2])<<std::endl;
+    std::cout<<Form("SEP=%2.2f +/- %2.2f ",sep,sep_err)<<std::endl; 
+    
   }
 
   if(!fVerbose) gROOT->SetBatch(1);
@@ -446,10 +455,8 @@ void PrtLutReco::Run(int start, int end){
     }
     for(int i=0; i<20; i++){
       std::cout<<(i?",":"")<<rr[i]<<std::endl;
-    }  
-  
+    }    
     ctimeRes = prt_fit(fFindTimeRes).Y();
- 
 
     gStyle->SetOptStat(0);
     prt_canvasAdd("fdtt",800,500);
@@ -618,31 +625,28 @@ void PrtLutReco::Run(int start, int end){
   }    
 }
 
-bool PrtLutReco::FindPeak(double& cherenkovreco, double& spr){
-  cherenkovreco=0;
-  spr=0;
-  //  gStyle->SetCanvasPreferGL(kTRUE);
-
+void PrtLutReco::FindPeak(double (&cangle)[5], double (&spr)[5]){
   for(int h=0; h<5; h++){    
+    spr[h]=0;
+    cangle[h]=0;
+      
     if(hthetac[h]->GetEntries()>20 ){
       gROOT->SetBatch(1);
       int nfound = fSpect->Search(hthetac[h],1,"",0.9); //0.6
-      if(nfound>0) cherenkovreco = fSpect->GetPositionX()[0];
-      else cherenkovreco =  hthetac[h]->GetXaxis()->GetBinCenter(hthetac[h]->GetMaximumBin());
-      // cherenkovreco = fAngle[2];
-      fFit->SetParameters(100,cherenkovreco,0.005,10);   // peak
+      if(nfound>0) cangle[h] = fSpect->GetPositionX()[0];
+      else cangle[h] =  hthetac[h]->GetXaxis()->GetBinCenter(hthetac[h]->GetMaximumBin());
+
+      fFit->SetParameters(100,cangle[h],0.005,10);   // peak
       fFit->SetParameter(2,0.005); // width
       fFit->FixParameter(2,0.008); // width
-      hthetac[h]->Fit("fgaus","","",cherenkovreco-3*fSigma,cherenkovreco+3*fSigma);
+      hthetac[h]->Fit("fgaus","Q","",cangle[h]-3*fSigma,cangle[h]+3*fSigma);
       fFit->ReleaseParameter(2); // width
-      hthetac[h]->Fit("fgaus","M","",cherenkovreco-3*fSigma,cherenkovreco+3*fSigma);
-      cherenkovreco = fFit->GetParameter(1);
-      spr = fFit->GetParameter(2); 
-      if(fVerbose>2) gROOT->SetBatch(0);    
+      hthetac[h]->Fit("fgaus","MQ","",cangle[h]-3*fSigma,cangle[h]+3*fSigma);
+      cangle[h] = fFit->GetParameter(1);
+      spr[h] = fFit->GetParameter(2)*1000; 
+      if(fVerbose>2) gROOT->SetBatch(0);
     }
   }
-  
-  return (cherenkovreco>0 && cherenkovreco<1);
 }
 
 void circleFcn(int &, double *, double &f, double *par, int) {
@@ -715,7 +719,6 @@ void PrtLutReco::FitRing(double& x0, double& y0, double& theta){
 }
 
 int PrtLutReco::FindPdg(double mom, double cangle){
-  int pdg[]={11,13,211,321,2212};
   double tdiff, diff=100;
   int minid=0;
   for(int i=0; i<5; i++){
@@ -725,7 +728,7 @@ int PrtLutReco::FindPdg(double mom, double cangle){
       minid = i;
     }
   }
-  return pdg[minid]; 
+  return prt_pdg[minid]; 
 }
 
 int gggg=0;

@@ -33,7 +33,7 @@ public:
   void drawTheoryLines(double mom=6);
 
 private:
-  bool FindPeak(double& cherenkovreco, double& spr);
+  void FindPeak(double (&cherenkovreco)[5], double (&spr)[5]);
   int FindPdg(double mom, double cangle);
   void FitRing(double& x0, double& y0, double& theta);
   double FindStartTime(PrtEvent *e);

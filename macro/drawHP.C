@@ -5,7 +5,7 @@
 #include "../../prttools/prttools.C"
 
 void drawHP(TString infile="../build/hits.root"){
-  
+
   if(!prt_init(infile,2)) return;
   for (int ievent=0; ievent<prt_entries; ievent++){
     prt_nextEvent(ievent,1000);
