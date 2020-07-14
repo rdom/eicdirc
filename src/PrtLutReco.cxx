@@ -486,7 +486,7 @@ void PrtLutReco::Run(int start, int end){
   tree.Write();  
   
   if(fVerbose>1){
-    TString nid = Form("_%1.2f_%1.4f_%1.2f",prt_theta,test1,prt_mom);
+    TString nid = Form("_%1.2f_%1.4f_%1.2f",prt_theta,test1,mom);
 
     { // cherenkov angle
       prt_canvasAdd("tangle"+nid,800,400);
