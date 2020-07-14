@@ -618,10 +618,11 @@ void PrtLutReco::Run(int start, int end){
       fDiff->SetStats(0);
       fDiff->Draw("colz");	
     }
-    
-    if(fVerbose>2) prt_waitPrimitive("lh"+nid,"none");
 
-    prt_canvasSave("data/reco");
+    prt_canvasSave("data/reco",1,0,0);
+	
+    if(fVerbose>2) prt_waitPrimitive("lh"+nid,"none");
+    
   }    
 }
 

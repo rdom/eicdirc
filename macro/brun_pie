@@ -1,0 +1,28 @@
+#!/bin/bash
+
+theads=30
+tseed=$(($(date +%s%N)/1000000-1393400000000))
+data="hdata_pie"
+
+waitForMe (){
+    while : 
+    do 
+	activth=$(ps aux | grep "[e]icdirc" | grep "h_b" | wc -l)
+	printf "\r$statusline [$activth] ---- [$(($(date +%s) - start_time)) s] "
+	sleep .1
+	if [ "$activth" -lt "$1" ]; then 
+	    break  
+	fi
+	sleep 1
+    done
+}
+
+mkdir -p $data
+
+for i in `LANG=en_us seq 0.5 0.1 0 5`; do
+    ../build/eicdirc -r $tseed$i -o ${data}/h_b$i.root  -s 0 -a 30 -x "mix_pie" -p $i -w 0 -h 11 -c 4 -l 3 -z 0.0005 -v 0 -zpos 1 -g 1 -ev 0 -e 2000 -b 1  > ${data}/l_b$i.log &
+
+    # ../build/eicdirc -o res_pimu_tr_$i.root -s 2 -i hits_pimu.root -u ../data/lut_avr.root -s 2 -tc 0.2 -t1 $i -v 2  &
+    waitForMe $threads
+done
+
