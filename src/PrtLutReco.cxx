@@ -663,8 +663,10 @@ void PrtLutReco::Run(int start, int end){
       fDiff->SetStats(0);
       fDiff->Draw("colz");	
     }
-
-    prt_canvasSave("data/reco",1,0,0);
+    
+    TString filedir=fCorrFile;
+    filedir.Remove(filedir.Last('/'));    
+    prt_canvasSave(filedir+"/reco",1,0,0);
 	
     if(fVerbose>2) prt_waitPrimitive("lh"+nid,"none");
     
