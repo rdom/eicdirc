@@ -338,7 +338,7 @@ void PrtLutReco::Run(int start, int end){
 	  tangle = rotatedmom.Angle(dir)+fCorr[mcp];//45;
 	  //if(tangle>TMath::PiOver2()) tangle = TMath::Pi()-tangle;
  
-	  if(fabs(tdiff)<2) tangle -= 0.01*tdiff; // chromatic correction	  
+	  if(fabs(tdiff)<2) tangle -= 0.008*tdiff; // chromatic correction	  
 	  if(fabs(tdiff)>timeCut+luttime*0.035) continue;
 	  fDiff->Fill(hitTime,tdiff);
 	  
