@@ -102,14 +102,16 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, int verbose){
   if(!gSystem->AccessPathName(fCorrFile)){
     std::cout<<"------- reading  "<<fCorrFile <<std::endl;
     int pmt;
-    double corr;
+    double corr,cspr[5];
     TChain ch; ch.SetName("corr"); ch.Add(fCorrFile);
-    ch.SetBranchAddress("pmt",&pmt);
+    ch.SetBranchAddress("pmt",&pmt);    
     ch.SetBranchAddress("corr",&corr);
+    ch.SetBranchAddress("cspr",&cspr);
     for(int i=0; i<ch.GetEntries(); i++){
       ch.GetEvent(i);
       fCorr[pmt] = (fabs(corr)<0.011)? corr: 0.00001;
-      std::cout<<"pmt "<<pmt<<"  "<<corr<<std::endl;    
+      fSigma = 0.001*cspr[2];
+      std::cout<<"pmt "<<pmt<<"  "<<corr<< " spr = "<<fSigma<<std::endl;    
     }
   }else{
     std::cout<<"------- corr file not found  "<<fCorrFile <<std::endl;
@@ -222,27 +224,35 @@ void PrtLutReco::Run(int start, int end){
     rotatedmom.RotateY(prt_rand.Gaus(0,test1));
     rotatedmom.Rotate(TMath::Pi(),init);
  
-    fSigma=0.0067;
-    if(fabs(theta-90)<30) fSigma=0.009;
-    // if(theta<35) fSigma=0.005;
+    if(fSigma<0.003) fSigma=0.007;  
 
     if(ievent==0){
       double range = 160;
-      if(mom>2) range = 60;
       if(mom>1.5) range = 100;
+      if(mom>2) range = 60;
       if(mom<1) range = 300;
       if(mom<0.7) range = 400;
       if(mom<0.6) range = 500;
+
+      if(fp2==3 && theta<120) range = 50;
+
       for(int h=0; h<5; h++){	
 	fLnDiff[h] = new TH1F(Form("LnDiff_%d",h),  ";ln L(K) - ln L(#pi);entries [#]",100,-range,range);
 	fLnDiff[h]->SetLineColor(prt_color[h]);
       }
     }
     
-    if(fp1==0 || fp2==0){ //electron
-      if(mom<0.7) fSigma=0.008;
-      if(mom>2) fSigma=0.006;
-    }
+    // if(fp1==0 || fp2==0){ //electron
+    //   fSigma=0.0057;
+    //   fSigma=0.0045;
+    //   if(theta<40 ) fSigma=0.007;
+    //   if(mom<0.7) fSigma=0.008;
+    //   if(mom>2) fSigma=0.006;
+    // }
+
+    // if(fp2==3){ // kaon
+    //   if(theta<120) fSigma=0.004;
+    // }
 
     for(int i=0; i<5; i++){
       fAngle[i] = acos(sqrt(mom*mom + prt_mass[i]*prt_mass[i])/mom/1.4738); //1.4738 = 370 = 3.35
@@ -338,7 +348,7 @@ void PrtLutReco::Run(int start, int end){
 	  tangle = rotatedmom.Angle(dir)+fCorr[mcp];//45;
 	  //if(tangle>TMath::PiOver2()) tangle = TMath::Pi()-tangle;
  
-	  if(fabs(tdiff)<2) tangle -= 0.008*tdiff; // chromatic correction	  
+	  if(fabs(tdiff)<2) tangle -= 0.007*tdiff; // chromatic correction
 	  if(fabs(tdiff)>timeCut+luttime*0.035) continue;
 	  fDiff->Fill(hitTime,tdiff);
 	  
@@ -360,7 +370,7 @@ void PrtLutReco::Run(int start, int end){
 	  fhChrom->Fill(tdiff,(tangle-fAngle[pid])*1000);
 	  fhChromL->Fill(tdiff/(lenz/cos(luttheta)),(tangle-fAngle[pid])*1000);
 	  
-	  if(fabs(tangle-fAngle[fp2])>0.05 && fabs(tangle-fAngle[fp1])>0.05) continue;
+	  if(fabs(tangle-fAngle[fp2])>0.03 && fabs(tangle-fAngle[fp1])>0.03) continue;
 
 	  if(tangle > minChangle && tangle < maxChangle){
 	    TVector3 rdir = TVector3(-dir.X(),dir.Y(),dir.Z());
@@ -471,7 +481,7 @@ void PrtLutReco::Run(int start, int end){
     
     std::cout<<Form("%3d : SPR = %2.2f N = %2.2f +/- %2.2f",prt_pdg[fp1],spr[fp1],nph[fp1],nph_err[fp1])<<std::endl;
     std::cout<<Form("%3d : SPR = %2.2f N = %2.2f +/- %2.2f",prt_pdg[fp2],spr[fp2],nph[fp2],nph_err[fp2])<<std::endl;
-    std::cout<<Form("SEP=%2.2f +/- %2.2f ",sep,sep_err)<<std::endl;    
+    std::cout<<Form("SEP = %2.2f +/- %2.2f ",sep,sep_err)<<std::endl;    
   }
 
   if(!fVerbose) gROOT->SetBatch(1);
@@ -613,6 +623,7 @@ void PrtLutReco::Run(int start, int end){
         double corr;
         tc->Branch("pmt",&pmt,"pmt/I");
         tc->Branch("corr",&corr,"corr/D");
+	tc->Branch("cspr",&spr,"cspr[5]/D");
        
         for(int i=0; i<prt_nmcp; i++){	  
 	  if(fHistMcp[i]->GetEntries()<20) continue;	  
