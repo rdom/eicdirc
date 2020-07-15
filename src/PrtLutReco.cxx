@@ -79,14 +79,12 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, int verbose){
   }  
   for(int h=0; h<5; h++){
     hthetac[h] = new TH1F(Form("thetac_%d",h),";#theta_{C} [rad];entries [#]", 200,0.75,0.9);
-    hthetacd[h] = new TH1F(Form("thetacd_%d",h),";#Delta#theta_{C} [mrad];entries [#]", 200,-60,60);
-    hnph[h] = new TH1F(Form("nph_%d",h),";detected photons [#];entries [#]", 150,0,150);
-    fLnDiff[h] = new TH1F(Form("LnDiff_%d",h),  ";ln L(K) - ln L(#pi);entries [#]",100,-160,160);
-    fFunc[h] = new TF1(Form("gaus_%d",h),"[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2])",0.7,0.9);    
     hthetac[h]->SetLineColor(prt_color[h]);
+    hthetacd[h] = new TH1F(Form("thetacd_%d",h),";#Delta#theta_{C} [mrad];entries [#]", 200,-60,60);
     hthetacd[h]->SetLineColor(prt_color[h]);
+    hnph[h] = new TH1F(Form("nph_%d",h),";detected photons [#];entries [#]", 150,0,150);
     hnph[h]->SetLineColor(prt_color[h]);
-    fLnDiff[h]->SetLineColor(prt_color[h]);
+    fFunc[h] = new TF1(Form("gaus_%d",h),"[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2])",0.7,0.9);    
     fFunc[h]->SetLineColor(prt_color[h]);
   }
 
@@ -101,7 +99,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, int verbose){
   // read corrections  
   fCorrFile = infile+"_corr.root";
   for(int i=0; i<prt_nmcp; i++) fCorr[i]=0;
-  if(!gSystem->AccessPathName(fCorrFile)){  
+  if(!gSystem->AccessPathName(fCorrFile)){
     std::cout<<"------- reading  "<<fCorrFile <<std::endl;
     int pmt;
     double corr;
@@ -227,6 +225,22 @@ void PrtLutReco::Run(int start, int end){
     fSigma=0.007;
     if(fabs(theta-90)<30) fSigma=0.009;
     // if(theta<35) fSigma=0.005;
+
+    if(ievent==0){
+      double range = 160;
+      if(mom>2) range = 100;
+      if(mom<1) range = 200;
+      if(mom<0.8) range = 300;
+      for(int h=0; h<5; h++){	
+	fLnDiff[h] = new TH1F(Form("LnDiff_%d",h),  ";ln L(K) - ln L(#pi);entries [#]",100,-range,range);
+	fLnDiff[h]->SetLineColor(prt_color[h]);
+      }
+    }
+    
+    if(fp1==0 || fp2==0){ //electron
+      if(mom<0.7) fSigma=0.008;
+      if(mom>2) fSigma=0.006;
+    }
 
     for(int i=0; i<5; i++){
       fAngle[i] = acos(sqrt(mom*mom + prt_mass[i]*prt_mass[i])/mom/1.4738); //1.4738 = 370 = 3.35
@@ -408,7 +422,7 @@ void PrtLutReco::Run(int start, int end){
     test2 = fEvent->GetTest2();
 
     TF1 *ff;
-    double m1,m2,s1,s2,dm1,dm2,ds1,ds2;; 
+    double m1=0,m2=0,s1=0,s2=0,dm1=0,dm2=0,ds1=0,ds2=0; 
     if(fLnDiff[fp2]->GetEntries()>10){
       fLnDiff[fp2]->Fit("gaus","S");
       ff = fLnDiff[fp2]->GetFunction("gaus");
