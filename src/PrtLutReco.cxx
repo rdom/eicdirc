@@ -228,9 +228,11 @@ void PrtLutReco::Run(int start, int end){
 
     if(ievent==0){
       double range = 160;
-      if(mom>2) range = 100;
-      if(mom<1) range = 200;
-      if(mom<0.8) range = 300;
+      if(mom>2) range = 60;
+      if(mom>1.5) range = 100;
+      if(mom<1) range = 300;
+      if(mom<0.7) range = 400;
+      if(mom<0.6) range = 500;
       for(int h=0; h<5; h++){	
 	fLnDiff[h] = new TH1F(Form("LnDiff_%d",h),  ";ln L(K) - ln L(#pi);entries [#]",100,-range,range);
 	fLnDiff[h]->SetLineColor(prt_color[h]);
