@@ -222,7 +222,7 @@ void PrtLutReco::Run(int start, int end){
     rotatedmom.RotateY(prt_rand.Gaus(0,test1));
     rotatedmom.Rotate(TMath::Pi(),init);
  
-    fSigma=0.007;
+    fSigma=0.0067;
     if(fabs(theta-90)<30) fSigma=0.009;
     // if(theta<35) fSigma=0.005;
 
@@ -360,7 +360,7 @@ void PrtLutReco::Run(int start, int end){
 	  fhChrom->Fill(tdiff,(tangle-fAngle[pid])*1000);
 	  fhChromL->Fill(tdiff/(lenz/cos(luttheta)),(tangle-fAngle[pid])*1000);
 	  
-	  if(fabs(tangle- fAngle[fp2])>0.05 && fabs(tangle-fAngle[fp1])>0.05) continue;
+	  if(fabs(tangle-fAngle[fp2])>0.05 && fabs(tangle-fAngle[fp1])>0.05) continue;
 
 	  if(tangle > minChangle && tangle < maxChangle){
 	    TVector3 rdir = TVector3(-dir.X(),dir.Y(),dir.Z());
@@ -432,14 +432,33 @@ void PrtLutReco::Run(int start, int end){
       s1=ff->GetParameter(2);
       dm1=ff->GetParError(1);
       ds1=ff->GetParError(2);
+
+      if(fp1==0 && mom <1.5){ //handle tails      
+	fLnDiff[fp2]->Fit("gaus","S","",m1-1.5*s1,500);
+	ff = fLnDiff[fp2]->GetFunction("gaus");
+	m1=ff->GetParameter(1);
+	s1=ff->GetParameter(2);
+	dm1=ff->GetParError(1);
+	ds1=ff->GetParError(2);
+      }
+      
     }
     if(fLnDiff[fp1]->GetEntries()>10){
       fLnDiff[fp1]->Fit("gaus","S");
-      ff = fLnDiff[fp1]->GetFunction("gaus");      
+      ff = fLnDiff[fp1]->GetFunction("gaus"); 
       m2=ff->GetParameter(1);
       s2=ff->GetParameter(2);
       dm2=ff->GetParError(1);
       ds2=ff->GetParError(2);
+
+      if(fp1==0 && mom <1.5){ ///handle tails
+	fLnDiff[fp1]->Fit("gaus","S","",-500,m2+1.5*s2);
+	ff = fLnDiff[fp1]->GetFunction("gaus");      
+	m2=ff->GetParameter(1);
+	s2=ff->GetParameter(2);
+	dm2=ff->GetParError(1);
+	ds2=ff->GetParError(2);
+      }
     }
     sep = (fabs(m2-m1))/(0.5*(s1+s2));
      
@@ -450,10 +469,9 @@ void PrtLutReco::Run(int start, int end){
     e4=-((2*(m1 + m2))/((s1 + s2)*(s1 + s2)))*ds2;
     sep_err=sqrt(e1*e1+e2*e2+e3*e3+e4*e4);    
     
-    std::cout<<Form("%3d : SPR=%2.2f N=%2.2f +/- %2.2f",prt_pdg[fp1],spr[fp1],nph[fp1],nph_err[fp1])<<std::endl;
-    std::cout<<Form("%3d : SPR=%2.2f N=%2.2f +/- %2.2f",prt_pdg[fp2],spr[fp2],nph[fp2],nph_err[fp2])<<std::endl;
-    std::cout<<Form("SEP=%2.2f +/- %2.2f ",sep,sep_err)<<std::endl; 
-    
+    std::cout<<Form("%3d : SPR = %2.2f N = %2.2f +/- %2.2f",prt_pdg[fp1],spr[fp1],nph[fp1],nph_err[fp1])<<std::endl;
+    std::cout<<Form("%3d : SPR = %2.2f N = %2.2f +/- %2.2f",prt_pdg[fp2],spr[fp2],nph[fp2],nph_err[fp2])<<std::endl;
+    std::cout<<Form("SEP=%2.2f +/- %2.2f ",sep,sep_err)<<std::endl;    
   }
 
   if(!fVerbose) gROOT->SetBatch(1);
