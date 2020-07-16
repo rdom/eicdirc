@@ -445,7 +445,7 @@ void PrtLutReco::Run(int start, int end){
       ds1=ff->GetParError(2);
 
       if(fp1==0 && mom <1.5){ //handle tails      
-      	fLnDiff[fp2]->Fit("gaus","S","",m1-2*s1,500);
+      	fLnDiff[fp2]->Fit("gaus","S","",m1-1.8*s1,500);
       	ff = fLnDiff[fp2]->GetFunction("gaus");
       	m1=ff->GetParameter(1);
       	s1=ff->GetParameter(2);
@@ -463,7 +463,7 @@ void PrtLutReco::Run(int start, int end){
       ds2=ff->GetParError(2);
 
       if(fp1==0 && mom <1.5){ ///handle tails
-      	fLnDiff[fp1]->Fit("gaus","S","",-500,m2+2*s2);
+      	fLnDiff[fp1]->Fit("gaus","S","",-500,m2+1.8*s2);
       	ff = fLnDiff[fp1]->GetFunction("gaus");      
       	m2=ff->GetParameter(1);
       	s2=ff->GetParameter(2);
