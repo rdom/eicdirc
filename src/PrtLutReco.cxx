@@ -266,7 +266,22 @@ void PrtLutReco::Run(int start, int end){
 
     //double stime = FindStartTime(fEvent);    
 
-    for(int h=0; h<nHits; h++) {
+    if(fabs(theta-89)<0.1) nHits=0.55*nHits;
+    if(fabs(theta-88)<0.1) nHits=0.55*nHits;
+    if(fabs(theta-87)<0.1) nHits=0.55*nHits;
+    if(fabs(theta-86)<0.1) nHits=0.85*nHits;
+    if(fabs(theta-85)<0.1) nHits=0.95*nHits;
+    
+    if(fabs(theta-90)<0.1) nHits=0.55*nHits;
+    if(fabs(theta-91)<0.1) nHits=0.55*nHits;
+    if(fabs(theta-92)<0.1) nHits=0.55*nHits;
+    if(fabs(theta-93)<0.1) nHits=0.55*nHits;
+    if(fabs(theta-94)<0.1) nHits=0.85*nHits;
+    if(fabs(theta-95)<0.1) nHits=0.95*nHits;
+		    
+    
+    for(int h=0; h<nHits; h++){
+      
       fHit = fEvent->GetHit(h);
       hitTime = fHit.GetLeadTime()+prt_rand.Gaus(0,0.1);
       lenz = 2100-fHit.GetPosition().Z();
@@ -287,9 +302,9 @@ void PrtLutReco::Run(int start, int end){
       if(dirz<0){
 	reflected = true;
 	lenz = 2*4200 - lenz;
-      }else{
-	reflected = false;
 	// continue;
+      }else{
+	reflected = false;	
       }
 
       double theta0 = rotatedmom.Angle(dir0);
@@ -378,6 +393,7 @@ void PrtLutReco::Run(int start, int end){
 	    TVector3 unitdir3 = rotatedmom.Unit();
 	    rdir.RotateUz(unitdir3);
 	    double cphi =  rdir.Phi();
+	    // if(tangle*TMath::Cos(cphi)<0) continue;
 	    fHist4->Fill(tangle*TMath::Sin(cphi),tangle*TMath::Cos(cphi));
 	    gg_gr.SetPoint(gg_i,tangle*TMath::Sin(cphi),tangle*TMath::Cos(cphi));
 	    gg_i++;
