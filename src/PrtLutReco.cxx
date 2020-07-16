@@ -689,9 +689,9 @@ void PrtLutReco::FindPeak(double (&cangle)[5], double (&spr)[5]){
       fFit->SetParameters(100,cangle[h],0.005,10);   // peak
       fFit->SetParameter(2,0.005); // width
       fFit->FixParameter(2,0.008); // width
-      hthetac[h]->Fit("fgaus","Q","",cangle[h]-3*fSigma,cangle[h]+3*fSigma);
+      hthetac[h]->Fit("fgaus","Q","",cangle[h]-3.5*fSigma,cangle[h]+3.5*fSigma);
       fFit->ReleaseParameter(2); // width
-      hthetac[h]->Fit("fgaus","MQ","",cangle[h]-3*fSigma,cangle[h]+3*fSigma);
+      hthetac[h]->Fit("fgaus","MQ","",cangle[h]-3.5*fSigma,cangle[h]+3.5*fSigma);
       cangle[h] = fFit->GetParameter(1);
       spr[h] = fFit->GetParameter(2)*1000; 
       if(fVerbose>2) gROOT->SetBatch(0);
