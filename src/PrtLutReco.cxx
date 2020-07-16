@@ -264,21 +264,7 @@ void PrtLutReco::Run(int start, int end){
       // if(i==2) fFunc[i]->SetParameter(2,0.0064);
     }
 
-    //double stime = FindStartTime(fEvent);    
-
-    if(fabs(theta-89)<0.1) nHits=0.55*nHits;
-    if(fabs(theta-88)<0.1) nHits=0.55*nHits;
-    if(fabs(theta-87)<0.1) nHits=0.55*nHits;
-    if(fabs(theta-86)<0.1) nHits=0.75*nHits;
-    if(fabs(theta-85)<0.1) nHits=0.87*nHits;
-    
-    if(fabs(theta-90)<0.1) nHits=0.55*nHits;
-    if(fabs(theta-91)<0.1) nHits=0.55*nHits;
-    if(fabs(theta-92)<0.1) nHits=0.55*nHits;
-    if(fabs(theta-93)<0.1) nHits=0.55*nHits;
-    if(fabs(theta-94)<0.1) nHits=0.75*nHits;
-    if(fabs(theta-95)<0.1) nHits=0.87*nHits;
-		    
+    //double stime = FindStartTime(fEvent);		    
     
     for(int h=0; h<nHits; h++){
       
@@ -302,7 +288,7 @@ void PrtLutReco::Run(int start, int end){
       if(dirz<0){
 	reflected = true;
 	lenz = 2*4200 - lenz;
-	// continue;
+        continue;
       }else{
 	reflected = false;	
       }
