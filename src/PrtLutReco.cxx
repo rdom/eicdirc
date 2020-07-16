@@ -429,8 +429,10 @@ void PrtLutReco::Run(int start, int end){
       if(hnph[h]->GetEntries()<20) continue;
       hnph[h]->Fit("gaus","","S",5,150);
       auto f = hnph[h]->GetFunction("gaus");
-      nph[h] = f->GetParameter(1);	
-      nph_err[h] = f->GetParError(1);
+      if(f){
+	nph[h] = f->GetParameter(1);	
+	nph_err[h] = f->GetParError(1);
+      }
     }   
     
     theta = fEvent->GetAngle();
