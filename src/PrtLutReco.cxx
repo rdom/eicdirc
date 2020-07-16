@@ -110,7 +110,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, int verbose){
     for(int i=0; i<ch.GetEntries(); i++){
       ch.GetEvent(i);
       fCorr[pmt] = (fabs(corr)<0.011)? corr: 0.00001;
-      fSigma = 0.001*cspr[2];
+      fSigma = 0.001*cspr[2]*0.9;
       std::cout<<"pmt "<<pmt<<"  "<<corr<< " spr = "<<fSigma<<std::endl;    
     }
   }else{
@@ -445,12 +445,12 @@ void PrtLutReco::Run(int start, int end){
       ds1=ff->GetParError(2);
 
       if(fp1==0 && mom <1.5){ //handle tails      
-	fLnDiff[fp2]->Fit("gaus","S","",m1-1.5*s1,500);
-	ff = fLnDiff[fp2]->GetFunction("gaus");
-	m1=ff->GetParameter(1);
-	s1=ff->GetParameter(2);
-	dm1=ff->GetParError(1);
-	ds1=ff->GetParError(2);
+      	fLnDiff[fp2]->Fit("gaus","S","",m1-2*s1,500);
+      	ff = fLnDiff[fp2]->GetFunction("gaus");
+      	m1=ff->GetParameter(1);
+      	s1=ff->GetParameter(2);
+      	dm1=ff->GetParError(1);
+      	ds1=ff->GetParError(2);
       }
       
     }
@@ -463,12 +463,12 @@ void PrtLutReco::Run(int start, int end){
       ds2=ff->GetParError(2);
 
       if(fp1==0 && mom <1.5){ ///handle tails
-	fLnDiff[fp1]->Fit("gaus","S","",-500,m2+1.5*s2);
-	ff = fLnDiff[fp1]->GetFunction("gaus");      
-	m2=ff->GetParameter(1);
-	s2=ff->GetParameter(2);
-	dm2=ff->GetParError(1);
-	ds2=ff->GetParError(2);
+      	fLnDiff[fp1]->Fit("gaus","S","",-500,m2+2*s2);
+      	ff = fLnDiff[fp1]->GetFunction("gaus");      
+      	m2=ff->GetParameter(1);
+      	s2=ff->GetParameter(2);
+      	dm2=ff->GetParError(1);
+      	ds2=ff->GetParError(2);
       }
     }
     sep = (fabs(m2-m1))/(0.5*(s1+s2));
@@ -564,6 +564,7 @@ void PrtLutReco::Run(int start, int end){
       prt_canvasAdd("lh"+nid,800,400);
       prt_normalize(fLnDiff, 5);
       fLnDiff[fp2]->SetName(Form("s_%2.2f",sep));
+      fLnDiff[fp2]->SetTitle(Form("separation = %2.2f s.d.",sep));
       fLnDiff[fp2]->GetXaxis()->SetTitle("ln L("+prt_lname[fp2]+") - ln L("+prt_lname[fp1]+")");      
       fLnDiff[fp2]->Draw();
       fLnDiff[fp1]->Draw("same");
