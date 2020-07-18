@@ -138,7 +138,7 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", double timeres
   tc->Branch("theta",&prt_theta,"prt_theta/D");
   tc->Branch("sep",&sep,"sep/D");
   tc->Branch("timeres",&timeres,"timeres/D");
-  tc->Branch("nph",&nph,"nph[5]/I");
+  tc->Branch("nph",&nph,"nph[5]/D");
   tc->Branch("r1",&r1,"r1/D");
   tc->Branch("r2",&r2,"r2/D");
   tc->Fill();
