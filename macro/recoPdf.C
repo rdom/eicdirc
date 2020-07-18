@@ -135,7 +135,7 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", double timeres
 
   TFile fc(in+"_r.root","recreate");
   TTree *tc = new TTree("reco","reco");
-  tc->Branch("theta",&prt_theta,"prt_theta/D");
+  tc->Branch("theta",&prt_theta,"theta/D");
   tc->Branch("sep",&sep,"sep/D");
   tc->Branch("timeres",&timeres,"timeres/D");
   tc->Branch("nph",&nph,"nph[5]/D");
