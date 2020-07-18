@@ -8,7 +8,7 @@
 
 void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", double timeres=0.1, int pid =3, TString nameid="", double r1=0, double r2=0){
 
-  if(!prt_init(in,1,"data/recoPdf_pik6_hiqe"+nameid)) return;
+  if(!prt_init(in,1)) return;
   TGaxis::SetMaxDigits(4);
   
   TCanvas *cc = new TCanvas("cc","cc");
@@ -87,7 +87,7 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", double timeres
   //TString name = Form("%1.2f_%1.2f",r1,r2);
 
   prt_canvasAdd("nph_"+name,800,400);
-  for(int i=0; i<5; i++) nph = prt_fit(hnph[i],50,20,50).X();
+  for(int i=0; i<5; i++) nph[i] = prt_fit(hnph[i],50,20,50).X();
   hnph[2]->Draw();
   hnph[pid]->Draw("same");
 
@@ -129,7 +129,7 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", double timeres
   hl[2]->Draw("same");
   hl[pid]->SetLineColor(2);
   hl[pid]->Draw("same");
-  prt_canvasSave(2,0);
+  prt_canvasSave("data/recoPdf_pik_6.0"+nameid,2);
 
 
   TFile fc(in+"_r.root","recreate");
@@ -137,7 +137,7 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", double timeres
   tc->Branch("theta",&prt_theta,"prt_theta/D");
   tc->Branch("sep",&sep,"sep/D");
   tc->Branch("timeres",&timeres,"timeres/D");
-  tc->Branch("nph",&nph,"nph/I");
+  tc->Branch("nph",&nph,"nph[5]/I");
   tc->Branch("r1",&r1,"r1/D");
   tc->Branch("r2",&r2,"r2/D");
   tc->Fill();
