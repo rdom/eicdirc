@@ -43,7 +43,8 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", double timeres
   }
 
   double time;
-  int nph, tnph(0),totalf(0),totals(0), ch(0), pdg(0);
+  int nph[5]={0};
+  int tnph(0),totalf(0),totals(0), ch(0), pdg(0);
   
   for (int ievent=0; ievent<10000 && ievent<prt_entries; ievent++){
     prt_nextEvent(ievent,100);
