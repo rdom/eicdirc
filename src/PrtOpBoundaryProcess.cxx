@@ -18,7 +18,7 @@ G4VParticleChange* PrtOpBoundaryProcess::PostStepDoIt(const G4Track& aTrack, con
   // std::cout<<"parentId   "<<parentId <<std::endl;
   // if(parentId==1) particleChange->ProposeTrackStatus(fStopAndKill);
 
-  double endofbar = 4200/2; //1250/2.;
+  double endofbar = 0.5*(4200+4*0.05); //1250/2.;
   
   // ideal focusing
   if(PrtManager::Instance()->GetLens() == 10){
@@ -26,13 +26,13 @@ G4VParticleChange* PrtOpBoundaryProcess::PostStepDoIt(const G4Track& aTrack, con
     G4TouchableHistory* touchable = (G4TouchableHistory*)(pPostStepPoint->GetTouchable());
     G4ThreeVector lpoint =  touchable->GetHistory()->GetTransform( 1 ).TransformPoint(theGlobalPoint1);
     if(lpoint.getZ() < endofbar+0.0001 && lpoint.getZ() > endofbar-0.0001){
-    
       G4ThreeVector ww  = pPreStepPoint->GetTouchableHandle()->GetHistory()->
 	GetTopTransform().Inverse().TransformPoint(G4ThreeVector(0,0,endofbar));
-      if(aStep.GetPreStepPoint()->GetPhysicalVolume()->GetName()!="wBar") 
+
+      if(aStep.GetPreStepPoint()->GetPhysicalVolume()->GetName()!="wGlue") 
 	particleChange->ProposeTrackStatus(fStopAndKill);
       else
-	aParticleChange.ProposePosition(ww.getX(), ww.getY(),ww.getZ()-0.0005);
+	aParticleChange.ProposePosition(ww.getX(), ww.getY(),lpoint.getZ()-0.0005);
       return G4VDiscreteProcess::PostStepDoIt(aTrack, aStep);
     }
   }

@@ -109,9 +109,9 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, int verbose){
     ch.SetBranchAddress("cspr",&cspr);
     for(int i=0; i<ch.GetEntries(); i++){
       ch.GetEvent(i);
-      fCorr[pmt] = (fabs(corr)<0.011)? corr: 0.00001;
+      fCorr[pmt] = (fabs(corr)<0.007)? corr: 0.00001;
       fSigma = 0.001*cspr[2]*0.9;
-      std::cout<<"pmt "<<pmt<<"  "<<corr<< " spr = "<<fSigma<<std::endl;    
+      std::cout<<"pmt "<<pmt<<"  "<<fCorr[pmt]<< " spr = "<<fSigma<<std::endl;    
     }
   }else{
     std::cout<<"------- corr file not found  "<<fCorrFile <<std::endl;
@@ -350,7 +350,7 @@ void PrtLutReco::Run(int start, int end){
 	  tangle = rotatedmom.Angle(dir)+fCorr[mcp];//45;
 	  //if(tangle>TMath::PiOver2()) tangle = TMath::Pi()-tangle;
  
-	  if(fabs(tdiff)<2) tangle -= 0.007*tdiff; // chromatic correction
+	  if(fabs(tdiff)<2) tangle -= 0.01*tdiff; // chromatic correction
 	  if(fabs(tdiff)>timeCut+luttime*0.035) continue;
 	  fDiff->Fill(hitTime,tdiff);
 	  
@@ -544,7 +544,7 @@ void PrtLutReco::Run(int start, int end){
       hthetac[fp1]->SetTitle(Form("theta %1.2f", prt_theta));
       hthetac[fp1]->Draw("");
       hthetac[fp2]->Draw("same");
-      drawTheoryLines(1);
+      drawTheoryLines(6);
 
       prt_canvasAdd("tangled"+nid,800,400);
       prt_normalize(hthetacd, 5);	    
