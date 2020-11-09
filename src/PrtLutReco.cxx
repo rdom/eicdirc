@@ -350,7 +350,7 @@ void PrtLutReco::Run(int start, int end){
 	  tangle = rotatedmom.Angle(dir)+fCorr[mcp];//45;
 	  //if(tangle>TMath::PiOver2()) tangle = TMath::Pi()-tangle;
  
-	  if(fabs(tdiff)<2) tangle -= 0.01*tdiff; // chromatic correction
+	  if(fabs(tdiff)<2) tangle -= 0.012*tdiff; // chromatic correction
 	  if(fabs(tdiff)>timeCut+luttime*0.035) continue;
 	  fDiff->Fill(hitTime,tdiff);
 	  
@@ -504,7 +504,7 @@ void PrtLutReco::Run(int start, int end){
     }
     for(int i=0; i<20; i++){
       std::cout<<(i?",":"")<<rr[i]<<std::endl;
-    }    
+    }  
     ctimeRes = prt_fit(fFindTimeRes).Y();
 
     gStyle->SetOptStat(0);
