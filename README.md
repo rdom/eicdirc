@@ -82,7 +82,7 @@ example:
 
 -w    physical list
                 0    standard
-                1    without multiple scattering, ionization and bremsstrahlung
+                1    without multiple scattering and bremsstrahlung
                 10   monochromatic Cherenkov light
                 11   10 + 1 
 
