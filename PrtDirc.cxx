@@ -17,13 +17,8 @@
 #include "PrtActionInitialization.h"
 #include "time.h"
 
-#ifdef G4VIS_USE
 #include "G4VisExecutive.hh"
-#endif
-
-#ifdef G4UI_USE
 #include "G4UIExecutive.hh"
-#endif
 
 #include "TApplication.h"
 
@@ -150,12 +145,10 @@ int main(int argc,char** argv)
   // Initialize G4 kernel
   runManager->Initialize();
 
-#ifdef G4VIS_USE
   // Initialize visualization
   G4VisManager* visManager = new G4VisExecutive;
   // G4VisManager* visManager = new G4VisExecutive("Quiet");
   visManager->Initialize();
-#endif
 
   // Get the pointer to the User Interface manager
   G4UImanager* UImanager = G4UImanager::GetUIpointer(); 
@@ -214,21 +207,15 @@ int main(int argc,char** argv)
     UImanager->ApplyCommand("/run/beamOn "+events);
   }else{  // UI session for interactive mode
 
-#ifdef G4UI_USE
     G4UIExecutive * ui = new G4UIExecutive(argc,argv,session);
-#ifdef G4VIS_USE
     UImanager->ApplyCommand("/control/execute ../vis.mac");
-#endif
     if (ui->IsGUI()) UImanager->ApplyCommand("/control/execute gui.mac");
     UImanager->ApplyCommand("/run/beamOn "+events);
     ui->SessionStart();
     delete ui;
-#endif
   }
 
-#ifdef G4VIS_USE
   delete visManager;
-#endif
   delete runManager;
 
   return 0;

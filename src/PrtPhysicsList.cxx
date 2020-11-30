@@ -124,7 +124,8 @@ void PrtPhysicsList::ConstructEM()
     G4ParticleDefinition* particle = particleIterator->value();
     G4ProcessManager* pmanager = particle->GetProcessManager();
     G4String particleName = particle->GetParticleName();
-
+    std::cout<<"particleName "<<particleName<<std::endl;
+    
     if (particleName == "gamma") {
     // gamma
       // Construct processes for gamma
@@ -137,27 +138,27 @@ void PrtPhysicsList::ConstructEM()
       // Construct processes for electron
       if(fPhysList !=1 && fPhysList != 11) {
 	pmanager->AddProcess(new G4eMultipleScattering(),-1, 1, 1);
-	pmanager->AddProcess(new G4eIonisation(),       -1, 2, 2);
 	pmanager->AddProcess(new G4eBremsstrahlung(),   -1, 3, 3);
       }
+      pmanager->AddProcess(new G4eIonisation(),       -1, 2, 2);
     } else if (particleName == "e+") {
       //positron
       // Construct processes for positron
       if(fPhysList !=1 && fPhysList != 11) {
 	pmanager->AddProcess(new G4eMultipleScattering(),-1, 1, 1);
-	pmanager->AddProcess(new G4eIonisation(),       -1, 2, 2);
 	pmanager->AddProcess(new G4eBremsstrahlung(),   -1, 3, 3);
 	pmanager->AddProcess(new G4eplusAnnihilation(),  0,-1, 4);
       }
+      pmanager->AddProcess(new G4eIonisation(),       -1, 2, 2);
     } else if( particleName == "mu+" || particleName == "mu-"    ) {
       //muon
       // Construct processes for muon
       if(fPhysList !=1 && fPhysList != 11) {
 	pmanager->AddProcess(new G4MuMultipleScattering(),-1, 1, 1);
-	pmanager->AddProcess(new G4MuIonisation(),      -1, 2, 2);
 	pmanager->AddProcess(new G4MuBremsstrahlung(),  -1, 3, 3);
-	pmanager->AddProcess(new G4MuPairProduction(),  -1, 4, 4);
+	pmanager->AddProcess(new G4MuPairProduction(),  -1, 4, 4);	
       }
+      pmanager->AddProcess(new G4MuIonisation(),      -1, 2, 2);
     } else {
       if ((particle->GetPDGCharge() != 0.0) &&
           (particle->GetParticleName() != "chargedgeantino") &&
@@ -165,8 +166,8 @@ void PrtPhysicsList::ConstructEM()
 	// all others charged particles except geantino
 	if(fPhysList !=1 && fPhysList != 11) {
 	  pmanager->AddProcess(new G4hMultipleScattering(),-1,1,1);
-	  pmanager->AddProcess(new G4hIonisation(),       -1,2,2);
 	}
+	pmanager->AddProcess(new G4hIonisation(),       -1,2,2);
      }
     }
   }
@@ -211,7 +212,8 @@ void PrtPhysicsList::ConstructOp()
     G4ParticleDefinition* particle = particleIterator->value();
     G4ProcessManager* pmanager = particle->GetProcessManager();
     G4String particleName = particle->GetParticleName();
-    if (fCerenkovProcess->IsApplicable(*particle)) {
+
+    if (fCerenkovProcess->IsApplicable(*particle)) {      
       if(fPhysList < 10){
 	pmanager->AddProcess(fCerenkovProcess);
 	pmanager->SetProcessOrdering(fCerenkovProcess,idxPostStep);
