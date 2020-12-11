@@ -475,14 +475,14 @@ void PrtLutReco::Run(int start, int end){
       	ds2=ff->GetParError(2);
       }
     }
-    sep = (fabs(m2-m1))/(0.5*(s1+s2));
+    sep = (fabs(m1-m2))/(0.5*(s1+s2));
      
     double e1,e2,e3,e4;
-    e1=2/(s1+s2)*dm1;
-    e2=2/(s1+s2)*dm2;
-    e3=-((2*(m1 + m2))/((s1 + s2)*(s1 + s2)))*ds1;
-    e4=-((2*(m1 + m2))/((s1 + s2)*(s1 + s2)))*ds2;
-    sep_err=sqrt(e1*e1+e2*e2+e3*e3+e4*e4);    
+    e1 =  2/(s1 + s2)*dm1;
+    e2 = -2/(s1 + s2)*dm2;
+    e3 = -2*(m1 + m2)/((s1 + s2)*(s1 + s2))*ds1;
+    e4 = -2*(m1 + m2)/((s1 + s2)*(s1 + s2))*ds2;
+    sep_err = sqrt(e1*e1+e2*e2+e3*e3+e4*e4);    
     
     std::cout<<Form("%3d : SPR = %2.2f N = %2.2f +/- %2.2f",prt_pdg[fp1],spr[fp1],nph[fp1],nph_err[fp1])<<std::endl;
     std::cout<<Form("%3d : SPR = %2.2f N = %2.2f +/- %2.2f",prt_pdg[fp2],spr[fp2],nph[fp2],nph_err[fp2])<<std::endl;
