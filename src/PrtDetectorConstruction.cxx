@@ -138,7 +138,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   G4Box* gFd = new G4Box("gFd",0.5*fFd[1],0.5*fFd[0],0.5*fFd[2]);
   lFd = new G4LogicalVolume(gFd,defaultMaterial,"lFd",0,0,0);
   
-  G4double tphi, dphi = 360*deg/(double)fNBoxes;  
+  double tphi, dphi = 360*deg/(double)fNBoxes;  
 
   if(PrtManager::Instance()->GetRunType()==1){ 
     // LUT
@@ -146,8 +146,8 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   }else{ 
     for(int i=0; i<fNBoxes; i++){
       tphi = dphi*i; 
-      G4double dx = fRadius * cos(tphi);
-      G4double dy = fRadius * sin(tphi);
+      double dx = fRadius * cos(tphi);
+      double dy = fRadius * sin(tphi);
 
       G4RotationMatrix *tRot = new G4RotationMatrix();
       tRot->rotateZ(-tphi);     
@@ -202,8 +202,8 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
 
   // The Lenses
   if(fLensId == 2){ // 2-layer lens
-    G4double lensrad = 70;
-    G4double lensMinThikness = 2;
+    double lensrad = 70;
+    double lensMinThikness = 2;
     G4Box* gfbox = new G4Box("Fbox",fLens[0]/2.,fLens[1]/2.,fLens[2]/2.);
     G4ThreeVector zTrans(0, 0, -lensrad+fLens[2]/2.-lensMinThikness);
 
@@ -216,10 +216,10 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   }
 
   if(fLensId == 3){ // 3-component spherical lens
-    G4double lensMinThikness = 2; 
+    double lensMinThikness = 2; 
   
-    G4double r1 = 0; //PrtManager::Instance()->GetTest1();
-    G4double r2 = 0; //PrtManager::Instance()->GetTest2();
+    double r1 = 0; //PrtManager::Instance()->GetTest1();
+    double r2 = 0; //PrtManager::Instance()->GetTest2();
   
     r1 = (r1==0)? 47.8: r1;
     r2 = (r2==0)? 29.1: r2;
@@ -264,20 +264,20 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   }
 
   if(fLensId == 6){ // 3-component cylindrical lens
-    G4double lensMinThikness = 2.0;
+    double lensMinThikness = 2.0;
 
-    G4double r1 = 0; //PrtManager::Instance()->GetTest1();
-    G4double r2 = 0; //PrtManager::Instance()->GetTest2();
+    double r1 = 0; //PrtManager::Instance()->GetTest1();
+    double r2 = 0; //PrtManager::Instance()->GetTest2();
 
     lensMinThikness = 2;
-    G4double layer12 = lensMinThikness*2;
+    double layer12 = lensMinThikness*2;
 
     // r1 = (r1==0)? 27.45: r1;
     // r2 = (r2==0)? 20.02: r2;
 
     r1 = (r1==0)? 33: r1;
     r2 = (r2==0)? 24: r2;
-    G4double shight = 25;
+    double shight = 25;
 
     if(fEvType==3){
       r1 = 1000;
@@ -363,8 +363,8 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
 
   G4RotationMatrix* fdRot = new G4RotationMatrix();
   G4RotationMatrix *fdrot = new G4RotationMatrix();
-  G4double evshiftz = 0.5*dirclength+fPrizm[1]+fMcpActive[2]/2.+fLens[2];
-  G4double evshiftx = 0;
+  double evshiftz = 0.5*dirclength+fPrizm[1]+fMcpActive[2]/2.+fLens[2];
+  double evshiftx = 0;
 
   if(fEvType == 1){ // focusing prism
     
@@ -479,18 +479,17 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     G4Box* gPixel = new G4Box("gPixel",fMcpActive[0]/16.,fMcpActive[1]/16.,fMcpActive[2]/16.);
     lPixel = new G4LogicalVolume(gPixel,BarMaterial,"lPixel",0,0,0);
     
-    int pixelId = 0;
     for(int i=0; i<8; i++){
       for(int j=0; j<8; j++){
 	double shiftx = i*(fMcpActive[0]/8.)-fMcpActive[0]/2.+fMcpActive[0]/16.;
 	double shifty = j*(fMcpActive[0]/8.)-fMcpActive[0]/2.+fMcpActive[0]/16.;
-	new G4PVPlacement(0,G4ThreeVector(shiftx,shifty,0),lPixel,"wPixel", lMcp,false,pixelId++);      
+	new G4PVPlacement(0,G4ThreeVector(shiftx,shifty,0),lPixel,"wPixel", lMcp,false,8*i+j);      
       }
     }
  
     int mcpId = 0;
-    G4double gapx = (fPrizm[2]-4*fMcpTotal[0])/5.;
-    G4double gapy = (fPrizm[0]-6*fMcpTotal[0])/7.;
+    double gapx = (fPrizm[2]-4*fMcpTotal[0])/5.;
+    double gapy = (fPrizm[0]-6*fMcpTotal[0])/7.;
     for(int i=0; i<fNCol; i++){
       for(int j=0; j<fNRow; j++){
 	double shiftx = i*(fMcpTotal[0]+gapx)-fFd[1]/2.+fMcpTotal[0]/2.+gapx;
@@ -513,12 +512,11 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     //double disx = (fPrizm[0]-fNpix2*fMcpTotal[0])/(double)fNpix2;
     double disy = (fPrizm[1]-fNpix1*fMcpTotal[0])/(double)(fNpix1+1);
     if(true){
-      int pixelId=0;
       for(int i=0; i<fNpix1; i++){
 	for(int j=0; j<fNpix2; j++){
 	  double shiftx = i*(fMcpTotal[0] +disy/2.) - fPrizm[2]/2. + fMcpTotal[0]/2.+disy/2.;
 	  double shifty = j*(fMcpTotal[0] +disy/2.) - fPrizm[0]/2. + fMcpTotal[0]/2.+disy/2.;
-	  new G4PVPlacement(0,G4ThreeVector(shiftx,shifty,0),lPixel,"wPixel", lMcp,false,pixelId++);      
+	  new G4PVPlacement(0,G4ThreeVector(shiftx,shifty,0),lPixel,"wPixel", lMcp,false,fNpix1*i+j);
 	}
       }
     }else{
@@ -531,31 +529,21 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     G4Box* gMcp = new G4Box("gMcp",0.5*fPrizm[2],0.5*fPrizm[0],0.5*fMcpTotal[2]);
     lMcp = new G4LogicalVolume(gMcp,BarMaterial,"lMcp",0,0,0);
 
-    G4double pixSize = 3*mm;
-    //pixSize = PrtManager::Instance()->GetTest()*mm;
+    double pixSize = 3*mm;
     
     fNpix1 = fPrizm[2]/pixSize-1;
     fNpix2 = fPrizm[0]/pixSize-1;
-    std::cout<<"fNpix1  "<< fNpix1<<"   "<<fPrizm[0]<<std::endl;
-    std::cout<<"fNpix2  "<< fNpix2 << "  "<< fPrizm[2]<<std::endl;
  
-    // fNpix1 = 90;  
-    // fNpix2 = 120;
-    // fNpix1 = 4;
-    // fNpix2 = 7;
     G4Box* gPixel = new G4Box("gPixel",0.5*fPrizm[2]/fNpix1,0.5*fPrizm[0]/fNpix2,0.2);
     lPixel = new G4LogicalVolume(gPixel,BarMaterial,"lPixel",0,0,0);
     int pixelId=0;
     for(int i=0; i<fNpix1; i++){
       for(int j=0; j<fNpix2; j++){
-	//std::cout<<"i  "<<i <<"   j  "<< j <<std::endl;
-	
 	double shiftx = i*(fPrizm[2]/fNpix1) - 0.5*fPrizm[2]+0.5*fPrizm[2]/fNpix1;
 	double shifty = j*(fPrizm[0]/fNpix2) - 0.5*fPrizm[0]+0.5*fPrizm[0]/fNpix2;
-	new G4PVPlacement(fdRot,G4ThreeVector(shiftx,shifty,0),lPixel,"wPixel", lMcp,false,pixelId++);      
+	new G4PVPlacement(fdRot,G4ThreeVector(shiftx,shifty,0),lPixel,"wPixel", lMcp,false,fNpix1*i+j);
       }
     }
-    //new G4PVPlacement(fdRot,G4ThreeVector(fPrizm[2]/2.-fPrizm[3]/2.,0,fBar[2]/2.+fPrizm[1]+fMcpActive[2]/2.+fLens[2]),lMcp,"wMcp", lDirc,false,1);
     new G4PVPlacement(0,G4ThreeVector(0,0,0),lMcp,"wMcp", lFd,false,1);
   }
   if(fMcpLayout==4){
@@ -571,7 +559,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     lMcp = new G4LogicalVolume(gMcp,BarMaterial,"lMcp",0,0,0);
 
 
-    //G4double pixSize = 6*mm;    
+    //double pixSize = 6*mm;    
     fNpix1 = 32;//fMcpActive[1]/pixSize-1;
     fNpix2 = 32;// fMcpActive[1]/pixSize-1;
 
@@ -584,18 +572,17 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     G4Box* gPixel = new G4Box("gPixel",0.5*fMcpActive[0]/fNpix1,0.5*fMcpActive[1]/fNpix2,fMcpActive[2]/16.);
     lPixel = new G4LogicalVolume(gPixel,BarMaterial,"lPixel",0,0,0);
     
-    int pixelId = 0;
-    for(int j=0; j<fNpix2; j++){
-      for(int i=0; i<fNpix1; i++){
+    for(int i=0; i<fNpix2; i++){
+      for(int j=0; j<fNpix1; j++){
     	double shiftx = i*(fMcpActive[0]/fNpix1)-fMcpActive[0]/2.+0.5*fMcpActive[0]/fNpix1;
     	double shifty = j*(fMcpActive[1]/fNpix2)-fMcpActive[1]/2.+0.5*fMcpActive[1]/fNpix2;
-    	new G4PVPlacement(0,G4ThreeVector(shiftx,shifty,0),lPixel,"wPixel", lMcp,false,pixelId++);      
+    	new G4PVPlacement(0,G4ThreeVector(shiftx,shifty,0),lPixel,"wPixel", lMcp,false,fNpix2*i+j);      
       }
     }
  
     int mcpId = 0;
-    G4double gapx = (fPrizm[2]-fNCol*fMcpTotal[0])/(double)(fNCol+1);
-    G4double gapy = (fBoxWidth-fNRow*fMcpTotal[1])/(double)(fNRow+1);
+    double gapx = (fPrizm[2]-fNCol*fMcpTotal[0])/(double)(fNCol+1);
+    double gapy = (fBoxWidth-fNRow*fMcpTotal[1])/(double)(fNRow+1);
     for(int i=0; i<fNCol; i++){
       for(int j=0; j<fNRow; j++){
 	// double shiftx = i*(fMcpTotal[0]+gapx)-0.5*(fPrizm[3]-fMcpTotal[0])+gapx;
@@ -610,12 +597,12 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
   }
 
   {
-    const G4int num = 36; 
-    G4double WaveLength[num];
-    G4double PhotonEnergy[num];
-    G4double PMTReflectivity[num];
-    G4double EfficiencyMirrors[num];
-    const G4double LambdaE = 2.0 * 3.14159265358979323846 * 1.973269602e-16 * m * GeV;
+    const int num = 36; 
+    double WaveLength[num];
+    double PhotonEnergy[num];
+    double PMTReflectivity[num];
+    double EfficiencyMirrors[num];
+    const double LambdaE = 2.0 * 3.14159265358979323846 * 1.973269602e-16 * m * GeV;
     for(int i=0;i<num;i++){
       WaveLength[i]= (300 +i*10)*nanometer;
       PhotonEnergy[num-(i+1)]= LambdaE/WaveLength[i];
@@ -626,20 +613,20 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     /***************** QUANTUM EFFICIENCY OF BURLE AND HAMAMTSU PMT'S *****/
 
     //ideal pmt quantum efficiency
-    G4double QuantumEfficiencyIdial[num]=
+    double QuantumEfficiencyIdial[num]=
       {1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,
        1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,
        1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,
        1.0,1.0,1.0,1.0,1.0,1.0};
 
     // Burle PMT's 
-    G4double QuantumEfficiencyB[num] =
+    double QuantumEfficiencyB[num] =
       {0.,0.001,0.002,0.005,0.01,0.015,0.02,0.03,0.04,0.05,0.06,
        0.07,0.09,0.1,0.13,0.15,0.17,0.2,0.24,0.26,0.28,0.282,0.284,0.286,
        0.288,0.29,0.28,0.26,0.24,0.22,0.20,0.18,0.15,0.13,0.12,0.10};
   
     //hamamatsu pmt quantum efficiency
-    G4double QuantumEfficiencyPMT[num]=
+    double QuantumEfficiencyPMT[num]=
       {0.001,0.002,0.004,0.007,0.011,0.015,0.020,0.026,0.033,0.040,0.045,
        0.056,0.067,0.085,0.109,0.129,0.138,0.147,0.158,0.170,
        0.181,0.188,0.196,0.203,0.206,0.212,0.218,0.219,0.225,0.230,
@@ -649,17 +636,17 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     //   efficiency of given PMT's
     //   for Hamamatsu by factor 0.7
     //   for Burle by factor 0.45 
-    for(G4int k=0;k<36;k++){
+    for(int k=0;k<36;k++){
       QuantumEfficiencyB[k] =  QuantumEfficiencyB[k] * 0.45 ;
       QuantumEfficiencyPMT[k] =  QuantumEfficiencyPMT[k] *.7;
     }
  
-    // G4double QuantumEfficiency[num]= 
+    // double QuantumEfficiency[num]= 
     //    { 1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,
     //      1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,
     //      1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.};
 
-    //  G4double QuantumEfficiencyPMT[num] =
+    //  double QuantumEfficiencyPMT[num] =
     //    { 1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,
     //      1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,
     //      1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.};
@@ -705,7 +692,7 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
     G4OpticalSurface* MirrorOpSurface= 
       new G4OpticalSurface("MirrorOpSurface",glisur,polished,dielectric_metal);
   
-    G4double ReflectivityMirrorBar[num]={
+    double ReflectivityMirrorBar[num]={
 					 0.8755,0.882,0.889,0.895,0.9,0.9025,0.91,0.913,0.9165,0.92,0.923,
 					 0.9245,0.9285,0.932,0.934,0.935,0.936,0.9385,0.9395,0.94,
 					 0.9405,0.9405,0.9405,0.9405,0.94,0.9385,0.936,0.934,
@@ -727,10 +714,10 @@ G4VPhysicalVolume* PrtDetectorConstruction::Construct(){
 
 void PrtDetectorConstruction::DefineMaterials(){
   G4String symbol;             //a=mass of a mole;
-  G4double a, z, density;      //z=mean number of protons;  
+  double a, z, density;      //z=mean number of protons;  
 
-  G4int ncomponents, natoms;
-  G4double fractionmass;
+  int ncomponents, natoms;
+  double fractionmass;
 
   // define Elements
   G4Element* H  = new G4Element("Hydrogen",symbol="H" , z= 1., a= 1.01*g/mole);
@@ -799,36 +786,36 @@ void PrtDetectorConstruction::DefineMaterials(){
 
   // ------------ Generate & Add Material Properties Table ------------
 
-  static const G4double LambdaE = 2.0 * 3.14159265358979323846 * 1.973269602e-16 * m * GeV;
-  const G4int num = 36;
-  G4double WaveLength[num];
-  G4double Absorption[num]; // default value for absorption
-  G4double AirAbsorption[num]; // absorption value for air
-  G4double AirRefractiveIndex[num]; // air refractive index
-  G4double PhotonEnergy[num]; // energy of photons which correspond to the given 
+  static const double LambdaE = 2.0 * 3.14159265358979323846 * 1.973269602e-16 * m * GeV;
+  const int num = 36;
+  double WaveLength[num];
+  double Absorption[num]; // default value for absorption
+  double AirAbsorption[num]; // absorption value for air
+  double AirRefractiveIndex[num]; // air refractive index
+  double PhotonEnergy[num]; // energy of photons which correspond to the given 
   // refractive or absoprtion values
 
-  G4double PhotonEnergyNlak33a[76] = {1,1.2511,1.26386,1.27687,1.29016,1.30372,1.31758,1.33173,1.34619,1.36097,1.37607,1.39152,1.40731,1.42347,1.44,1.45692,1.47425,1.49199,1.51016,1.52878,1.54787,1.56744,1.58751,1.6081,1.62923,1.65092,1.6732,1.69609,1.71961,1.7438,1.76868,1.79427,1.82062,1.84775,1.87571,1.90452,1.93423,1.96488,1.99652,2.0292,2.06296,2.09787,2.13398,2.17135,2.21006,2.25017,2.29176,2.33492,2.37973,2.42631,2.47473,2.52514,2.57763,2.63236,2.68946,2.7491,2.81143,2.87666,2.94499,3.01665,3.09187,3.17095,3.25418,3.34189,3.43446,3.53231,3.6359,3.74575,3.86244,3.98663,4.11908,4.26062,4.41225,4.57506,4.75035,4.93961};
+  double PhotonEnergyNlak33a[76] = {1,1.2511,1.26386,1.27687,1.29016,1.30372,1.31758,1.33173,1.34619,1.36097,1.37607,1.39152,1.40731,1.42347,1.44,1.45692,1.47425,1.49199,1.51016,1.52878,1.54787,1.56744,1.58751,1.6081,1.62923,1.65092,1.6732,1.69609,1.71961,1.7438,1.76868,1.79427,1.82062,1.84775,1.87571,1.90452,1.93423,1.96488,1.99652,2.0292,2.06296,2.09787,2.13398,2.17135,2.21006,2.25017,2.29176,2.33492,2.37973,2.42631,2.47473,2.52514,2.57763,2.63236,2.68946,2.7491,2.81143,2.87666,2.94499,3.01665,3.09187,3.17095,3.25418,3.34189,3.43446,3.53231,3.6359,3.74575,3.86244,3.98663,4.11908,4.26062,4.41225,4.57506,4.75035,4.93961};
   
-  G4int n_PbF2=56;
-  G4double en_PbF2[] = {1.55 ,1.569,1.59 ,1.61 ,1.631,1.653,1.675,1.698,1.722,1.746,1.771,1.797,1.823,1.851,1.879,1.907,1.937,1.968,2    ,2.033,2.066,2.101,2.138,2.175,2.214,2.254,2.296,2.339,2.384,2.431,2.48 ,2.53 ,2.583,2.638,2.695,2.755,2.818,2.883,2.952,3.024,3.1  ,3.179,3.263,3.351,3.444,3.542,3.647,3.757,3.875,3.999,4.133,4.275,4.428,4.592,4.769,4.959};
-  G4double ab_PbF2[]= {407,403.3,379.1,406.3,409.7,408.9,406.7,404.7,391.7,397.7,409.6,403.7,403.8,409.7,404.9,404.2,407.1,411.1,403.1,406.1,415.4,399.1,405.8,408.2,385.7,405.6,405.2,401.6,402.6,407.1,417.7,401.1,389.9,411.9,400.9,398.3,402.1,408.7,384.8,415.8,413.1,385.7,353.7,319.1,293.6,261.9,233.6,204.4,178.3,147.6,118.2,78.7 ,51.6 ,41.5 ,24.3 ,8.8};
-  G4double ref_PbF2[]= {1.749,1.749,1.75 ,1.75 ,1.751,1.752,1.752,1.753,1.754,1.754,1.755,1.756,1.757,1.757,1.758,1.759,1.76 ,1.761,1.762,1.764,1.765,1.766,1.768,1.769,1.771,1.772,1.774,1.776,1.778,1.78 ,1.782,1.785,1.787,1.79 ,1.793,1.796,1.8  ,1.804,1.808,1.813,1.818,1.824,1.83 ,1.837,1.845,1.854,1.865,1.877,1.892,1.91 ,1.937,1.991,1.38 ,1.915,1.971,2.019};
+  int n_PbF2=56;
+  double en_PbF2[] = {1.55 ,1.569,1.59 ,1.61 ,1.631,1.653,1.675,1.698,1.722,1.746,1.771,1.797,1.823,1.851,1.879,1.907,1.937,1.968,2    ,2.033,2.066,2.101,2.138,2.175,2.214,2.254,2.296,2.339,2.384,2.431,2.48 ,2.53 ,2.583,2.638,2.695,2.755,2.818,2.883,2.952,3.024,3.1  ,3.179,3.263,3.351,3.444,3.542,3.647,3.757,3.875,3.999,4.133,4.275,4.428,4.592,4.769,4.959};
+  double ab_PbF2[]= {407,403.3,379.1,406.3,409.7,408.9,406.7,404.7,391.7,397.7,409.6,403.7,403.8,409.7,404.9,404.2,407.1,411.1,403.1,406.1,415.4,399.1,405.8,408.2,385.7,405.6,405.2,401.6,402.6,407.1,417.7,401.1,389.9,411.9,400.9,398.3,402.1,408.7,384.8,415.8,413.1,385.7,353.7,319.1,293.6,261.9,233.6,204.4,178.3,147.6,118.2,78.7 ,51.6 ,41.5 ,24.3 ,8.8};
+  double ref_PbF2[]= {1.749,1.749,1.75 ,1.75 ,1.751,1.752,1.752,1.753,1.754,1.754,1.755,1.756,1.757,1.757,1.758,1.759,1.76 ,1.761,1.762,1.764,1.765,1.766,1.768,1.769,1.771,1.772,1.774,1.776,1.778,1.78 ,1.782,1.785,1.787,1.79 ,1.793,1.796,1.8  ,1.804,1.808,1.813,1.818,1.824,1.83 ,1.837,1.845,1.854,1.865,1.877,1.892,1.91 ,1.937,1.991,1.38 ,1.915,1.971,2.019};
 
-  const G4int n_Sapphire=57;
-  G4double en_Sapphire[] = {1.02212,1.05518,1.09045,1.12610,1.16307,1.20023,1.23984,1.28043,1.32221,1.36561,1.41019,1.45641,1.50393,1.55310,1.60393,1.65643,1.71059,1.76665,1.82437,1.88397,1.94576,2.00946,2.07504,2.14283,2.21321,2.28542,2.36025,2.43727,2.51693,2.59924,2.68480,2.77245,2.86337,2.95693,3.05379,3.15320,3.25674,3.36273,3.47294,3.58646,3.70433,3.82549,3.94979,4.07976,4.21285,4.35032,4.49380,4.64012,4.79258,4.94946,5.11064,5.27816,5.44985,5.62797,5.81266,6.00407,6.19920};
-  G4double ref_Sapphire[] = {1.75188,1.75253,1.75319,1.75382,1.75444,1.75505,1.75567,1.75629,1.75691,1.75754,1.75818,1.75883,1.75949,1.76017,1.76088,1.76160,1.76235,1.76314,1.76395,1.76480,1.76570,1.76664,1.76763,1.76867,1.76978,1.77095,1.77219,1.77350,1.77490,1.77639,1.77799,1.77968,1.78150,1.78343,1.78551,1.78772,1.79011,1.79265,1.79540,1.79835,1.80154,1.80497,1.80864,1.81266,1.81696,1.82163,1.82674,1.83223,1.83825,1.84480,1.85191,1.85975,1.86829,1.87774,1.88822,1.89988,1.91270};
+  const int n_Sapphire=57;
+  double en_Sapphire[] = {1.02212,1.05518,1.09045,1.12610,1.16307,1.20023,1.23984,1.28043,1.32221,1.36561,1.41019,1.45641,1.50393,1.55310,1.60393,1.65643,1.71059,1.76665,1.82437,1.88397,1.94576,2.00946,2.07504,2.14283,2.21321,2.28542,2.36025,2.43727,2.51693,2.59924,2.68480,2.77245,2.86337,2.95693,3.05379,3.15320,3.25674,3.36273,3.47294,3.58646,3.70433,3.82549,3.94979,4.07976,4.21285,4.35032,4.49380,4.64012,4.79258,4.94946,5.11064,5.27816,5.44985,5.62797,5.81266,6.00407,6.19920};
+  double ref_Sapphire[] = {1.75188,1.75253,1.75319,1.75382,1.75444,1.75505,1.75567,1.75629,1.75691,1.75754,1.75818,1.75883,1.75949,1.76017,1.76088,1.76160,1.76235,1.76314,1.76395,1.76480,1.76570,1.76664,1.76763,1.76867,1.76978,1.77095,1.77219,1.77350,1.77490,1.77639,1.77799,1.77968,1.78150,1.78343,1.78551,1.78772,1.79011,1.79265,1.79540,1.79835,1.80154,1.80497,1.80864,1.81266,1.81696,1.82163,1.82674,1.83223,1.83825,1.84480,1.85191,1.85975,1.86829,1.87774,1.88822,1.89988,1.91270};
 
-  G4double ab_Sapphire[n_Sapphire];
+  double ab_Sapphire[n_Sapphire];
   //crystan standard grade 2mm
-  G4double transmitance_Sapphire[]= {0.845,0.844,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.842,0.842,0.842,0.842,0.838,0.838,0.838,0.838,0.838,0.838,0.836,0.836,0.836,0.836,0.834,0.834,0.833,0.832,0.832,0.831,0.831,0.83,0.828,0.828,0.828,0.828,0.828,0.828,0.828,0.828,0.828,0.825,0.80,0.67,0.47,0.23,0.22};
+  double transmitance_Sapphire[]= {0.845,0.844,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.843,0.842,0.842,0.842,0.842,0.838,0.838,0.838,0.838,0.838,0.838,0.836,0.836,0.836,0.836,0.834,0.834,0.833,0.832,0.832,0.831,0.831,0.83,0.828,0.828,0.828,0.828,0.828,0.828,0.828,0.828,0.828,0.825,0.80,0.67,0.47,0.23,0.22};
   for(int i=0;i<n_Sapphire;i++)  ab_Sapphire[i] = (-1)/log(transmitance_Sapphire[i]+2*0.077007)*2*mm;
 
   
   /*************************** ABSORPTION COEFFICIENTS *****************************/
 
   // absorption of KamLandOil per 50 cm - from jjv
-  G4double KamLandOilAbsorption[num]=
+  double KamLandOilAbsorption[num]=
     {0.97469022,0.976603956,0.978511548,0.980400538,0.982258449,0.984072792,
      0.985831062,0.987520743,0.989129303,0.990644203,0.992052894,
      0.993342822,0.994501428,0.995516151,0.996374433,0.997063719,
@@ -837,7 +824,7 @@ void PrtDetectorConstruction::DefineMaterials(){
      0.85657,0.842637,0.77020213,0.65727,0.324022,0.019192};
 
   // absorption of quartz per 1 m - from jjv
-  G4double QuartzAbsorption[num] = 
+  double QuartzAbsorption[num] = 
     {0.999572036,0.999544661,0.999515062,0.999483019,0.999448285,
      0.999410586,0.999369611,0.999325013,0.999276402,0.999223336,
      0.999165317,0.999101778,0.999032079,0.998955488,0.998871172,
@@ -847,7 +834,7 @@ void PrtDetectorConstruction::DefineMaterials(){
      0.994921022,0.994298396,0.993577567,0.992739402,0.991760297,0.990610945};
   
   // absorption of epotek per one layer - thicknes 0.001'' - from jjv
-  G4double EpotekAbsorption[num] = 
+  double EpotekAbsorption[num] = 
     {0.99999999,0.99999999,0.99999999,0.99999999,0.99999999,
      0.99999999,0.99999999,0.99999999,0.99999999,0.99999999,
      0.99999999,0.99999999,0.99999999,0.99999999,0.99999999,
@@ -857,9 +844,9 @@ void PrtDetectorConstruction::DefineMaterials(){
      0.9871,0.9745};
 
   //N-Lak 33a
-  G4double Nlak33aAbsorption[76]={371813,352095,331021,310814,291458,272937,255238,238342,222234,206897,192313,178463,165331,152896,141140,130043,119585,109747,100507,91846.3,83743.1,76176.7,69126.1,62570.2,56488,50858.3,45660.1,40872.4,36474.6,32445.8,28765.9,25414.6,22372.2,19619.3,17136.9,14906.5,12910.2,11130.3,9550.13,8153.3,6924.25,5848.04,4910.46,4098.04,3398.06,2798.54,2288.32,1856.99,1494.92,1193.28,943.973,739.657,573.715,440.228,333.94,250.229,185.064,134.967,96.9664,68.5529,47.6343,32.4882,21.7174,14.2056,9.07612,5.65267,3.4241,2.01226,1.14403,0.62722,0.330414,0.166558,0.0799649,0.0363677,0.0155708,0.00623089};
+  double Nlak33aAbsorption[76]={371813,352095,331021,310814,291458,272937,255238,238342,222234,206897,192313,178463,165331,152896,141140,130043,119585,109747,100507,91846.3,83743.1,76176.7,69126.1,62570.2,56488,50858.3,45660.1,40872.4,36474.6,32445.8,28765.9,25414.6,22372.2,19619.3,17136.9,14906.5,12910.2,11130.3,9550.13,8153.3,6924.25,5848.04,4910.46,4098.04,3398.06,2798.54,2288.32,1856.99,1494.92,1193.28,943.973,739.657,573.715,440.228,333.94,250.229,185.064,134.967,96.9664,68.5529,47.6343,32.4882,21.7174,14.2056,9.07612,5.65267,3.4241,2.01226,1.14403,0.62722,0.330414,0.166558,0.0799649,0.0363677,0.0155708,0.00623089};
 
-  G4double EpotekThickness = 0.001*2.54*cm;
+  double EpotekThickness = 0.001*2.54*cm;
   for(int i=0;i<num;i++){
     WaveLength[i]= (300 +i*10)*nanometer;
     Absorption[i]= 100*m; // not true, just due to definiton -> not absorb any
@@ -883,14 +870,14 @@ void PrtDetectorConstruction::DefineMaterials(){
   
   // only phase refractive indexes are necessary -> g4 calculates group itself !!
   
-  G4double QuartzRefractiveIndex[num]={
+  double QuartzRefractiveIndex[num]={
     1.456535,1.456812,1.4571,1.457399,1.457712,1.458038,1.458378,
     1.458735,1.459108,1.4595,1.459911,1.460344,1.460799,1.46128,
     1.461789,1.462326,1.462897,1.463502,1.464146,1.464833,
     1.465566,1.46635,1.46719,1.468094,1.469066,1.470116,1.471252,1.472485,
     1.473826,1.475289,1.476891,1.478651,1.480592,1.482739,1.485127,1.487793};
 
-  G4double EpotekRefractiveIndex[num]={
+  double EpotekRefractiveIndex[num]={
     1.554034,1.555575,1.55698,1.558266,1.559454,1.56056,1.561604,
      1.562604,1.563579,1.564547,1.565526,1.566536,1.567595,
      1.568721,1.569933,1.57125,1.57269,1.574271,1.576012,
@@ -898,7 +885,7 @@ void PrtDetectorConstruction::DefineMaterials(){
      1.59424,1.597929,1.601946,1.606307,1.611033,1.616141,1.621651,1.62758,
      1.633947,1.640771,1.64807};
 
-  G4double KamLandOilRefractiveIndex[num]={
+  double KamLandOilRefractiveIndex[num]={
     1.433055,1.433369,1.433698,1.434045,1.434409,1.434793,1.435198,
     1.435626,1.436077,1.436555,1.4371,1.4376,1.4382,1.4388,1.4395,
     1.4402,1.4409,1.4415,1.4425,1.4434,1.4444,1.4455,1.4464,1.4479,1.4501,
@@ -991,7 +978,7 @@ void PrtDetectorConstruction::SetVisualization(){
   waMirror->SetVisibility(true);
   lMirror->SetVisAttributes(waMirror);
 
-  G4double transp = 0.4;
+  double transp = 0.4;
   G4VisAttributes * vaLens = new G4VisAttributes(G4Colour(0.,1.,1.,transp));
   vaLens->SetForceWireframe(true);
   // vaLens->SetForceAuxEdgeVisible(true);
@@ -1070,7 +1057,7 @@ void PrtDetectorConstruction::ConstructSDandField(){
   // Magnetic field
 }
 
-void PrtDetectorConstruction::SetRotation(G4double angle){
+void PrtDetectorConstruction::SetRotation(double angle){
   fPrtRot->rotateY(-fRotAngle);
   fPrtRot->rotateY(angle);
   fRotAngle=angle;
@@ -1130,12 +1117,12 @@ void PrtDetectorConstruction::DrawHitBox(int id){
   G4VisAttributes *waDircHit = new G4VisAttributes(G4Colour(1.,1.,0.9,0.2));
   waDircHit->SetVisibility(false);
 	  
-  G4double tphi, dphi = 22.5*deg;
+  double tphi, dphi = 22.5*deg;
   G4LogicalVolume *lDircHit[16]; 
   for(int i=0; i<16; i++){
     tphi = dphi*i;
-    G4double dx = fRadius * cos(tphi);
-    G4double dy = fRadius * sin(tphi);
+    double dx = fRadius * cos(tphi);
+    double dy = fRadius * sin(tphi);
     G4ThreeVector dirc = G4ThreeVector(dx,dy,0.5*fBar[2]*4+fPrizm[1]+fMcpActive[2]/2.+fLens[2]);
 
     G4Box* gDircHit = new G4Box("gDircHit",400.,300.,10);
@@ -1153,8 +1140,8 @@ void PrtDetectorConstruction::DrawHitBox(int id){
   G4Box* gHit;
   for(int p=0; p<1; p++){
     mcp = 0;
-    G4double gapx = (fPrizm[2]-fNCol*fMcpTotal[0])/(double)(fNCol+1);
-    G4double gapy = (fPrizm[0]-fNRow*fMcpTotal[1])/(double)(fNRow+1);
+    double gapx = (fPrizm[2]-fNCol*fMcpTotal[0])/(double)(fNCol+1);
+    double gapy = (fPrizm[0]-fNRow*fMcpTotal[1])/(double)(fNRow+1);
     for(int i=0; i<fNCol; i++){
       for(int j=0; j<fNRow; j++){
   	double shiftx = i*(fMcpTotal[0]+gapx)-fPrizm[3]/2.+fMcpTotal[0]/2+gapx;
@@ -1191,7 +1178,7 @@ void PrtDetectorConstruction::DrawHitBox(int id){
   G4UImanager::GetUIpointer()->ApplyCommand("/vis/scene/notifyHandlers");
 }
 
-void PrtDetectorConstruction::SetLens(G4int id){
+void PrtDetectorConstruction::SetLens(int id){
  
   // if(id==0){
   //   fPrismShift.setZ(fPrismShift.z()-fLens[2]);
@@ -1201,23 +1188,23 @@ void PrtDetectorConstruction::SetLens(G4int id){
   // G4RunManager::GetRunManager()->GeometryHasBeenModified();
 }
 
-void PrtDetectorConstruction::SetQuantumEfficiency(G4int id){
-  const G4int num = 36;
+void PrtDetectorConstruction::SetQuantumEfficiency(int id){
+  const int num = 36;
   //ideal pmt quantum efficiency
-  G4double QuantumEfficiencyIdial[num]=
+  double QuantumEfficiencyIdial[num]=
     {1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,
      1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,
      1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,
      1.0,1.0,1.0,1.0,1.0,1.0};
 
   // Burle PMT's 
-  G4double QuantumEfficiencyB[num] =
+  double QuantumEfficiencyB[num] =
     {0.,0.001,0.002,0.005,0.01,0.015,0.02,0.03,0.04,0.05,0.06,
      0.07,0.09,0.1,0.13,0.15,0.17,0.2,0.24,0.26,0.28,0.282,0.284,0.286,
      0.288,0.29,0.28,0.26,0.24,0.22,0.20,0.18,0.15,0.13,0.12,0.10};
   
   //hamamatsu pmt quantum efficiency
-  G4double QuantumEfficiencyPMT[num]=
+  double QuantumEfficiencyPMT[num]=
     {0.001,0.002,0.004,0.007,0.011,0.015,0.020,0.026,0.033,0.040,0.045,
      0.056,0.067,0.085,0.109,0.129,0.138,0.147,0.158,0.170,
      0.181,0.188,0.196,0.203,0.206,0.212,0.218,0.219,0.225,0.230,

@@ -16,13 +16,13 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", double timeres
   TH1F *hl[5],*hll[5],*hnph[5];
   for(int i=0; i<5; i++){
     hl[i] = new TH1F(Form("hl_%d",i),";LE time [ns]; entries [#]", 2000,0,100);    
-    hll[i]= new TH1F(Form("ll_i%d",i),";ln L("+prt_lname[pid]+") - ln L(#pi); entries [#]",140,-140,140);
+    hll[i]= new TH1F(Form("ll_i%d",i),";ln L("+prt_lname[pid]+") - ln L(#pi); entries [#]",140,-40,40);
     hnph[i] = new TH1F(Form("hnph_%d",i),";multiplicity [#]; entries [#]", 200,0,200);
     hnph[i]->SetLineColor(prt_color[i]);
     hll[i]->SetLineColor(prt_color[i]);
   }
   
-  const int nch(8000);
+  const int nch(24*256);
   TF1 *pdff[nch],*pdfs[nch];
   TH1F *hpdff[nch],*hpdfs[nch];
   TFile f(pdf);
@@ -38,8 +38,8 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", double timeres
     if(rebin >0) hpdfs[i]->Rebin(rebin);
     integ1+= hpdff[i]->Integral();
     integ2+= hpdfs[i]->Integral();
-    hpdff[i]->Smooth(1);
-    hpdfs[i]->Smooth(1);
+    // hpdff[i]->Smooth(1);
+    // hpdfs[i]->Smooth(1);
   }
 
   double time;
@@ -55,17 +55,18 @@ void recoPdf(TString in="hits.root", TString pdf="hits.pdf.root", double timeres
     if(hll[id]->GetEntries()>4000)continue;
 
     for(PrtHit hit : prt_event->GetHits()){
-
-      ch=300*hit.GetMcpId()+hit.GetPixelId();      
-      time = hit.GetLeadTime() + gRandom->Gaus(0,timeres)+0.05;
-      //if(prt_event->GetParticle()==pid) time +=0.01; // remove TOF difference;
       
+      ch = 256 * hit.GetMcpId() + hit.GetPixelId();
+      time = hit.GetLeadTime() + gRandom->Gaus(0, timeres);
+      // if(prt_event->GetParticle()==pid) time +=0.01; // remove TOF
+      // difference;
+
       //if(time<5 || time>100) continue;      
       aminf = hpdff[ch]->GetBinContent(hpdff[ch]->FindBin(time)); 
       amins = hpdfs[ch]->GetBinContent(hpdfs[ch]->FindBin(time));
       tnph++;
       
-      double noise = 1e-4; //1e-7;
+      double noise = 1e-6; //1e-7;
       // double noise = 1e-5; //1e-7;
       sumf+=TMath::Log((aminf+noise));
       sums+=TMath::Log((amins+noise));    
