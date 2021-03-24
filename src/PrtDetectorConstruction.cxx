@@ -50,7 +50,6 @@ PrtDetectorConstruction::PrtDetectorConstruction()
   //fPrizm[0] = 170; fPrizm[1] = 300; fPrizm[2] = 30+300*tan(37*deg); fPrizm[3] = 30;
   //fPrizm[0] = 390; fPrizm[1] = 300; fPrizm[3] = 50; fPrizm[2]= fPrizm[3]+300*tan(32*deg);
   fPrizm[0] = 360; fPrizm[1] = 300; fPrizm[3] = 50; fPrizm[2]= fPrizm[3]+300*tan(32*deg);
-  //420
   fBarsGap = 0.15;
   
   std::cout<<"fPrizm[2] "<<fPrizm[2]<<std::endl;
