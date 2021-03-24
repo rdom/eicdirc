@@ -46,7 +46,6 @@ PrtDetectorConstruction::PrtDetectorConstruction()
 
   fHall[0] = 1500; fHall[1] = 1500; fHall[2] = 3000;
   //fBar[0] = 17; fBar[1] = 32; fBar[2] = 1050*4; //4200;
-  //fMirror[0] = 20; fMirror[1] = 40; fMirror[2] =1;
   //fPrizm[0] = 170; fPrizm[1] = 300; fPrizm[2] = 30+300*tan(37*deg); fPrizm[3] = 30;
   //fPrizm[0] = 390; fPrizm[1] = 300; fPrizm[3] = 50; fPrizm[2]= fPrizm[3]+300*tan(32*deg);
   fPrizm[0] = 360; fPrizm[1] = 300; fPrizm[3] = 50; fPrizm[2]= fPrizm[3]+300*tan(32*deg);
