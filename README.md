@@ -11,7 +11,7 @@ cmake ..
 make -j4
 
 #test event display
-./eicdirc -s 0 -a 30 -x "pi+" -p 6.0 -w 0 -h 11 -c 4 -l 3 -v 0 -zpos 1 -g 1 -ev 0 -e 1
+./eicdirc -r 0 -theta 30 -x "pi+" -p 6.0 -w 0 -h 11 -c 4 -l 3 -v 0 -zpos 1 -g 1 -ev 0 -e 1
 ```
 
 
@@ -27,16 +27,15 @@ example:
 -o    output file name
 -i    input file name
 -u    look-up file name
+-pdf  look-up file name
 
--s    run type
+-r    run type
                 0    simulation
                 1    look-up table generation
-                2    reconstruction
-                3    likelihood calculation for geometrical reconstruction
-                4    likelihood calculation for time imaging
-                5    calibration
-                10   simulation of pions and kaons for 3,4
-
+                2    geometrical reconstruction
+                3    likelihood calculation
+		4    create pdf
+		5    simulate pdf
 
 -g    geometry configuration
                 0    whole DIRC
@@ -63,8 +62,10 @@ example:
                 6    3-layer cylindrical lens
                 10   ideal lens (thickness = 0, ideal focusing)
 
--a    angle between particle beam and bar radiator
+-theta    polar between particle beam and bar radiator
       if a == 0 then a = [30,160]
+
+-phi  azimuth angle between particle beam and bar radiator
 
 -e    number of simulated events
 
@@ -86,7 +87,7 @@ example:
                 10   monochromatic Cherenkov light
                 11   10 + 1 
 
--r    seed number for the random generator 
+-seed seed number for the random generator 
 
 -b    batch mode
                1    run silent (without GUI)
@@ -96,20 +97,22 @@ example:
                1    display hit occupancy of current run
                2    display hit occupancy of occuhits.root (needs to be generated)
 
+-tr   time resolution [ns]
+               0.2  (default)  
+
 -zpos target's Z offset 
 
--z    track smearing at vertex [rad]
 
 ```
 
 ## LUT generation
 
 ```
-eicdirc -o ../data/lut.root -s 1 -g 1 -h 11 -c 4 -l 3 -v 0 -ev 0 -x "opticalphoton" -p "3.18 eV"  -e 1000000 -b 1
+eicdirc -o ../data/lut.root -r 1 -g 1 -h 11 -c 4 -l 3 -v 0 -ev 0 -x "opticalphoton" -p "3.18 eV"  -e 1000000 -b 1
 ```
 
 Visualization of 100 events:
-eicdirc -o ../data/lut.root -s 1 -g 1 -h 11 -c 4 -l 3 -v 0 -ev 0 -x "opticalphoton" -p "3.18 eV"  -e 100
+eicdirc -o ../data/lut.root -r 1 -g 1 -h 11 -c 4 -l 3 -v 0 -ev 0 -x "opticalphoton" -p "3.18 eV"  -e 100
 
 ![alt text](https://github.com/rdom/eicdirc/raw/master/pic/eicdirc_lut_gen.png)
 

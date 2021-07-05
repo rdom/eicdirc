@@ -1,31 +1,21 @@
-#define eic__sim
-#include "../src/PrtHit.h"
-#include "../src/PrtEvent.h"
-#include "../../prttools/datainfo.C"
-#include "../../prttools/prttools.C"
+#include "../src/PrtTools.h"
 
-void draw_hp(TString infile="../build/hits.root",TString id = ""){
+void draw_hp(TString infile = "../build/hits.root") {
 
-  if(!prt_init(infile,2)) return;
-  for (int ievent=0; ievent<prt_entries; ievent++){
-    prt_nextEvent(ievent,1000);
-    int pdg = prt_event->GetParticle();
-    for(auto hit : prt_event->GetHits()){
-      int mcp = hit.GetMcpId();
-      int pix = hit.GetPixelId()-1;
-      double time = hit.GetLeadTime();
-      // if(pdg==211) prt_hdigi[mcp]->Fill(pix/16, pix%16);
-      if(pdg==211) prt_hdigi[mcp]->Fill(pix%16, pix/16);
+  PrtTools t(infile);
+
+  while (t.next() && t.i() < 10000) {
+    for (auto hit : t.event()->getHits()) {
+      int ch = hit.getChannel();
+      int pmt = hit.getPmt();
+      int pix = hit.getPixel();
+      double time = hit.getLeadTime();
+
+      if (t.pid() == 2) t.fill_digi(pmt, pix);
     }
   }
 
-  TGaxis::SetMaxDigits(3);
-    
-  auto cdigi = prt_drawDigi(2030); //2031 //2032
-  cdigi->SetName("hp_"+id);
-  prt_canvasAdd(cdigi);
-  prt_canvasSave("data/drawHP",0);
-  auto s = prt_getPixData("m,p,v\n",2030);
-  prt_writeString("digi.csv", s);
+  auto cdigi = t.draw_digi(0, 0);
+  t.add_canvas(cdigi);
+  t.save_canvas("data/draw_hp", 0);
 }
-

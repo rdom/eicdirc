@@ -50,27 +50,6 @@ PrtDetectorConstructionMessenger::~PrtDetectorConstructionMessenger()
 void PrtDetectorConstructionMessenger::SetNewValue(
                                         G4UIcommand* command, G4String newValue)
 { 
-  if( command == fAngleCmd ) {
-    G4double angle = fAngleCmd->GetNewDoubleValue(newValue);
-    if(angle>0) angle = 180*deg - angle;
-    fPrtGeom->SetRotation(angle);
-    PrtManager::Instance()->SetAngle(angle);
-    std::cout<<"angle deg   "<<angle/deg <<std::endl;
-    
-  } 
-  
-  if( command == fLensIdCmd ) {
-    G4int id = fLensIdCmd->GetNewIntValue(newValue);
-    PrtManager::Instance()->SetLens(id);
-    fPrtGeom->SetLens(id);
-  }
-
-  if( command == fDetEffType ) {
-    G4int id = fDetEffType->GetNewIntValue(newValue);
-    //PrtManager::Instance()->SetQuantumEfficiency(id);
-    //PrtManager::Instance()->SetDetEffType();
-  }
-
   if( command == fDrawHits ) {
     G4int id = fDrawHits->GetNewIntValue(newValue);
     fPrtGeom->DrawHitBox(id);

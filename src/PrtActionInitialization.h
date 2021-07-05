@@ -7,7 +7,7 @@
 class PrtActionInitialization : public G4VUserActionInitialization
 {
 public:
-  PrtActionInitialization(G4String outfile);
+  PrtActionInitialization();
   virtual ~PrtActionInitialization();
 
   virtual void BuildForMaster() const;

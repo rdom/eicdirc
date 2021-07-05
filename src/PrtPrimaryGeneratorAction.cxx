@@ -13,129 +13,131 @@
 #include "PrtManager.h"
 
 PrtPrimaryGeneratorAction::PrtPrimaryGeneratorAction()
- : G4VUserPrimaryGeneratorAction(), 
-   fParticleGun(0){
+  : G4VUserPrimaryGeneratorAction(), fParticleGun(0) {
+
+  int n_particle = 1;
+  fRun = PrtManager::Instance()->getRun();
+  double mom = fRun->getMomentum();
+  fRunType = fRun->getRunType();
+  fRadiatorL = fRun->getRadiatorL();
+  fRadiatorW = fRun->getRadiatorW();
+  fRadiatorH = fRun->getRadiatorH();
   
-  G4int n_particle = 1;
   fParticleGun = new G4ParticleGun(n_particle);
 
-  //create a messenger for this class
+  // create a messenger for this class
   fGunMessenger = new PrtPrimaryGeneratorMessenger(this);
 
-  //default kinematic
-  //
-  G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
-  fParticleK = particleTable->FindParticle("kaon+");
-  fParticlePi = particleTable->FindParticle("pi+");
-  fParticleE = particleTable->FindParticle("e-");
-  fParticleMu = particleTable->FindParticle("mu-");
+  // default kinematic
+  G4ParticleTable *particleTable = G4ParticleTable::GetParticleTable();
+  fParticle[4] = particleTable->FindParticle("proton");
+  fParticle[3] = particleTable->FindParticle("kaon+");
+  fParticle[2] = particleTable->FindParticle("pi+");
+  fParticle[1] = particleTable->FindParticle("mu+");
+  fParticle[0] = particleTable->FindParticle("e-");
+  fParticleOP = particleTable->FindParticle("opticalphoton");
 
-  fParticleGun->SetParticleDefinition(fParticlePi);
-  fParticleGun->SetParticleTime(0.0*ns);
-  fParticleGun->SetParticlePosition(G4ThreeVector(0.0*cm,0.0*cm,-0.5*cm));
-  fParticleGun->SetParticleMomentumDirection(G4ThreeVector(1.,0.,0.));
-  fParticleGun->SetParticleEnergy(500.0*keV);
+  fParticleGun->SetParticleDefinition(fParticle[2]);
+  fParticleGun->SetParticleTime(0.0 * ns);
+  fParticleGun->SetParticlePosition(G4ThreeVector(0.0 * cm, 0.0 * cm, -0.5 * cm));
+  fParticleGun->SetParticleMomentumDirection(G4ThreeVector(1., 0., 0.));
+  fParticleGun->SetParticleMomentum(G4ThreeVector(0, 0, mom * GeV));
+
+  iter = 0;
+  fPid = 4;
 }
 
-PrtPrimaryGeneratorAction::~PrtPrimaryGeneratorAction(){
+PrtPrimaryGeneratorAction::~PrtPrimaryGeneratorAction() {
   delete fParticleGun;
   delete fGunMessenger;
 }
 
-void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
-  G4double x,y,z;
-  G4double angle = PrtManager::Instance()->GetAngle();
-  G4double zpos = PrtManager::Instance()->GetZPos();
-  G4double ypos = 0; //PrtManager::Instance()->GetTest1();
-  G4double radiatorL = PrtManager::Instance()->GetRadiatorL();
-  G4double radiatorW = PrtManager::Instance()->GetRadiatorW();
-  G4double radiatorH = PrtManager::Instance()->GetRadiatorH();
-  int runtype = PrtManager::Instance()->GetRunType();
-  
-  if(PrtManager::Instance()->GetMix()){
-    if(PrtManager::Instance()->GetParticle()==211 || PrtManager::Instance()->GetParticle()==0){
+void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
 
-      if(PrtManager::Instance()->GetMix()==1){
-	fParticleGun->SetParticleDefinition(fParticleK);
-	PrtManager::Instance()->SetParticle(321);
-      }else if(PrtManager::Instance()->GetMix()==2){
-	fParticleGun->SetParticleDefinition(fParticleE);
-	PrtManager::Instance()->SetParticle(11);	
-      }else if(PrtManager::Instance()->GetMix()==3){
-	fParticleGun->SetParticleDefinition(fParticleMu);
-	PrtManager::Instance()->SetParticle(13);
-      }
-    }else{
-      fParticleGun->SetParticleDefinition(fParticlePi);
-      PrtManager::Instance()->SetParticle(211);
-    }
+  PrtManager::Instance()->addEvent(PrtEvent());
+  int pdg = fRun->getPid();
+  double theta = 180-fRun->getTheta();
+  double phi = fRun->getTheta();
+  double zpos = fRun->getBeamZ();
+  double ypos = fRun->getBeamX();  
+  
+  if (pdg > 0) {
+    if (pdg == 2212) fPid = 4;
+    else if (pdg == 321) fPid = 3;
+    else if (pdg == 211) fPid = 2;
+    else if (pdg == 10001 && fPid > 2) fPid = 2;
+    else if (pdg == 10001 && fPid == 2) fPid = 4;
+    else if (pdg == 10002 && fPid > 2) fPid = 2;
+    else if (pdg == 10002 && fPid == 2) fPid = 3;
+
+    PrtManager::Instance()->getEvent()->setPid(fPid);
+    fParticleGun->SetParticleDefinition(fParticle[fPid]);
+  } else {
+    fParticleGun->SetParticleDefinition(fParticleOP);
   }
-  
-  PrtManager::Instance()->AddEvent(PrtEvent());
-  if(runtype == 0 || runtype == 10 || runtype == 5){ // simulation
-    G4ThreeVector vec(0,0,1);
-    //G4int id = anEvent->GetEventID()%5;
-    // if(id==0)  vec.setTheta(M_PI-110*deg);
-    // if(id==0)  vec.setPhi(0*deg);
-    // if(id==1)  vec.setTheta(M_PI-30*deg);
-    // if(id==1)  vec.setPhi(70*deg);
-    // if(id==2)  vec.setTheta(M_PI-140*deg);
-    // if(id==2)  vec.setPhi(180*deg);
-    // if(id==3)  vec.setTheta(M_PI-70*deg);
-    // if(id==3)  vec.setPhi(250*deg);
 
-    double trackresolution=PrtManager::Instance()->GetBeamDimension();
-    if(angle>0){
-      if(trackresolution<0.00001){	
-	vec.setTheta(angle);
-      }else{
-	//smear track resolution
-	G4ThreeVector vec0 = vec;
-	vec0.setTheta(angle);
-	vec.setTheta(G4RandGauss::shoot(angle,trackresolution));
-	vec.rotate(2*M_PI*G4UniformRand(), vec0);
+  if (fRunType == 0 || fRunType == 10 || fRunType == 5) { // simulation
+    G4ThreeVector vec(0, 0, 1);
+    // G4int id = anEvent->GetEventID()%5;
+    //  if(id==0)  vec.setTheta(M_PI-110*deg);
+    //  if(id==0)  vec.setPhi(0*deg);
+    //  if(id==1)  vec.setTheta(M_PI-30*deg);
+    //  if(id==1)  vec.setPhi(70*deg);
+    //  if(id==2)  vec.setTheta(M_PI-140*deg);
+    //  if(id==2)  vec.setPhi(180*deg);
+    //  if(id==3)  vec.setTheta(M_PI-70*deg);
+    //  if(id==3)  vec.setPhi(250*deg);
+
+    double trackresolution = fRun->getBeamSize();
+    if (theta > 0) {
+      if (trackresolution < 0.00001) {
+        vec.setTheta(theta*TMath::DegToRad());
+      } else {
+        // smear track resolution
+        G4ThreeVector vec0 = vec;
+        vec0.setTheta(theta);
+        vec.setTheta(G4RandGauss::shoot(theta, trackresolution));
+        vec.rotate(2 * M_PI * G4UniformRand(), vec0);
       }
-    }else{
-      G4double theta = M_PI*G4UniformRand();
-      theta = acos((cos(30*deg)-cos(150*deg))*G4UniformRand()+cos(150*deg));
+    } else {
+      double theta = M_PI * G4UniformRand();
+      theta = acos((cos(30 * deg) - cos(150 * deg)) * G4UniformRand() + cos(150 * deg));
 
       G4ThreeVector vec0 = vec;
-      vec0.setTheta(M_PI-theta);
-	
-      theta = G4RandGauss::shoot(theta,trackresolution);
-      vec.setTheta(M_PI-theta);
-      vec.rotate(2*M_PI*G4UniformRand(), vec0);
+      vec0.setTheta(M_PI - theta);
 
-      if(runtype != 5) PrtManager::Instance()->Event()->SetAngle(theta/deg);
+      theta = G4RandGauss::shoot(theta, trackresolution);
+      vec.setTheta(M_PI - theta);
+      vec.rotate(2 * M_PI * G4UniformRand(), vec0);
+
+      if (fRunType != 5) PrtManager::Instance()->getEvent()->setMomentum(TVector3(vec.x(),vec.y(),vec.z()));
     }
 
-    if(PrtManager::Instance()->GetEvType()==1){
-      if(runtype == 5) {
-	vec.setTheta(angle + G4UniformRand()*0.09-0.045);
-	vec.rotateZ(G4UniformRand()*0.032);
+    if (fRun->getEv() == 1) {
+      if (fRunType == 5) {
+        vec.setTheta(theta + G4UniformRand() * 0.09 - 0.045);
+        vec.rotateZ(G4UniformRand() * 0.032);
       }
-      if(runtype == 0) vec.rotateZ(PrtManager::Instance()->GetTest1()); // 0.016 hits the middle of the BaBar bar
+      if (fRunType == 0)
+        vec.rotateZ(fRun->getTest1()); // 0.016 hits the middle of the BaBar bar
     }
-    
-    fParticleGun->SetParticlePosition(G4ThreeVector(0,ypos,zpos));
-    if(runtype != 5) PrtManager::Instance()->Event()->SetPosition(TVector3(0,ypos,zpos));
-      
-   
+
+    fParticleGun->SetParticlePosition(G4ThreeVector(0, ypos, zpos));
+    if (fRunType != 5) PrtManager::Instance()->getEvent()->setPosition(TVector3(0, ypos, zpos));
+
     fParticleGun->SetParticleMomentumDirection(vec);
   }
 
-  if(runtype == 1){ // LUT generation
-    
-    G4double barShift=0; // 390/12./2;
-    if(PrtManager::Instance()->GetEvType()==1) barShift = 0.5*35;
-    
-    fParticleGun->SetParticlePosition(G4ThreeVector(0,barShift,radiatorL/2.-0.5));
-    G4double angle = -G4UniformRand()*M_PI;
-    G4ThreeVector vec(0,0,-1);
+  if (fRunType == 1) { // LUT generation
+
+    double barShift = 0; // 390/12./2;
+    if (fRun->getEv() == 1) barShift = 0.5 * 35;
+
+    fParticleGun->SetParticlePosition(G4ThreeVector(0, barShift, fRadiatorL / 2. - 0.5));
+    G4ThreeVector vec(0, 0, -1);
     vec.setTheta(acos(G4UniformRand()));
-    vec.setPhi(2*M_PI*G4UniformRand());
-    
-    //  vec.rotateY(-M_PI/2.);
+    vec.setPhi(2 * M_PI * G4UniformRand());
+
     fParticleGun->SetParticleMomentumDirection(vec);
   }
 
@@ -143,33 +145,32 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
 
   G4ThreeVector dir = fParticleGun->GetParticleMomentumDirection();
   dir *= fParticleGun->GetParticleMomentum();
-  PrtManager::Instance()->SetMomentum(TVector3(dir.x(),dir.y(),dir.z()));
+  PrtManager::Instance()->getEvent()->setMomentum(TVector3(dir.x(),dir.y(),dir.z()));
 }
 
-void PrtPrimaryGeneratorAction::SetOptPhotonPolar(){
- G4double angle = G4UniformRand() * 360.0*deg;
- SetOptPhotonPolar(angle);
+void PrtPrimaryGeneratorAction::SetOptPhotonPolar() {
+  double angle = G4UniformRand() * 360.0 * deg;
+  SetOptPhotonPolar(angle);
 }
 
-void PrtPrimaryGeneratorAction::SetOptPhotonPolar(G4double angle){
+void PrtPrimaryGeneratorAction::SetOptPhotonPolar(double angle) {
 
-  if (fParticleGun->GetParticleDefinition()->GetParticleName()!="opticalphoton")
-   {
-     G4cout << "--> warning from PrimaryGeneratorAction::SetOptPhotonPolar() :"
-       "the particleGun is not an opticalphoton " << 
-       fParticleGun->GetParticleDefinition()->GetParticleName()<< G4endl;
-     return;
-   }
+  if (fParticleGun->GetParticleDefinition()->GetParticleName() != "opticalphoton") {
+    G4cout << "--> warning from PrimaryGeneratorAction::SetOptPhotonPolar() :"
+              "the particleGun is not an opticalphoton "
+           << fParticleGun->GetParticleDefinition()->GetParticleName() << G4endl;
+    return;
+  }
 
- G4ThreeVector normal (1., 0., 0.);
- G4ThreeVector kphoton = fParticleGun->GetParticleMomentumDirection();
- G4ThreeVector product = normal.cross(kphoton);
- G4double modul2       = product*product;
- 
- G4ThreeVector e_perpend (0., 0., 1.);
- if (modul2 > 0.) e_perpend = (1./std::sqrt(modul2))*product;
- G4ThreeVector e_paralle    = e_perpend.cross(kphoton);
- 
- G4ThreeVector polar = std::cos(angle)*e_paralle + std::sin(angle)*e_perpend;
- fParticleGun->SetParticlePolarization(polar);
+  G4ThreeVector normal(1., 0., 0.);
+  G4ThreeVector kphoton = fParticleGun->GetParticleMomentumDirection();
+  G4ThreeVector product = normal.cross(kphoton);
+  double modul2 = product * product;
+
+  G4ThreeVector e_perpend(0., 0., 1.);
+  if (modul2 > 0.) e_perpend = (1. / std::sqrt(modul2)) * product;
+  G4ThreeVector e_paralle = e_perpend.cross(kphoton);
+
+  G4ThreeVector polar = std::cos(angle) * e_paralle + std::sin(angle) * e_perpend;
+  fParticleGun->SetParticlePolarization(polar);
 }

@@ -15,71 +15,62 @@
 
 G4Mutex PrtBarSD::fMutex = G4MUTEX_INITIALIZER;
 
-PrtBarSD::PrtBarSD(const G4String& name, 
-		   const G4String& hitsCollectionName,
-		   G4int nofCells)
-  : G4VSensitiveDetector(name), fHitsCollection(NULL){
+PrtBarSD::PrtBarSD(const G4String &name, const G4String &hitsCollectionName, G4int nofCells)
+  : G4VSensitiveDetector(name), fHitsCollection(NULL) {
 
   G4AutoLock tuberier(&fMutex);
   collectionName.insert(hitsCollectionName);
 }
 
-PrtBarSD::~PrtBarSD(){
+PrtBarSD::~PrtBarSD() {}
 
-}
+void PrtBarSD::Initialize(G4HCofThisEvent *hce) {
 
-void PrtBarSD::Initialize(G4HCofThisEvent* hce){
-  
   // Create hits collection
-  fHitsCollection = new PrtBarHitsCollection(SensitiveDetectorName, collectionName[0]); 
+  fHitsCollection = new PrtBarHitsCollection(SensitiveDetectorName, collectionName[0]);
 
   // Add this collection in hce
-  G4int hcID 
-    = G4SDManager::GetSDMpointer()->GetCollectionID(collectionName[0]);
-  hce->AddHitsCollection( hcID, fHitsCollection );
+  G4int hcID = G4SDManager::GetSDMpointer()->GetCollectionID(collectionName[0]);
+  hce->AddHitsCollection(hcID, fHitsCollection);
 }
 
-G4bool PrtBarSD::ProcessHits(G4Step* aStep, G4TouchableHistory* hist){
+G4bool PrtBarSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
 
   // energy deposit
-  G4double edep = aStep->GetTotalEnergyDeposit();
-  G4Track *track = aStep->GetTrack();
-  G4String ParticleName = track->GetDynamicParticle()->
-    GetParticleDefinition()->GetParticleName();
+  G4Track *track = step->GetTrack();
+  G4String ParticleName = track->GetDynamicParticle()->GetParticleDefinition()->GetParticleName();
   if (ParticleName == "opticalphoton") return true;
-  
-  // if (edep==0.) return false;
 
-  PrtBarHit* newHit = new PrtBarHit();
-  newHit->SetTrackID(aStep->GetTrack()->GetTrackID());
-  newHit->SetEdep(edep);
-  newHit->SetPos(aStep->GetPostStepPoint()->GetPosition());
+  PrtBarHit *newHit = new PrtBarHit();
+  newHit->SetTrackID(step->GetTrack()->GetTrackID());
+  newHit->SetPos(step->GetPostStepPoint()->GetPosition());
   newHit->SetMom(track->GetMomentum());
-  // // store normal to the closest boundary
-  G4Navigator* theNavigator 
-    = G4TransportationManager::GetTransportationManager()
-    ->GetNavigatorForTracking();
-  double fP = track->GetDynamicParticle()->GetTotalMomentum();
-  
-  double fEnergy = track->GetDynamicParticle()->GetTotalEnergy();
-  double cherenkov = acos(1/(1.47125*(fP/fEnergy)));
-  PrtManager::Instance()->SetCurrentCherenkov(cherenkov);
-  
+
+  // store normal to the closest boundary
+  // G4Navigator *theNavigator =
+  //   G4TransportationManager::GetTransportationManager()->GetNavigatorForTracking();
+  // double fP = track->GetDynamicParticle()->GetTotalMomentum();
+  // double fEnergy = track->GetDynamicParticle()->GetTotalEnergy();
+  // double cherenkov = acos(1 / (1.47125 * (fP / fEnergy)));
+  // PrtManager::Instance()->SetCurrentCherenkov(cherenkov);
   // PrtManager::Instance()->Event()->SetTime();
+
   fHitsCollection->insert(newHit);
 
-  // newHit->Print();
+  G4ThreeVector gpos = step->GetPostStepPoint()->GetPosition();
+  G4TouchableHistory *touchable = (G4TouchableHistory *)(step->GetPostStepPoint()->GetTouchable());
+  G4ThreeVector lpos = touchable->GetHistory()->GetTopTransform().TransformPoint(gpos);
+  PrtManager::Instance()->getEvent()->setPosition(TVector3(lpos.x(), lpos.y(), lpos.z()));
 
   return true;
 }
 
-void PrtBarSD::EndOfEvent(G4HCofThisEvent*){
+void PrtBarSD::EndOfEvent(G4HCofThisEvent *) {
 
-  if ( verboseLevel>1 ) { 
+  if (verboseLevel > 1) {
     G4int nofHits = fHitsCollection->entries();
-    G4cout << "\n-------->Bar Hits Collection: in this event they are " << nofHits 
-	   << " hits in the tracker chambers: " << G4endl;
-    for ( G4int i=0; i<nofHits; i++ ) (*fHitsCollection)[i]->Print();
+    G4cout << "\n-------->Bar Hits Collection: in this event they are " << nofHits
+           << " hits in the tracker chambers: " << G4endl;
+    for (G4int i = 0; i < nofHits; i++) (*fHitsCollection)[i]->Print();
   }
 }
-

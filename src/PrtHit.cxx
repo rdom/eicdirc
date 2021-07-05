@@ -2,7 +2,5 @@
 
 ClassImp(PrtHit)
 
-// -----   Default constructor   -------------------------------------------
-PrtHit::PrtHit(): fType(-1),fCherenkovMC(0),fMcpId(-1),fPixelId(-1),fChannel(-1),
-  fTdc(-1),fTrb(-1),fMultiplicity(-1),fLeadTime(-1),fTotTime(-1){ 
-}
+PrtHit::PrtHit()
+  : fChannel(-1), fPmt(-1), fPixel(-1), fLeadTime(0), fTotTime(0), fPathInPrizm(0) {}

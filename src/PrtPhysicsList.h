@@ -14,42 +14,37 @@ class G4OpBoundaryProcess;
 
 class PrtPhysicsListMessenger;
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+class PrtPhysicsList : public G4VUserPhysicsList {
+ public:
+  PrtPhysicsList();
+  virtual ~PrtPhysicsList();
 
-class PrtPhysicsList : public G4VUserPhysicsList
-{ 
-  public:
-    PrtPhysicsList();
-    virtual ~PrtPhysicsList();
+ public:
+  virtual void ConstructParticle();
+  virtual void ConstructProcess();
 
-  public:
-    virtual void ConstructParticle();
-    virtual void ConstructProcess();
+  virtual void SetCuts();
 
-    virtual void SetCuts();
+  // these methods Construct physics processes and register them
+  void ConstructDecay();
+  void ConstructEM();
+  void ConstructOp();
 
-    //these methods Construct physics processes and register them
-    void ConstructDecay();
-    void ConstructEM();
-    void ConstructOp();
+  // for the Messenger
+  void SetVerbose(G4int);
+  void SetNbOfPhotonsCerenkov(G4int);
 
-    //for the Messenger 
-    void SetVerbose(G4int);
-    void SetNbOfPhotonsCerenkov(G4int);
- 
-  private:
-    G4int                fPhysList;
-    G4Cerenkov*          fCerenkovProcess;
-    PrtCherenkovProcess* fCerenkovProcess0;
-    G4Scintillation*     fScintillationProcess;
-    G4OpAbsorption*      fAbsorptionProcess;
-    G4OpRayleigh*        fRayleighScatteringProcess;
-    G4OpMieHG*           fMieHGScatteringProcess;
-    G4OpBoundaryProcess* fBoundaryProcess;
- 
-    PrtPhysicsListMessenger* fMessenger;
+ private:
+  int fRunType, fPhysList;
+  G4Cerenkov *fCerenkovProcess;
+  PrtCherenkovProcess *fCerenkovProcess0;
+  G4Scintillation *fScintillationProcess;
+  G4OpAbsorption *fAbsorptionProcess;
+  G4OpRayleigh *fRayleighScatteringProcess;
+  G4OpMieHG *fMieHGScatteringProcess;
+  G4OpBoundaryProcess *fBoundaryProcess;
+
+  PrtPhysicsListMessenger *fMessenger;
 };
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-#endif /* PrtPhysicsList_h */
+#endif
