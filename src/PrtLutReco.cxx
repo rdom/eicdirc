@@ -178,7 +178,7 @@ void PrtLutReco::Run(int start, int end) {
   test3 = frun->getTest3();
   fMethod = frun->getRunType();
   timeRes = frun->getTimeSigma();
-  double timeCut = 0.2;
+  double timeCut = 0.5;
   int pid = frun->getPid();
   fp1 = 2; // pi
   if(pid == 10001)  fp1 = 0; // e
@@ -196,7 +196,7 @@ void PrtLutReco::Run(int start, int end) {
 
   for (int ievent = 0; ievent < nEvents; ievent++) {
     fChain->GetEntry(ievent);
-    theta = fEvent->getMomentum().Theta() * TMath::RadToDeg();
+    theta = (fEvent->getMomentum().Angle(TVector3(0, 0, -1))) * TMath::RadToDeg();
     mom = fEvent->getMomentum().Mag() / 1000.;
     pid = fEvent->getPid();
     int tnph[5] = {0};
@@ -208,10 +208,10 @@ void PrtLutReco::Run(int start, int end) {
     TVector3 rotatedmom = fEvent->getMomentum().Unit();
     double sum1(0), sum2(0), noise(0.2);
 
-    // track smearing
-    TVector3 init = rotatedmom;
-    rotatedmom.RotateY(gRandom->Gaus(0, test1));
-    rotatedmom.Rotate(TMath::Pi(), init);
+    // // track smearing
+    // TVector3 init = rotatedmom;
+    // rotatedmom.RotateY(gRandom->Gaus(0, test1));
+    // rotatedmom.Rotate(TMath::Pi(), init);
 
     if (fSigma < 0.003) fSigma = 0.007;
 
@@ -257,7 +257,7 @@ void PrtLutReco::Run(int start, int end) {
 
     // double stime = FindStartTime(fEvent);
 
-    lenz = 2100 - fEvent->getPosition().Z();
+   
     
     for (auto hit : fEvent->getHits()) {
    
@@ -265,7 +265,7 @@ void PrtLutReco::Run(int start, int end) {
       dirz = hit.getMomentum().Z();
       int mcp = hit.getPmt();
       int pix = hit.getPixel();
-      int ch = ft.map_pmtpix[mcp][pix];
+      int ch = hit.getChannel();
 
       TVector3 dir0 = hit.getMomentum().Unit();
       TVector3 cz = TVector3(-rotatedmom.X(), rotatedmom.Y(), rotatedmom.Z());
@@ -274,23 +274,23 @@ void PrtLutReco::Run(int start, int end) {
       TVector3 unitdir2 = rotatedmom.Unit();
       cz.RotateUz(unitdir1);
       cd.RotateUz(unitdir2);
-
+      
+      lenz = 2100 - fEvent->getPosition().Z();      
       double phi0 = cd.Phi();
-      if (dirz < 0) {
+      if (dirz < 0) {	
         reflected = true;
         lenz = 2 * 4200 - lenz;
       } else {
         reflected = false;
-        // continue;
       }
-
+      
       double theta0 = rotatedmom.Angle(dir0);
       fHist5->Fill(theta0 * TMath::Sin(phi0), theta0 * TMath::Cos(phi0));
-
+      
       PrtLutNode *node = (PrtLutNode *)fLut->At(ch);
       int size = node->Entries();
       bool isGoodHit(false);
-
+      
       // double fAngle =  fEvent->GetAngle()-90;
       // TVector3 rotatedmom = momInBar;
       // rotatedmom.RotateY(-fAngle/180.*TMath::Pi());
@@ -308,6 +308,7 @@ void PrtLutReco::Run(int start, int end) {
 
       for (int i = 0; i < size; i++) {
         dird = node->GetEntry(i);
+
         Long_t lpath = node->GetPathId(i);
         TString slpath = Form("%ld", lpath);
         bool ipath = 0;
@@ -334,6 +335,7 @@ void PrtLutReco::Run(int start, int end) {
 
           fHist1->Fill(hitTime);
           double luttime = bartime + evtime;
+	  
           tdiff = hitTime - luttime;
           fHistDiff[reflected]->Fill(tdiff);
           if (ipath) fHistDiff[2]->Fill(tdiff);
@@ -342,7 +344,7 @@ void PrtLutReco::Run(int start, int end) {
           // if(tangle>TMath::PiOver2()) tangle = TMath::Pi()-tangle;
 
           if (fabs(tdiff) < 2) tangle -= 0.012 * tdiff; // chromatic correction
-          if (fabs(tdiff) > timeCut + luttime * 0.035) continue;
+	  if (fabs(tdiff) > timeCut + luttime * 0.035) continue;
           fDiff->Fill(hitTime, tdiff);
 
           // if(theta<50){
@@ -573,8 +575,8 @@ void PrtLutReco::Run(int start, int end) {
       fhChromL->Draw("colz");
     }
 
-    {                                   // hp
-      auto cdigi = ft.draw_digi(fEvId); // 2030
+    { // hp
+      auto cdigi = ft.draw_digi(0, 0);
       cdigi->SetName("hp" + nid);
       ft.add_canvas(cdigi);
     }

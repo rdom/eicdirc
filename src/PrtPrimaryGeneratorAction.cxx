@@ -19,10 +19,7 @@ PrtPrimaryGeneratorAction::PrtPrimaryGeneratorAction()
   fRun = PrtManager::Instance()->getRun();
   double mom = fRun->getMomentum();
   fRunType = fRun->getRunType();
-  fRadiatorL = fRun->getRadiatorL();
-  fRadiatorW = fRun->getRadiatorW();
-  fRadiatorH = fRun->getRadiatorH();
-  
+
   fParticleGun = new G4ParticleGun(n_particle);
 
   // create a messenger for this class
@@ -56,11 +53,14 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
 
   PrtManager::Instance()->addEvent(PrtEvent());
   int pdg = fRun->getPid();
-  double theta = 180-fRun->getTheta();
+  double theta = 180 - fRun->getTheta();
   double phi = fRun->getTheta();
   double zpos = fRun->getBeamZ();
-  double ypos = fRun->getBeamX();  
-  
+  double ypos = fRun->getBeamX();
+  fRadiatorL = fRun->getRadiatorL();
+  fRadiatorW = fRun->getRadiatorW();
+  fRadiatorH = fRun->getRadiatorH();
+
   if (pdg > 0) {
     if (pdg == 2212) fPid = 4;
     else if (pdg == 321) fPid = 3;
@@ -91,7 +91,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
     double trackresolution = fRun->getBeamSize();
     if (theta > 0) {
       if (trackresolution < 0.00001) {
-        vec.setTheta(theta*TMath::DegToRad());
+        vec.setTheta(theta * TMath::DegToRad());
       } else {
         // smear track resolution
         G4ThreeVector vec0 = vec;
@@ -109,8 +109,6 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
       theta = G4RandGauss::shoot(theta, trackresolution);
       vec.setTheta(M_PI - theta);
       vec.rotate(2 * M_PI * G4UniformRand(), vec0);
-
-      if (fRunType != 5) PrtManager::Instance()->getEvent()->setMomentum(TVector3(vec.x(),vec.y(),vec.z()));
     }
 
     if (fRun->getEv() == 1) {
@@ -118,8 +116,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
         vec.setTheta(theta + G4UniformRand() * 0.09 - 0.045);
         vec.rotateZ(G4UniformRand() * 0.032);
       }
-      if (fRunType == 0)
-        vec.rotateZ(fRun->getTest1()); // 0.016 hits the middle of the BaBar bar
+      if (fRunType == 0) vec.rotateZ(fRun->getTest1()); // 0.016 hits the middle of the BaBar bar
     }
 
     fParticleGun->SetParticlePosition(G4ThreeVector(0, ypos, zpos));
@@ -145,7 +142,9 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
 
   G4ThreeVector dir = fParticleGun->GetParticleMomentumDirection();
   dir *= fParticleGun->GetParticleMomentum();
-  PrtManager::Instance()->getEvent()->setMomentum(TVector3(dir.x(),dir.y(),dir.z()));
+
+  PrtManager::Instance()->getEvent()->setMomentum(TVector3(dir.x(), dir.y(), dir.z()));
+  PrtManager::Instance()->setMomentum(TVector3(dir.x(), dir.y(), dir.z()));
 }
 
 void PrtPrimaryGeneratorAction::SetOptPhotonPolar() {

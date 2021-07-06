@@ -17,11 +17,6 @@
 PrtPixelSD::PrtPixelSD(const G4String &name, const G4String &hitsCollectionName)
   : G4VSensitiveDetector(name) {
   collectionName.insert(hitsCollectionName);
-}
-
-PrtPixelSD::~PrtPixelSD() {}
-
-void PrtPixelSD::Initialize(G4HCofThisEvent *hce) {
 
   fRunType = PrtManager::Instance()->getRun()->getRunType();
   fEvType = PrtManager::Instance()->getRun()->getEv();
@@ -30,11 +25,19 @@ void PrtPixelSD::Initialize(G4HCofThisEvent *hce) {
   int npix = PrtManager::Instance()->getRun()->getNpix();
 
   // create MPC map
+
+  std::cout << "npmt * npix " << npmt * npix << std::endl;
+
   for (int ch = 0; ch < npmt * npix; ch++) {
     int mcp = ch / npix;
     int pix = ch % npix;
     fMap_Mpc[mcp][pix] = ch;
   }
+}
+
+PrtPixelSD::~PrtPixelSD() {}
+
+void PrtPixelSD::Initialize(G4HCofThisEvent *hce) {
 }
 
 G4bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
@@ -139,7 +142,7 @@ G4bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
   // time since event created
   // hit.SetTrailTime(0,step->GetPreStepPoint()->GetGlobalTime()*1000);
 
-  PrtManager::Instance()->addHit(hit);
+  PrtManager::Instance()->addHit(hit, localPos);
 
   return true;
 }

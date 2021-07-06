@@ -26,16 +26,6 @@
 #include "PrtLutNode.h"
 #include "PrtTools.h"
 
-// #include "TROOT.h"
-// #include "TStyle.h"
-// #include "TCanvas.h"
-// #include "TMath.h"
-// #include "TRotation.h"
-// #include "TGraph.h"
-// #include <TVirtualFitter.h>
-
-// #include <TLegend.h>
-
 class PrtLutReco {
 
  public:
@@ -85,7 +75,7 @@ class PrtLutReco {
   int fp2;
   int fPk;
   int fCor_level;
-  double fCor_angle[12] = {0}, fCor_time[12] = {0}, fCor_time_refl[2] = {0};
+  double fCor_angle[48] = {0}, fCor_time[48] = {0}, fCor_time_refl[2] = {0};
   double fCorrSpr;
   TString fCorrPath;
   TString fPdfPath;

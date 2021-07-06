@@ -30,6 +30,7 @@ PrtManager::PrtManager(TString filename, PrtRun *run) {
     fTree = new TTree("prtlut", "Look-up table for the geometrical reconstruction.");
     fTree->Branch("LUT", &fLut, 256000, 2);
     TClonesArray &fLuta = *fLut;
+
     for (Long64_t i = 0; i < fRun->getNpmt()*fRun->getNpix(); i++) {
       new ((fLuta)[i]) PrtLutNode(i);
     }        
