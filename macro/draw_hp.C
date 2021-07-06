@@ -1,4 +1,8 @@
-#include "../src/PrtTools.h"
+#if defined(__ACLIC__)
+#include "PrtTools.h"
+#else
+R__LOAD_LIBRARY(../build/libPrt.so)
+#endif
 
 void draw_hp(TString infile = "../build/hits.root") {
 

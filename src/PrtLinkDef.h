@@ -8,5 +8,6 @@
 #pragma link C++ class  PrtHit+;
 #pragma link C++ class  vector<PrtHit>;
 #pragma link C++ class  PrtLutNode+;
+#pragma link C++ class  PrtTools+;
 
 #endif

@@ -31,21 +31,22 @@ include(${Geant4_USE_FILE})
 file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cxx)
 file(GLOB headers ${PROJECT_SOURCE_DIR}/src/*.h)
 
-#MESSAGE(STATUS ${ROOT_LIBRARIES})
+# MESSAGE(STATUS ${PROJECT_SOURCE_DIR})
 
 #----------------------------------------------------------------------------
 # Generate dictionary for root
-ROOT_GENERATE_DICTIONARY(G__Prt PrtHit.h PrtEvent.h PrtRun.h PrtLutNode.h LINKDEF src/PrtLinkDef.h MODULE Prt)
-add_library(Prt SHARED src/PrtHit.cxx src/PrtEvent.cxx src/PrtRun.cxx  src/PrtLutNode.cxx src/PrtTools.cxx G__Prt.cxx)
+ROOT_GENERATE_DICTIONARY(G__Prt PrtHit.h PrtEvent.h PrtRun.h PrtLutNode.h PrtTools.h LINKDEF src/PrtLinkDef.h MODULE Prt)
+add_library(Prt SHARED src/PrtHit.cxx src/PrtEvent.cxx src/PrtRun.cxx src/PrtLutNode.cxx src/PrtTools.cxx G__Prt.cxx)
 
-# target_link_libraries(Prt ${ROOT_LIBRARIES} -lSpectrum -lHistPainter)
+target_link_libraries(Prt ${ROOT_LIBRARIES} -lSpectrum -lHistPainter)
 
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4 libraries
 
 set(CMAKE_CXX_STANDARD 14)
 add_executable(eicdirc ${sources})
-target_link_libraries(eicdirc -lGLU ${Geant4_LIBRARIES} ${ROOT_LIBRARIES} Prt -lSpectrum -lHistPainter)
+target_link_libraries(eicdirc -lGLU ${Geant4_LIBRARIES} Prt)
+# target_link_libraries(eicdirc -lGLU ${Geant4_LIBRARIES} ${ROOT_LIBRARIES} Prt -lSpectrum -lHistPainter)
 
 #----------------------------------------------------------------------------
 # Copy all scripts to the build directory, i.e. the directory in which we
