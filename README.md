@@ -75,10 +75,11 @@ example:
               "kaon+"
                  ...
               "opticalphoton"
-              "mix_pik"  1 pion 1 kaon mix
 	      "mix_pie"  1 pion 1 electron mix
 	      "mix_pimu" 1 pion 1 muon mix
-
+              "mix_pik"  1 pion 1 kaon mix
+	      "mix_pip"  1 pion 1 proton mix
+	      
 -p    particle momentum [GeV/c]
 
 -w    physical list
