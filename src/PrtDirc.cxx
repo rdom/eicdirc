@@ -191,24 +191,19 @@ int main(int argc, char **argv) {
 
   if (particle.size()) {
     int pdgid = 0;
-    if (particle == "mix_pip") PrtManager::Instance()->getRun()->setPid(10001);
-    else if (particle == "mix_pik") PrtManager::Instance()->getRun()->setPid(10002);
-    else {
-      G4String command = "/gun/particle ";
-      UImanager->ApplyCommand(command + particle);
-      if (particle == "proton") pdgid = 2212;
-      if (particle == "pi+") pdgid = 211;
-      if (particle == "pi0") pdgid = 111;
-      if (particle == "kaon+") pdgid = 321;
-      if (particle == "kaon-") pdgid = -321;
-      if (particle == "mu-") pdgid = 13;
-      if (particle == "e-") pdgid = 11;
-      if (particle == "opticalphoton") pdgid = 0;
-      if (particle == "mix_pie") pdgid = 10001;
-      if (particle == "mix_pik") pdgid = 10002;
-      if (particle == "mix_pimu") pdgid = 10003;
-      PrtManager::Instance()->getRun()->setPid(pdgid);
-    }
+    if (particle == "proton") pdgid = 2212;
+    if (particle == "pi+") pdgid = 211;
+    if (particle == "pi0") pdgid = 111;
+    if (particle == "kaon+") pdgid = 321;
+    if (particle == "kaon-") pdgid = -321;
+    if (particle == "mu-") pdgid = 13;
+    if (particle == "e-") pdgid = 11;
+    if (particle == "opticalphoton") pdgid = 0;
+    if (particle == "mix_pie") pdgid = 10000;
+    if (particle == "mix_pimu") pdgid = 10001;
+    if (particle == "mix_pik") pdgid = 10003;
+    if (particle == "mix_pip") pdgid = 10004;
+    PrtManager::Instance()->getRun()->setPid(pdgid);
   }
 
   if (batchmode.size()) { // batch mode

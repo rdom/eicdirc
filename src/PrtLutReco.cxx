@@ -181,9 +181,10 @@ void PrtLutReco::Run(int start, int end) {
   double timeCut = 0.5;
   int pid = frun->getPid();
   fp1 = 2; // pi
-  if(pid == 10001)  fp1 = 0; // e
-  if(pid == 10002)  fp1 = 3; // K
-  if(pid == 10003)  fp1 = 1; // mu
+  if(pid == 10000)  fp1 = 0; // e
+  if(pid == 10001)  fp1 = 1; // mu
+  if(pid == 10003)  fp1 = 3; // K
+  if(pid == 10004)  fp1 = 4; // K
   
   if( fCor_level == 0) timeRes = 1.5;
 

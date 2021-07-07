@@ -65,10 +65,14 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
     if (pdg == 2212) fPid = 4;
     else if (pdg == 321) fPid = 3;
     else if (pdg == 211) fPid = 2;
-    else if (pdg == 10001 && fPid > 2) fPid = 2;
-    else if (pdg == 10001 && fPid == 2) fPid = 4;
-    else if (pdg == 10002 && fPid > 2) fPid = 2;
-    else if (pdg == 10002 && fPid == 2) fPid = 3;
+    else if (pdg == 10000 && fPid != 2) fPid = 2;
+    else if (pdg == 10000) fPid = 0;
+    else if (pdg == 10001 && fPid != 2) fPid = 2;
+    else if (pdg == 10001) fPid = 1;
+    else if (pdg == 10003 && fPid != 2) fPid = 2;
+    else if (pdg == 10003) fPid = 3;
+    else if (pdg == 10004 && fPid != 2) fPid = 2;
+    else if (pdg == 10004) fPid = 4;
 
     PrtManager::Instance()->getEvent()->setPid(fPid);
     fParticleGun->SetParticleDefinition(fParticle[fPid]);
