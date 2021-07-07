@@ -51,7 +51,7 @@
 
 
 # Draw coordinate axes:
-#/vis/scene/add/axes 0 0 0 1 m
+/vis/scene/add/axes 0 0 0 1 m
 #
 # Draw smooth trajectories at end of event, showing trajectory points
 # as markers 2 pixels wide:
@@ -124,13 +124,13 @@
 # /vis/viewer/set/viewpointThetaPhi 129.792  1.39204  deg
 # /vis/viewer/set/targetPoint 100 20 210 cm
 
-# #lens side
-/vis/viewer/set/viewpointVector 1.31839e-16 -1 -6.93889e-18
-/vis/viewer/set/upVector 0 1 0
-/vis/viewer/set/projection orthogonal
-/vis/viewer/zoomTo 11
-/vis/viewer/scaleTo 1 1 1
-/vis/viewer/set/targetPoint 1.01299 -0.569503 2.15227 m  
+# # #lens side
+# /vis/viewer/set/viewpointVector 1.31839e-16 -1 -6.93889e-18
+# /vis/viewer/set/upVector 0 1 0
+# /vis/viewer/set/projection orthogonal
+# /vis/viewer/zoomTo 11
+# /vis/viewer/scaleTo 1 1 1
+# /vis/viewer/set/targetPoint 1.01299 -0.569503 2.15227 m  
 
 
 # side wedge
@@ -145,3 +145,6 @@
 # /vis/viewer/zoomTo 7.0883
 # /vis/viewer/set/targetPoint 1.11348 -0.128502 0.164898 m
 #/vis/ogl/export ev_1.png
+
+# draw field
+/vis/scene/add/magneticField 10

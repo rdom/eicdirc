@@ -63,7 +63,7 @@ example:
                 10   ideal lens (thickness = 0, ideal focusing)
 
 -theta    polar between particle beam and bar radiator
-      if a == 0 then a = [30,160]
+      if theta == 0 then thata = [30,160]
 
 -phi  azimuth angle between particle beam and bar radiator
 

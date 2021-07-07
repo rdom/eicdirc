@@ -93,7 +93,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
     //  if(id==3)  vec.setPhi(250*deg);
 
     double trackresolution = fRun->getBeamSize();
-    if (theta > 0) {
+    if (theta > 0 && theta < 180) {
       if (trackresolution < 0.00001) {
         vec.setTheta(theta * TMath::DegToRad());
       } else {

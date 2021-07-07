@@ -25,10 +25,17 @@
 #include "G4VisAttributes.hh"
 #include "G4UImanager.hh"
 
+#include "G4MagneticField.hh"
+#include "G4UniformMagField.hh"
+#include "G4TransportationManager.hh"
+#include "G4FieldManager.hh"
+
+
 #include "PrtManager.h"
 #include "PrtBarSD.h"
 #include "PrtPrizmSD.h"
 #include "PrtPixelSD.h"
+#include "PrtField.h"
 
 PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction() {
 
@@ -1158,6 +1165,12 @@ void PrtDetectorConstruction::ConstructSDandField() {
   SetSensitiveDetector("lBar", barSD);
 
   // Magnetic field
+  // G4MagneticField *mField = new G4UniformMagField(G4ThreeVector(3. * tesla, 0., 0.));
+  G4MagneticField* mField= new PrtField("../data/field.tab", 0);
+  G4FieldManager *globalFieldMgr =
+    G4TransportationManager::GetTransportationManager()->GetFieldManager();
+  globalFieldMgr->SetDetectorField(mField);
+  globalFieldMgr->CreateChordFinder(mField);
 }
 
 void PrtDetectorConstruction::SetRotation(double angle) {
