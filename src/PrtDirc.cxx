@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
 #endif
   TApplication theApp("EicDirc", 0, 0);
 
-  G4String macro, events, geometry, ev, radiator, physlist, session, geomTheta, geomPhi, batchmode,
+  G4String macro, events, field, geometry, ev, radiator, physlist, session, geomTheta, geomPhi, batchmode,
     displayOpt, lensId, particle = "mix_pip", momentum, testVal1, testVal2, testVal3, prismStepX,
                         prismStepY, beamZ, beamX, timeSigma, beamDimension, mcpLayout;
   TString infile = "", lutfile = "", pdffile = "", outfile = "";
@@ -60,6 +60,7 @@ int main(int argc, char **argv) {
     else if (G4String(argv[i]) == "-i") infile = argv[i + 1];
     else if (G4String(argv[i]) == "-u") lutfile = argv[i + 1];
     else if (G4String(argv[i]) == "-pdf") pdffile = argv[i + 1];
+    else if (G4String(argv[i]) == "-field") field = argv[i + 1];
     else if (G4String(argv[i]) == "-g") geometry = argv[i + 1];
     else if (G4String(argv[i]) == "-ev") ev = argv[i + 1];
     else if (G4String(argv[i]) == "-h") radiator = argv[i + 1];
@@ -75,7 +76,6 @@ int main(int argc, char **argv) {
     else if (G4String(argv[i]) == "-r") runtype = atoi(argv[i + 1]);
     else if (G4String(argv[i]) == "-study") study = atoi(argv[i + 1]);
     else if (G4String(argv[i]) == "-fid") fid = atoi(argv[i + 1]);
-    else if (G4String(argv[i]) == "-z") beamDimension = argv[i + 1];
     else if (G4String(argv[i]) == "-c") mcpLayout = argv[i + 1];
     else if (G4String(argv[i]) == "-t1") testVal1 = argv[i + 1];
     else if (G4String(argv[i]) == "-t2") testVal2 = argv[i + 1];
@@ -84,9 +84,11 @@ int main(int argc, char **argv) {
     else if (G4String(argv[i]) == "-gsy") prismStepY = argv[i + 1];
     else if (G4String(argv[i]) == "-gz") beamZ = argv[i + 1];
     else if (G4String(argv[i]) == "-gx") beamX = argv[i + 1];
-    else if (G4String(argv[i]) == "-tr") timeSigma = argv[i + 1];
+    else if (G4String(argv[i]) == "-timeres") timeSigma = argv[i + 1];
+    else if (G4String(argv[i]) == "-trackres") beamDimension = argv[i + 1];
     else if (G4String(argv[i]) == "-v") verbose = atoi(argv[i + 1]);
     else if (G4String(argv[i]) == "-d") displayOpt = argv[i + 1];
+
 #ifdef G4MULTITHREADED
     else if (G4String(argv[i]) == "-t") {
       nThreads = G4UIcommand::ConvertToInt(argv[i + 1]);
@@ -134,6 +136,7 @@ int main(int argc, char **argv) {
 
   if (momentum.size()) run->setMomentum(atof(momentum));
   if (physlist.size()) run->setPhysList(atoi(physlist));
+  if (field.size()) run->setField(atoi(field));
   if (geometry.size()) run->setGeometry(atoi(geometry));
   if (ev.size()) run->setEv(atoi(ev));
   if (radiator.size()) run->setRadiator(atoi(radiator));

@@ -20,7 +20,7 @@ make -j4
 eicdirc [OPTION] [ARGUMENT] ... [OPTION] [ARGUMENT]
 
 example:
-./eicdirc -a 40 -l 0 -x "pi+" -p 1 -w 0 -g 0 -e 1
+./eicdirc -r 0 -theta 30 -x "pi+" -p 6.0 -w 0 -h 11 -c 2031 -l 3 -v 0 -gz 1 -g 1 -ev 0 -e 1
 ```
 ## Options
 ```
@@ -37,10 +37,13 @@ example:
 		4    create pdf
 		5    simulate pdf
 
+-field    field type
+                0    no field (default)
+                1    b-field 2021
+
 -g    geometry configuration
                 0    whole DIRC
                 1    one barbox (default)
-
 
 -ev   expansion volume type
 	        0    prism with lenses (default)
@@ -98,7 +101,10 @@ example:
                1    display hit occupancy of current run
                2    display hit occupancy of occuhits.root (needs to be generated)
 
--tr   time resolution [ns]
+-timeres   time resolution [ns]
+               0.2  (default)  
+
+-trackres   time resolution [ns]
                0.2  (default)  
 
 -gx target's X offset
@@ -111,11 +117,11 @@ example:
 ## LUT generation
 
 ```
-eicdirc -o ../data/lut.root -r 1 -g 1 -h 11 -c 4 -l 3 -v 0 -ev 0 -x "opticalphoton" -p "3.18 eV"  -e 1000000 -b 1
+eicdirc -o ../data/lut.root -r 1 -g 1 -h 11 -c 2031 -l 3 -v 0 -ev 0 -x "opticalphoton" -p "3.18 eV"  -e 1000000 -b 1
 ```
 
 Visualization of 100 events:
-eicdirc -o ../data/lut.root -r 1 -g 1 -h 11 -c 4 -l 3 -v 0 -ev 0 -x "opticalphoton" -p "3.18 eV"  -e 100
+eicdirc -o ../data/lut.root -r 1 -g 1 -h 11 -c 2031 -l 3 -v 0 -ev 0 -x "opticalphoton" -p "3.18 eV"  -e 100
 
 ![alt text](https://github.com/rdom/eicdirc/raw/master/pic/eicdirc_lut_gen.png)
 
@@ -127,7 +133,7 @@ root -q -b loadlib.C lutmean.C'("../data/lut")'
 
 ## Simulation:
 ```
-eicdirc -r 1 -o hits.root -s 0 -a 30 -x "mix_pik" -p 6 -w 0 -g 1 -h 11 -c 4 -l 3 -z 0.0005 -v 0 -zpos 1 -ev 0 -b 1 -e 2000
+eicdirc -r 1 -o hits.root -r 0 -theta 30 -x "mix_pik" -p 6 -w 0 -g 1 -h 11 -c 2031 -l 3 -trackres 0.0005 -v 0 -gz 1 -ev 0 -b 1 -e 2000
 ```
 
 ## Reconstruction:

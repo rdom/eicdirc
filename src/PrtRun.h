@@ -31,6 +31,7 @@ class PrtRun : public TObject {
   Int_t getPhysList() const { return fPhysList; }
   Int_t getPid() const { return fPid; }
   Double_t getMomentum() const { return fMomentum; }
+  Int_t getField() const { return fField; }
   Int_t getGeometry() const { return fGeometry; }
   Int_t getRadiator() const { return fRadiator; }
   Int_t getPmtLayout() const { return fPmtLayout; }
@@ -65,6 +66,7 @@ class PrtRun : public TObject {
   void setPhysList(Int_t v) { fPhysList = v; }
   void setPid(Int_t v) { fPid = v; }
   void setMomentum(Double_t v) { fMomentum = v; }
+  void setField(Int_t v) { fField = v; }
   void setGeometry(Int_t v) { fGeometry = v; }
   void setRadiator(Int_t v) { fRadiator = v; }
   void setPmtLayout(Int_t v);
@@ -96,6 +98,7 @@ class PrtRun : public TObject {
   Bool_t fMc;
   Int_t fPhysList;
   Int_t fPid;
+  Int_t fField;
   Int_t fGeometry;
   Int_t fEv;
   Int_t fLens;
@@ -123,6 +126,6 @@ class PrtRun : public TObject {
   Double_t fTest2;
   Double_t fTest3;
 
-  ClassDef(PrtRun, 1);
+  ClassDef(PrtRun, 2);
 };
 #endif
