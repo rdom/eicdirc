@@ -29,6 +29,9 @@
 #include "G4SystemOfUnits.hh"
 #include "G4AutoLock.hh"
 
+#include "TVector2.h"
+#include "TVector3.h"
+
 #include "PrtField.h"
 
 namespace {
@@ -68,7 +71,6 @@ PrtField::PrtField(const char *filename, double zOffset)
   // Read table dimensions
   file >> nz >> ny >> nx; // Note dodgy order
 
-  nx = ny;
   G4cout << "  [ Number of values x,y,z: " << nx << " " << ny << " " << nz << " ] " << G4endl;
 
   // Set up storage space for table
@@ -106,18 +108,17 @@ PrtField::PrtField(const char *filename, double zOffset)
       if (fabs(by) < 0.01) by = 0;
       if (fabs(bz) < 0.01) bz = 0;
 
-      for (ix = 0; ix < nx; ix++) {
-        if (ix == 0 && iy == 0 && iz == 0) {
-          minx = xval * lenUnit;
-          miny = yval * lenUnit;
-          minz = zval * lenUnit;
-        }
-        xField[ix][iy][iz] = bx * fieldUnit;
-        yField[ix][iy][iz] = by * fieldUnit;
-        zField[ix][iy][iz] = bz * fieldUnit;
+      if (iy == 0 && iz == 0) {
+        minx = xval * lenUnit;
+        miny = yval * lenUnit;
+        minz = zval * lenUnit;
       }
+      xField[0][iy][iz] = bx * fieldUnit;
+      yField[0][iy][iz] = by * fieldUnit;
+      zField[0][iy][iz] = bz * fieldUnit;
     }
   }
+
   file.close();
 
   lock.unlock();
@@ -169,72 +170,38 @@ void PrtField::GetFieldValue(const double point[4], double *Bfield) const {
   double x = fabs(point[0]);
   double y = fabs(point[1]);
   double z = point[2] + fZoffset;
+  TVector2 t(point[0],point[1]);
 
   // Check that the point is within the defined region
-  if (x >= miny && x <= maxy && y >= miny && y <= maxy && z >= minz && z <= maxz) {
+  if (y >= miny && y <= maxy && z >= minz && z <= maxz) {
 
-    // Position of given point within region, normalized to the range
-    // [0,1]
-    double xfraction = (x - minx) / dy; 
+    // Position of given point within region, normalized to the range  [0,1]
+    double xfraction = (x - minx) / dy;
     double yfraction = (y - miny) / dy;
     double zfraction = (z - minz) / dz;
 
     // Need addresses of these to pass to modf below.
     // modf uses its second argument as an OUTPUT argument.
-    double xdindex, ydindex, zdindex;
+    double ydindex, zdindex;
 
     // Position of the point within the cuboid defined by the
     // nearest surrounding tabulated points
-    double xlocal = (std::modf(xfraction * (nx - 1), &xdindex));
     double ylocal = (std::modf(yfraction * (ny - 1), &ydindex));
     double zlocal = (std::modf(zfraction * (nz - 1), &zdindex));
 
     // The indices of the nearest tabulated point whose coordinates
     // are all less than those of the given point
-    int xindex = static_cast<int>(xdindex);
     int yindex = static_cast<int>(ydindex);
     int zindex = static_cast<int>(zdindex);
 
-    // std::cout<<"-- "<<x<<" "<<y<<" "<<z<<std::endl;
-    // std::cout << "00 " << xindex << " " << yindex << " " << zindex << std::endl;
+    TVector3 vfield(xField[0][yindex][zindex], yField[0][yindex][zindex],
+                    zField[0][yindex][zindex]);
 
-    // std::cout<<"xField[xindex][yindex][zindex] "<<xField[xindex][yindex][zindex]<<" "<<yField[xindex][yindex][zindex]<<" "<< zField[xindex][yindex][zindex]<<std::endl;
-    
-    
-    // // Full 3-dimensional version
-    // Bfield[0] = xField[xindex][yindex][zindex] * (1 - xlocal) * (1 - ylocal) * (1 - zlocal) +
-    //             xField[xindex][yindex][zindex + 1] * (1 - xlocal) * (1 - ylocal) * zlocal +
-    //             xField[xindex][yindex + 1][zindex] * (1 - xlocal) * ylocal * (1 - zlocal) +
-    //             xField[xindex][yindex + 1][zindex + 1] * (1 - xlocal) * ylocal * zlocal +
-    //             xField[xindex + 1][yindex][zindex] * xlocal * (1 - ylocal) * (1 - zlocal) +
-    //             xField[xindex + 1][yindex][zindex + 1] * xlocal * (1 - ylocal) * zlocal +
-    //             xField[xindex + 1][yindex + 1][zindex] * xlocal * ylocal * (1 - zlocal) +
-    //             xField[xindex + 1][yindex + 1][zindex + 1] * xlocal * ylocal * zlocal;
-    // Bfield[1] = yField[xindex][yindex][zindex] * (1 - xlocal) * (1 - ylocal) * (1 - zlocal) +
-    //             yField[xindex][yindex][zindex + 1] * (1 - xlocal) * (1 - ylocal) * zlocal +
-    //             yField[xindex][yindex + 1][zindex] * (1 - xlocal) * ylocal * (1 - zlocal) +
-    //             yField[xindex][yindex + 1][zindex + 1] * (1 - xlocal) * ylocal * zlocal +
-    //             yField[xindex + 1][yindex][zindex] * xlocal * (1 - ylocal) * (1 - zlocal) +
-    //             yField[xindex + 1][yindex][zindex + 1] * xlocal * (1 - ylocal) * zlocal +
-    //             yField[xindex + 1][yindex + 1][zindex] * xlocal * ylocal * (1 - zlocal) +
-    //             yField[xindex + 1][yindex + 1][zindex + 1] * xlocal * ylocal * zlocal;
-    // Bfield[2] = zField[xindex][yindex][zindex] * (1 - xlocal) * (1 - ylocal) * (1 - zlocal) +
-    //             zField[xindex][yindex][zindex + 1] * (1 - xlocal) * (1 - ylocal) * zlocal +
-    //             zField[xindex][yindex + 1][zindex] * (1 - xlocal) * ylocal * (1 - zlocal) +
-    //             zField[xindex][yindex + 1][zindex + 1] * (1 - xlocal) * ylocal * zlocal +
-    //             zField[xindex + 1][yindex][zindex] * xlocal * (1 - ylocal) * (1 - zlocal) +
-    //             zField[xindex + 1][yindex][zindex + 1] * xlocal * (1 - ylocal) * zlocal +
-    //             zField[xindex + 1][yindex + 1][zindex] * xlocal * ylocal * (1 - zlocal) +
-    //             zField[xindex + 1][yindex + 1][zindex + 1] * xlocal * ylocal * zlocal;
+    vfield.RotateZ(t.Phi()-TMath::PiOver2());
 
-    Bfield[0] = xField[xindex][yindex][zindex];
-    Bfield[1] = yField[xindex][yindex][zindex];
-    Bfield[2] = zField[xindex][yindex][zindex];
-    
-    if (x != 0) Bfield[0] *= x / (point[0]);
-    if (y != 0) Bfield[1] *= y / (point[1]);
-
-    // std::cout << "Bfield[0] " << Bfield[0] << std::endl;
+    Bfield[0] = vfield.X();
+    Bfield[1] = vfield.Y();
+    Bfield[2] = vfield.Z();
 
   } else {
     Bfield[0] = 0.0;
