@@ -65,10 +65,10 @@ example:
                 6    3-layer cylindrical lens
                 10   ideal lens (thickness = 0, ideal focusing)
 
--theta    polar between particle beam and bar radiator
+-theta    polar between particle beam and bar radiator [deg]
       if theta == 0 then thata = [30,160]
 
--phi  azimuth angle between particle beam and bar radiator
+-phi  azimuth angle between particle beam and bar radiator [deg]
 
 -e    number of simulated events
 

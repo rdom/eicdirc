@@ -54,7 +54,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
   PrtManager::Instance()->addEvent(PrtEvent());
   int pdg = fRun->getPid();
   double theta = (180 - fRun->getTheta()) * TMath::DegToRad();
-  double phi = fRun->getTheta();
+  double phi = fRun->getPhi() * TMath::DegToRad();
   double zpos = fRun->getBeamZ();
   double ypos = fRun->getBeamX();
   fRadiatorL = fRun->getRadiatorL();
@@ -93,9 +93,11 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
     //  if(id==3)  vec.setPhi(250*deg);
 
     double trackresolution = fRun->getBeamSize();
-    if (theta > 0 && theta < 180) {
+    
+    if (theta > 0 && theta < M_PI) {
       if (trackresolution < 0.00001) {
         vec.setTheta(theta);
+        vec.setPhi(phi);
       } else {
         // smear track resolution
         G4ThreeVector vec0 = vec;
@@ -113,6 +115,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
       theta = G4RandGauss::shoot(theta, trackresolution);
       vec.setTheta(M_PI - theta);
       vec.rotate(2 * M_PI * G4UniformRand(), vec0);
+      vec.setPhi(2 * M_PI * G4UniformRand());
     }
 
     if (fRun->getEv() == 1) {
