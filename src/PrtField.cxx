@@ -167,7 +167,6 @@ PrtField::PrtField(const char *filename, double zOffset)
 
 void PrtField::GetFieldValue(const double point[4], double *Bfield) const {
 
-  double x = fabs(point[0]);
   double y = fabs(point[1]);
   double z = point[2] + fZoffset;
   TVector2 t(point[0],point[1]);
@@ -176,7 +175,6 @@ void PrtField::GetFieldValue(const double point[4], double *Bfield) const {
   if (y >= miny && y <= maxy && z >= minz && z <= maxz) {
 
     // Position of given point within region, normalized to the range  [0,1]
-    double xfraction = (x - minx) / dy;
     double yfraction = (y - miny) / dy;
     double zfraction = (z - minz) / dz;
 
@@ -186,8 +184,8 @@ void PrtField::GetFieldValue(const double point[4], double *Bfield) const {
 
     // Position of the point within the cuboid defined by the
     // nearest surrounding tabulated points
-    double ylocal = (std::modf(yfraction * (ny - 1), &ydindex));
-    double zlocal = (std::modf(zfraction * (nz - 1), &zdindex));
+    std::modf(yfraction * (ny - 1), &ydindex);
+    std::modf(zfraction * (nz - 1), &zdindex);
 
     // The indices of the nearest tabulated point whose coordinates
     // are all less than those of the given point
