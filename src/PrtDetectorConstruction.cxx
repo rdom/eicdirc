@@ -1169,8 +1169,8 @@ void PrtDetectorConstruction::ConstructSDandField() {
   G4MagneticField* mField= new PrtField("../data/field.tab", 0);
   G4FieldManager *globalFieldMgr =
     G4TransportationManager::GetTransportationManager()->GetFieldManager();
-  globalFieldMgr->SetDetectorField(mField);
-  globalFieldMgr->CreateChordFinder(mField);
+  // globalFieldMgr->SetDetectorField(mField);
+  // globalFieldMgr->CreateChordFinder(mField);
 }
 
 void PrtDetectorConstruction::SetRotation(double angle) {

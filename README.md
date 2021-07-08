@@ -11,7 +11,7 @@ cmake ..
 make -j4
 
 #test event display
-./eicdirc -r 0 -theta 30 -x "pi+" -p 6.0 -w 0 -h 11 -c 4 -l 3 -v 0 -zpos 1 -g 1 -ev 0 -e 1
+./eicdirc -r 0 -theta 30 -x "pi+" -p 6.0 -w 0 -h 11 -c 2031 -l 3 -v 0 -gz 1 -g 1 -ev 0 -e 1
 ```
 
 
@@ -54,7 +54,7 @@ example:
                 0    4x6 standard MCPs (pixel size == mcp size)
                 1    4x6 standard MCPs (6.4x6.4 pixels)
 		3    one MCP cover all FD plain (custom pixel size)
-		4    4x6 MCPs with compact packing and 32x32 pixels (2 mm x 2 mm)
+		2031    4x6 MCPs with compact packing and 32x32 pixels (2 mm x 2 mm)
 -l    focusing system
                 0    no lens
                 1    spherical lens
@@ -101,7 +101,9 @@ example:
 -tr   time resolution [ns]
                0.2  (default)  
 
--zpos target's Z offset 
+-gx target's X offset
+
+-gz target's Z offset 
 
 
 ```

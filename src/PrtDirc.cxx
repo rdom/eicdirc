@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
 #endif
   TApplication theApp("EicDirc", 0, 0);
 
-  G4String macro, events, geometry, radiator, physlist, session, geomTheta, geomPhi, batchmode,
+  G4String macro, events, geometry, ev, radiator, physlist, session, geomTheta, geomPhi, batchmode,
     displayOpt, lensId, particle = "mix_pip", momentum, testVal1, testVal2, testVal3, prismStepX,
                         prismStepY, beamZ, beamX, timeSigma, beamDimension, mcpLayout;
   TString infile = "", lutfile = "", pdffile = "", outfile = "";
@@ -61,6 +61,7 @@ int main(int argc, char **argv) {
     else if (G4String(argv[i]) == "-u") lutfile = argv[i + 1];
     else if (G4String(argv[i]) == "-pdf") pdffile = argv[i + 1];
     else if (G4String(argv[i]) == "-g") geometry = argv[i + 1];
+    else if (G4String(argv[i]) == "-ev") ev = argv[i + 1];
     else if (G4String(argv[i]) == "-h") radiator = argv[i + 1];
     else if (G4String(argv[i]) == "-theta") geomTheta = argv[i + 1];
     else if (G4String(argv[i]) == "-phi") geomPhi = argv[i + 1];
@@ -134,6 +135,7 @@ int main(int argc, char **argv) {
   if (momentum.size()) run->setMomentum(atof(momentum));
   if (physlist.size()) run->setPhysList(atoi(physlist));
   if (geometry.size()) run->setGeometry(atoi(geometry));
+  if (ev.size()) run->setEv(atoi(ev));
   if (radiator.size()) run->setRadiator(atoi(radiator));
   if (lensId.size()) run->setLens(atoi(lensId));
   if (mcpLayout.size()) run->setPmtLayout(atoi(mcpLayout));
