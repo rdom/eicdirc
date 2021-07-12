@@ -167,33 +167,33 @@ PrtField::PrtField(const char *filename, double zOffset)
 
 void PrtField::GetFieldValue(const double point[4], double *Bfield) const {
 
-  double y = fabs(point[1]);
-  double z = point[2] + fZoffset;
   TVector2 t(point[0],point[1]);
+  double z = point[2];
+  double r = t.Mod();
 
   // Check that the point is within the defined region
-  if (y >= miny && y <= maxy && z >= minz && z <= maxz) {
+  if (r >= miny && r <= maxy && z >= minz && z <= maxz) {
 
     // Position of given point within region, normalized to the range  [0,1]
-    double yfraction = (y - miny) / dy;
+    double rfraction = (r - miny) / dy;
     double zfraction = (z - minz) / dz;
 
     // Need addresses of these to pass to modf below.
     // modf uses its second argument as an OUTPUT argument.
-    double ydindex, zdindex;
+    double rdindex, zdindex;
 
     // Position of the point within the cuboid defined by the
     // nearest surrounding tabulated points
-    std::modf(yfraction * (ny - 1), &ydindex);
+    std::modf(rfraction * (ny - 1), &rdindex);
     std::modf(zfraction * (nz - 1), &zdindex);
 
     // The indices of the nearest tabulated point whose coordinates
     // are all less than those of the given point
-    int yindex = static_cast<int>(ydindex);
+    int rindex = static_cast<int>(rdindex);
     int zindex = static_cast<int>(zdindex);
 
-    TVector3 vfield(xField[0][yindex][zindex], yField[0][yindex][zindex],
-                    zField[0][yindex][zindex]);
+    TVector3 vfield(xField[0][rindex][zindex], yField[0][rindex][zindex],
+                    zField[0][rindex][zindex]);
 
     vfield.RotateZ(t.Phi()-TMath::PiOver2());
 
