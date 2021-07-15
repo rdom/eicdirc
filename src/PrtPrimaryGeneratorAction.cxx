@@ -52,7 +52,7 @@ PrtPrimaryGeneratorAction::~PrtPrimaryGeneratorAction() {
 void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
 
   PrtManager::Instance()->addEvent(PrtEvent());
-  int pdg = fRun->getPid();
+  int pdg = fabs(fRun->getPid());
   double theta = (180 - fRun->getTheta()) * TMath::DegToRad();
   double phi = fRun->getPhi() * TMath::DegToRad();
   double zpos = fRun->getBeamZ();
@@ -61,10 +61,12 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
   fRadiatorW = fRun->getRadiatorW();
   fRadiatorH = fRun->getRadiatorH();
 
-  if (pdg > 0) {
+  if (pdg != 0) {
     if (pdg == 2212) fPid = 4;
-    else if (pdg == 321) fPid = 3;
+    else if (pdg == 11) fPid = 0;
+    else if (pdg == 13) fPid = 1;
     else if (pdg == 211) fPid = 2;
+    else if (pdg == 321) fPid = 3;
     else if (pdg == 10000 && fPid != 2) fPid = 2;
     else if (pdg == 10000) fPid = 0;
     else if (pdg == 10001 && fPid != 2) fPid = 2;
@@ -73,13 +75,13 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
     else if (pdg == 10003) fPid = 3;
     else if (pdg == 10004 && fPid != 2) fPid = 2;
     else if (pdg == 10004) fPid = 4;
-
-    PrtManager::Instance()->getEvent()->setPid(fPid);
     fParticleGun->SetParticleDefinition(fParticle[fPid]);
   } else {
     fParticleGun->SetParticleDefinition(fParticleOP);
   }
-
+  PrtManager::Instance()->getEvent()->setPid(fPid);
+  
+  
   if (fRunType == 0 || fRunType == 10 || fRunType == 5) { // simulation
     G4ThreeVector vec(0, 0, 1);
     // G4int id = anEvent->GetEventID()%5;
@@ -106,7 +108,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
         vec.rotate(2 * M_PI * G4UniformRand(), vec0);
       }
     } else {
-      double theta = M_PI * G4UniformRand();
+      theta = M_PI * G4UniformRand();
       theta = acos((cos(30 * deg) - cos(150 * deg)) * G4UniformRand() + cos(150 * deg));
 
       G4ThreeVector vec0 = vec;

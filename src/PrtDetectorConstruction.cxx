@@ -77,13 +77,14 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   fPrizmT[4] = 290;
   fPrizmT[5] = 290 * cos(fdTilt);
 
-  fMirror[0] = 20;
-  fMirror[1] = fPrizm[0];
-  fMirror[2] = 1;
   //  fPrizm[0] = 170; fPrizm[1] = 300; fPrizm[2] = 50+300*tan(45*deg); fPrizm[3] = 50;
-  fBar[0] = 17;
+  fBar[0] = fTest1;//17;
   fBar[1] = (fPrizm[0] - (fNBar - 1) * fBarsGap) / fNBar;
   fBar[2] = 1050; // 4200; //4200
+
+  fMirror[0] = fBar[0]+1;
+  fMirror[1] = fPrizm[0];
+  fMirror[2] = 1;
 
   fMcpTotal[0] = fMcpTotal[1] = 53 + 4;
   fMcpTotal[2] = 1;

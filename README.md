@@ -102,10 +102,13 @@ example:
                2    display hit occupancy of occuhits.root (needs to be generated)
 
 -timeres   time resolution [ns]
-               0.2  (default)  
+               0.2  (default)
 
--trackres   time resolution [ns]
-               0.2  (default)  
+-timecut   time cut constant [ns]
+               0.5  (default)  
+
+-trackres   time resolution [rad]
+               0.0005  (default)  
 
 -gx target's X offset
 

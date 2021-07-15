@@ -942,9 +942,9 @@ TGraph *PrtTools::fit_slices(TH2F *h, double minrange, double maxrange, double f
   return gres;
 }
 
-void style_graph(TGraph *g, int id) {
-  int coll[] = {kBlack, kRed + 1, kGreen, kBlue, 4, kCyan - 6, kOrange, 7, 8, 9, 10};
-  int colm[] = {kBlack, kRed + 1, kGreen + 2, kBlue + 1, 4, kCyan - 6, kOrange + 1, 7, 8, 9, 10};
+void PrtTools::style_graph(TGraph *g, int id) {
+  int coll[] = {kCyan + 1, kOrange + 6, kBlue, kRed, kBlack, kOrange, 7, 8, 9, 10};
+  int colm[] = {kCyan + 2, kOrange + 8, kBlue + 1, kRed + 1, kBlack, kOrange, 7, 8, 9, 10};
 
   int cl = (id < 10) ? coll[id] : id;
   int cm = (id < 10) ? colm[id] : id;

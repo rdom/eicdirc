@@ -43,6 +43,9 @@
 #include <TKey.h>
 #include "TPRegexp.h"
 #include "TFitResult.h"
+#include "TGraphAsymmErrors.h"
+#include "TEventList.h"
+#include "TCut.h"
 
 #include <iostream>
 #include <fstream>
@@ -159,7 +162,7 @@ class PrtTools {
   array<double, 5> _mass = {0.000511, 0.1056584, 0.139570, 0.49368, 0.9382723};
   array<TString, 5> _name = {"e", "muon", "pion", "kaon", "proton"};
   array<TString, 5> _lname = {"e", "#mu", "#pi", "K", "p"};
-  array<int, 5> _color = {kOrange + 6, kCyan + 1, kBlue + 1, kRed + 1, kRed + 1};
+  array<int, 5> _color = {kOrange + 6, kCyan + 1, kBlue + 1, kRed + 1, kBlack};
 
   array<TString, 32> _tdcsid_jul2018 = {
     "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "200a",

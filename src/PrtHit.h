@@ -47,7 +47,7 @@ class PrtHit : public TObject {
   Long_t fPathInPrizm;
   TVector3 fPosition;
   TVector3 fMomentum;
-  
+
   ClassDef(PrtHit, 8)
 };
 

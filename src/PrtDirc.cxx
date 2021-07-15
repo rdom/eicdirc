@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
 
   G4String macro, events, field, geometry, ev, radiator, physlist, session, geomTheta, geomPhi, batchmode,
     displayOpt, lensId, particle = "mix_pip", momentum, testVal1, testVal2, testVal3, prismStepX,
-                        prismStepY, beamZ, beamX, timeSigma, beamDimension, mcpLayout;
+                        prismStepY, beamZ, beamX, timeSigma, timeCut, beamDimension, mcpLayout;
   TString infile = "", lutfile = "", pdffile = "", outfile = "";
   G4int firstevent(0), runtype(0), study(0), fid(0), verbose(0);
 
@@ -85,6 +85,7 @@ int main(int argc, char **argv) {
     else if (G4String(argv[i]) == "-gz") beamZ = argv[i + 1];
     else if (G4String(argv[i]) == "-gx") beamX = argv[i + 1];
     else if (G4String(argv[i]) == "-timeres") timeSigma = argv[i + 1];
+    else if (G4String(argv[i]) == "-timecut") timeCut = argv[i + 1];
     else if (G4String(argv[i]) == "-trackres") beamDimension = argv[i + 1];
     else if (G4String(argv[i]) == "-v") verbose = atoi(argv[i + 1]);
     else if (G4String(argv[i]) == "-d") displayOpt = argv[i + 1];
@@ -153,6 +154,7 @@ int main(int argc, char **argv) {
   if (beamX.size()) run->setBeamX(atof(beamX));
   if (beamZ.size()) run->setBeamZ(atof(beamZ));
   if (timeSigma.size()) run->setTimeSigma(atof(timeSigma));
+  if (timeCut.size()) run->setTimeCut(atof(timeCut));
   if (displayOpt.size()) PrtManager::Instance()->setDisplayOpt(atoi(displayOpt));
 
   PrtManager::Instance(outfile, run);
@@ -201,8 +203,10 @@ int main(int argc, char **argv) {
     if (particle == "pi0") pdgid = 111;
     if (particle == "kaon+") pdgid = 321;
     if (particle == "kaon-") pdgid = -321;
-    if (particle == "mu-") pdgid = 13;
-    if (particle == "e-") pdgid = 11;
+    if (particle == "mu-") pdgid = -13;
+    if (particle == "e-") pdgid = -11;
+    if (particle == "mu+") pdgid = 13;
+    if (particle == "e+") pdgid = 11;
     if (particle == "opticalphoton") pdgid = 0;
     if (particle == "mix_pie") pdgid = 10000;
     if (particle == "mix_pimu") pdgid = 10001;

@@ -46,6 +46,7 @@ class PrtRun : public TObject {
   Double_t getBeamZ() const { return fBeamZ; }
   Double_t getBeamSize() const { return fBeamSize; }
   Double_t getTimeSigma() const { return fTimeSigma; }
+  Double_t getTimeCut() const { return fTimeCut; }
   Double_t getSimOffset() const { return fSimOffset; }
   Double_t getRadiatorL() const { return fRadiatorL; }
   Double_t getRadiatorW() const { return fRadiatorW; }
@@ -81,6 +82,7 @@ class PrtRun : public TObject {
   void setBeamZ(Double_t v) { fBeamZ = v; }
   void setBeamSize(Double_t v) { fBeamSize = v; }
   void setTimeSigma(Double_t v) { fTimeSigma = v; }
+  void setTimeCut(Double_t v) { fTimeCut = v; }
   void setSimOffset(Double_t v) { fSimOffset = v; }
   void setRadiatorL(Double_t v) { fRadiatorL = v; }
   void setRadiatorW(Double_t v) { fRadiatorW = v; }
@@ -118,6 +120,7 @@ class PrtRun : public TObject {
   Double_t fBeamZ;
   Double_t fBeamSize;
   Double_t fTimeSigma;
+  Double_t fTimeCut;
   Double_t fSimOffset;
 
   Double_t fRadiatorL, fRadiatorW, fRadiatorH;
