@@ -78,7 +78,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
     hthetac[h] = new TH1F(Form("thetac_%d", h), ";#theta_{C} [rad];entries [#]", 200, 0.75, 0.9);
     hthetacd[h] =
       new TH1F(Form("thetacd_%d", h), ";#Delta#theta_{C} [mrad];entries [#]", 200, -60, 60);
-    hnph[h] = new TH1F(Form("nph_%d", h), ";detected photons [#];entries [#]", 150, 0, 150);
+    hnph[h] = new TH1F(Form("nph_%d", h), ";detected photons [#];entries [#]", 220, 0, 220);
     fFunc[h] = new TF1(Form("gaus_%d", h), "[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2])", 0.7, 0.9);
 
     int c = ft.color(h);
@@ -187,8 +187,6 @@ void PrtLutReco::Run(int start, int end) {
   if(pid == 10003)  fp1 = 3; // K
   if(pid == 10004)  fp1 = 4; // K
   
-  if( fCor_level == 0) timeCut = 1.5;
-
   int nEvents = fChain->GetEntries();
   if (end == 0) end = nEvents;
 
@@ -420,7 +418,7 @@ void PrtLutReco::Run(int start, int end) {
 
     for (int h = 0; h < 5; h++) {
       if (hnph[h]->GetEntries() < 20) continue;
-      hnph[h]->Fit("gaus", "", "S", 5, 150);
+      hnph[h]->Fit("gaus", "", "S", 5, 250);
       auto f = hnph[h]->GetFunction("gaus");
       if (f) {
         nph[h] = f->GetParameter(1);

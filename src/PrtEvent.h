@@ -30,6 +30,7 @@ class PrtEvent : public TObject {
   TVector3 getMomentum() const { return fMomentum; }
   TVector3 getMomentumAfter() { return fMomentumAfter; }
   TVector3 getPosition() const { return fPosition; }
+  TVector3 getPositionAfter() const { return fPositionAfter; }
   std::vector<PrtHit> getHits() { return fHitArray; }
 
   // mutators
@@ -41,6 +42,7 @@ class PrtEvent : public TObject {
   void setMomentum(TVector3 v) { fMomentum = v; }
   void setMomentumAfter(TVector3 val) { fMomentumAfter = val; }
   void setPosition(TVector3 v) { fPosition = v; }
+  void setPositionAfter(TVector3 v) { fPositionAfter = v; }
 
  private:
   Int_t fPid;
@@ -51,6 +53,7 @@ class PrtEvent : public TObject {
   TVector3 fMomentum;
   TVector3 fMomentumAfter;
   TVector3 fPosition;
+  TVector3 fPositionAfter;
   std::vector<PrtHit> fHitArray;
 
   ClassDef(PrtEvent, 7);
