@@ -129,8 +129,6 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
     }
 
     fParticleGun->SetParticlePosition(G4ThreeVector(0, ypos, zpos));
-    if (fRunType != 5) PrtManager::Instance()->getEvent()->setPosition(TVector3(0, ypos, zpos));
-
     fParticleGun->SetParticleMomentumDirection(vec);
   }
 

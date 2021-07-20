@@ -58,21 +58,22 @@ G4bool PrtBarSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
   // PrtManager::Instance()->SetCurrentCherenkov(cherenkov);
   // PrtManager::Instance()->Event()->SetTime();
 
-  fHitsCollection->insert(newHit);
-
-  G4ThreeVector gpos = step->GetPostStepPoint()->GetPosition();
-  G4ThreeVector gmom = step->GetPostStepPoint()->GetMomentum();
-  G4TouchableHistory *touchable = (G4TouchableHistory *)(step->GetPostStepPoint()->GetTouchable());
+  auto pstep = step->GetPostStepPoint();
+  G4ThreeVector gpos = pstep->GetPosition();
+  G4ThreeVector gmom = pstep->GetMomentum();
+  G4TouchableHistory *touchable = (G4TouchableHistory *)(pstep->GetTouchable());
   G4ThreeVector lpos = touchable->GetHistory()->GetTopTransform().TransformPoint(gpos);
 
-  if (fHitsCollection->entries() == 0){
+  if (fHitsCollection->entries() == 0) {
     PrtManager::Instance()->getEvent()->setMomentum(TVector3(gmom.x(), gmom.y(), gmom.z()));
     PrtManager::Instance()->getEvent()->setPosition(TVector3(lpos.x(), lpos.y(), lpos.z()));
-  }
-  else{
+  } else {    
     PrtManager::Instance()->getEvent()->setMomentumAfter(TVector3(gmom.x(), gmom.y(), gmom.z()));
     PrtManager::Instance()->getEvent()->setPositionAfter(TVector3(lpos.x(), lpos.y(), lpos.z()));
   }
+
+  fHitsCollection->insert(newHit);
+
   return true;
 }
 
