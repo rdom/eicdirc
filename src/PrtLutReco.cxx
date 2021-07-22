@@ -114,8 +114,10 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
     for (int i = 0; i < ch.GetEntries(); i++) {
       ch.GetEvent(i);
       fCorr[pmt] = (fabs(corr) < 0.007) ? corr : 0.00001;
-      fSigma = 0.001 * cspr[2] * 0.9;
-      std::cout << "pmt " << pmt << "  " << fCorr[pmt] << " spr = " << fSigma << std::endl;
+      for(int h=0; h<5; h++){
+	fSigma[h] = 0.001 * cspr[h] * 0.9;
+      }
+      std::cout << "pmt " << pmt << "  " << fCorr[pmt] << " spr = " << fSigma[2] << std::endl;
     }
   } else {
     std::cout << "------- corr file not found  " << fCorrFile << std::endl;
@@ -141,10 +143,9 @@ void PrtLutReco::Run(int start, int end) {
 
   TString outFile = PrtManager::Instance()->getOutName();
   double theta(0), phi(0), cangle[5] = {0}, spr[5] = {0}, trr[5] = {0}, nph[5] = {0},
-                           nph_err[5] = {0}, par5(0), par6(0), timeRes(0),timeCut(0), ctimeRes(0), test1(0),
-                           test2(0), test3(0), sep(0), sep_err(0);
+                           nph_err[5] = {0}, par5(0), par6(0), timeRes(0), timeCut(0), ctimeRes(0),
+                           trackRes(0), test1(0), test2(0), test3(0), sep(0), sep_err(0);
 
-   
   ft.set_palette(1);
   ft.create_maps();  
   ft.init_digi();  
@@ -165,6 +166,7 @@ void PrtLutReco::Run(int start, int end) {
   tree.Branch("sep_err", &sep_err, "sep_err/D");
   tree.Branch("par5", &par5, "par5/D");
   tree.Branch("par6", &par6, "par6/D");
+  tree.Branch("trackres", &trackRes, "trackRes/D");
   tree.Branch("timeres", &timeRes, "timeRes/D");
   tree.Branch("timecut", &timeCut, "timeCut/D");
   tree.Branch("ctimeres", &ctimeRes, "ctimeRes/D");
@@ -180,6 +182,7 @@ void PrtLutReco::Run(int start, int end) {
   fMethod = frun->getRunType();
   timeRes = frun->getTimeSigma();
   timeCut = frun->getTimeSigma();
+  trackRes = frun->getBeamSize();
   int pid = frun->getPid();
   fp1 = 2; // pi
   if(pid == 10000)  fp1 = 0; // e
@@ -208,23 +211,41 @@ void PrtLutReco::Run(int start, int end) {
     TVector3 rotatedmom = fEvent->getMomentum().Unit();
     double sum1(0), sum2(0), noise(0.2);
 
-    // track smearing
-    TVector3 init = rotatedmom;
-    rotatedmom.RotateY(gRandom->Gaus(0, 0.0005));
-    rotatedmom.Rotate(TMath::Pi(), init);
+    // post-dirc tracking layer
+    TVector3 pa = fEvent->getPositionAfter();
+    TVector3 ma = fEvent->getMomentumAfter().Unit();
+    TVector3 pb = fEvent->getPosition();
 
-    if (fSigma < 0.003) fSigma = 0.007;
+    TVector3 diff = pa - (pa + TVector3(15, 0, 0));
+    double prod1 = diff.Dot(TVector3(1, 0, 0));
+    double prod2 = ma.Dot(TVector3(1, 0, 0));
+    TVector3 ppa = pa - ma * (prod1 / prod2);
+
+    double tsr = 0.05;
+    pb += TVector3(0, gRandom->Gaus(0, tsr), gRandom->Gaus(0, tsr));
+    ppa += TVector3(0, gRandom->Gaus(0, 0.1), gRandom->Gaus(0, 0.1));
+    
+    rotatedmom = (ppa - pb);
+
+    // // track smearing
+    // TVector3 init = rotatedmom;
+    // rotatedmom.RotateY(gRandom->Gaus(0, trackRes));
+    // rotatedmom.Rotate(TMath::Pi(), init);
+
+    for (int h = 0; h < 5; h++)
+      if (fSigma[h] < 0.003) fSigma[h] = 0.007;
 
     if (ievent == 0) {
       double range = 160;
       if (mom > 1.5) range = 100;
       if (mom > 2) range = 60;
-      if (mom < 1) range = 300;
+      if (mom < 1.1) range = 150;
       if (mom < 0.7) range = 400;
       if (mom < 0.6) range = 500;
 
       if (fp2 == 3 && theta < 120) range = 50;
       if (fp2 == 3 && mom < 4) range = 500;
+      if (test1 > 10) range = 200;
 
       for (int h = 0; h < 5; h++) {
         fLnDiff[h] =
@@ -250,7 +271,7 @@ void PrtLutReco::Run(int start, int end) {
         acos(sqrt(mom * mom + ft.mass(i) * ft.mass(i)) / mom / 1.4738); // 1.4738 = 370 = 3.35
       fFunc[i]->SetParameter(0, 1);
       fFunc[i]->SetParameter(1, fAngle[i]);
-      fFunc[i]->SetParameter(2, fSigma);
+      fFunc[i]->SetParameter(2, fSigma[i]);
       // if(i==0) fFunc[i]->SetParameter(2,0.0074);
       // if(i==2) fFunc[i]->SetParameter(2,0.0064);
     }
@@ -331,7 +352,7 @@ void PrtLutReco::Run(int start, int end) {
           luttheta = dir.Theta();
           if (luttheta > TMath::PiOver2()) luttheta = TMath::Pi() - luttheta;
 
-          bartime = lenz / cos(luttheta) / 197.5; // 198.5
+          bartime = lenz / cos(luttheta) / 198.5; // 198.5
 
           fHist1->Fill(hitTime);
           double luttime = bartime + evtime;
@@ -527,7 +548,8 @@ void PrtLutReco::Run(int start, int end) {
 
   if (fVerbose > 1) {
     TString nid = Form("_%1.2f_%1.4f_%1.2f", theta, test1, mom);
-
+    TGaxis::SetMaxDigits(3);
+    
     { // cherenkov angle
       ft.add_canvas("tangle" + nid, 800, 400);
       ft.normalize(hthetac, 5);
@@ -689,9 +711,9 @@ void PrtLutReco::FindPeak(double (&cangle)[5], double (&spr)[5]) {
       fFit->SetParameters(100, cangle[h], 0.005, 10); // peak
       fFit->SetParameter(2, 0.005);                   // width
       fFit->FixParameter(2, 0.008);                   // width
-      hthetac[h]->Fit("fgaus", "Q", "", cangle[h] - 3.5 * fSigma, cangle[h] + 3.5 * fSigma);
+      hthetac[h]->Fit("fgaus", "Q", "", cangle[h] - 3.5 * fSigma[h], cangle[h] + 3.5 * fSigma[h]);
       fFit->ReleaseParameter(2); // width
-      hthetac[h]->Fit("fgaus", "MQ", "", cangle[h] - 3.5 * fSigma, cangle[h] + 3.5 * fSigma);
+      hthetac[h]->Fit("fgaus", "MQ", "", cangle[h] - 3.5 * fSigma[h], cangle[h] + 3.5 * fSigma[h]);
       cangle[h] = fFit->GetParameter(1);
       spr[h] = fFit->GetParameter(2) * 1000;
       if (fVerbose > 2) gROOT->SetBatch(0);

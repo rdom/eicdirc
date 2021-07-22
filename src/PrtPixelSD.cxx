@@ -23,7 +23,9 @@ PrtPixelSD::PrtPixelSD(const G4String &name, const G4String &hitsCollectionName)
   fMcpLayout = PrtManager::Instance()->getRun()->getPmtLayout();
   int npmt = PrtManager::Instance()->getRun()->getNpmt();
   int npix = PrtManager::Instance()->getRun()->getNpix();
-
+  fRadiatorL = PrtManager::Instance()->getRun()->getRadiatorL();
+  fRadiatorW = PrtManager::Instance()->getRun()->getRadiatorW();
+  fRadiatorH = PrtManager::Instance()->getRun()->getRadiatorH();
   // create MPC map
 
   std::cout << "npmt * npix " << npmt * npix << std::endl;
@@ -71,6 +73,8 @@ G4bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
   G4ThreeVector inPrismpos = touchable->GetHistory()->GetTransform(1).TransformPoint(globalpos);
   G4ThreeVector g4mom = track->GetVertexMomentumDirection(); // GetMomentum();
   G4ThreeVector g4pos = track->GetVertexPosition();
+
+  G4ThreeVector localvec = touchable->GetHistory()->GetTopTransform().TransformAxis(g4mom);
 
   TVector3 globalPos(inPrismpos.x(), inPrismpos.y(), inPrismpos.z());
   // TVector3 globalPos(globalpos.x(),globalpos.y(),globalpos.z());
@@ -141,6 +145,36 @@ G4bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
 
   // time since event created
   // hit.SetTrailTime(0,step->GetPreStepPoint()->GetGlobalTime()*1000);
+
+  bool transport_efficiency(true);
+  if (transport_efficiency) {
+    double pi(4 * atan(1));
+    double roughness(0.5); // nm
+    double angleX = localvec.angle(G4ThreeVector(1, 0, 0));
+    double angleY = localvec.angle(G4ThreeVector(0, 1, 0));
+    if (angleX > 0.5 * pi) angleX = pi - angleX;
+    if (angleY > 0.5 * pi) angleY = pi - angleY;
+    double length = track->GetTrackLength() - 400; // 400 - average path in EV
+    double lengthx = fabs(length * localvec.x());  // along the bar
+    double lengthy = fabs(length * localvec.y());
+
+    int nBouncesX = (int)(lengthx) / fRadiatorH;
+    int nBouncesY = (int)(lengthy) / fRadiatorW;
+
+    double ll = wavelength * wavelength;
+    double n_quartz = sqrt(1. + (0.696 * ll / (ll - pow(0.068, 2))) +
+                           (0.407 * ll / (ll - pow(0.116, 2))) + 0.897 * ll / (ll - pow(9.896, 2)));
+    double bounce_probX = 1 - pow(4 * pi * cos(angleX) * roughness * n_quartz / wavelength, 2);
+    double bounce_probY = 1 - pow(4 * pi * cos(angleY) * roughness * n_quartz / wavelength, 2);
+
+    double totalProb = pow(bounce_probX, nBouncesX) * pow(bounce_probY, nBouncesY);
+
+    if (G4UniformRand() > totalProb) {
+      // std::cout << "photon lost in the radiator. n_bounces = [" << nBouncesX << " " << nBouncesY
+      //           << "] with prob = "<<totalProb<<std::endl;
+      return true;
+    }
+  }
 
   PrtManager::Instance()->addHit(hit, localPos);
 

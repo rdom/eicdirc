@@ -42,7 +42,6 @@ class PrtLutReco {
   int FindPdg(double mom, double cangle);
   void FitRing(double &x0, double &y0, double &theta);
   double FindStartTime(PrtEvent *e);
-  double fSigma;
 
   PrtRun *frun;
   PrtTools ft;
@@ -80,8 +79,9 @@ class PrtLutReco {
   TString fCorrPath;
   TString fPdfPath;
   
-  TF1 *fFit;
+  TF1 *fFit;  
   TSpectrum *fSpect;
+  double fSigma[5];
   TH1F *hthetac[5];
   TH1F *hthetacd[5];
   TH1F *hnph[5];
