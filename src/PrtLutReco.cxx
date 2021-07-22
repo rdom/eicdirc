@@ -223,7 +223,7 @@ void PrtLutReco::Run(int start, int end) {
 
     double tsr = 0.05;
     pb += TVector3(0, gRandom->Gaus(0, tsr), gRandom->Gaus(0, tsr));
-    ppa += TVector3(0, gRandom->Gaus(0, 0.1), gRandom->Gaus(0, 0.1));
+    ppa += TVector3(0, gRandom->Gaus(0, 0.05), gRandom->Gaus(0, 0.05));
     
     rotatedmom = (ppa - pb);
 
@@ -245,7 +245,7 @@ void PrtLutReco::Run(int start, int end) {
 
       if (fp2 == 3 && theta < 120) range = 50;
       if (fp2 == 3 && mom < 4) range = 500;
-      if (test1 > 10) range = 200;
+      if (test1 > 10 && mom < 1.1) range = 200;
 
       for (int h = 0; h < 5; h++) {
         fLnDiff[h] =
