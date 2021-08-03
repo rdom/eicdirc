@@ -75,7 +75,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
     fHistDiff[i]->SetLineColor(col[i]);
   }
   for (int h = 0; h < 5; h++) {
-    hthetac[h] = new TH1F(Form("thetac_%d", h), ";#theta_{C} [rad];entries [#]", 200, 0.75, 0.9);
+    hthetac[h] = new TH1F(Form("thetac_%d", h), ";#theta_{C} [rad];entries [#]", 200, 0.45, 0.9);
     hthetacd[h] =
       new TH1F(Form("thetacd_%d", h), ";#Delta#theta_{C} [mrad];entries [#]", 200, -60, 60);
     hnph[h] = new TH1F(Form("nph_%d", h), ";detected photons [#];entries [#]", 220, 0, 220);
@@ -211,26 +211,26 @@ void PrtLutReco::Run(int start, int end) {
     TVector3 rotatedmom = fEvent->getMomentum().Unit();
     double sum1(0), sum2(0), noise(0.2);
 
-    // post-dirc tracking layer
-    TVector3 pa = fEvent->getPositionAfter();
-    TVector3 ma = fEvent->getMomentumAfter().Unit();
-    TVector3 pb = fEvent->getPosition();
+    // // post-dirc tracking layer
+    // TVector3 pa = fEvent->getPositionAfter();
+    // TVector3 ma = fEvent->getMomentumAfter().Unit();
+    // TVector3 pb = fEvent->getPosition();
 
-    TVector3 diff = pa - (pa + TVector3(15, 0, 0));
-    double prod1 = diff.Dot(TVector3(1, 0, 0));
-    double prod2 = ma.Dot(TVector3(1, 0, 0));
-    TVector3 ppa = pa - ma * (prod1 / prod2);
+    // TVector3 diff = pa - (pa + TVector3(15, 0, 0));
+    // double prod1 = diff.Dot(TVector3(1, 0, 0));
+    // double prod2 = ma.Dot(TVector3(1, 0, 0));
+    // TVector3 ppa = pa - ma * (prod1 / prod2);
 
-    double tsr = 0.05;
-    pb += TVector3(0, gRandom->Gaus(0, tsr), gRandom->Gaus(0, tsr));
-    ppa += TVector3(0, gRandom->Gaus(0, 0.05), gRandom->Gaus(0, 0.05));
+    // double tsr = 0.05;
+    // pb += TVector3(0, gRandom->Gaus(0, tsr), gRandom->Gaus(0, tsr));
+    // ppa += TVector3(0, gRandom->Gaus(0, 0.05), gRandom->Gaus(0, 0.05));
     
-    rotatedmom = (ppa - pb);
+    // rotatedmom = (ppa - pb);
 
-    // // track smearing
-    // TVector3 init = rotatedmom;
-    // rotatedmom.RotateY(gRandom->Gaus(0, trackRes));
-    // rotatedmom.Rotate(TMath::Pi(), init);
+    // track smearing
+    TVector3 init = rotatedmom;
+    rotatedmom.RotateY(gRandom->Gaus(0, trackRes));
+    rotatedmom.Rotate(TMath::Pi(), init);
 
     for (int h = 0; h < 5; h++)
       if (fSigma[h] < 0.003) fSigma[h] = 0.007;
@@ -239,13 +239,10 @@ void PrtLutReco::Run(int start, int end) {
       double range = 160;
       if (mom > 1.5) range = 100;
       if (mom > 2) range = 60;
-      if (mom < 1.1) range = 150;
       if (mom < 0.7) range = 400;
       if (mom < 0.6) range = 500;
-
-      if (fp2 == 3 && theta < 120) range = 50;
-      if (fp2 == 3 && mom < 4) range = 500;
-      if (test1 > 10 && mom < 1.1) range = 200;
+      if (mom < 5) range = 100;
+      if (mom < 3) range = 400;
 
       for (int h = 0; h < 5; h++) {
         fLnDiff[h] =
@@ -271,7 +268,7 @@ void PrtLutReco::Run(int start, int end) {
         acos(sqrt(mom * mom + ft.mass(i) * ft.mass(i)) / mom / 1.4738); // 1.4738 = 370 = 3.35
       fFunc[i]->SetParameter(0, 1);
       fFunc[i]->SetParameter(1, fAngle[i]);
-      fFunc[i]->SetParameter(2, fSigma[i]);
+      fFunc[i]->SetParameter(2, fSigma[i]);      
       // if(i==0) fFunc[i]->SetParameter(2,0.0074);
       // if(i==2) fFunc[i]->SetParameter(2,0.0064);
     }
@@ -400,7 +397,7 @@ void PrtLutReco::Run(int start, int end) {
           }
 
           isGoodHit = true;
-
+	  
           sum1 += -TMath::Log(fFunc[fp1]->Eval(tangle) + noise);
           sum2 += -TMath::Log(fFunc[fp2]->Eval(tangle) + noise);
         }
@@ -547,7 +544,7 @@ void PrtLutReco::Run(int start, int end) {
   tree.Write();
 
   if (fVerbose > 1) {
-    TString nid = Form("_%1.2f_%1.4f_%1.2f", theta, test1, mom);
+    TString nid = Form("_%1.2f_%1.4f_%1.2f", frun->getTheta(), test1, mom);
     TGaxis::SetMaxDigits(3);
     
     { // cherenkov angle
@@ -691,7 +688,7 @@ void PrtLutReco::Run(int start, int end) {
       filedir += "/";
     } else filedir = "";
 
-    ft.save_canvas(filedir + "reco", 1, 0, 0);
+    ft.save_canvas(filedir + "reco", 0, 0, 0);
 
     if (fVerbose > 2) ft.wait_primitive("lh" + nid, "none");
   }

@@ -265,8 +265,9 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     r2 = (r2 == 0) ? 29.1 : r2;
     // r1=80;
     // r2=35;
-
-    double cr2 = sqrt(fLens[1] * fLens[1] / 4. + fBar[0] * fBar[0] / 4.);
+    double thight =  fBar[0];
+    if (thight < 12) thight = 12;
+    double cr2 = sqrt(fLens[1] * fLens[1] / 4. + thight * thight / 4.);
     if (cr2 > r2) {
       std::cout << "bad lens" << std::endl;
       cr2 = r2;
