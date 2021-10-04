@@ -293,18 +293,18 @@ void PrtLutReco::Run(int start, int end) {
       cz.RotateUz(unitdir1);
       cd.RotateUz(unitdir2);
       
-      lenz = 2100 - fEvent->getPosition().Z();      
+      lenz = 2100 - fEvent->getPosition().Z();
       double phi0 = cd.Phi();
-      if (dirz < 0) {	
+      if (dirz < 0) {
         reflected = true;
         lenz = 2 * 4200 - lenz;
       } else {
         reflected = false;
       }
-      
+
       double theta0 = rotatedmom.Angle(dir0);
       fHist5->Fill(theta0 * TMath::Sin(phi0), theta0 * TMath::Cos(phi0));
-      
+
       PrtLutNode *node = (PrtLutNode *)fLut->At(ch);
       int size = node->Entries();
       bool isGoodHit(false);

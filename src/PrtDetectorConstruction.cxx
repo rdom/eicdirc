@@ -61,13 +61,12 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   // fBar[0] = 17; fBar[1] = 32; fBar[2] = 1050*4; //4200;
   // fPrizm[0] = 170; fPrizm[1] = 300; fPrizm[2] = 30+300*tan(37*deg); fPrizm[3] = 30;
   // fPrizm[0] = 390; fPrizm[1] = 300; fPrizm[3] = 50; fPrizm[2]= fPrizm[3]+300*tan(32*deg);
+
   fPrizm[0] = 360;
   fPrizm[1] = 300;
   fPrizm[3] = 50;
   fPrizm[2] = fPrizm[3] + 300 * tan(32 * deg);
   fBarsGap = 0.15;
-
-  std::cout << "fPrizm[2] " << fPrizm[2] << std::endl;
 
   fdTilt = 80 * deg;
   fPrizmT[0] = 390;
@@ -76,16 +75,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   fPrizmT[3] = 50;                      // face
   fPrizmT[4] = 290;
   fPrizmT[5] = 290 * cos(fdTilt);
-
-  //  fPrizm[0] = 170; fPrizm[1] = 300; fPrizm[2] = 50+300*tan(45*deg); fPrizm[3] = 50;
-  fBar[0] = fTest1;//17;
-  fBar[1] = (fPrizm[0] - (fNBar - 1) * fBarsGap) / fNBar;
-  fBar[2] = 1050; // 4200; //4200
-
-  fMirror[0] = fBar[0]+1;
-  fMirror[1] = fPrizm[0];
-  fMirror[2] = 1;
-
+  
   fMcpTotal[0] = fMcpTotal[1] = 53 + 4;
   fMcpTotal[2] = 1;
   fMcpActive[0] = fMcpActive[1] = 53;
@@ -93,9 +83,37 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   fLens[0] = fLens[1] = 40;
   fLens[2] = 10;
   fRadius = 970;
+  fNBoxes = 16;
+  
+  if (fGeomType == 0 || fGeomType == 10) { // ATHENA
+    fNBoxes = 16;
+    fRadius = 970;
+  }
+
+  if (fGeomType == 1 || fGeomType == 11) { // ECCE
+    fNBoxes = 12;
+    fRadius = 740;
+  }
+
+  if (fGeomType == 2 || fGeomType == 12) { // CORE    
+    fNRow = 4;
+    fNCol = 4;
+    fNBar = 7;
+    fPrizm[0] = 240;
+    fNBoxes = 12; //8
+    fRadius = 500;
+  }
 
   fBoxWidth = fPrizm[0];
-  fNBoxes = 16;
+  std::cout << "fBoxWidth " << fBoxWidth << std::endl;
+
+  fBar[0] = 17; // fTest1;
+  fBar[1] = (fPrizm[0] - (fNBar - 1) * fBarsGap) / fNBar;
+  fBar[2] = 1050; // 4200; //4200
+
+  fMirror[0] = fBar[0] + 1;
+  fMirror[1] = fPrizm[0];
+  fMirror[2] = 1;
 
   if (fEvType == 1) { // BaBar
     fBar[0] = 17.25;
@@ -109,7 +127,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
     fNBoxes = 12;
   }
 
-  if (fGeomType == 1) fNBoxes = 1;
+  if (fGeomType < 10) fNBoxes = 1;
 
   fFd[0] = fBoxWidth;
   fFd[1] = fPrizm[2];
@@ -847,7 +865,7 @@ void PrtDetectorConstruction::DefineMaterials() {
   Epotek->AddElement(O, natoms = 2);
 
   // assign main materials
-  if (fGeomType < 10) defaultMaterial = Vacuum;
+  if (fGeomType < 20) defaultMaterial = Vacuum;
   else defaultMaterial = Air; // Vacuum // material of world
   frontMaterial = CarbonFiber;
   BarMaterial = SiO2;        // material of all Bars, Quartz and Window
@@ -864,18 +882,8 @@ void PrtDetectorConstruction::DefineMaterials() {
   double AirAbsorption[num];      // absorption value for air
   double AirRefractiveIndex[num]; // air refractive index
   double PhotonEnergy[num];       // energy of photons which correspond to the given
+
   // refractive or absoprtion values
-
-  double PhotonEnergyNlak33a[76] = {
-    1,       1.2511,  1.26386, 1.27687, 1.29016, 1.30372, 1.31758, 1.33173, 1.34619, 1.36097,
-    1.37607, 1.39152, 1.40731, 1.42347, 1.44,    1.45692, 1.47425, 1.49199, 1.51016, 1.52878,
-    1.54787, 1.56744, 1.58751, 1.6081,  1.62923, 1.65092, 1.6732,  1.69609, 1.71961, 1.7438,
-    1.76868, 1.79427, 1.82062, 1.84775, 1.87571, 1.90452, 1.93423, 1.96488, 1.99652, 2.0292,
-    2.06296, 2.09787, 2.13398, 2.17135, 2.21006, 2.25017, 2.29176, 2.33492, 2.37973, 2.42631,
-    2.47473, 2.52514, 2.57763, 2.63236, 2.68946, 2.7491,  2.81143, 2.87666, 2.94499, 3.01665,
-    3.09187, 3.17095, 3.25418, 3.34189, 3.43446, 3.53231, 3.6359,  3.74575, 3.86244, 3.98663,
-    4.11908, 4.26062, 4.41225, 4.57506, 4.75035, 4.93961};
-
   int n_PbF2 = 56;
   double en_PbF2[] = {1.55,  1.569, 1.59,  1.61,  1.631, 1.653, 1.675, 1.698, 1.722, 1.746,
                       1.771, 1.797, 1.823, 1.851, 1.879, 1.907, 1.937, 1.968, 2,     2.033,
@@ -979,6 +987,20 @@ void PrtDetectorConstruction::DefineMaterials() {
     EpotekAbsorption[i] = (-1) / log(EpotekAbsorption[i]) * EpotekThickness;
     QuartzAbsorption[i] = (-1) / log(QuartzAbsorption[i]) * 100 * cm;
     KamLandOilAbsorption[i] = (-1) / log(KamLandOilAbsorption[i]) * 50 * cm;
+  }
+
+  double PhotonEnergyNlak33a[76] = {
+    1,       1.2511,  1.26386, 1.27687, 1.29016, 1.30372, 1.31758, 1.33173, 1.34619, 1.36097,
+    1.37607, 1.39152, 1.40731, 1.42347, 1.44,    1.45692, 1.47425, 1.49199, 1.51016, 1.52878,
+    1.54787, 1.56744, 1.58751, 1.6081,  1.62923, 1.65092, 1.6732,  1.69609, 1.71961, 1.7438,
+    1.76868, 1.79427, 1.82062, 1.84775, 1.87571, 1.90452, 1.93423, 1.96488, 1.99652, 2.0292,
+    2.06296, 2.09787, 2.13398, 2.17135, 2.21006, 2.25017, 2.29176, 2.33492, 2.37973, 2.42631,
+    2.47473, 2.52514, 2.57763, 2.63236, 2.68946, 2.7491,  2.81143, 2.87666, 2.94499, 3.01665,
+    3.09187, 3.17095, 3.25418, 3.34189, 3.43446, 3.53231, 3.6359,  3.74575, 3.86244, 3.98663,
+    4.11908, 4.26062, 4.41225, 4.57506, 4.75035, 4.93961};
+
+  for (int i = 0; i < 76; i++) {
+    PhotonEnergyNlak33a[i] = PhotonEnergyNlak33a[i] * eV;
   }
 
   /**************************** REFRACTIVE INDEXES ****************************/

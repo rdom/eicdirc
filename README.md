@@ -42,9 +42,14 @@ example:
                 1    b-field 2021
 
 -g    geometry configuration
-                0    whole DIRC
-                1    one barbox (default)
-
+                0    ATHENA one barbox
+                1    ECCE one barbox
+		2    CORE one barbox
+		10   ATHENA whole DIRC
+		11   ECCE whole DIRC
+		12   CORE whole DIRC
+		
+10   ATHENA whole DIRC 
 -ev   expansion volume type
 	        0    prism with lenses (default)
                 1    BaBar wedge with focusing prism
