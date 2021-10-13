@@ -107,7 +107,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   fBoxWidth = fPrizm[0];
   std::cout << "fBoxWidth " << fBoxWidth << std::endl;
 
-  fBar[0] = 17; // fTest1;
+  fBar[0] = fTest1; // 17 fTest1;
   fBar[1] = (fPrizm[0] - (fNBar - 1) * fBarsGap) / fNBar;
   fBar[2] = 1050; // 4200; //4200
 
@@ -990,7 +990,7 @@ void PrtDetectorConstruction::DefineMaterials() {
     333.94,    250.229,   185.064,   134.967,   96.9664, 68.5529, 47.6343, 32.4882,  21.7174,
     14.2056,   9.07612,   5.65267,   3.4241,    2.01226, 1.14403, 0.62722, 0.330414, 0.166558,
     0.0799649, 0.0363677, 0.0155708, 0.00623089};
-
+  
   double EpotekThickness = 0.001 * 2.54 * cm;
   for (int i = 0; i < num; i++) {
     WaveLength[i] = (300 + i * 10) * nanometer;
@@ -1008,7 +1008,10 @@ void PrtDetectorConstruction::DefineMaterials() {
     KamLandOilAbsorption[i] = (-1) / log(KamLandOilAbsorption[i]) * 50 * cm;
   }
 
-
+  for(int i=0; i<num; i++){
+    std::cout<<PhotonEnergy[i]<<" QuartzAbsorption[i] "<< QuartzAbsorption[i]<<std::endl;
+    
+  }
 
   /**************************** REFRACTIVE INDEXES ****************************/
 

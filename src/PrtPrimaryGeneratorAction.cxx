@@ -81,7 +81,6 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
   }
   PrtManager::Instance()->getEvent()->setPid(fPid);
   
-  
   if (fRunType == 0 || fRunType == 10 || fRunType == 5) { // simulation
     G4ThreeVector vec(0, 0, 1);
     // G4int id = anEvent->GetEventID()%5;

@@ -47,7 +47,7 @@ class PrtLutReco {
   PrtTools ft;
   int fmaxch, fnpmt, fnpix;
   int fDetectorID;
-  double fBboxNum, fPipehAngle, fDphi, fBarPhi;
+  double fMomentum, fBboxNum, fPipehAngle, fDphi, fBarPhi;
   int fMethod;
   int fRadiator;
   int fStudyId;
@@ -72,7 +72,6 @@ class PrtLutReco {
   TString fInputFile;
   int fp1;
   int fp2;
-  int fPk;
   int fCor_level;
   double fCor_angle[48] = {0}, fCor_time[48] = {0}, fCor_time_refl[2] = {0};
   double fCorrSpr;
@@ -84,12 +83,15 @@ class PrtLutReco {
   double fSigma[5];
   TH1F *hthetac[5];
   TH1F *hthetacd[5];
-  TH1F *hnph[5];
+  TH1F *hnph_gr[5], *hnph_ti[5];
   double fAngle[5];
   TF1 *fFunc[5];
-  TH1F *fLnDiff[5];
+  TH1F *fLnDiffGr[5];
+  TH1F *fLnDiffTi[5];
   double fCriticalAngle;
   TString fCorrFile;
+  TH1F *fTime[5][7000];
+  TGraph *fPdf[5][7000];
 };
 
 #endif
