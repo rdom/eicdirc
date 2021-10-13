@@ -991,6 +991,10 @@ void PrtDetectorConstruction::DefineMaterials() {
     14.2056,   9.07612,   5.65267,   3.4241,    2.01226, 1.14403, 0.62722, 0.330414, 0.166558,
     0.0799649, 0.0363677, 0.0155708, 0.00623089};
   
+  for (int i = 0; i < 76; i++) {
+    Nlak33aAbsorption[i] *= cm; // cm to mm
+  }
+
   double EpotekThickness = 0.001 * 2.54 * cm;
   for (int i = 0; i < num; i++) {
     WaveLength[i] = (300 + i * 10) * nanometer;
