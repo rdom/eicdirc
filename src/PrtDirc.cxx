@@ -46,11 +46,11 @@ int main(int argc, char **argv) {
 #endif
   TApplication theApp("EicDirc", 0, 0);
 
-  G4String macro, events, field, geometry, ev, radiator, physlist, session, geomTheta, geomPhi, batchmode,
+  G4String macro, events, field, geometry, ev, radiator, physlist, session, geomTheta, geomPhi,
     displayOpt, lensId, particle = "mix_pip", momentum, testVal1, testVal2, testVal3, prismStepX,
                         prismStepY, beamZ, beamX, timeSigma, timeCut, beamDimension, mcpLayout;
   TString infile = "", lutfile = "", pdffile = "", outfile = "";
-  G4int firstevent(0), runtype(0), study(0), fid(0), verbose(0);
+  G4int firstevent(0), runtype(0), study(0), fid(0), verbose(0), batchmode(0);
 
   G4long myseed = 0;
   for (G4int i = 1; i < argc; i = i + 2) {
@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
     else if (G4String(argv[i]) == "-h") radiator = argv[i + 1];
     else if (G4String(argv[i]) == "-theta") geomTheta = argv[i + 1];
     else if (G4String(argv[i]) == "-phi") geomPhi = argv[i + 1];
-    else if (G4String(argv[i]) == "-b") batchmode = argv[i + 1];
+    else if (G4String(argv[i]) == "-b") batchmode = atoi(argv[i + 1]);
     else if (G4String(argv[i]) == "-f") firstevent = atoi(argv[i + 1]);
     else if (G4String(argv[i]) == "-e") events = argv[i + 1];
     else if (G4String(argv[i]) == "-l") lensId = argv[i + 1];
@@ -114,7 +114,7 @@ int main(int argc, char **argv) {
   if (outfile == "" && (runtype == 2 || runtype == 3 || runtype == 4))
     outfile = "reco.root"; // reconstruction
 
-  if (batchmode.size()) gROOT->SetBatch(kTRUE);
+  if (batchmode == 1) gROOT->SetBatch(kTRUE);
   if (!events.size()) events = "0";
 
   PrtTools t;
@@ -214,8 +214,8 @@ int main(int argc, char **argv) {
     if (particle == "mix_pip") pdgid = 10004;
     PrtManager::Instance()->getRun()->setPid(pdgid);
   }
-
-  if (batchmode.size()) { // batch mode
+  
+  if (batchmode == 1) { // batch mode
     UImanager->ApplyCommand("/run/beamOn " + events);
   } else { // UI session for interactive mode
 

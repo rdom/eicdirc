@@ -68,6 +68,7 @@ class PrtLutReco {
 
   // Verbosity level
   int fVerbose;
+  int fBatch;
   int nevents;
   TString fInputFile;
   int fp1;

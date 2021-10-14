@@ -194,7 +194,7 @@ PrtLutReco::~PrtLutReco() {}
 void PrtLutReco::Run(int start, int end) {
   TVector3 dird, dir, momInBar(0, 0, 1), posInBar;
   double mom, tangle, tdiff, evtime, bartime, lenz, dirz, luttheta, hitTime;
-  int tofPid(0), distPid(0), likePid(0);
+  int tofPid(fp1), distPid(0), likePid(0);
   bool reflected = kFALSE;
   gStyle->SetOptFit(111);
 
