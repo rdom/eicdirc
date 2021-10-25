@@ -107,7 +107,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   fBoxWidth = fPrizm[0];
   std::cout << "fBoxWidth " << fBoxWidth << std::endl;
 
-  fBar[0] = fTest1; // 17 fTest1;
+  fBar[0] = 17; //fTest1;
   fBar[1] = (fPrizm[0] - (fNBar - 1) * fBarsGap) / fNBar;
   fBar[2] = 1050; // 4200; //4200
 
@@ -276,8 +276,8 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   if (fLensId == 3) { // 3-component spherical lens
     double lensMinThikness = 2;
 
-    double r1 = 0; // PrtManager::Instance()->GetTest1();
-    double r2 = 0; // PrtManager::Instance()->GetTest2();
+    double r1 = fTest1;
+    double r2 = fTest2;
 
     r1 = (r1 == 0) ? 47.8 : r1;
     r2 = (r2 == 0) ? 29.1 : r2;

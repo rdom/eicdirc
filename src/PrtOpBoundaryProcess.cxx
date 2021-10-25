@@ -1,5 +1,5 @@
 #include "PrtOpBoundaryProcess.h"
-
+#include <G4TouchableHistory.hh>
 #include "PrtManager.h"
 
 PrtOpBoundaryProcess::PrtOpBoundaryProcess() : G4OpBoundaryProcess() {

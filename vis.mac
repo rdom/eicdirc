@@ -51,7 +51,7 @@
 
 
 # Draw coordinate axes:
-# /vis/scene/add/axes 0 0 0 1 m
+/vis/scene/add/axes 0.78 0 2.100100001 0.01 m auto false
 
 # Draw smooth trajectories at end of event, showing trajectory points
 # as markers 2 pixels wide:
@@ -107,13 +107,13 @@
 # /vis/geometry/set/lineWidth all 0 1
 
 
-# whole
-/vis/viewer/set/viewpointVector 0.461081 0.309017 0.831813
-/vis/viewer/set/upVector 0 1 0
-/vis/viewer/set/projection perspective 35 deg
-/vis/viewer/zoomTo 1.22741
-/vis/viewer/scaleTo 1 1 1
-/vis/viewer/set/targetPoint -72.0016 -53.2675 68.1293 cm 
+# # whole
+# /vis/viewer/set/viewpointVector 0.461081 0.309017 0.831813
+# /vis/viewer/set/upVector 0 1 0
+# /vis/viewer/set/projection perspective 35 deg
+# /vis/viewer/zoomTo 1.22741
+# /vis/viewer/scaleTo 1 1 1
+# /vis/viewer/set/targetPoint -72.0016 -53.2675 68.1293 cm 
 
 #fp
 
@@ -140,13 +140,13 @@
 # /vis/viewer/scaleTo 1 1 1
 # /vis/viewer/set/targetPoint 0 0 15.6294 cm
 
-# #side xz
+#side xz
 # /vis/viewer/set/viewpointVector 1.31839e-16 -1 -6.93889e-18
 # /vis/viewer/set/upVector 0 1 0
 # /vis/viewer/set/projection orthogonal
 # /vis/viewer/zoomTo 2
 # /vis/viewer/scaleTo 1 1 1
-# /vis/viewer/set/targetPoint 0 0 0.5 m  
+# /vis/viewer/set/targetPoint 0.8 0 0.5 m  
 
 # # side yz
 # /vis/viewer/set/viewpointVector 1 0 0
@@ -158,7 +158,7 @@
 /vis/viewer/set/projection orthogonal
 /vis/viewer/zoomTo 20.0
 /vis/viewer/scaleTo 1 1 1
-/vis/viewer/set/targetPoint 1.0404 -0.128502 2.17344 m
+/vis/viewer/set/targetPoint 0.8 0 2.17344 m
 
 # # whole length
 # /vis/viewer/zoomTo 7.0883

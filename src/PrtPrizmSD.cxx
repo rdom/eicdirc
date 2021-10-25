@@ -95,15 +95,19 @@ G4bool PrtPrizmSD::ProcessHits(G4Step *aStep, G4TouchableHistory *hist) {
         if (normal.x() < -0.99) nid = 8; // top
       } else if (vname == "wLens2") {
         nid = 9;
+      } else if (fRun->getRunType() == 5 && vname == "wLens1") {
+	nid = -5;
+	newHit->SetPos(aStep->GetPreStepPoint()->GetMomentum());
+	newHit->SetEdep(aStep->GetPreStepPoint()->GetLocalTime());
       }
     }
   }
 
-  if (fRun->getRunType() == 5 && aStep->GetPreStepPoint()->GetPosition().z() < 2100.100001) {
-    nid = -5;
-    newHit->SetPos(aStep->GetPostStepPoint()->GetMomentum());
-    newHit->SetEdep(aStep->GetPreStepPoint()->GetLocalTime());
-  }
+  // if (fRun->getRunType() == 5 && aStep->GetPreStepPoint()->GetPosition().z() < 2100.100001) {
+  //   nid = -5;
+  //   newHit->SetPos(aStep->GetPostStepPoint()->GetMomentum());
+  //   newHit->SetEdep(aStep->GetPreStepPoint()->GetLocalTime());
+  // }
 
   newHit->SetNormalId(nid);
 

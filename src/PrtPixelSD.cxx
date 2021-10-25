@@ -96,12 +96,13 @@ G4bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
   int refl = 0;
   int prizmId = -1;
 
-  for (int i = 0; i < prizmCol->entries(); i++) {
+  double prismtime = 0;
+  for (size_t i = 0; i < prizmCol->entries(); i++) {
     PrtPrizmHit *phit = (*prizmCol)[i];
     if (phit->GetTrackID() == track->GetTrackID()) {
       if (fRunType == 5 && phit->GetNormalId() == -5) {
         momentum.SetXYZ(phit->GetPos().x(), phit->GetPos().y(), phit->GetPos().z());
-        time -= phit->GetEdep();
+        prismtime = phit->GetEdep();
       }
       if (phit->GetNormalId() > 0) {
         ++refl;
@@ -111,6 +112,9 @@ G4bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
     }
   }
 
+  // store time in prism
+  if (fRunType == 5) time -= prismtime;
+  
   // // information from bar
   // G4int collectionID_bar = fSDM->GetCollectionID("BarHitsCollection");
   // PrtBarHitsCollection* barCol = (PrtBarHitsCollection*)(HCofEvent->GetHC(collectionID_bar));
