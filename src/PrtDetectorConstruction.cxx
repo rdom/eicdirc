@@ -1012,11 +1012,6 @@ void PrtDetectorConstruction::DefineMaterials() {
     KamLandOilAbsorption[i] = (-1) / log(KamLandOilAbsorption[i]) * 50 * cm;
   }
 
-  for(int i=0; i<num; i++){
-    std::cout<<PhotonEnergy[i]<<" QuartzAbsorption[i] "<< QuartzAbsorption[i]<<std::endl;
-    
-  }
-
   /**************************** REFRACTIVE INDEXES ****************************/
 
   // only phase refractive indexes are necessary -> g4 calculates group itself !!
