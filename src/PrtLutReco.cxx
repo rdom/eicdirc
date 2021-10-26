@@ -72,7 +72,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
     fHistDiff[i]->SetLineColor(col[i]);
   }
   for (int h = 0; h < 5; h++) {
-    hthetac[h] = new TH1F(Form("thetac_%d", h), ";#theta_{C} [rad];entries [#]", 200, 0.45, 0.9);
+    hthetac[h] = new TH1F(Form("thetac_%d", h), ";#theta_{C} [rad];entries [#]", 200, 0.75, 0.9);
     hthetacd[h] =
       new TH1F(Form("thetacd_%d", h), ";#Delta#theta_{C} [mrad];entries [#]", 200, -60, 60);
     hnph_gr[h] = new TH1F(Form("nph_gr_%d", h), ";detected photons [#];entries [#]", 220, 0, 220);
@@ -556,41 +556,47 @@ void PrtLutReco::Run(int start, int end) {
         nph_gr_err[h] = f->GetParError(1);
       }
     }
-    
+
     TF1 *ff;
-    double m1 = 0, m2 = 0, s1 = 0, s2 = 0, dm1 = 0, dm2 = 0, ds1 = 0, ds2 = 0;
+    double m1 = 0, m2 = 0, s1 = 100, s2 = 100, dm1 = 0, dm2 = 0, ds1 = 0, ds2 = 0;
     if (fLnDiffGr[fp2]->GetEntries() > 10) {
       fLnDiffGr[fp2]->Fit("gaus", "S");
       ff = fLnDiffGr[fp2]->GetFunction("gaus");
-      m1 = ff->GetParameter(1);
-      s1 = ff->GetParameter(2);
-      dm1 = ff->GetParError(1);
-      ds1 = ff->GetParError(2);
-
-      if (fp1 == 0 && mom < 1.5) { // handle tails
-        fLnDiffGr[fp2]->Fit("gaus", "S", "", m1 - 2.0 * s1, 500);
-        ff = fLnDiffGr[fp2]->GetFunction("gaus");
+      if (ff) {
         m1 = ff->GetParameter(1);
         s1 = ff->GetParameter(2);
         dm1 = ff->GetParError(1);
         ds1 = ff->GetParError(2);
       }
+      if (fp1 == 0 && mom < 1.5) { // handle tails
+        fLnDiffGr[fp2]->Fit("gaus", "S", "", m1 - 2.0 * s1, 500);
+        ff = fLnDiffGr[fp2]->GetFunction("gaus");
+        if (ff) {
+          m1 = ff->GetParameter(1);
+          s1 = ff->GetParameter(2);
+          dm1 = ff->GetParError(1);
+          ds1 = ff->GetParError(2);
+        }
+      }
     }
     if (fLnDiffGr[fp1]->GetEntries() > 10) {
       fLnDiffGr[fp1]->Fit("gaus", "S");
       ff = fLnDiffGr[fp1]->GetFunction("gaus");
-      m2 = ff->GetParameter(1);
-      s2 = ff->GetParameter(2);
-      dm2 = ff->GetParError(1);
-      ds2 = ff->GetParError(2);
-
-      if (fp1 == 0 && mom < 1.5) { /// handle tails
-        fLnDiffGr[fp1]->Fit("gaus", "S", "", -500, m2 + 2.0 * s2);
-        ff = fLnDiffGr[fp1]->GetFunction("gaus");
+      if (ff) {
         m2 = ff->GetParameter(1);
         s2 = ff->GetParameter(2);
         dm2 = ff->GetParError(1);
         ds2 = ff->GetParError(2);
+      }
+      if (fp1 == 0 && mom < 1.5) { /// handle tails
+        fLnDiffGr[fp1]->Fit("gaus", "S", "", -500, m2 + 2.0 * s2);
+        ff = fLnDiffGr[fp1]->GetFunction("gaus");
+        if (ff) {
+          m2 = ff->GetParameter(1);
+          s2 = ff->GetParameter(2);
+          dm2 = ff->GetParError(1);
+          ds2 = ff->GetParError(2);
+        }
       }
     }
     sep_gr = (fabs(m1 - m2)) / (0.5 * (s1 + s2));

@@ -136,6 +136,7 @@ class PrtTools {
   // accessors
   PrtEvent *event() const { return _event; }
   PrtRun *run() { return _run; }
+  TChain *chain() { return _chain; }
   int pdg(int v) { return _pdg[v]; }
   int pid() { return _pid; }
   int i( ) { return _iter; }

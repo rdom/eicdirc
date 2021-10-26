@@ -66,7 +66,7 @@ bool PrtTools::init_run(TString in, int bdigi, TString savepath, int setupid) {
   _info += _run->getInfo();
 
   if (savepath != "") _savepath = savepath;
-  TGaxis::SetMaxDigits(4);
+  TGaxis::SetMaxDigits(3);
   set_palette(1);
   create_maps(setupid);
 
@@ -121,7 +121,7 @@ TString PrtTools::get_outpath() {
     return _dbpath + Form("%d/%sC.rec.root", _run->getStudy(), _run->getName().Data());
 }
 
-void PrtTools::fill_digi(int pmt, int pix){  
+void PrtTools::fill_digi(int pmt, int pix){
 
   int n = sqrt(_npix);  
   if (pmt < _npmt) _hdigi[pmt]->Fill(pix % n, pix / n);
@@ -1227,7 +1227,7 @@ void PrtTools::save(TPad *c,TString path, int what, int style){
 	cc->SetCanvasSize(w,h);
       }
 
-      if(style == 0) set_style(cc);
+      // if(style == 0) set_style(cc);
 
       print_canvas(cc,name,path,what);
     }else{
