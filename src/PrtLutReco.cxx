@@ -267,8 +267,8 @@ void PrtLutReco::Run(int start, int end) {
 
     // track smearing
     TVector3 init = rotatedmom;
-    rotatedmom.RotateY(gRandom->Gaus(0, trackRes));
-    rotatedmom.Rotate(TMath::Pi(), init);
+    rotatedmom.SetTheta(rotatedmom.Theta() + gRandom->Gaus(0, trackRes));
+    rotatedmom.Rotate(gRandom->Uniform(0, TMath::TwoPi()), init);
 
     for (int h = 0; h < 5; h++)
       if (fSigma[h] < 0.003) fSigma[h] = 0.007;
@@ -876,7 +876,7 @@ void PrtLutReco::Run(int start, int end) {
 
         for (int i = 0; i < fnpmt; i++) {
           if (fHistMcp[i]->GetEntries() < 20) continue;
-          ft.add_canvas(Form("r_tangle_%d", i), 800, 400);
+          if (fVerbose > 2) ft.add_canvas(Form("r_tangle_%d", i), 800, 400);
 
           corr = -ft.fit(fHistMcp[i], 0.008, 20, 0.01).X();
           // fHistMcp[i]->Fit("gaus","MQ","",-0.01,0.01).X();
