@@ -58,7 +58,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   fHall[1] = 1500;
   fHall[2] = 3000;
   
-  // fBar[0] = 17; fBar[1] = 32; fBar[2] = 1050*4; //4200;
+  fBar[0] = 17; fBar[1] = 32; fBar[2] = 1050; //4200;
   // fPrizm[0] = 170; fPrizm[1] = 300; fPrizm[2] = 30+300*tan(37*deg); fPrizm[3] = 30;
   // fPrizm[0] = 390; fPrizm[1] = 300; fPrizm[3] = 50; fPrizm[2]= fPrizm[3]+300*tan(32*deg);
 
@@ -101,6 +101,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
     fNBoxes = 16;
     fRadius = 501.7;
     fNBar = 5;
+    fBar[2] = 700;
 	
     fNRow = 3;
     fNCol = 4;
@@ -116,7 +117,6 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
 
   fBar[0] = 17; //fTest1;
   fBar[1] = (fPrizm[0] - (fNBar - 1) * fBarsGap) / fNBar;
-  fBar[2] = 1050; // 4200; //4200
 
   fMirror[0] = fBar[0] + 1;
   fMirror[1] = fPrizm[0];
@@ -336,7 +336,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     else lLens2 = new G4LogicalVolume(gLens2, Nlak33aMaterial, "lLens2", 0, 0, 0);
     lLens3 = new G4LogicalVolume(gLens3, BarMaterial, "lLens3", 0, 0, 0);
   }
-
+ 
   if (fLensId == 6) { // 3-component cylindrical lens
     double lensMinThikness = 2.0;
 
