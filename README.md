@@ -49,7 +49,6 @@ example:
 		11   ECCE whole DIRC
 		12   CORE whole DIRC
 		
-10   ATHENA whole DIRC 
 -ev   expansion volume type
 	        0    prism with lenses (default)
                 1    BaBar wedge with focusing prism

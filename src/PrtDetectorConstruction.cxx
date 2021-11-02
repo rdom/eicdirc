@@ -62,7 +62,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   // fPrizm[0] = 170; fPrizm[1] = 300; fPrizm[2] = 30+300*tan(37*deg); fPrizm[3] = 30;
   // fPrizm[0] = 390; fPrizm[1] = 300; fPrizm[3] = 50; fPrizm[2]= fPrizm[3]+300*tan(32*deg);
 
-  fPrizm[0] = 360;
+  fPrizm[0] = 350;
   fPrizm[1] = 300;
   fPrizm[3] = 50;
   fPrizm[2] = fPrizm[3] + 300 * tan(32 * deg);
@@ -87,21 +87,28 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   
   if (fGeomType == 0 || fGeomType == 10) { // ATHENA
     fNBoxes = 16;
-    fRadius = 970;
+    fRadius = 964.5; // middle of the barbox at 90 degree
+    fNBar = 10;
   }
 
   if (fGeomType == 1 || fGeomType == 11) { // ECCE
     fNBoxes = 12;
-    fRadius = 740;
+    fRadius = 729.6;
+    fNBar = 10;
   }
 
   if (fGeomType == 2 || fGeomType == 12) { // CORE    
-    fNRow = 4;
+    fNBoxes = 16;
+    fRadius = 501.7;
+    fNBar = 5;
+	
+    fNRow = 3;
     fNCol = 4;
-    fNBar = 7;
-    fPrizm[0] = 240;
-    fNBoxes = 12; //8
-    fRadius = 500;
+    fPrizm[0] = 175;
+
+    // fNBoxes = 12; // alternative
+    // fNBar = 7;	
+    // fPrizm[0] = 245;
   }
 
   fBoxWidth = fPrizm[0];
@@ -281,9 +288,10 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
 
     r1 = (r1 == 0) ? 47.8 : r1;
     r2 = (r2 == 0) ? 29.1 : r2;
-    // r1=80;
-    // r2=35;
-    double thight =  fBar[0];
+    r1 = 62;
+    r2 = 36;
+    
+    double thight = fBar[0];
     if (thight < 12) thight = 12;
     double cr2 = sqrt(fLens[1] * fLens[1] / 4. + thight * thight / 4.);
     if (cr2 > r2) {
@@ -323,8 +331,8 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
       new G4SubtractionSolid("Lens3", gLenst, gsphere2, new G4RotationMatrix(), zTrans2);
 
     lLens1 = new G4LogicalVolume(gLens1, BarMaterial, "lLens1", 0, 0, 0);
-    lLens2 = new G4LogicalVolume(gLens2, Nlak33aMaterial, "lLens2", 0, 0,
-                                   0); // Nlak33aMaterial //PbF2Material //SapphireMaterial
+    lLens2 = new G4LogicalVolume(gLens2, Nlak33aMaterial, "lLens2", 0, 0, 0);
+    // Nlak33aMaterial //PbF2Material //SapphireMaterial
     // if (tt == 1) lLens2 = new G4LogicalVolume(gLens2, PbF2Material, "lLens2", 0, 0, 0);
     // if (tt == 2) lLens2 = new G4LogicalVolume(gLens2, SapphireMaterial, "lLens2", 0, 0, 0);
     lLens3 = new G4LogicalVolume(gLens3, BarMaterial, "lLens3", 0, 0, 0);
@@ -913,6 +921,9 @@ void PrtDetectorConstruction::DefineMaterials() {
                       417.7, 401.1, 389.9, 411.9, 400.9, 398.3, 402.1, 408.7, 384.8, 415.8,
                       413.1, 385.7, 353.7, 319.1, 293.6, 261.9, 233.6, 204.4, 178.3, 147.6,
                       118.2, 78.7,  51.6,  41.5,  24.3,  8.8};
+  for (int i = 0; i < n_PbF2; i++) {
+    ab_PbF2[i] *= cm; // cm to mm
+  }
   double ref_PbF2[] = {1.749, 1.749, 1.75,  1.75,  1.751, 1.752, 1.752, 1.753, 1.754, 1.754,
                        1.755, 1.756, 1.757, 1.757, 1.758, 1.759, 1.76,  1.761, 1.762, 1.764,
                        1.765, 1.766, 1.768, 1.769, 1.771, 1.772, 1.774, 1.776, 1.778, 1.78,
@@ -941,16 +952,19 @@ void PrtDetectorConstruction::DefineMaterials() {
     1.85191, 1.85975, 1.86829, 1.87774, 1.88822, 1.89988, 1.91270};
 
   double ab_Sapphire[n_Sapphire];
-  // crystan standard grade 2mm
-  double transmitance_Sapphire[] = {
+  // transmittance for 2 mm thickness (crystan standard UV grade)
+  // https://www.crystran.co.uk/optical-materials/sapphire-al2o3
+  double transmittance_Sapphire[] = {
     0.845, 0.844, 0.843, 0.843, 0.843, 0.843, 0.843, 0.843, 0.843, 0.843, 0.843, 0.843,
     0.843, 0.843, 0.843, 0.843, 0.843, 0.843, 0.843, 0.843, 0.842, 0.842, 0.842, 0.842,
     0.838, 0.838, 0.838, 0.838, 0.838, 0.838, 0.836, 0.836, 0.836, 0.836, 0.834, 0.834,
     0.833, 0.832, 0.832, 0.831, 0.831, 0.83,  0.828, 0.828, 0.828, 0.828, 0.828, 0.828,
     0.828, 0.828, 0.828, 0.825, 0.80,  0.67,  0.47,  0.23,  0.22};
-  for (int i = 0; i < n_Sapphire; i++)
-    ab_Sapphire[i] = (-1) / log(transmitance_Sapphire[i] + 2 * 0.077007) * 2 * mm;
 
+  // conversion to free mean path 
+  for (int i = 0; i < n_Sapphire; i++) {
+    ab_Sapphire[i] = (-1) / log(transmittance_Sapphire[i] + 2 * 0.077007) * 2 * mm; // correcrted for Fresnel losses  
+  }
   /*************************** ABSORPTION COEFFICIENTS *****************************/
 
   // absorption of KamLandOil per 50 cm - from jjv

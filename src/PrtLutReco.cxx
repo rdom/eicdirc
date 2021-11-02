@@ -268,7 +268,7 @@ void PrtLutReco::Run(int start, int end) {
     // track smearing
     TVector3 init = rotatedmom;
     rotatedmom.SetTheta(rotatedmom.Theta() + gRandom->Gaus(0, trackRes));
-    rotatedmom.Rotate(gRandom->Uniform(0, TMath::TwoPi()), init);
+    rotatedmom.Rotate(gRandom->Uniform(0, TMath::Pi()), init);
 
     for (int h = 0; h < 5; h++)
       if (fSigma[h] < 0.003) fSigma[h] = 0.007;

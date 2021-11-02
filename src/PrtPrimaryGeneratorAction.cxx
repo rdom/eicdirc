@@ -116,7 +116,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
       theta = G4RandGauss::shoot(theta, trackresolution);
       vec.setTheta(M_PI - theta);
       vec.rotate(2 * M_PI * G4UniformRand(), vec0);
-      vec.setPhi(2 * M_PI * G4UniformRand());
+      // vec.setPhi(2 * M_PI * G4UniformRand());
     }
 
     if (fRun->getEv() == 1) {
