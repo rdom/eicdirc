@@ -960,7 +960,7 @@ void PrtDetectorConstruction::DefineMaterials() {
     0.833, 0.832, 0.832, 0.831, 0.831, 0.83,  0.828, 0.828, 0.828, 0.828, 0.828, 0.828,
     0.828, 0.828, 0.828, 0.825, 0.80,  0.67,  0.47,  0.23,  0.22};
 
-  // conversion to free mean path
+  // conversion to mean free path
   for (int i = 0; i < n_Sapphire; i++) {
     double fresnel = (ref_Sapphire[i] - 1) * (ref_Sapphire[i] - 1) /
                      ((ref_Sapphire[i] + 1) * (ref_Sapphire[i] + 1));
