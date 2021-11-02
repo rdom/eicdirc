@@ -331,10 +331,9 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
       new G4SubtractionSolid("Lens3", gLenst, gsphere2, new G4RotationMatrix(), zTrans2);
 
     lLens1 = new G4LogicalVolume(gLens1, BarMaterial, "lLens1", 0, 0, 0);
-    lLens2 = new G4LogicalVolume(gLens2, SapphireMaterial, "lLens2", 0, 0, 0);
     // Nlak33aMaterial //PbF2Material //SapphireMaterial
-    // if (tt == 1) lLens2 = new G4LogicalVolume(gLens2, PbF2Material, "lLens2", 0, 0, 0);
-    // if (tt == 2) lLens2 = new G4LogicalVolume(gLens2, SapphireMaterial, "lLens2", 0, 0, 0);
+    if (fTest3 > 1) lLens2 = new G4LogicalVolume(gLens2, SapphireMaterial, "lLens2", 0, 0, 0);
+    else lLens2 = new G4LogicalVolume(gLens2, Nlak33aMaterial, "lLens2", 0, 0, 0);
     lLens3 = new G4LogicalVolume(gLens3, BarMaterial, "lLens3", 0, 0, 0);
   }
 
@@ -961,9 +960,11 @@ void PrtDetectorConstruction::DefineMaterials() {
     0.833, 0.832, 0.832, 0.831, 0.831, 0.83,  0.828, 0.828, 0.828, 0.828, 0.828, 0.828,
     0.828, 0.828, 0.828, 0.825, 0.80,  0.67,  0.47,  0.23,  0.22};
 
-  // conversion to free mean path 
+  // conversion to free mean path
   for (int i = 0; i < n_Sapphire; i++) {
-    ab_Sapphire[i] = (-1) / log(transmittance_Sapphire[i] + 2 * 0.077007) * 2 * mm; // correcrted for Fresnel losses  
+    double fresnel = (ref_Sapphire[i] - 1) * (ref_Sapphire[i] - 1) /
+                     ((ref_Sapphire[i] + 1) * (ref_Sapphire[i] + 1));
+    ab_Sapphire[i] = (-1) / log(transmittance_Sapphire[i] + 2 * fresnel) * 2 * mm;
   }
   /*************************** ABSORPTION COEFFICIENTS *****************************/
 
