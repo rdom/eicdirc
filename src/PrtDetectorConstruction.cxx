@@ -331,7 +331,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
       new G4SubtractionSolid("Lens3", gLenst, gsphere2, new G4RotationMatrix(), zTrans2);
 
     lLens1 = new G4LogicalVolume(gLens1, BarMaterial, "lLens1", 0, 0, 0);
-    lLens2 = new G4LogicalVolume(gLens2, Nlak33aMaterial, "lLens2", 0, 0, 0);
+    lLens2 = new G4LogicalVolume(gLens2, SapphireMaterial, "lLens2", 0, 0, 0);
     // Nlak33aMaterial //PbF2Material //SapphireMaterial
     // if (tt == 1) lLens2 = new G4LogicalVolume(gLens2, PbF2Material, "lLens2", 0, 0, 0);
     // if (tt == 2) lLens2 = new G4LogicalVolume(gLens2, SapphireMaterial, "lLens2", 0, 0, 0);
