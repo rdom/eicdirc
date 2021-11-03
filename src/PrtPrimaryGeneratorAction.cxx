@@ -103,7 +103,9 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
         // smear track resolution
         G4ThreeVector vec0 = vec;
         vec0.setTheta(theta);
+	vec0.setPhi(phi);
         vec.setTheta(G4RandGauss::shoot(theta, trackresolution));
+	vec.setPhi(phi);
         vec.rotate(2 * M_PI * G4UniformRand(), vec0);
       }
     } else {
