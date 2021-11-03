@@ -220,6 +220,7 @@ void PrtLutReco::Run(int start, int end) {
   timeRes = frun->getTimeSigma();
   timeCut = frun->getTimeCut() ;
   trackRes = frun->getBeamSize();
+  double radiatorL = frun->getRadiatorL();
   
   int nEvents = fChain->GetEntries();
   if (end == 0) end = nEvents;
@@ -313,11 +314,11 @@ void PrtLutReco::Run(int start, int end) {
       cz.RotateUz(unitdir1);
       cd.RotateUz(unitdir2);
       
-      lenz = 2100 - fEvent->getPosition().Z();
+      lenz = 0.5 * radiatorL - fEvent->getPosition().Z();
       double phi0 = cd.Phi();
       if (dirz < 0) {
         reflected = true;
-        lenz = 2 * 4200 - lenz;
+        lenz = 2 * radiatorL - lenz;
       } else {
         reflected = false;
       }

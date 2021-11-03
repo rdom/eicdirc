@@ -201,6 +201,10 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
     nrow = 6;
     ncol = 18;
   }
+  if (_run->getGeometry() == 2) {
+    nrow = 4;
+    ncol = 3;
+  }
 
   if (_pmtlayout > 1) {
     float tbw(0.02), tbh(0.01), shift(0), shiftw(0.02), shifth(0), margin(0.01);
