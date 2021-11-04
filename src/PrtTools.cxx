@@ -123,8 +123,11 @@ TString PrtTools::get_outpath() {
 
 void PrtTools::fill_digi(int pmt, int pix){
 
-  int n = sqrt(_npix);  
-  if (pmt < _npmt) _hdigi[pmt]->Fill(pix % n, pix / n);
+  int n = sqrt(_npix);
+  if (pmt < _npmt) {
+    if (_run->getGeometry() == 2) _hdigi[pmt]->Fill(pix / n, pix % n);
+    else _hdigi[pmt]->Fill(pix % n, pix / n);
+  }
 }
 
 // _pmtlayout == 5    - 5 row's design for the PANDA Barrel DIRC
@@ -202,8 +205,8 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
     ncol = 18;
   }
   if (_run->getGeometry() == 2) {
-    nrow = 4;
-    ncol = 3;
+    nrow = 3;
+    ncol = 4;
   }
 
   if (_pmtlayout > 1) {
@@ -275,7 +278,7 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
           tbh = 0.001;
           padi = j * ncol + i;
         }
-        if (_pmtlayout == 2030) {
+        if (_pmtlayout == 2030 || _run->getGeometry() == 2) {
           margin = 0.1;
           shift = 0;
           shiftw = 0.01;
