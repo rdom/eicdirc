@@ -52,13 +52,13 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
   fStudyId = frun->getStudy();
   fMomentum = frun->getMomentum();
   fRadiator = frun->getRadiator();
+  double timeRes = frun->getTimeSigma() * 1000;
   int rpid = frun->getPid();
   fp2 = 2; // pi
   if(rpid == 10000)  fp1 = 0; // e
   if(rpid == 10001)  fp1 = 1; // mu
   if(rpid == 10003)  fp1 = 3; // K
   if(rpid == 10004)  fp1 = 4; // p
-  
 
   fChain->SetBranchAddress("PrtEvent", &fEvent);
 
@@ -114,7 +114,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
     fLnDiffTi[h]->SetLineColor(ft.color(h));
 
     for (int i = 0; i < fmaxch; i++) {
-      fTime[h][i] = new TH1F(Form("h_%d_%d", h, i), "pdf;LE time [ns]; entries [#]", 1000, 0, 50);
+      fTime[h][i] = new TH1F(Form("h_%d_%d", h, i), "pdf;LE time [ns]; entries [#]", 2000, 0, 100);
     }
   }
 
@@ -142,14 +142,13 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
     if (!gSystem->AccessPathName(fPdfPath)) {
       std::cout << "--- reading  " << fPdfPath << std::endl;
       TFile pdfFile(fPdfPath);
-      double sigma = 100;
-      int binfactor = (int)(sigma / 50. + 0.1);
+      int binfactor = (int)(timeRes / 50. + 0.1);
       for (int h : {fp1, fp2}) {
         for (int i = 0; i < fmaxch; i++) {
 	  // auto hpdf = (TH1F *)pdfFile.Get(Form("h_%d_%d",h, i));
           fTime[h][i] = (TH1F *)pdfFile.Get(Form("h_%d_%d", h, i));
           fTime[h][i]->SetDirectory(0);
-          if (sigma > 0) fTime[h][i]->Rebin(binfactor);
+          if (timeRes > 0) fTime[h][i]->Rebin(binfactor);
           // if (sigma > 0) hpdf->Rebin(binfactor);
           // // hpdf->Smooth();
           // fPdf[h][i] = new TGraph(hpdf);

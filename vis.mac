@@ -133,7 +133,7 @@
 # /vis/viewer/set/targetPoint 100 20 210 cm
 
 # # side xy
-# /vis/viewer/set/viewpointVector 0 0 1
+# /vis/viewer/set/viewpointVector 0 0 -1
 # /vis/viewer/set/upVector 0 1 0
 # /vis/viewer/set/projection orthogonal
 # /vis/viewer/zoomTo 2.2
