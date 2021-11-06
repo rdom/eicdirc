@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
             beamX, timeSigma, timeCut, mcpLayout;
   TString infile = "", lutfile = "", pdffile = "", outfile = "";
   int geometry(0), firstevent(0), runtype(0), study(0), fid(0), verbose(0), batchmode(0);
-  double momentum, beamZ, trackres(-1);
+  double momentum(-1), beamZ, trackres(-1);
 
   G4long myseed = 0;
   for (G4int i = 1; i < argc; i = i + 2) {
@@ -102,6 +102,7 @@ int main(int argc, char **argv) {
     }
   }
 
+  // default values
   if (geometry == 0 || geometry == 10) {
     beamZ = -600;
   }
@@ -111,11 +112,14 @@ int main(int argc, char **argv) {
   if (geometry == 2 || geometry == 12) {
     beamZ = 10;
   }
-  if (trackres < 0) { // default values
+  if (trackres < 0) {
     if (momentum < 1.5) trackres = 0.0022;
     if (momentum >= 1.5) trackres = 0.0005;
   }
-
+  if (momentum < 0) {
+    if (particle == "mix_pie") momentum = 1.2;
+    else momentum = 6;
+  }
   if (runtype == 1) {
     particle = "opticalphoton";
     momentum = 3.18e-09;
