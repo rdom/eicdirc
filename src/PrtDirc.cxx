@@ -46,11 +46,12 @@ int main(int argc, char **argv) {
 #endif
   TApplication theApp("EicDirc", 0, 0);
 
-  G4String macro, events, field, geometry, ev, radiator, physlist, session, geomTheta, geomPhi,
-    displayOpt, lensId, particle = "mix_pip", momentum, testVal1, testVal2, testVal3, prismStepX,
-                        prismStepY, beamZ, beamX, timeSigma, timeCut, beamDimension, mcpLayout;
+  G4String macro, events, field, ev, radiator, physlist, session, geomTheta, geomPhi, displayOpt,
+    lensId, particle = "mix_pip", testVal1, testVal2, testVal3, prismStepX, prismStepY,
+            beamX, timeSigma, timeCut, mcpLayout;
   TString infile = "", lutfile = "", pdffile = "", outfile = "";
-  G4int firstevent(0), runtype(0), study(0), fid(0), verbose(0), batchmode(0);
+  int geometry(0), firstevent(0), runtype(0), study(0), fid(0), verbose(0), batchmode(0);
+  double momentum, beamZ, trackres(-1);
 
   G4long myseed = 0;
   for (G4int i = 1; i < argc; i = i + 2) {
@@ -61,7 +62,7 @@ int main(int argc, char **argv) {
     else if (G4String(argv[i]) == "-u") lutfile = argv[i + 1];
     else if (G4String(argv[i]) == "-pdf") pdffile = argv[i + 1];
     else if (G4String(argv[i]) == "-field") field = argv[i + 1];
-    else if (G4String(argv[i]) == "-g") geometry = argv[i + 1];
+    else if (G4String(argv[i]) == "-g") geometry = atoi(argv[i + 1]);
     else if (G4String(argv[i]) == "-ev") ev = argv[i + 1];
     else if (G4String(argv[i]) == "-h") radiator = argv[i + 1];
     else if (G4String(argv[i]) == "-theta") geomTheta = argv[i + 1];
@@ -71,7 +72,7 @@ int main(int argc, char **argv) {
     else if (G4String(argv[i]) == "-e") events = argv[i + 1];
     else if (G4String(argv[i]) == "-l") lensId = argv[i + 1];
     else if (G4String(argv[i]) == "-x") particle = argv[i + 1];
-    else if (G4String(argv[i]) == "-p") momentum = argv[i + 1];
+    else if (G4String(argv[i]) == "-p") momentum =  atof(argv[i + 1]);
     else if (G4String(argv[i]) == "-w") physlist = argv[i + 1];
     else if (G4String(argv[i]) == "-r") runtype = atoi(argv[i + 1]);
     else if (G4String(argv[i]) == "-study") study = atoi(argv[i + 1]);
@@ -82,11 +83,11 @@ int main(int argc, char **argv) {
     else if (G4String(argv[i]) == "-t3") testVal3 = argv[i + 1];
     else if (G4String(argv[i]) == "-gsx") prismStepX = argv[i + 1];
     else if (G4String(argv[i]) == "-gsy") prismStepY = argv[i + 1];
-    else if (G4String(argv[i]) == "-gz") beamZ = argv[i + 1];
+    else if (G4String(argv[i]) == "-gz") beamZ = atof(argv[i + 1]);
     else if (G4String(argv[i]) == "-gx") beamX = argv[i + 1];
     else if (G4String(argv[i]) == "-timeres") timeSigma = argv[i + 1];
     else if (G4String(argv[i]) == "-timecut") timeCut = argv[i + 1];
-    else if (G4String(argv[i]) == "-trackres") beamDimension = argv[i + 1];
+    else if (G4String(argv[i]) == "-trackres") trackres = atof(argv[i + 1]);
     else if (G4String(argv[i]) == "-v") verbose = atoi(argv[i + 1]);
     else if (G4String(argv[i]) == "-d") displayOpt = argv[i + 1];
 
@@ -101,9 +102,23 @@ int main(int argc, char **argv) {
     }
   }
 
+  if (geometry == 0 || geometry == 10) {
+    beamZ = -600;
+  }
+  if (geometry == 1 || geometry == 11) {
+    beamZ = -400;
+  }
+  if (geometry == 2 || geometry == 12) {
+    beamZ = 10;
+  }
+  if (trackres < 0) { // default values
+    if (momentum < 1.5) trackres = 0.0022;
+    if (momentum >= 1.5) trackres = 0.0005;
+  }
+
   if (runtype == 1) {
     particle = "opticalphoton";
-    momentum = " 3.18e-09";
+    momentum = 3.18e-09;
     geomTheta = "180";
     geomPhi = "0";
   }
@@ -135,15 +150,15 @@ int main(int argc, char **argv) {
 
   run->setRunType(runtype);
 
-  if (momentum.size()) run->setMomentum(atof(momentum));
+  run->setMomentum(momentum);
   if (physlist.size()) run->setPhysList(atoi(physlist));
   if (field.size()) run->setField(atoi(field));
-  if (geometry.size()) run->setGeometry(atoi(geometry));
+  run->setGeometry(geometry);
   if (ev.size()) run->setEv(atoi(ev));
   if (radiator.size()) run->setRadiator(atoi(radiator));
   if (lensId.size()) run->setLens(atoi(lensId));
   if (mcpLayout.size()) run->setPmtLayout(atoi(mcpLayout));
-  if (beamDimension.size()) run->setBeamSize(atof(beamDimension));
+  run->setBeamSize(trackres);
   if (testVal1.size()) run->setTest1(atof(testVal1));
   if (testVal2.size()) run->setTest2(atof(testVal2));
   if (testVal3.size()) run->setTest3(atof(testVal3));
@@ -152,7 +167,7 @@ int main(int argc, char **argv) {
   if (prismStepX.size()) run->setPrismStepX(atof(prismStepX));
   if (prismStepY.size()) run->setPrismStepY(atof(prismStepY));
   if (beamX.size()) run->setBeamX(atof(beamX));
-  if (beamZ.size()) run->setBeamZ(atof(beamZ));
+  run->setBeamZ(beamZ);
   if (timeSigma.size()) run->setTimeSigma(atof(timeSigma));
   if (timeCut.size()) run->setTimeCut(atof(timeCut));
   if (displayOpt.size()) PrtManager::Instance()->setDisplayOpt(atoi(displayOpt));

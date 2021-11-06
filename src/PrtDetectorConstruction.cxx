@@ -87,14 +87,16 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   
   if (fGeomType == 0 || fGeomType == 10) { // ATHENA
     fNBoxes = 16;
-    fRadius = 964.5; // middle of the barbox at 90 degree
+    fRadius = 972.8; // middle of the barbox at 90 degree
     fNBar = 10;
+    fBar[2] = 1100;
   }
 
   if (fGeomType == 1 || fGeomType == 11) { // ECCE
     fNBoxes = 12;
     fRadius = 729.6;
     fNBar = 10;
+    fBar[2] = 1050;
   }
 
   if (fGeomType == 2 || fGeomType == 12) { // CORE    

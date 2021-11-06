@@ -60,6 +60,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
   fRadiatorL = fRun->getRadiatorL();
   fRadiatorW = fRun->getRadiatorW();
   fRadiatorH = fRun->getRadiatorH();
+  fGeomType = fRun->getGeometry();
 
   if (pdg != 0) {
     if (pdg == 2212) fPid = 4;
@@ -128,7 +129,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
       }
       if (fRunType == 0) vec.rotateZ(fRun->getTest1()); // 0.016 hits the middle of the BaBar bar
     }
-    if (fRun->getGeometry() < 2)  ypos = 0.5 * fRadiatorW;
+    if (fGeomType < 2)  ypos = 0.5 * fRadiatorW;
     fParticleGun->SetParticlePosition(G4ThreeVector(0, ypos, zpos));
     fParticleGun->SetParticleMomentumDirection(vec);
   }
@@ -137,7 +138,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
 
     double barShift = 0.5 * fRadiatorW; // 390/12./2;
     if (fRun->getEv() == 1) barShift = 0.5 * 35;
-    if (fRun->getGeometry() == 2) barShift = 0;
+    if (fGeomType == 2) barShift = 0;
 
     fParticleGun->SetParticlePosition(G4ThreeVector(0, barShift, 0.5 * fRadiatorL - 0.5));
     G4ThreeVector vec(0, 0, -1);
