@@ -220,6 +220,7 @@ void PrtLutReco::Run(int start, int end) {
   timeCut = frun->getTimeCut() ;
   trackRes = frun->getBeamSize();
   double radiatorL = frun->getRadiatorL();
+  std::cout << "trackRes " << trackRes << std::endl;
   
   int nEvents = fChain->GetEntries();
   if (end == 0) end = nEvents;
@@ -268,7 +269,7 @@ void PrtLutReco::Run(int start, int end) {
     // track smearing
     TVector3 init = rotatedmom;
     rotatedmom.SetTheta(rotatedmom.Theta() + gRandom->Gaus(0, trackRes));
-    rotatedmom.Rotate(gRandom->Uniform(0, TMath::Pi()), init);
+    rotatedmom.Rotate(gRandom->Uniform(0, TMath::TwoPi()), init);
 
     for (int h = 0; h < 5; h++)
       if (fSigma[h] < 0.003) fSigma[h] = 0.007;
@@ -314,6 +315,7 @@ void PrtLutReco::Run(int start, int end) {
       cd.RotateUz(unitdir2);
       
       lenz = 0.5 * radiatorL - fEvent->getPosition().Z();
+      
       double phi0 = cd.Phi();
       if (dirz < 0) {
         reflected = true;

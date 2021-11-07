@@ -117,16 +117,17 @@ int main(int argc, char **argv) {
       if (particle == "mix_pie") momentum = 1.2;
       else momentum = 6;
     }
-    if (trackres < 0) {
-      if (momentum < 1.5) trackres = 0.0022;
-      if (momentum >= 1.5) trackres = 0.0005;
-    }
     if (runtype == 1) {
       particle = "opticalphoton";
       momentum = 3.18e-09;
       geomTheta = "180";
       geomPhi = "0";
     }
+  }
+
+  if (runtype == 2) {
+    if (particle == "mix_pie") trackres = 0.0022;
+    else trackres = 0.0005;
   }
 
   if (outfile == "" && (runtype == 0 || runtype == 10)) outfile = "hits.root"; // simulation
