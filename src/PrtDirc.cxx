@@ -50,8 +50,8 @@ int main(int argc, char **argv) {
     lensId, particle = "mix_pip", testVal1, testVal2, testVal3, prismStepX, prismStepY,
             beamX, timeSigma, timeCut, mcpLayout;
   TString infile = "", lutfile = "", pdffile = "", outfile = "";
-  int geometry(0), firstevent(0), runtype(0), study(0), fid(0), verbose(0), batchmode(0);
-  double momentum(-1), beamZ, trackres(-1);
+  int geometry(-1), firstevent(0), runtype(0), study(0), fid(0), verbose(0), batchmode(0);
+  double momentum(-1), beamZ(20000), trackres(-1);
 
   G4long myseed = 0;
   for (G4int i = 1; i < argc; i = i + 2) {
@@ -103,28 +103,30 @@ int main(int argc, char **argv) {
   }
 
   // default values
-  if (geometry == 0 || geometry == 10) {
-    beamZ = -600;
-  }
-  if (geometry == 1 || geometry == 11) {
-    beamZ = -400;
-  }
-  if (geometry == 2 || geometry == 12) {
-    beamZ = 10;
-  }
-  if (trackres < 0) {
-    if (momentum < 1.5) trackres = 0.0022;
-    if (momentum >= 1.5) trackres = 0.0005;
-  }
-  if (momentum < 0) {
-    if (particle == "mix_pie") momentum = 1.2;
-    else momentum = 6;
-  }
-  if (runtype == 1) {
-    particle = "opticalphoton";
-    momentum = 3.18e-09;
-    geomTheta = "180";
-    geomPhi = "0";
+  if (runtype == 0 || runtype == 1) {
+    if (geometry == 0 || geometry == 10) {
+      beamZ = -600;
+    }
+    if (geometry == 1 || geometry == 11) {
+      beamZ = -400;
+    }
+    if (geometry == 2 || geometry == 12) {
+      beamZ = 10;
+    }
+    if (momentum < 0) {
+      if (particle == "mix_pie") momentum = 1.2;
+      else momentum = 6;
+    }
+    if (trackres < 0) {
+      if (momentum < 1.5) trackres = 0.0022;
+      if (momentum >= 1.5) trackres = 0.0005;
+    }
+    if (runtype == 1) {
+      particle = "opticalphoton";
+      momentum = 3.18e-09;
+      geomTheta = "180";
+      geomPhi = "0";
+    }
   }
 
   if (outfile == "" && (runtype == 0 || runtype == 10)) outfile = "hits.root"; // simulation
@@ -154,10 +156,10 @@ int main(int argc, char **argv) {
 
   run->setRunType(runtype);
 
-  run->setMomentum(momentum);
+  if (momentum > -1) run->setMomentum(momentum);
   if (physlist.size()) run->setPhysList(atoi(physlist));
   if (field.size()) run->setField(atoi(field));
-  run->setGeometry(geometry);
+  if (geometry > -1) run->setGeometry(geometry);
   if (ev.size()) run->setEv(atoi(ev));
   if (radiator.size()) run->setRadiator(atoi(radiator));
   if (lensId.size()) run->setLens(atoi(lensId));
@@ -171,7 +173,7 @@ int main(int argc, char **argv) {
   if (prismStepX.size()) run->setPrismStepX(atof(prismStepX));
   if (prismStepY.size()) run->setPrismStepY(atof(prismStepY));
   if (beamX.size()) run->setBeamX(atof(beamX));
-  run->setBeamZ(beamZ);
+  if (beamZ < 10000) run->setBeamZ(beamZ);
   if (timeSigma.size()) run->setTimeSigma(atof(timeSigma));
   if (timeCut.size()) run->setTimeCut(atof(timeCut));
   if (displayOpt.size()) PrtManager::Instance()->setDisplayOpt(atoi(displayOpt));
