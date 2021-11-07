@@ -165,7 +165,7 @@ int main(int argc, char **argv) {
   if (radiator.size()) run->setRadiator(atoi(radiator));
   if (lensId.size()) run->setLens(atoi(lensId));
   if (mcpLayout.size()) run->setPmtLayout(atoi(mcpLayout));
-  run->setBeamSize(trackres);
+  if (trackres > -1) run->setBeamSize(trackres);
   if (testVal1.size()) run->setTest1(atof(testVal1));
   if (testVal2.size()) run->setTest2(atof(testVal2));
   if (testVal3.size()) run->setTest3(atof(testVal3));
