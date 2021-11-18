@@ -557,6 +557,13 @@ void PrtLutReco::Run(int start, int end) {
         nph_gr[h] = f->GetParameter(1);
         nph_gr_err[h] = f->GetParError(1);
       }
+
+      hnph_ti[h]->Fit("gaus", "", "S", 5, 250);
+      f = hnph_ti[h]->GetFunction("gaus");
+      if (f) {
+        nph_ti[h] = f->GetParameter(1);
+        nph_ti_err[h] = f->GetParError(1);
+      }
     }
 
     TF1 *ff;
@@ -661,11 +668,13 @@ void PrtLutReco::Run(int start, int end) {
       sep_ti_err = sqrt(e1 * e1 + e2 * e2 + e3 * e3 + e4 * e4);
     }
 
-    std::cout << Form("%3d : SPR = %2.2f N = %2.2f +/- %2.2f", ft.pdg(fp1), spr[fp1], nph_gr[fp1],
-                      nph_gr_err[fp1])
+    std::cout << Form("%3d : SPR = %2.2f N_gr = %2.2f +/- %2.2f  N_ti = %2.2f +/- %2.2f",
+                      ft.pdg(fp1), spr[fp1], nph_gr[fp1], nph_gr_err[fp1], nph_ti[fp1],
+                      nph_ti_err[fp1])
               << std::endl;
-    std::cout << Form("%3d : SPR = %2.2f N = %2.2f +/- %2.2f", ft.pdg(fp2), spr[fp2], nph_gr[fp2],
-                      nph_gr_err[fp2])
+    std::cout << Form("%3d : SPR = %2.2f N_gr = %2.2f +/- %2.2f  N_ti = %2.2f +/- %2.2f",
+                      ft.pdg(fp2), spr[fp2], nph_gr[fp2], nph_gr_err[fp2], nph_ti[fp2],
+                      nph_ti_err[fp2])
               << std::endl;
     std::cout << Form("SEP GR = %2.2f +/- %2.2f ", sep_gr, sep_gr_err) << std::endl;
     std::cout << Form("SEP TI = %2.2f +/- %2.2f ", sep_ti, sep_ti_err) << std::endl;

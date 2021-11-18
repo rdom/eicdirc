@@ -10,10 +10,11 @@ void draw_hp(TString infile = "../build/hits.root") {
 
   while (t.next() && t.i() < 10000) {
     for (auto hit : t.event()->getHits()) {
+
       int ch = hit.getChannel();
       int pmt = hit.getPmt();
-      int pix = hit.getPixel();
-      double time = hit.getLeadTime();
+      int pix = hit.getpixel();
+      double time = hit.getleadtime();
 
       if (t.pid() == 2) t.fill_digi(pmt, pix);
     }
