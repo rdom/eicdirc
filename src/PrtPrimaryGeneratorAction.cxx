@@ -76,6 +76,8 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
     else if (pdg == 10003) fPid = 3;
     else if (pdg == 10004 && fPid != 2) fPid = 2;
     else if (pdg == 10004) fPid = 4;
+    else if (pdg == 10005 && fPid != 3) fPid = 3;
+    else if (pdg == 10005) fPid = 4;
     fParticleGun->SetParticleDefinition(fParticle[fPid]);
   } else {
     fParticleGun->SetParticleDefinition(fParticleOP);

@@ -86,6 +86,7 @@ example:
 	      "mix_pimu" 1 pion 1 muon mix
               "mix_pik"  1 pion 1 kaon mix
 	      "mix_pip"  1 pion 1 proton mix
+	      "mix_kp"   1 kaon 1 proton mix
 	      
 -p    particle momentum [GeV/c]
 

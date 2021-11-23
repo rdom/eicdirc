@@ -235,6 +235,7 @@ int main(int argc, char **argv) {
     if (particle == "mix_pimu") pdgid = 10001;
     if (particle == "mix_pik") pdgid = 10003;
     if (particle == "mix_pip") pdgid = 10004;
+    if (particle == "mix_kp") pdgid = 10005;
     PrtManager::Instance()->getRun()->setPid(pdgid);
   }
   
