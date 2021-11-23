@@ -115,7 +115,7 @@ int main(int argc, char **argv) {
     }
     if (momentum < 0) {
       if (particle == "mix_pie") momentum = 1.2;
-      if (particle == "mix_kp") momentum = 12;
+      else if (particle == "mix_kp") momentum = 12;
       else momentum = 6;
       trackres = 0.0005;
     }
