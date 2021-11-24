@@ -59,6 +59,10 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
   if(rpid == 10001)  fp1 = 1; // mu
   if(rpid == 10003)  fp1 = 3; // K
   if(rpid == 10004)  fp1 = 4; // p
+  if(rpid == 10005)  {
+    fp2 = 3;
+    fp1 = 4;
+  }
 
   fChain->SetBranchAddress("PrtEvent", &fEvent);
 
@@ -428,9 +432,11 @@ void PrtLutReco::Run(int start, int end) {
       if (isGoodHit_gr) {
         nsHits++;
         tnph_gr[pid]++;
-	if (pid == 2) ft.fill_digi(mcp,pix);
+        if (frun->getPid() == 10005) {
+          if (pid == 3) ft.fill_digi(mcp, pix);
+        } else if (pid == 2) ft.fill_digi(mcp, pix);
       }
-      
+
       isGoodHit_ti = true;
       if (fTimeImaging && isGoodHit_ti) {
 
