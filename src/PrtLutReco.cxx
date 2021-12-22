@@ -112,10 +112,11 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
 
   for (int h = 0; h < 5; h++) {
     TString la = ";ln L(K) - ln L(#pi);entries [#]";
-    fLnDiffGr[h] = new TH1F(Form("LnDiffGr_%d", h), la, 100, -range, range);
-    fLnDiffTi[h] = new TH1F(Form("LnDiffTi_%d", h), la, 100, -range, range);
+    fLnDiffGr[h] = new TH1F(Form("LnDiffGr_%d", h), la, 300, -range, range);
+    fLnDiffTi[h] = new TH1F(Form("LnDiffTi_%d", h), la, 300, -range, range);
     fLnDiffGr[h]->SetLineColor(ft.color(h));
     fLnDiffTi[h]->SetLineColor(ft.color(h));
+    fLnDiffTi[h]->SetMarkerColor(ft.color(h) + 1);
 
     for (int i = 0; i < fmaxch; i++) {
       fTime[h][i] = new TH1F(Form("h_%d_%d", h, i), "pdf;LE time [ns]; entries [#]", 2000, 0, 100);
@@ -211,7 +212,7 @@ void PrtLutReco::Run(int start, int end) {
                            nph_gr_err[5] = {0}, nph_ti[5] = {0}, nph_ti_err[5] = {0}, par5(0),
                            par6(0), timeRes(0), timeCut(0), ctimeRes(0), trackRes(0), test1(0),
                            test2(0), test3(0), sep_gr(0), sep_gr_err(0), sep_ti(0), sep_ti_err(0),
-                           total[5] = {0};
+                           total[5] = {0}, epi_rejection1(0), epi_rejection2(0), epi_rejection3(0);
 
   ft.set_palette(1);
   ft.create_maps();  
@@ -624,6 +625,12 @@ void PrtLutReco::Run(int start, int end) {
     sep_gr_err = sqrt(e1 * e1 + e2 * e2 + e3 * e3 + e4 * e4);
 
     if (fTimeImaging) {
+
+      epi_rejection1 = CalcRejection(fLnDiffTi[fp1],fLnDiffTi[fp2],0.90);
+      epi_rejection2 = CalcRejection(fLnDiffTi[fp1],fLnDiffTi[fp2],0.95);
+      epi_rejection3 = CalcRejection(fLnDiffTi[fp1],fLnDiffTi[fp2],0.98);
+
+      double epid = 0, pimisid = 0;
       if (fLnDiffTi[fp1]->Integral() > 10) {
         fLnDiffTi[fp1]->Fit("gaus", "Q");
         ff = fLnDiffTi[fp1]->GetFunction("gaus");
@@ -636,7 +643,7 @@ void PrtLutReco::Run(int start, int end) {
         }
 
         if (fp1 == 0 && mom < 1.5) { /// handle tails
-	  fLnDiffTi[fp1]->Fit("gaus", "S", "", m1 - 2.0 * s1, 500);
+          fLnDiffTi[fp1]->Fit("gaus", "S", "", m1 - 20.0 * s1, 500);
           ff = fLnDiffTi[fp1]->GetFunction("gaus");
           m2 = ff->GetParameter(1);
           s2 = ff->GetParameter(2);
@@ -656,7 +663,7 @@ void PrtLutReco::Run(int start, int end) {
           ff->SetLineColor(kBlack);
         }
         if (fp1 == 0 && mom < 1.5) { /// handle tails
-          fLnDiffTi[fp2]->Fit("gaus", "S", "", -500, m2 + 2.0 * s2);
+          fLnDiffTi[fp2]->Fit("gaus", "S", "", -500, m2 + 20.0 * s2);
           ff = fLnDiffTi[fp2]->GetFunction("gaus");
           m2 = ff->GetParameter(1);
           s2 = ff->GetParameter(2);
@@ -664,6 +671,20 @@ void PrtLutReco::Run(int start, int end) {
           ds2 = ff->GetParError(2);
         }
       }
+
+      // {
+      //   auto f1 = fLnDiffTi[fp1]->GetFunction("gaus");
+      //   auto f2 = fLnDiffTi[fp2]->GetFunction("gaus");
+      //   double mid = 0; // 0.5 * (f1->GetParameter(1) + f2->GetParameter(1));
+      //   epid = f1->Integral(mid, 300);
+      //   pimisid = f2->Integral(mid, 300);
+      //   epi_rejection = epid / pimisid;
+      //   std::cout << "F " << epid << " " << pimisid << std::endl;
+      // }
+
+      std::cout << "rejection " << epi_rejection1 << std::endl;
+      std::cout << "rejection " << epi_rejection2 << std::endl;
+      std::cout << "rejection " << epi_rejection3 << std::endl;
 
       sep_ti = (fabs(m1 - m2)) / (0.5 * (s1 + s2));
 
@@ -759,6 +780,9 @@ void PrtLutReco::Run(int start, int end) {
     tree.Branch("test3", &test3, "test3/D");
     tree.Branch("par5", &par5, "par5/D");
     tree.Branch("par6", &par6, "par6/D");
+    tree.Branch("epi_rejection1", &epi_rejection1, "epi_rejection1/D");
+    tree.Branch("epi_rejection2", &epi_rejection2, "epi_rejection2/D");
+    tree.Branch("epi_rejection3", &epi_rejection3, "epi_rejection3/D");
 
     tree.Fill();
     tree.Write();
@@ -808,6 +832,7 @@ void PrtLutReco::Run(int start, int end) {
       fLnDiffGr[fp2]->SetName(Form("s_%2.2f", sep_gr));
       fLnDiffGr[fp2]->SetTitle(Form("GR separation = %2.2f s.d.", sep_gr));
       TString lhtitle = "ln L(" + ft.lname(fp2) + ") - ln L(" + ft.lname(fp1) + ")";
+      if(fp1 == 0) lhtitle = "ln L(" + ft.lname(fp1) + ") - ln L(" + ft.lname(fp2) + ")";
       fLnDiffGr[fp2]->GetXaxis()->SetTitle(lhtitle);
 
       fLnDiffGr[fp2]->Draw();
@@ -818,16 +843,16 @@ void PrtLutReco::Run(int start, int end) {
         ft.add_canvas("lh_ti"+ nid, 800, 400);
         ft.normalize(fLnDiffTi[fp1], fLnDiffTi[fp2]);
 	fLnDiffTi[fp2]->SetTitle(Form("TI separation = %2.2f s.d.", sep_ti));	      
-        fLnDiffTi[fp2]->SetLineColor(kBlue + 1);
+        // fLnDiffTi[fp2]->SetLineColor(kBlue + 1);
         fLnDiffTi[fp2]->SetMarkerStyle(20);
         fLnDiffTi[fp2]->SetMarkerSize(0.85);
-        fLnDiffTi[fp2]->SetMarkerColor(kBlue + 1);
+        // fLnDiffTi[fp2]->SetMarkerColor(kBlue + 1);
         fLnDiffTi[fp2]->Draw("E");
 
-        fLnDiffTi[fp1]->SetLineColor(kRed + 1);
+        // fLnDiffTi[fp1]->SetLineColor(kRed + 1);
         fLnDiffTi[fp1]->SetMarkerStyle(20);
         fLnDiffTi[fp1]->SetMarkerSize(0.85);
-        fLnDiffTi[fp1]->SetMarkerColor(kRed + 1);
+        // fLnDiffTi[fp1]->SetMarkerColor(kRed + 1);
         fLnDiffTi[fp1]->SetName(Form("s_%2.2f", sep_ti));
         fLnDiffTi[fp1]->Draw("E same");
       }
@@ -1152,4 +1177,22 @@ void PrtLutReco::drawTheoryLines(double mom) {
   line1->SetY2(gPad->GetUymax());
   line1->SetLineColor(ft.color(fp1));
   line1->Draw();
+}
+
+double PrtLutReco::CalcRejection(TH1F *h1, TH1F *h2, double eff) {
+  auto ax1 = h1->GetXaxis();
+  auto ax2 = h2->GetXaxis();
+  double mid = 0;
+  double id_total = h1->Integral(ax1->FindBin(-200), ax1->FindBin(200));
+  int b;
+  for (b = -200; b < 200; b++) {
+    double id = h1->Integral(ax1->FindBin(-200), ax1->FindBin(b));
+    if (id / id_total > 1 - eff) break;
+  }
+  
+  double id = h1->Integral(ax1->FindBin(b), ax1->FindBin(300));
+  double misid = h2->Integral(ax2->FindBin(b), ax2->FindBin(300));
+  std::cout << " B " << b << " "<<  id << " " << misid << std::endl;
+
+  return id / misid;
 }

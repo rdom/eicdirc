@@ -42,6 +42,7 @@ class PrtLutReco {
   int FindPdg(double mom, double cangle);
   void FitRing(double &x0, double &y0, double &theta);
   double FindStartTime(PrtEvent *e);
+  double CalcRejection(TH1F *h1, TH1F *h2, double eff);
 
   PrtRun *frun;
   PrtTools ft;
