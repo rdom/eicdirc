@@ -1186,8 +1186,8 @@ double PrtLutReco::CalcRejection(TH1F *h1, TH1F *h2, double eff) {
   double mid = 0;
   double range = 450;
   double id_total = h1->Integral(ax1->FindBin(-range), ax1->FindBin(range));
-  int b;
-  for (b = -range; b < range; b++) {
+  double b;
+  for (b = -range; b < range; b += 0.5) {
     double id = h1->Integral(ax1->FindBin(-range), ax1->FindBin(b));
     if (id / id_total > 1 - eff) break;
   }
@@ -1195,6 +1195,6 @@ double PrtLutReco::CalcRejection(TH1F *h1, TH1F *h2, double eff) {
   double id = h1->Integral(ax1->FindBin(b), ax1->FindBin(range));
   double misid = h2->Integral(ax2->FindBin(b), ax2->FindBin(range));
   std::cout << " B " << b << " " << id << " " << misid << std::endl;
-
+  if(misid == 0) misid = 0.05; 
   return id / misid;
 }
