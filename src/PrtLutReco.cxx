@@ -106,14 +106,14 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
   if (fMomentum < 3) range = 400;
   if (fMomentum < 0.6) range = 500;
   if (fp1 == 0) {
-    range = 300;
+    range = 500;
     if (fMomentum >= 2) range = 100;
   }
 
   for (int h = 0; h < 5; h++) {
     TString la = ";ln L(K) - ln L(#pi);entries [#]";
-    fLnDiffGr[h] = new TH1F(Form("LnDiffGr_%d", h), la, 300, -range, range);
-    fLnDiffTi[h] = new TH1F(Form("LnDiffTi_%d", h), la, 300, -range, range);
+    fLnDiffGr[h] = new TH1F(Form("LnDiffGr_%d", h), la, 1000, -range, range);
+    fLnDiffTi[h] = new TH1F(Form("LnDiffTi_%d", h), la, 1000, -range, range);
     fLnDiffGr[h]->SetLineColor(ft.color(h));
     fLnDiffTi[h]->SetLineColor(ft.color(h));
     fLnDiffTi[h]->SetMarkerColor(ft.color(h) + 1);
@@ -1184,15 +1184,16 @@ double PrtLutReco::CalcRejection(TH1F *h1, TH1F *h2, double eff) {
   auto ax1 = h1->GetXaxis();
   auto ax2 = h2->GetXaxis();
   double mid = 0;
-  double id_total = h1->Integral(ax1->FindBin(-200), ax1->FindBin(200));
+  double range = 450;
+  double id_total = h1->Integral(ax1->FindBin(-range), ax1->FindBin(range));
   int b;
-  for (b = -200; b < 200; b++) {
-    double id = h1->Integral(ax1->FindBin(-200), ax1->FindBin(b));
+  for (b = -range; b < range; b++) {
+    double id = h1->Integral(ax1->FindBin(-range), ax1->FindBin(b));
     if (id / id_total > 1 - eff) break;
   }
 
-  double id = h1->Integral(ax1->FindBin(b), ax1->FindBin(300));
-  double misid = h2->Integral(ax2->FindBin(b), ax2->FindBin(300));
+  double id = h1->Integral(ax1->FindBin(b), ax1->FindBin(range));
+  double misid = h2->Integral(ax2->FindBin(b), ax2->FindBin(range));
   std::cout << " B " << b << " " << id << " " << misid << std::endl;
 
   return id / misid;
