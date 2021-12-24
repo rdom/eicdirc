@@ -1195,6 +1195,6 @@ double PrtLutReco::CalcRejection(TH1F *h1, TH1F *h2, double eff) {
   double id = h1->Integral(ax1->FindBin(b), ax1->FindBin(range));
   double misid = h2->Integral(ax2->FindBin(b), ax2->FindBin(range));
   std::cout << " B " << b << " " << id << " " << misid << std::endl;
-  if(misid == 0) misid = 0.05; 
+  if(misid == 0) misid = 0.001; 
   return id / misid;
 }
