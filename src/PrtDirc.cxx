@@ -26,6 +26,9 @@
 #include "PrtLutReco.h"
 #include "../../prttools/PrtTools.h"
 
+#include "G4PhysListFactory.hh"
+
+
 namespace {
 void PrintUsage() {
   G4cerr << " read README.md " << G4endl;
@@ -202,11 +205,16 @@ int main(int argc, char **argv) {
 
   G4Random::setTheSeed(myseed);
 
+  G4PhysListFactory *physListFactory = new G4PhysListFactory();
+  G4VUserPhysicsList *physicsList = physListFactory->GetReferencePhysList("QGSP_BERT");
+  // for(auto v : physListFactory->AvailablePhysLists()) std::cout << "v " << v << std::endl;
+  
   runManager->SetUserInitialization(new PrtDetectorConstruction());
   runManager->SetUserInitialization(new PrtPhysicsList());
   runManager->SetUserInitialization(new PrtActionInitialization());
+  // runManager->SetUserInitialization(physicsList);
   runManager->Initialize();
-
+  
   // Initialize visualization
   G4VisManager *visManager = new G4VisExecutive;
   visManager->Initialize();

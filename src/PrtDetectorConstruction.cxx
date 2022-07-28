@@ -876,6 +876,7 @@ void PrtDetectorConstruction::DefineMaterials() {
   // assign main materials
   if (fGeomType < 20) defaultMaterial = Vacuum;
   else defaultMaterial = Air; // Vacuum // material of world
+
   frontMaterial = CarbonFiber;
   BarMaterial = SiO2;        // material of all Bars, Quartz and Window
   OilMaterial = KamLandOil;  // material of volume 1,2,3,4

@@ -91,8 +91,9 @@ example:
 -p    particle momentum [GeV/c]
 
 -w    physical list
-                0    standard
+                0    standard EM
                 1    without multiple scattering and bremsstrahlung
+		2    standard EM with HAD (elastic/inelastic/absorption) 
                 10   monochromatic Cherenkov light
                 11   10 + 1 
 

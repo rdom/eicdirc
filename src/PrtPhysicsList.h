@@ -28,6 +28,7 @@ class PrtPhysicsList : public G4VUserPhysicsList {
   // these methods Construct physics processes and register them
   void ConstructDecay();
   void ConstructEM();
+  void ConstructHad();
   void ConstructOp();
 
   // for the Messenger
