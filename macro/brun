@@ -34,7 +34,7 @@ echo $tseed
 
 
 
-for i in {0..9}; do ../build/eicdirc -seed $tseed$i -o h_b$i.root  -r 0 -theta 45 -x pi+ -p 6 -w 2 -g 1 -e 1000 -b 1  > l_b$i.log & done
+for i in {0..19}; do ../build/eicdirc -seed $tseed$i -o h_b$i.root  -r 0 -theta 45 -x pi+ -p 6 -w 2 -g 1 -e 1000 -b 1  > l_b$i.log & done
 
 sleep 1
 
@@ -51,4 +51,4 @@ done
 
 sleep 2
 
-hadd -f hits_wt.root h_b*.root
+hadd -f hits_w2tt.root h_b*.root
