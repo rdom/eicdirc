@@ -118,8 +118,8 @@ G4ClassificationOfNewTrack PrtStackingAction::ClassifyNewTrack(const G4Track *aT
 
   if (fRunType == 0 || fRunType == 5 || fRunType == 10) { // for the simulation run
 
-    // if (aTrack->GetDefinition()->GetParticleName() == "opticalphoton" && aTrack->GetParentID() != 1)
-    //   return fKill;
+    if (aTrack->GetDefinition()->GetParticleName() == "opticalphoton" && aTrack->GetParentID() != 1)
+      return fKill;
 
     G4String ParticleName =
       aTrack->GetDynamicParticle()->GetParticleDefinition()->GetParticleName();
