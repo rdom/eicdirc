@@ -285,8 +285,8 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   if (fLensId == 3) { // 3-component spherical lens
     double lensMinThikness = 2;
 
-    double r1 = fTest1;
-    double r2 = fTest2;
+    double r1 = 0;// = fTest1;
+    double r2 = 0;// = fTest2;
 
     r1 = (r1 == 0) ? 47.8 : r1;
     r2 = (r2 == 0) ? 29.1 : r2;
@@ -662,27 +662,33 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     lMcp = new G4LogicalVolume(gMcp, BarMaterial, "lMcp", 0, 0, 0);
 
     // double pixSize = 6*mm;
-    fNpix1 = 32; // fMcpActive[1]/pixSize-1;
-    fNpix2 = 32; // fMcpActive[1]/pixSize-1;
+    // fNpix1 = 32; // fMcpActive[1]/pixSize-1;
+    // fNpix2 = 32; // fMcpActive[1]/pixSize-1;
 
-    fNpix1 = 16;
-    fNpix2 = 16;
+    // fNpix1 = fTest1;
+    // fNpix2 = fTest2;
 
-    std::cout << "fNpix1=" << fNpix1 << " fNpix1=" << fNpix1 << std::endl;
+    fNpix1 = sqrt(fRun->getNpix());
+    fNpix2 = sqrt(fRun->getNpix());
+
+    // fNpix1 = (int) fMcpActive[1] / fTest1 ;
+    // fNpix2 = (int) fMcpActive[1] / fTest1 ;
+
+    std::cout << "fNpix1=" << fNpix1 << " fNpix2=" << fNpix2<< " size = "<<fMcpActive[0] / fNpix1<< std::endl;
 
     // The MCP Pixel
     G4Box *gPixel = new G4Box("gPixel", 0.5 * fMcpActive[0] / fNpix1, 0.5 * fMcpActive[1] / fNpix2,
                               fMcpActive[2] / 16.);
     lPixel = new G4LogicalVolume(gPixel, BarMaterial, "lPixel", 0, 0, 0);
 
-    for (int i = 0; i < fNpix2; i++) {
-      for (int j = 0; j < fNpix1; j++) {
+    for (int i = 0; i < fNpix1; i++) {
+      for (int j = 0; j < fNpix2; j++) {
         double shiftx =
           i * (fMcpActive[0] / fNpix1) - fMcpActive[0] / 2. + 0.5 * fMcpActive[0] / fNpix1;
         double shifty =
           j * (fMcpActive[1] / fNpix2) - fMcpActive[1] / 2. + 0.5 * fMcpActive[1] / fNpix2;
         new G4PVPlacement(0, G4ThreeVector(shiftx, shifty, 0), lPixel, "wPixel", lMcp, false,
-                          fNpix2 * i + j);
+                          fNpix1 * i + j);
       }
     }
 

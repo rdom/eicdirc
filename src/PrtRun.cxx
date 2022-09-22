@@ -12,6 +12,11 @@ void PrtRun::setPmtLayout(Int_t v) {
     fNpmt = 12;
     fNpix = 256;
   }
+  if (v == 2038) {
+    fNpmt = 24;
+    fNpix = 64;
+    v = 2031;
+  }
   fPmtLayout = v;
 }
 

@@ -43,7 +43,7 @@ target_link_libraries(Prt ${ROOT_LIBRARIES} -lSpectrum -lHistPainter)
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4 libraries
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 add_executable(eicdirc ${sources})
 target_link_libraries(eicdirc -lGLU ${Geant4_LIBRARIES} Prt)
 # target_link_libraries(eicdirc -lGLU ${Geant4_LIBRARIES} ${ROOT_LIBRARIES} Prt -lSpectrum -lHistPainter)
