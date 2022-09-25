@@ -112,8 +112,8 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
 
   for (int h = 0; h < 5; h++) {
     TString la = ";ln L(K) - ln L(#pi);entries [#]";
-    fLnDiffGr[h] = new TH1F(Form("LnDiffGr_%d", h), la, 1000, -range, range);
-    fLnDiffTi[h] = new TH1F(Form("LnDiffTi_%d", h), la, 1000, -range, range);
+    fLnDiffGr[h] = new TH1F(Form("LnDiffGr_%d", h), la, 400, -range, range);
+    fLnDiffTi[h] = new TH1F(Form("LnDiffTi_%d", h), la, 400, -range, range);
     fLnDiffGr[h]->SetLineColor(ft.color(h));
     fLnDiffTi[h]->SetLineColor(ft.color(h));
     fLnDiffTi[h]->SetMarkerColor(ft.color(h) + 1);
