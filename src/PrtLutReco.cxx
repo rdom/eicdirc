@@ -142,7 +142,8 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
     fPdfPath = infile;
     fPdfPath.ReplaceAll(".root", ".pdf.root");
   }
-
+  std::cout << "timeRes pdf " << timeRes << std::endl;
+  
   if (fMethod == 2) {
     if (!gSystem->AccessPathName(fPdfPath)) {
       std::cout << "--- reading  " << fPdfPath << std::endl;
@@ -226,7 +227,7 @@ void PrtLutReco::Run(int start, int end) {
   timeCut = frun->getTimeCut();
   trackRes = frun->getBeamSize();
   double radiatorL = frun->getRadiatorL();
-  std::cout << "trackRes " << trackRes << std::endl;
+  std::cout << "trackRes " << trackRes << " timeRes " << timeRes << std::endl;
 
   int nEvents = fChain->GetEntries();
   if (end == 0) end = nEvents;

@@ -119,6 +119,8 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
 
   fBar[0] = 17; //fTest1;
   fBar[1] = (fPrizm[0] - (fNBar - 1) * fBarsGap) / fNBar;
+  std::cout << "bar width " << fBar[1]<< std::endl;
+  
 
   fMirror[0] = fBar[0] + 1;
   fMirror[1] = fPrizm[0];
