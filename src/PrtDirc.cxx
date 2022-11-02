@@ -186,48 +186,6 @@ int main(int argc, char **argv) {
 
   PrtManager::Instance(outfile, run);
 
-  std::cout << "=== Run info:  " << std::endl << run->getInfo() << std::endl;
-
-  if (runtype == 2 || runtype == 3 || runtype == 4) {
-    PrtLutReco *reco = new PrtLutReco(infile, lutfile, pdffile, verbose);
-    reco->Run(firstevent, atoi(events));
-    return 0;
-  }
-
-  // Choose the Random engine
-  G4Random::setTheEngine(new CLHEP::RanecuEngine);
-#ifdef G4MULTITHREADED
-  G4MTRunManager *runManager = new G4MTRunManager;
-  if (nThreads > 0) runManager->SetNumberOfThreads(nThreads);
-#else
-  G4RunManager *runManager = new G4RunManager;
-#endif
-
-  G4Random::setTheSeed(myseed);
-
-  G4PhysListFactory *physListFactory = new G4PhysListFactory();
-  G4VUserPhysicsList *physicsList = physListFactory->GetReferencePhysList("QGSP_BERT");
-  // for(auto v : physListFactory->AvailablePhysLists()) std::cout << "v " << v << std::endl;
-  
-  runManager->SetUserInitialization(new PrtDetectorConstruction());
-  runManager->SetUserInitialization(new PrtPhysicsList());
-  runManager->SetUserInitialization(new PrtActionInitialization());
-  // runManager->SetUserInitialization(physicsList);
-  runManager->Initialize();
-  
-  // Initialize visualization
-  G4VisManager *visManager = new G4VisExecutive;
-  visManager->Initialize();
-
-  // Get the pointer to the User Interface manager
-  G4UImanager *UImanager = G4UImanager::GetUIpointer();
-
-  if (macro.size()) {
-    UImanager->ApplyCommand("/control/execute " + macro);
-  } else {
-    // UImanager->ApplyCommand("/control/execute ../prt.mac");
-  }
-
   if (particle.size()) {
     int pdgid = 0;
     if (particle == "proton") pdgid = 2212;
@@ -247,9 +205,52 @@ int main(int argc, char **argv) {
     if (particle == "mix_kp") pdgid = 10005;
     PrtManager::Instance()->getRun()->setPid(pdgid);
   }
+
+  std::cout << "=== Run info:  " << std::endl << run->getInfo() << std::endl;
+
+  if (runtype == 2 || runtype == 3 || runtype == 4) {
+    PrtLutReco *reco = new PrtLutReco(infile, lutfile, pdffile, verbose);
+    reco->Run(firstevent, atoi(events));
+    return 0;
+  }
+
+  // Choose the Random engine
+  G4Random::setTheEngine(new CLHEP::RanecuEngine);
+#ifdef G4MULTITHREADED
+  G4MTRunManager *runManager = new G4MTRunManager;
+  if (nThreads > 0) runManager->SetNumberOfThreads(nThreads);
+#else
+  G4RunManager *runManager = new G4RunManager;
+#endif
+ 
+  G4Random::setTheSeed(myseed);
+
+  // G4PhysListFactory *physListFactory = new G4PhysListFactory();
+  // G4VUserPhysicsList *physicsList = physListFactory->GetReferencePhysList("QGSP_BERT");
+  // for(auto v : physListFactory->AvailablePhysLists()) std::cout << "v " << v << std::endl;
   
+  runManager->SetUserInitialization(new PrtDetectorConstruction());
+  runManager->SetUserInitialization(new PrtPhysicsList());
+  runManager->SetUserInitialization(new PrtActionInitialization());
+  // runManager->SetUserInitialization(physicsList);
+  runManager->Initialize();
+
+ 
+  // Initialize visualization
+  G4VisManager *visManager = new G4VisExecutive;
+  visManager->Initialize();
+
+  // Get the pointer to the User Interface manager
+  G4UImanager *UImanager = G4UImanager::GetUIpointer();
+
+  if (macro.size()) {
+    UImanager->ApplyCommand("/control/execute " + macro);
+  } else {
+    // UImanager->ApplyCommand("/control/execute ../prt.mac");
+  }
+
   if (batchmode == 1) { // batch mode
-    UImanager->ApplyCommand("/run/beamOn " + events);
+    UImanager->ApplyCommand("/run/beamOn " + events);    
   } else { // UI session for interactive mode
 
     G4UIExecutive *ui = new G4UIExecutive(argc, argv, session);

@@ -31,9 +31,9 @@ PrtManager::PrtManager(TString filename, PrtRun *run) {
     fTree->Branch("LUT", &fLut, 256000, 2);
     TClonesArray &fLuta = *fLut;
 
-    for (Long64_t i = 0; i < fRun->getNpmt()*fRun->getNpix(); i++) {
+    for (Long64_t i = 0; i < fRun->getNpmt() * 64 * 64; i++) { // fRun->getNpix()
       new ((fLuta)[i]) PrtLutNode(i);
-    }        
+    }
   }
 
   fnX1 = TVector3(1, 0, 0);
