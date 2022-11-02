@@ -120,7 +120,6 @@ void PrtPhysicsList::ConstructEM() {
     G4ParticleDefinition *particle = particleIterator->value();
     G4ProcessManager *pmanager = particle->GetProcessManager();
     G4String particleName = particle->GetParticleName();
-    std::cout << "particleName " << particleName << std::endl;
 
     if (particleName == "gamma") {
       // gamma

@@ -667,17 +667,19 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     // fNpix1 = 32; // fMcpActive[1]/pixSize-1;
     // fNpix2 = 32; // fMcpActive[1]/pixSize-1;
 
-    // fNpix1 = fTest1;
-    // fNpix2 = fTest2;
+    fNpix1 = fTest1;
+    fNpix2 = fTest1;
+    fRun->setTest2(fMcpActive[0] / fNpix1);
+    fRun->setNpix(fNpix1 * fNpix1);
 
-    fNpix1 = sqrt(fRun->getNpix());
-    fNpix2 = sqrt(fRun->getNpix());
+    // fNpix1 = sqrt(fRun->getNpix());
+    // fNpix2 = sqrt(fRun->getNpix());
 
     // fNpix1 = (int) fMcpActive[1] / fTest1 ;
     // fNpix2 = (int) fMcpActive[1] / fTest1 ;
 
     std::cout << "fNpix1=" << fNpix1 << " fNpix2=" << fNpix2<< " size = "<<fMcpActive[0] / fNpix1<< std::endl;
-
+    
     // The MCP Pixel
     G4Box *gPixel = new G4Box("gPixel", 0.5 * fMcpActive[0] / fNpix1, 0.5 * fMcpActive[1] / fNpix2,
                               fMcpActive[2] / 16.);
