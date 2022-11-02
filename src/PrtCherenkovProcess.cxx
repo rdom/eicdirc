@@ -97,7 +97,7 @@ G4VParticleChange* PrtCherenkovProcess::PostStepDoIt(const G4Track& aTrack, cons
 	// G4double Pmax = Rindex->GetMaxLowEdgeEnergy();
 	
 	// //d/ monochromatic photons
-	G4double Pmin = (Rindex->GetMinLowEdgeEnergy()+Rindex->GetMaxLowEdgeEnergy())/2.;
+	G4double Pmin = 3.18 * 1E-6; //(Rindex->GetMinLowEdgeEnergy()+Rindex->GetMaxLowEdgeEnergy())/2.;
 	G4double Pmax = Pmin;
 
 	G4double dp = Pmax - Pmin;
@@ -134,10 +134,15 @@ G4VParticleChange* PrtCherenkovProcess::PostStepDoIt(const G4Track& aTrack, cons
 			cosTheta = BetaInverse / sampledRI;  
 
 			sin2Theta = (1.0 - cosTheta)*(1.0 + cosTheta);
-			rand = G4UniformRand();	
+			rand = G4UniformRand();
 
+			if (cosTheta > 1) {
+			  std::cout << "Warning - PrtCherenkovProcess:  cosTheta " << cosTheta << std::endl;
+			  return pParticleChange;
+			}
+			
 		} while (rand*maxSin2 > sin2Theta);
-
+		
 		// Generate random position of photon on cone surface 
 		// defined by Theta 
 
