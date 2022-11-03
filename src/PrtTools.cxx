@@ -82,7 +82,6 @@ bool PrtTools::init_run(TString in, int bdigi, TString savepath, int setupid) {
 
 void PrtTools::init_digi() {
   int nrow = sqrt(_npix);
-
   for (int m = 0; m < _npmt; m++) {
     if (_hdigi[m]) {
       _hdigi[m]->Reset("M");
@@ -90,8 +89,10 @@ void PrtTools::init_digi() {
       _hdigi[m] = new TH2F(Form("pmt%d", m), Form("pmt%d", m), nrow, 0, nrow, nrow, 0, nrow);
       _hdigi[m]->SetStats(0);
       _hdigi[m]->SetTitle(0);
-      _hdigi[m]->GetXaxis()->SetNdivisions(((nrow > 10) ? 20 : 10));
-      _hdigi[m]->GetYaxis()->SetNdivisions(((nrow > 10) ? 20 : 10));
+      // _hdigi[m]->GetXaxis()->SetNdivisions(((nrow > 10) ? 20 : 10));
+      // _hdigi[m]->GetYaxis()->SetNdivisions(((nrow > 10) ? 20 : 10));
+      _hdigi[m]->GetXaxis()->SetNdivisions(nrow);
+      _hdigi[m]->GetYaxis()->SetNdivisions(nrow);
       _hdigi[m]->GetXaxis()->SetLabelOffset(100);
       _hdigi[m]->GetYaxis()->SetLabelOffset(100);
       _hdigi[m]->GetXaxis()->SetTickLength(1);

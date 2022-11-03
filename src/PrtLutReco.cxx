@@ -127,14 +127,15 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
   if (!gSystem->AccessPathName(lutfile)) {
     std::cout << "--- reading  " << lutfile << std::endl;
     fFile = new TFile(lutfile);
-    fTree = (TTree *)fFile->Get("prtlut");
+    fTree = (TTree *)fFile->Get("prtlut");   
     fLut = new TClonesArray("PrtLutNode");
     fTree->SetBranchAddress("LUT", &fLut);
+    
     fTree->GetEntry(0);
   } else {
     std::cout << "--- lut file not found  " << lutfile << std::endl;
   }
-
+  
   fTimeImaging = (fMethod == 4) ? true : false;
 
   // read pdf
@@ -632,7 +633,6 @@ void PrtLutReco::Run(int start, int end) {
       epi_rejection2 = CalcRejection(fLnDiffTi[fp1], fLnDiffTi[fp2], 0.95);
       epi_rejection3 = CalcRejection(fLnDiffTi[fp1], fLnDiffTi[fp2], 0.98);
 
-      double epid = 0, pimisid = 0;
       if (fLnDiffTi[fp1]->Integral() > 10) {
         fLnDiffTi[fp1]->Fit("gaus", "Q");
         ff = fLnDiffTi[fp1]->GetFunction("gaus");
@@ -674,6 +674,7 @@ void PrtLutReco::Run(int start, int end) {
         }
       }
 
+      // double epid = 0, pimisid = 0;
       // {
       //   auto f1 = fLnDiffTi[fp1]->GetFunction("gaus");
       //   auto f2 = fLnDiffTi[fp2]->GetFunction("gaus");
@@ -956,7 +957,8 @@ void PrtLutReco::Run(int start, int end) {
       fDiff->SetStats(0);
       fDiff->Draw("colz");
     }
-
+    std::cout << "fCorrFile " << fCorrFile << std::endl;
+    
     TString filedir = fCorrFile;
     if (filedir.Contains("/")) {
       filedir.Remove(filedir.Last('/'));
@@ -1184,7 +1186,6 @@ void PrtLutReco::drawTheoryLines(double mom) {
 double PrtLutReco::CalcRejection(TH1F *h1, TH1F *h2, double eff) {
   auto ax1 = h1->GetXaxis();
   auto ax2 = h2->GetXaxis();
-  double mid = 0;
   double range = 450;
   double id_total = h1->Integral(ax1->FindBin(-range), ax1->FindBin(range));
   double b;
