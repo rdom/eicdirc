@@ -63,7 +63,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
     fp2 = 3;
     fp1 = 4;
   }
-
+ 
   fChain->SetBranchAddress("PrtEvent", &fEvent);
 
   fFit = new TF1("fgaus", "[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +[3]", 0.35, 0.9);
@@ -117,7 +117,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
     fLnDiffGr[h]->SetLineColor(ft.color(h));
     fLnDiffTi[h]->SetLineColor(ft.color(h));
     fLnDiffTi[h]->SetMarkerColor(ft.color(h) + 1);
-
+ 
     for (int i = 0; i < fmaxch; i++) {
       fTime[h][i] = new TH1F(Form("h_%d_%d", h, i), "pdf;LE time [ns]; entries [#]", 2000, 0, 100);
     }
@@ -500,7 +500,7 @@ void PrtLutReco::Run(int start, int end) {
         }
       }
     }
-
+ 
     double sum_gr = sum1 - sum2;
 
     if (sum_gr != 0) fLnDiffGr[pid]->Fill(sum_gr);

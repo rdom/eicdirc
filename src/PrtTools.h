@@ -151,8 +151,8 @@ class PrtTools {
   // mutators
   void set_path(TString v) { _savepath = v; }
 
-  array<int, 10000> map_pmt{}, map_pix{}, map_row{}, map_col{}, map_tdc{};
-  array<array<int, 1000>, 100> map_pmtpix{};
+  array<int, 100000> map_pmt{}, map_pix{}, map_row{}, map_col{}, map_tdc{};
+  array<array<int, 4096>, 100> map_pmtpix{};
 
  private:
   TChain *_chain;

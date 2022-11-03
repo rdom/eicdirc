@@ -752,10 +752,11 @@ void PrtTools::create_maps(int pmtlayout) {
       map_tdc[dec] = i;
     }
   }
-  
-  for (int ch = 0; ch < _maxch; ch++) {
+
+  for (int ch = 0; ch < _maxdircch; ch++) {
     int pmt = ch / _npix;
     int pix = ch % _npix;
+
     map_pmtpix[pmt][pix] = ch;
     
     int col = pix / 2 - 8 * (pix / 16);
