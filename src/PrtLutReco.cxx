@@ -109,7 +109,10 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
     range = 500;
     if (fMomentum >= 2) range = 100;
   }
+  if(frun->getTest1() >= 16) range = 500;
+  if(frun->getLens() == 10) range = 500;
 
+ 
   for (int h = 0; h < 5; h++) {
     TString la = ";ln L(K) - ln L(#pi);entries [#]";
     fLnDiffGr[h] = new TH1F(Form("LnDiffGr_%d", h), la, 400, -range, range);
