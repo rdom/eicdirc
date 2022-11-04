@@ -20,6 +20,7 @@ PrtPixelSD::PrtPixelSD(const G4String &name, const G4String &hitsCollectionName)
 
   fRunType = PrtManager::Instance()->getRun()->getRunType();
   fEvType = PrtManager::Instance()->getRun()->getEv();
+  fLensType = PrtManager::Instance()->getRun()->getLens();
   fMcpLayout = PrtManager::Instance()->getRun()->getPmtLayout();
   int npmt = PrtManager::Instance()->getRun()->getNpmt();
   int npix = PrtManager::Instance()->getRun()->getNpix();
@@ -104,8 +105,8 @@ G4bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
       }
       if (phit->GetNormalId() > 0) {
         ++refl;
-        if (fEvType == 0 && refl == 1) continue;
-        pathId = pathId * 10 + phit->GetNormalId();
+	if (fEvType == 0 && refl == 1 && fLensType != 10) continue;
+	pathId = pathId * 10 + phit->GetNormalId();
       }
     }
   }

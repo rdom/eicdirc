@@ -2,6 +2,7 @@
 #include <G4TouchableHistory.hh>
 #include "PrtManager.h"
 
+
 PrtOpBoundaryProcess::PrtOpBoundaryProcess() : G4OpBoundaryProcess() {
   fLensId = PrtManager::Instance()->getRun()->getLens();
   fRunType = PrtManager::Instance()->getRun()->getRunType();
@@ -34,6 +35,7 @@ G4VParticleChange *PrtOpBoundaryProcess::PostStepDoIt(const G4Track &aTrack, con
       if (aStep.GetPreStepPoint()->GetPhysicalVolume()->GetName() != "wGlue")
         particleChange->ProposeTrackStatus(fStopAndKill);
       else aParticleChange.ProposePosition(ww.getX(), ww.getY(), lpoint.getZ() - 0.0005);
+      G4TransportationManager::GetTransportationManager()->GetNavigatorForTracking()->ComputeSafety(G4ThreeVector(ww.getX(), ww.getY(), lpoint.getZ() - 0.0005));
       return G4VDiscreteProcess::PostStepDoIt(aTrack, aStep);
     }
   }

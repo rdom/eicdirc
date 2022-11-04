@@ -22,7 +22,7 @@ class PrtPixelSD : public G4VSensitiveDetector {
   virtual void EndOfEvent(G4HCofThisEvent *hitCollection);
 
  private:
-  int fEvType, fMcpLayout, fRunType;
+  int fEvType, fLensType, fMcpLayout, fRunType;
   double fRadiatorL, fRadiatorW, fRadiatorH;
   int fMultHit[24][4096]; // 265
   int fMap_Mpc[24][4096];
