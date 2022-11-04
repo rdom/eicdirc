@@ -969,9 +969,11 @@ void PrtLutReco::Run(int start, int end) {
     } else filedir = "";
 
     ft.save_canvas(filedir + "reco", 0, 0, 0);
-
+    
     if (fVerbose > 2) ft.wait_primitive("lh_gr" + nid, "none");
   }
+
+  delete fTime; // abort now to save time
 }
 
 void PrtLutReco::FindPeak(double (&cangle)[5], double (&spr)[5]) {
