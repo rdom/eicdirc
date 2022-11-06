@@ -63,8 +63,6 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
     fp2 = 3;
     fp1 = 4;
   }
-  std::cout << rpid<< " fp1 " << fp1 << std::endl;
-  
  
   fChain->SetBranchAddress("PrtEvent", &fEvent);
 
@@ -151,26 +149,26 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
     fPdfPath.ReplaceAll(".root", ".pdf.root");
   }
   
-  if (fMethod == 2) {
-    if (!gSystem->AccessPathName(fPdfPath)) {
-      std::cout << "--- reading  " << fPdfPath << std::endl;
-      TFile pdfFile(fPdfPath);
-      int binfactor = (int)(timeRes / 50. + 0.1);
-      for (int h : {fp1, fp2}) {
-        for (int i = 0; i < fmaxch; i++) {
-          // auto hpdf = (TH1F *)pdfFile.Get(Form("h_%d_%d",h, i));
-          fTime[h][i] = (TH1F *)pdfFile.Get(Form("h_%d_%d", h, i));
-          fTime[h][i]->SetDirectory(0);
-          if (timeRes > 0) fTime[h][i]->Rebin(binfactor);
-          // if (sigma > 0) hpdf->Rebin(binfactor);
-          // // hpdf->Smooth();
-          // fPdf[h][i] = new TGraph(hpdf);
-          // fPdf[h][i]->SetBit(TGraph::kIsSortedX);
-          fTimeImaging = true;
-        }
-      }
-    } else fTimeImaging = false;
-  }
+  // if (fMethod == 2) {
+  //   if (!gSystem->AccessPathName(fPdfPath)) {
+  //     std::cout << "--- reading  " << fPdfPath << std::endl;
+  //     TFile pdfFile(fPdfPath);
+  //     int binfactor = (int)(timeRes / 50. + 0.1);
+  //     for (int h : {fp1, fp2}) {
+  //       for (int i = 0; i < fmaxch; i++) {
+  //         // auto hpdf = (TH1F *)pdfFile.Get(Form("h_%d_%d",h, i));
+  //         fTime[h][i] = (TH1F *)pdfFile.Get(Form("h_%d_%d", h, i));
+  //         fTime[h][i]->SetDirectory(0);
+  //         if (timeRes > 0) fTime[h][i]->Rebin(binfactor);
+  //         // if (sigma > 0) hpdf->Rebin(binfactor);
+  //         // // hpdf->Smooth();
+  //         // fPdf[h][i] = new TGraph(hpdf);
+  //         // fPdf[h][i]->SetBit(TGraph::kIsSortedX);
+  //         fTimeImaging = true;
+  //       }
+  //     }
+  //   } else fTimeImaging = false;
+  // }
 
   // read corrections
   fCorrFile = infile + "_corr.root";
@@ -286,7 +284,7 @@ void PrtLutReco::Run(int start, int end) {
     rotatedmom.Rotate(gRandom->Uniform(0, TMath::TwoPi()), init);
 
     for (int h = 0; h < 5; h++)
-      if (fSigma[h] < 0.003) fSigma[h] = 0.007;
+      // if (fSigma[h] < 0.003) fSigma[h] = 0.007;
 
     // if(fp1==0 || fp2==0){ //electron
     //   fSigma=0.0057;
