@@ -50,6 +50,7 @@ class PrtLutReco {
   int fDetectorID;
   double fMomentum, fBboxNum, fPipehAngle, fDphi, fBarPhi;
   int fMethod;
+  int fPhysList;
   int fRadiator;
   int fStudyId;
   bool fTimeImaging;

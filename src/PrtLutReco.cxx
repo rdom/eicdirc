@@ -52,6 +52,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
   fStudyId = frun->getStudy();
   fMomentum = frun->getMomentum();
   fRadiator = frun->getRadiator();
+  fPhysList = frun->getPhysList();
   double timeRes = frun->getTimeSigma() * 1000;
   int rpid = frun->getPid();
   fp2 = 2;                    // pi
@@ -110,10 +111,13 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
     range = 500;
     if (fMomentum >= 2) range = 100;
   }
+
+  // pixels scan tmp
   if(pixels >= 16) range = 500;
-  if(frun->getLens() == 10) range = 500;
+  if(frun->getLens() == 10) range = 1500;
   double range_gr = range;
-  if(pixels > 16) range_gr = 200; 
+  if(pixels < 30) range_gr = 200;
+  if(pixels >= 30) range_gr = 500;
  
   for (int h = 0; h < 5; h++) {
     TString la = ";ln L(K) - ln L(#pi);entries [#]";
@@ -149,26 +153,26 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
     fPdfPath.ReplaceAll(".root", ".pdf.root");
   }
   
-  // if (fMethod == 2) {
-  //   if (!gSystem->AccessPathName(fPdfPath)) {
-  //     std::cout << "--- reading  " << fPdfPath << std::endl;
-  //     TFile pdfFile(fPdfPath);
-  //     int binfactor = (int)(timeRes / 50. + 0.1);
-  //     for (int h : {fp1, fp2}) {
-  //       for (int i = 0; i < fmaxch; i++) {
-  //         // auto hpdf = (TH1F *)pdfFile.Get(Form("h_%d_%d",h, i));
-  //         fTime[h][i] = (TH1F *)pdfFile.Get(Form("h_%d_%d", h, i));
-  //         fTime[h][i]->SetDirectory(0);
-  //         if (timeRes > 0) fTime[h][i]->Rebin(binfactor);
-  //         // if (sigma > 0) hpdf->Rebin(binfactor);
-  //         // // hpdf->Smooth();
-  //         // fPdf[h][i] = new TGraph(hpdf);
-  //         // fPdf[h][i]->SetBit(TGraph::kIsSortedX);
-  //         fTimeImaging = true;
-  //       }
-  //     }
-  //   } else fTimeImaging = false;
-  // }
+  if (fMethod == 2) {
+    if (!gSystem->AccessPathName(fPdfPath)) {
+      std::cout << "--- reading  " << fPdfPath << std::endl;
+      TFile pdfFile(fPdfPath);
+      int binfactor = (int)(timeRes / 50. + 0.1);
+      for (int h : {fp1, fp2}) {
+        for (int i = 0; i < fmaxch; i++) {
+          // auto hpdf = (TH1F *)pdfFile.Get(Form("h_%d_%d",h, i));
+          fTime[h][i] = (TH1F *)pdfFile.Get(Form("h_%d_%d", h, i));
+          fTime[h][i]->SetDirectory(0);
+          if (timeRes > 0) fTime[h][i]->Rebin(binfactor);
+          // if (sigma > 0) hpdf->Rebin(binfactor);
+          // // hpdf->Smooth();
+          // fPdf[h][i] = new TGraph(hpdf);
+          // fPdf[h][i]->SetBit(TGraph::kIsSortedX);
+          fTimeImaging = true;
+        }
+      }
+    } else fTimeImaging = false;
+  }
 
   // read corrections
   fCorrFile = infile + "_corr.root";
@@ -396,7 +400,7 @@ void PrtLutReco::Run(int start, int end) {
 	  
           // if(tangle>TMath::PiOver2()) tangle = TMath::Pi()-tangle;
 
-          if (fabs(tdiff) < 2) tangle -= 0.008 * tdiff; // chromatic correction // 0.012
+          if (fabs(tdiff) < 2 && fPhysList < 10) tangle -= 0.008 * tdiff; // chromatic correction // 0.012
           if (fabs(tdiff) > timeCut + luttime * 0.035) continue;
           fDiff->Fill(hitTime, tdiff);
 
