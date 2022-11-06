@@ -63,6 +63,8 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
     fp2 = 3;
     fp1 = 4;
   }
+  std::cout << rpid<< " fp1 " << fp1 << std::endl;
+  
  
   fChain->SetBranchAddress("PrtEvent", &fEvent);
 
@@ -101,6 +103,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
                            Form("fHistMcp_%d;#theta_{C} [rad];entries [#]", i), 50, -0.05, 0.05);
   }
 
+  double pixels = frun->getTest1();
   double range = 100;
   if (fMomentum < 5) range = 200;
   if (fMomentum < 3) range = 400;
@@ -109,13 +112,14 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
     range = 500;
     if (fMomentum >= 2) range = 100;
   }
-  if(frun->getTest1() >= 16) range = 500;
+  if(pixels >= 16) range = 500;
   if(frun->getLens() == 10) range = 500;
-
+  double range_gr = range;
+  if(pixels > 16) range_gr = 200; 
  
   for (int h = 0; h < 5; h++) {
     TString la = ";ln L(K) - ln L(#pi);entries [#]";
-    fLnDiffGr[h] = new TH1F(Form("LnDiffGr_%d", h), la, 400, -range, range);
+    fLnDiffGr[h] = new TH1F(Form("LnDiffGr_%d", h), la, 400, -range_gr, range_gr);
     fLnDiffTi[h] = new TH1F(Form("LnDiffTi_%d", h), la, 400, -range, range);
     fLnDiffGr[h]->SetLineColor(ft.color(h));
     fLnDiffTi[h]->SetLineColor(ft.color(h));
@@ -146,7 +150,6 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
     fPdfPath = infile;
     fPdfPath.ReplaceAll(".root", ".pdf.root");
   }
-  std::cout << "timeRes pdf " << timeRes << std::endl;
   
   if (fMethod == 2) {
     if (!gSystem->AccessPathName(fPdfPath)) {
@@ -250,7 +253,7 @@ void PrtLutReco::Run(int start, int end) {
     fChain->GetEntry(ievent);
     theta = (fEvent->getMomentum().Angle(TVector3(0, 0, -1))) * TMath::RadToDeg();
     double mome = fEvent->getMomentum().Mag() / 1000.;
-    int pid = fEvent->getPid();
+    int pid = fEvent->getPid();    
     int tnph_gr[5] = {0}, tnph_ti[5] = {0};
 
     if (ievent % 1000 == 0)
@@ -392,6 +395,7 @@ void PrtLutReco::Run(int start, int end) {
           if (ipath) fHistDiff[2]->Fill(tdiff);
 
           tangle = rotatedmom.Angle(dir) + fCorr[mcp]; // 45;
+	  
           // if(tangle>TMath::PiOver2()) tangle = TMath::Pi()-tangle;
 
           if (fabs(tdiff) < 2) tangle -= 0.008 * tdiff; // chromatic correction // 0.012
@@ -926,7 +930,7 @@ void PrtLutReco::Run(int start, int end) {
           if (fHistMcp[i]->GetEntries() < 20) continue;
           if (fVerbose > 2) ft.add_canvas(Form("r_tangle_%d", i), 800, 400);
 
-          corr = -ft.fit(fHistMcp[i], 0.008, 20, 0.01).X();
+          corr = -ft.fit(fHistMcp[i], 0.007, 20, 0.01).X();
           // fHistMcp[i]->Fit("gaus","MQ","",-0.01,0.01).X();
           // auto f = fHistMcp[i]->GetFunction("gaus");
           // if(f)
@@ -989,7 +993,7 @@ void PrtLutReco::FindPeak(double (&cangle)[5], double (&spr)[5]) {
 
       fFit->SetParameters(100, cangle[h], 0.005, 10); // peak
       fFit->SetParameter(2, 0.005);                   // width
-      fFit->FixParameter(2, 0.008);                   // width
+      fFit->FixParameter(2, 0.005);                   // width
       hthetac[h]->Fit("fgaus", "Q", "", cangle[h] - 3.5 * fSigma[h], cangle[h] + 3.5 * fSigma[h]);
       fFit->ReleaseParameter(2); // width
       hthetac[h]->Fit("fgaus", "MQ", "", cangle[h] - 3.5 * fSigma[h], cangle[h] + 3.5 * fSigma[h]);
