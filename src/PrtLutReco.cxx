@@ -99,7 +99,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
 
   for (int i = 0; i < 28; i++) {
     fHistMcp[i] = new TH1F(Form("fHistMcp_%d", i),
-                           Form("fHistMcp_%d;#theta_{C} [rad];entries [#]", i), 50, -0.05, 0.05);
+                           Form("fHistMcp_%d;#theta_{C} [rad];entries [#]", i), 200, -0.05, 0.05);
   }
 
   double pixels = frun->getTest1();
@@ -154,26 +154,26 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
     fPdfPath.ReplaceAll(".root", ".pdf.root");
   }
   
-  if (fMethod == 2) {
-    if (!gSystem->AccessPathName(fPdfPath)) {
-      std::cout << "--- reading  " << fPdfPath << std::endl;
-      TFile pdfFile(fPdfPath);
-      int binfactor = (int)(timeRes / 50. + 0.1);
-      for (int h : {fp1, fp2}) {
-        for (int i = 0; i < fmaxch; i++) {
-          // auto hpdf = (TH1F *)pdfFile.Get(Form("h_%d_%d",h, i));
-          fTime[h][i] = (TH1F *)pdfFile.Get(Form("h_%d_%d", h, i));
-          fTime[h][i]->SetDirectory(0);
-          if (timeRes > 0) fTime[h][i]->Rebin(binfactor);
-          // if (sigma > 0) hpdf->Rebin(binfactor);
-          // // hpdf->Smooth();
-          // fPdf[h][i] = new TGraph(hpdf);
-          // fPdf[h][i]->SetBit(TGraph::kIsSortedX);
-          fTimeImaging = true;
-        }
-      }
-    } else fTimeImaging = false;
-  }
+  // if (fMethod == 2) {
+  //   if (!gSystem->AccessPathName(fPdfPath)) {
+  //     std::cout << "--- reading  " << fPdfPath << std::endl;
+  //     TFile pdfFile(fPdfPath);
+  //     int binfactor = (int)(timeRes / 50. + 0.1);
+  //     for (int h : {fp1, fp2}) {
+  //       for (int i = 0; i < fmaxch; i++) {
+  //         // auto hpdf = (TH1F *)pdfFile.Get(Form("h_%d_%d",h, i));
+  //         fTime[h][i] = (TH1F *)pdfFile.Get(Form("h_%d_%d", h, i));
+  //         fTime[h][i]->SetDirectory(0);
+  //         if (timeRes > 0) fTime[h][i]->Rebin(binfactor);
+  //         // if (sigma > 0) hpdf->Rebin(binfactor);
+  //         // // hpdf->Smooth();
+  //         // fPdf[h][i] = new TGraph(hpdf);
+  //         // fPdf[h][i]->SetBit(TGraph::kIsSortedX);
+  //         fTimeImaging = true;
+  //       }
+  //     }
+  //   } else fTimeImaging = false;
+  // }
 
   // read corrections
   fCorrFile = infile + "_corr.root";
@@ -191,6 +191,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
     for (int i = 0; i < ch.GetEntries(); i++) {
       ch.GetEvent(i);
       fCorr[pmt] = (fabs(corr) < 0.017) ? corr : 0.00001;
+      if(pixels < 8) fCorr[pmt] = 0.00001;
       for (int h = 0; h < 5; h++) {
         fSigma[h] = 0.001 * cspr[h] * 0.9;
       }
@@ -397,7 +398,8 @@ void PrtLutReco::Run(int start, int end) {
           fHistDiff[reflected]->Fill(tdiff);
           if (ipath) fHistDiff[2]->Fill(tdiff);
 
-          tangle = rotatedmom.Angle(dir) + fCorr[mcp]; // 45;
+          tangle = rotatedmom.Angle(dir);	  
+	  tangle += fCorr[mcp]; // per-PMT angle correction;
 	  
           // if(tangle>TMath::PiOver2()) tangle = TMath::Pi()-tangle;
 
@@ -924,7 +926,7 @@ void PrtLutReco::Run(int start, int end) {
         TFile fc(fCorrFile, "recreate");
         TTree *tc = new TTree("corr", "corr");
         int pmt;
-        double corr;
+        double corr, fitrange = 0.01;
         tc->Branch("pmt", &pmt, "pmt/I");
         tc->Branch("corr", &corr, "corr/D");
         tc->Branch("cspr", &spr, "cspr[5]/D");
@@ -932,8 +934,8 @@ void PrtLutReco::Run(int start, int end) {
         for (int i = 0; i < fnpmt; i++) {
           if (fHistMcp[i]->GetEntries() < 20) continue;
           if (fVerbose > 2) ft.add_canvas(Form("r_tangle_%d", i), 800, 400);
-
-          corr = -ft.fit(fHistMcp[i], 0.007, 20, 0.01).X();
+	  
+          corr = -ft.fit(fHistMcp[i], fitrange, 20, 0.01).X();
           // fHistMcp[i]->Fit("gaus","MQ","",-0.01,0.01).X();
           // auto f = fHistMcp[i]->GetFunction("gaus");
           // if(f)
@@ -994,9 +996,9 @@ void PrtLutReco::FindPeak(double (&cangle)[5], double (&spr)[5]) {
       if (nfound > 0) cangle[h] = fSpect->GetPositionX()[0];
       else cangle[h] = hthetac[h]->GetXaxis()->GetBinCenter(hthetac[h]->GetMaximumBin());
 
-      fFit->SetParameters(100, cangle[h], 0.005, 10); // peak
-      fFit->SetParameter(2, 0.005);                   // width
-      fFit->FixParameter(2, 0.005);                   // width
+      fFit->SetParameters(100, cangle[h], 0.003, 10); // peak
+      fFit->SetParameter(2, 0.003);                   // width
+      fFit->FixParameter(2, 0.003);                   // width
       hthetac[h]->Fit("fgaus", "Q", "", cangle[h] - 3.5 * fSigma[h], cangle[h] + 3.5 * fSigma[h]);
       fFit->ReleaseParameter(2); // width
       hthetac[h]->Fit("fgaus", "MQ", "", cangle[h] - 3.5 * fSigma[h], cangle[h] + 3.5 * fSigma[h]);

@@ -847,7 +847,7 @@ TVector3 PrtTools::fit(TH1 *h, double range, double threshold, double limit, int
     if (peakSearch == 1) {
       _fgaus->SetParameter(1, xmax);
       _fgaus->SetParameter(2, 0.005);
-      _fgaus->SetParLimits(2, 0.003, limit);
+      _fgaus->SetParLimits(2, 0.0015, limit);
       h->Fit("_fgaus", opt, "", xxmin - range, xxmax + range);
     }
 
