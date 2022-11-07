@@ -116,8 +116,9 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
   if(pixels >= 16) range = 500;
   if(frun->getLens() == 10) range = 1500;
   double range_gr = range;
-  if(pixels < 30) range_gr = 200;
-  if(pixels >= 30) range_gr = 500;
+  if(pixels <= 16) range_gr = 200;
+  if(pixels > 16) range_gr = 500;
+  if(pixels > 40) range_gr = 1000;
  
   for (int h = 0; h < 5; h++) {
     TString la = ";ln L(K) - ln L(#pi);entries [#]";
