@@ -999,7 +999,8 @@ void PrtLutReco::FindPeak(double (&cangle)[5], double (&spr)[5]) {
 
       fFit->SetParameters(100, cangle[h], 0.003, 10); // peak
       fFit->SetParameter(2, 0.003);                   // width
-      fFit->FixParameter(2, 0.003);                   // width
+      // fFit->FixParameter(2, 0.003);                   // width
+      fFit->SetParLimits(2, 0.001, 0.03);
       hthetac[h]->Fit("fgaus", "Q", "", cangle[h] - 3.5 * fSigma[h], cangle[h] + 3.5 * fSigma[h]);
       fFit->ReleaseParameter(2); // width
       hthetac[h]->Fit("fgaus", "MQ", "", cangle[h] - 3.5 * fSigma[h], cangle[h] + 3.5 * fSigma[h]);
