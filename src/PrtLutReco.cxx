@@ -99,7 +99,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
 
   for (int i = 0; i < 28; i++) {
     fHistMcp[i] = new TH1F(Form("fHistMcp_%d", i),
-                           Form("fHistMcp_%d;#theta_{C} [rad];entries [#]", i), 200, -0.05, 0.05);
+                           Form("fHistMcp_%d;#theta_{C} [rad];entries [#]", i), 150, -0.05, 0.05);
   }
 
   double pixels = frun->getTest1();
@@ -119,6 +119,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
   if(pixels <= 16) range_gr = 200;
   if(pixels > 16) range_gr = 500;
   if(pixels > 40) range_gr = 1000;
+  if(pixels > 20 && fPhysList > 0) range_gr = 1000;
  
   for (int h = 0; h < 5; h++) {
     TString la = ";ln L(K) - ln L(#pi);entries [#]";
@@ -154,26 +155,26 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
     fPdfPath.ReplaceAll(".root", ".pdf.root");
   }
   
-  // if (fMethod == 2) {
-  //   if (!gSystem->AccessPathName(fPdfPath)) {
-  //     std::cout << "--- reading  " << fPdfPath << std::endl;
-  //     TFile pdfFile(fPdfPath);
-  //     int binfactor = (int)(timeRes / 50. + 0.1);
-  //     for (int h : {fp1, fp2}) {
-  //       for (int i = 0; i < fmaxch; i++) {
-  //         // auto hpdf = (TH1F *)pdfFile.Get(Form("h_%d_%d",h, i));
-  //         fTime[h][i] = (TH1F *)pdfFile.Get(Form("h_%d_%d", h, i));
-  //         fTime[h][i]->SetDirectory(0);
-  //         if (timeRes > 0) fTime[h][i]->Rebin(binfactor);
-  //         // if (sigma > 0) hpdf->Rebin(binfactor);
-  //         // // hpdf->Smooth();
-  //         // fPdf[h][i] = new TGraph(hpdf);
-  //         // fPdf[h][i]->SetBit(TGraph::kIsSortedX);
-  //         fTimeImaging = true;
-  //       }
-  //     }
-  //   } else fTimeImaging = false;
-  // }
+  if (fMethod == 2) {
+    if (!gSystem->AccessPathName(fPdfPath)) {
+      std::cout << "--- reading  " << fPdfPath << std::endl;
+      TFile pdfFile(fPdfPath);
+      int binfactor = (int)(timeRes / 50. + 0.1);
+      for (int h : {fp1, fp2}) {
+        for (int i = 0; i < fmaxch; i++) {
+          // auto hpdf = (TH1F *)pdfFile.Get(Form("h_%d_%d",h, i));
+          fTime[h][i] = (TH1F *)pdfFile.Get(Form("h_%d_%d", h, i));
+          fTime[h][i]->SetDirectory(0);
+          if (timeRes > 0) fTime[h][i]->Rebin(binfactor);
+          // if (sigma > 0) hpdf->Rebin(binfactor);
+          // // hpdf->Smooth();
+          // fPdf[h][i] = new TGraph(hpdf);
+          // fPdf[h][i]->SetBit(TGraph::kIsSortedX);
+          fTimeImaging = true;
+        }
+      }
+    } else fTimeImaging = false;
+  }
 
   // read corrections
   fCorrFile = infile + "_corr.root";
@@ -193,7 +194,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
       fCorr[pmt] = (fabs(corr) < 0.017) ? corr : 0.00001;
       if(pixels < 8) fCorr[pmt] = 0.00001;
       for (int h = 0; h < 5; h++) {
-        fSigma[h] = 0.001 * cspr[h] * 0.9;
+        fSigma[h] = 0.001 * cspr[h] * 0.95;
       }
       std::cout << "pmt " << pmt << "  " << fCorr[pmt] << " spr = (2) " << fSigma[2] << "  (3) "
                 << fSigma[3] << std::endl;
