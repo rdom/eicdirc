@@ -120,7 +120,7 @@ int main(int argc, char **argv) {
       if (particle == "mix_pie") momentum = 1.2;
       else if (particle == "mix_kp") momentum = 12;
       else momentum = 6;
-      trackres = 0.0005;
+      if (trackres < 0) trackres = 0.0005;
     }
     if (runtype == 1) {
       particle = "opticalphoton";
@@ -130,7 +130,7 @@ int main(int argc, char **argv) {
     }
   }
 
-  if (runtype == 2) {
+  if (runtype == 2 &&trackres < 0) {
     if (particle == "mix_pie") trackres = 0.0022;
     else trackres = 0.0005;
   }
