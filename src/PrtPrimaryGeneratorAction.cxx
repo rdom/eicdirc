@@ -54,6 +54,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
   PrtManager::Instance()->addEvent(PrtEvent());
   int pdg = fabs(fRun->getPid());
   double theta = (180 - fRun->getTheta()) * TMath::DegToRad();
+  double theta2 = (180 - fRun->getTest1()) * TMath::DegToRad();
   double phi = fRun->getPhi() * TMath::DegToRad();
   double zpos = fRun->getBeamZ();
   double ypos = fRun->getBeamX();
@@ -83,21 +84,20 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
     fParticleGun->SetParticleDefinition(fParticleOP);
   }
   PrtManager::Instance()->getEvent()->setPid(fPid);
-  
+  G4ThreeVector vec(0, 0, 1);
   if (fRunType == 0 || fRunType == 10 || fRunType == 5) { // simulation
-    G4ThreeVector vec(0, 0, 1);
-    // G4int id = anEvent->GetEventID()%5;
-    //  if(id==0)  vec.setTheta(M_PI-110*deg);
-    //  if(id==0)  vec.setPhi(0*deg);
-    //  if(id==1)  vec.setTheta(M_PI-30*deg);
-    //  if(id==1)  vec.setPhi(70*deg);
-    //  if(id==2)  vec.setTheta(M_PI-140*deg);
-    //  if(id==2)  vec.setPhi(180*deg);
-    //  if(id==3)  vec.setTheta(M_PI-70*deg);
-    //  if(id==3)  vec.setPhi(250*deg);
+    
+    if (fGeomType < 2) ypos = 0.5 * fRadiatorW;
+    fParticleGun->SetParticlePosition(G4ThreeVector(0, ypos, zpos));
+
+    // second track
+    vec.setTheta(theta2);
+    vec.setPhi(phi);
+    fParticleGun->SetParticleMomentumDirection(vec);
+    fParticleGun->GeneratePrimaryVertex(anEvent);
 
     double trackresolution = fRun->getBeamSize();
-    
+
     if (theta > 0 && theta < M_PI) {
       if (trackresolution < 0.00001) {
         vec.setTheta(theta);
@@ -129,10 +129,8 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
         vec.setTheta(theta + G4UniformRand() * 0.09 - 0.045);
         vec.rotateZ(G4UniformRand() * 0.032);
       }
-      if (fRunType == 0) vec.rotateZ(fRun->getTest1()); // 0.016 hits the middle of the BaBar bar
-    }
-    if (fGeomType < 2)  ypos = 0.5 * fRadiatorW;
-    fParticleGun->SetParticlePosition(G4ThreeVector(0, ypos, zpos));
+      if (fRunType == 0) vec.rotateZ(0.016); // 0.016 hits the middle of the BaBar bar
+    }  
     fParticleGun->SetParticleMomentumDirection(vec);
   }
 
@@ -157,6 +155,9 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
 
   PrtManager::Instance()->getEvent()->setMomentum(TVector3(dir.x(), dir.y(), dir.z()));
   PrtManager::Instance()->setMomentum(TVector3(dir.x(), dir.y(), dir.z()));
+
+ 
+
 }
 
 void PrtPrimaryGeneratorAction::SetOptPhotonPolar() {

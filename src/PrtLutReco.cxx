@@ -157,7 +157,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
     fPdfPath = infile;
     fPdfPath.ReplaceAll(".root", ".pdf.root");
   }
-  
+
   if (fMethod == 2) {
     if (!gSystem->AccessPathName(fPdfPath)) {
       std::cout << "--- reading  " << fPdfPath << std::endl;
