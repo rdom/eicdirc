@@ -73,7 +73,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
   int col[] = {kRed + 1, kBlue + 1, kBlack};
   for (int i = 0; i < 3; i++) {
     fHistDiff[i] = new TH1F(Form("TimeDiff_%d", i), ";t_{measured}-t_{calculated} [ns];entries [#]",
-                            500, -10, 10);
+                            500, -50, 50);
     fHistDiff[i]->SetLineColor(col[i]);
   }
   for (int h = 0; h < 5; h++) {
@@ -112,20 +112,20 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
     if (fMomentum >= 2) range = 100;
   }
 
-  // pixels scan tmp
-  if(pixels >= 16) range = 500;
-  if(frun->getLens() == 10) range = 1500;
-  double range_gr = range;
-  if(pixels <= 16) range_gr = 200;
-  if(pixels > 16) range_gr = 500;
-  if(pixels > 40) range_gr = 1000;
-  if(pixels > 20 && fPhysList > 0) range_gr = 1000;
-  if(fMomentum > 8) range = 500;
-  if(fMomentum > 8) range_gr = 200;
+  // // pixels scan tmp
+  // if(pixels >= 16) range = 500;
+  // if(frun->getLens() == 10) range = 1500;
+  // double range_gr = range;
+  // if(pixels <= 16) range_gr = 200;
+  // if(pixels > 16) range_gr = 500;
+  // if(pixels > 40) range_gr = 1000;
+  // if(pixels > 20 && fPhysList > 0) range_gr = 1000;
+  // if(fMomentum > 8) range = 500;
+  // if(fMomentum > 8) range_gr = 200;
   
   for (int h = 0; h < 5; h++) {
     TString la = ";ln L(K) - ln L(#pi);entries [#]";
-    fLnDiffGr[h] = new TH1F(Form("LnDiffGr_%d", h), la, 400, -range_gr, range_gr);
+    fLnDiffGr[h] = new TH1F(Form("LnDiffGr_%d", h), la, 400, -range, range);
     fLnDiffTi[h] = new TH1F(Form("LnDiffTi_%d", h), la, 400, -range, range);
     fLnDiffGr[h]->SetLineColor(ft.color(h));
     fLnDiffTi[h]->SetLineColor(ft.color(h));
