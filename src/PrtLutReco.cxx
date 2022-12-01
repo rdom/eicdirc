@@ -73,7 +73,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
   int col[] = {kRed + 1, kBlue + 1, kBlack};
   for (int i = 0; i < 3; i++) {
     fHistDiff[i] = new TH1F(Form("TimeDiff_%d", i), ";t_{measured}-t_{calculated} [ns];entries [#]",
-                            500, -50, 50);
+                            500, -25, 25);
     fHistDiff[i]->SetLineColor(col[i]);
   }
   for (int h = 0; h < 5; h++) {
