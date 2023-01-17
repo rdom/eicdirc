@@ -144,9 +144,9 @@
 /vis/viewer/set/viewpointVector 1.31839e-16 -1 -6.93889e-18
 /vis/viewer/set/upVector 0 1 0
 /vis/viewer/set/projection orthogonal
-/vis/viewer/zoomTo 2
+/vis/viewer/zoomTo 1.6
 /vis/viewer/scaleTo 1 1 1
-/vis/viewer/set/targetPoint 0.8 0 0.5 m  
+/vis/viewer/set/targetPoint 0.8 0 0.4 m  
 
 # # side yz
 # /vis/viewer/set/viewpointVector 1 0 0

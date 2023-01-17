@@ -972,7 +972,7 @@ void PrtLutReco::Run(int start, int end) {
     if (fVerbose > 2) ft.wait_primitive("lh_gr" + nid, "none");
   }
 
-  delete fTime; // abort now to save time
+  // delete fTime; // abort now to save time (for small pixels)
 }
 
 void PrtLutReco::FindPeak(double (&cangle)[5], double (&spr)[5]) {
