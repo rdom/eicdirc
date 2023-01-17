@@ -90,11 +90,11 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
     if (fGeomType < 2) ypos = 0.5 * fRadiatorW;
     fParticleGun->SetParticlePosition(G4ThreeVector(0, ypos, zpos));
 
-    // second track
-    vec.setTheta(theta2);
-    vec.setPhi(phi);
-    fParticleGun->SetParticleMomentumDirection(vec);
-    fParticleGun->GeneratePrimaryVertex(anEvent);
+    // // second track
+    // vec.setTheta(theta2);
+    // vec.setPhi(phi);
+    // fParticleGun->SetParticleMomentumDirection(vec);
+    // fParticleGun->GeneratePrimaryVertex(anEvent);
 
     double trackresolution = fRun->getBeamSize();
 
