@@ -52,8 +52,9 @@ example:
 -ev   expansion volume type
 	        0    prism with lenses (default)
                 1    BaBar wedge with focusing prism
-                3    prism with plate
-		4    tilted EV	
+                3    prism with plate, lens between bars and plate
+		4    tilted EV
+		5    prism with plate, lens between plate and EV
 
 -h    number of bars in one radiator box
 

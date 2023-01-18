@@ -136,6 +136,10 @@ G4ClassificationOfNewTrack PrtStackingAction::ClassifyNewTrack(const G4Track *aT
           return fKill;
         }
       }
+
+      // double angle = aTrack->GetMomentum().angle(G4ThreeVector(0, 0, 1));
+      // if(angle > 0.3) return fKill;      
+
     }
   }
 

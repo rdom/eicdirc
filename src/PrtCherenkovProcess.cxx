@@ -93,12 +93,12 @@ G4VParticleChange* PrtCherenkovProcess::PostStepDoIt(const G4Track& aTrack, cons
 	
 	////////////////////////////////////////////////////////////////
 
-	// G4double Pmin = Rindex->GetMinLowEdgeEnergy();
-	// G4double Pmax = Rindex->GetMaxLowEdgeEnergy();
+	G4double Pmin = Rindex->GetMinLowEdgeEnergy();
+	G4double Pmax = Rindex->GetMaxLowEdgeEnergy();
 	
-	// //d/ monochromatic photons
-	G4double Pmin = 3.18 * 1E-6; //(Rindex->GetMinLowEdgeEnergy()+Rindex->GetMaxLowEdgeEnergy())/2.;
-	G4double Pmax = Pmin;
+	//d/ monochromatic photons
+	Pmin = 3.18 * 1E-6;
+	Pmax = Pmin;
 
 	G4double dp = Pmax - Pmin;
 
@@ -149,6 +149,8 @@ G4VParticleChange* PrtCherenkovProcess::PostStepDoIt(const G4Track& aTrack, cons
 		rand = G4UniformRand();
 
 		G4double phi = twopi*rand;
+	       	// phi = 0.5 - 1.0 * rand;
+		
 		G4double sinPhi = std::sin(phi);
 		G4double cosPhi = std::cos(phi);
 

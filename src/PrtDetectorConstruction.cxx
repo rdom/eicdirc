@@ -218,16 +218,18 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   }
 
   // The Bar
-  G4Box *gBar = new G4Box("gBar", fBar[0] / 2., fBar[1] / 2., fBar[2] / 2.);
+  G4Box *gBar = new G4Box("gBar", 0.5 * fBar[0], 0.5 * fBar[1], 0.5 * fBar[2]);
   lBar = new G4LogicalVolume(gBar, BarMaterial, "lBar", 0, 0, 0);
   // wBar =  new G4PVPlacement(0,G4ThreeVector(0,0,0),lBar,"wBar", lDirc,false,0);
-  G4Box *gExpVol = new G4Box("gExpVol", fBar[0] / 2., 0.5 * fBoxWidth, fBar[2] / 2.);
+  double evprismhight = 17; //fPrizm[3]; // fBar[0]
+  double evprismlengh = 500; // Bar[2]
+  G4Box *gExpVol = new G4Box("gExpVol", 0.5 * evprismhight, 0.5 * fBoxWidth, 0.5 * evprismlengh); 
   lExpVol = new G4LogicalVolume(gExpVol, BarMaterial, "lExpVol", 0, 0, 0);
 
   // Glue
-  G4Box *gGlue = new G4Box("gGlue", fBar[0] / 2., fBar[1] / 2., 0.5 * gluethickness);
+  G4Box *gGlue = new G4Box("gGlue", 0.5 * fBar[0], 0.5 * fBar[1], 0.5 * gluethickness);
   lGlue = new G4LogicalVolume(gGlue, epotekMaterial, "lGlue", 0, 0, 0);
-  G4Box *gGlueE = new G4Box("gGlueE", fBar[0] / 2., 0.5 * fBoxWidth, 0.5 * gluethickness);
+  G4Box *gGlueE = new G4Box("gGlueE", 0.5 * evprismhight, 0.5 * fBoxWidth, 0.5 * gluethickness);
   lGlueE = new G4LogicalVolume(gGlueE, epotekMaterial, "lGlueE", 0, 0, 0);
 
   if (fNBar == 1) {
@@ -239,13 +241,14 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     }
   } else {
     int id = 0, nparts = 4;
-    if (fEvType == 3) {
+    if (fEvType == 3 || fEvType == 5) {
+      dirclength = fBar[2] * 3 + evprismlengh + gluethickness * 4;
       double sh = 0;
-      if (fLensId == 6) sh = fLens[2];
+      if (fLensId == 6 && fEvType == 3) sh = fLens[2];
       nparts = 3;
-      double z = -0.5 * dirclength + 0.5 * fBar[2] + (fBar[2] + gluethickness) * 3;
+      double z = -0.5 * dirclength + 0.5 * evprismlengh + (fBar[2] + gluethickness) * 3;
       new G4PVPlacement(0, G4ThreeVector(0, 0, z + sh), lExpVol, "wExpVol", lDirc, false, id);
-      new G4PVPlacement(0, G4ThreeVector(0, 0, z + 0.5 * (fBar[2] + gluethickness) + sh), lGlueE,
+      new G4PVPlacement(0, G4ThreeVector(0, 0, z + 0.5 * (evprismlengh + gluethickness) + sh), lGlueE,
                         "wGlue", lDirc, false, id);
     }
     for (int i = 0; i < fNBar; i++) {
@@ -354,11 +357,16 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
 
     r1 = (r1 == 0) ? 33 : r1;
     r2 = (r2 == 0) ? 24 : r2;
+
+    r1 = 62;
+    r2 = 36;
+    
     double shight = 25;
 
     if (fEvType == 3) {
-      r1 = 1000;
-      r2 = 400;
+      // fLens[0] = fBar[0];
+      r1 = 150;
+      r2 = 75;
     }
 
     G4ThreeVector zTrans1(
@@ -426,7 +434,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
       }
       if (fLensId == 6) {
         double sh = 0;
-        if (fEvType == 3) sh = fBar[2] + gluethickness;
+        if (fEvType == 3) sh = evprismlengh + gluethickness;
         new G4PVPlacement(0, G4ThreeVector(0, 0, shifth - sh), lLens1, "wLens1", lDirc, false, 0);
         new G4PVPlacement(0, G4ThreeVector(0, 0, shifth - sh), lLens2, "wLens2", lDirc, false, 0);
         new G4PVPlacement(0, G4ThreeVector(0, 0, shifth - sh), lLens3, "wLens3", lDirc, false, 0);
