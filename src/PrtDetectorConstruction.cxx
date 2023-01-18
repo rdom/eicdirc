@@ -243,13 +243,14 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     int id = 0, nparts = 4;
     if (fEvType == 3 || fEvType == 5) {
       dirclength = fBar[2] * 3 + evprismlengh + gluethickness * 4;
+      fRun->setRadiatorL(dirclength - 2 * evprismlengh);
       double sh = 0;
       if (fLensId == 6 && fEvType == 3) sh = fLens[2];
       nparts = 3;
       double z = -0.5 * dirclength + 0.5 * evprismlengh + (fBar[2] + gluethickness) * 3;
       new G4PVPlacement(0, G4ThreeVector(0, 0, z + sh), lExpVol, "wExpVol", lDirc, false, id);
-      new G4PVPlacement(0, G4ThreeVector(0, 0, z + 0.5 * (evprismlengh + gluethickness) + sh), lGlueE,
-                        "wGlue", lDirc, false, id);
+      new G4PVPlacement(0, G4ThreeVector(0, 0, z + 0.5 * (evprismlengh + gluethickness) + sh),
+                        lGlueE, "wGlue", lDirc, false, id);
     }
     for (int i = 0; i < fNBar; i++) {
       double shifty = i * (fBar[1] + fBarsGap) - 0.5 * fBoxWidth + fBar[1] / 2.;
