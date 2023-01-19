@@ -367,7 +367,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     if (fEvType == 3) {
       fLens[0] = fBar[0];
       r1 = 150;
-      r2 = 75;
+      r2 = 90;
     }
 
     G4ThreeVector zTrans1(
