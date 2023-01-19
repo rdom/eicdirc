@@ -435,7 +435,7 @@ void PrtLutReco::Run(int start, int end) {
         }
       }
 
-      if (isGoodHit_gr) {
+      if (isGoodHit_gr || 1) { // tmp for plate ev
         nsHits++;
         tnph_gr[pid]++;
         if (frun->getPid() == 10005) {
