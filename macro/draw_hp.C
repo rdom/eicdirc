@@ -16,7 +16,11 @@ void draw_hp(TString infile = "../build/hits.root") {
       int pix = hit.getPixel();
       double time = hit.getLeadTime();
 
-      if (t.pid() == 2) t.fill_digi(pmt, pix);
+      // if (t.pid() == 2) t.fill_digi(pmt, pix);
+      for(int i = 0; i < 256; i++) {
+	if (t.pid() == 2) t.fill_digi(pmt, i);
+      }
+      
     }
   }
 

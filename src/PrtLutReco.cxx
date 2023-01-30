@@ -10,7 +10,7 @@
 using std::cout;
 using std::endl;
 
-TH1F *fHist1 = new TH1F("Time1", "1", 1000, 0, 20);
+TH1F *fHist1 = new TH1F("Time1", "1", 1000, 0, 80);
 TH1F *fHist2 = new TH1F("Time2", "2", 1000, -10, 10);
 TH1F *fHistDiff[3];
 TH2F *fDiff =
@@ -958,6 +958,9 @@ void PrtLutReco::Run(int start, int end) {
       ft.add_canvas("diff" + nid, 800, 400);
       fDiff->SetStats(0);
       fDiff->Draw("colz");
+      
+      ft.add_canvas("time" + nid, 800, 400);
+      fHist1->Draw();
     }
     std::cout << "fCorrFile " << fCorrFile << std::endl;
     

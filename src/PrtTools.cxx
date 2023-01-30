@@ -125,6 +125,7 @@ TString PrtTools::get_outpath() {
 void PrtTools::fill_digi(int pmt, int pix){
 
   int n = sqrt(_npix);
+  
   if (pmt < _npmt) {
     if (_run->getGeometry() == 2) _hdigi[pmt]->Fill(pix / n, pix % n);
     else _hdigi[pmt]->Fill(pix % n, pix / n);
@@ -141,7 +142,8 @@ void PrtTools::fill_digi(int pmt, int pix){
 // _pmtlayout == 2030 - EIC DIRC beam test
 // _pmtlayout == 2031 - EIC DIRC prism
 // _pmtlayout == 2032 - EIC DIRC focusing prism
-// _pmtlayout == 3000 - GlueX 
+// _pmtlayout == 3000 - GlueX
+// _pmtlayout == 4 - EIC DIRC prism, LAPD
 TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
   
   _last_maxz = maxz;
@@ -174,6 +176,8 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
     toppad = new TPad(sid, "T", 0.12, 0.01, 0.80, 0.99);
   else if (_pmtlayout == 3000)
     toppad = new TPad(sid, "T", 0.005, 0.07, 0.95, 0.93);
+  else if (_pmtlayout == 4)
+    toppad = new TPad(sid, "T", 0.12, 0.02, 0.85, 0.98);
   else
     toppad = new TPad(sid, "T", 0.04, 0.04, 0.96, 0.96);
 
@@ -204,6 +208,10 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
   if (_pmtlayout == 3000) {
     nrow = 6;
     ncol = 18;
+  }
+  if (_pmtlayout == 4) {
+    nrow = 2;
+    ncol = 3;
   }
   if (_run->getGeometry() == 2) {
     nrow = 3;
@@ -294,6 +302,14 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
           tbw = 0.001;
           tbh = 0.005;
           padi = i * nrow + j;
+        }
+	if (_pmtlayout == 4) {
+          margin = 0.1;
+          shift = 0;
+          shiftw = 0.01;
+          tbw = 0.001;
+          tbh = 0.005;
+          padi = j * ncol + i;
         }
 
         pads[padi] = new TPad(
@@ -393,7 +409,7 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
   _last_max = max;
   int nnmax(0);
   for (int p = 0; p < nrow * ncol; p++) {
-    if (_pmtlayout == 1 || _pmtlayout == 4)
+    if (_pmtlayout == 1)
       np = p % nrow * ncol + p / 3;
     else
       np = p;
@@ -412,7 +428,7 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
   TPaletteAxis *palette;
   if (_pmtlayout == 2018 || _pmtlayout == 2023)
     palette = new TPaletteAxis(0.89, 0.1, 0.93, 0.90, (TH1 *)_hdigi[nnmax]);
-  else if (_pmtlayout == 2032)
+  else if (_pmtlayout == 2032 || _pmtlayout == 4)
     palette = new TPaletteAxis(0.91, 0.1, 0.94, 0.90, (TH1 *)_hdigi[nnmax]);
   else
     palette = new TPaletteAxis(0.82, 0.1, 0.86, 0.90, (TH1 *)_hdigi[nnmax]);

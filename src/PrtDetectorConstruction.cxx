@@ -228,7 +228,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   G4Box *gBar = new G4Box("gBar", 0.5 * fBar[0], 0.5 * fBar[1], 0.5 * fBar[2]);
   lBar = new G4LogicalVolume(gBar, BarMaterial, "lBar", 0, 0, 0);
   // wBar =  new G4PVPlacement(0,G4ThreeVector(0,0,0),lBar,"wBar", lDirc,false,0);
-  double evprismhight = fPrizm[3]; //fBar[0]; //fPrizm[3]; // fBar[0]
+  double evprismhight = fBar[0]; //fPrizm[3]; // fBar[0]
   double evprismlengh = 500; // Bar[2]
   G4Box *gExpVol = new G4Box("gExpVol", 0.5 * evprismhight, 0.5 * fBoxWidth, 0.5 * evprismlengh); 
   lExpVol = new G4LogicalVolume(gExpVol, BarMaterial, "lExpVol", 0, 0, 0);
@@ -372,7 +372,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     double shight = 25;
 
     if (fEvType == 3) {
-      // fLens[0] = fBar[0];
+      fLens[0] = fBar[0];
       r1 = 150;
       r2 = 90;
     }
@@ -668,13 +668,13 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   } 
 
   if (fMcpLayout == 4) {
-    // LAPD pmt   
+    // LAPPD pmt   
 
     G4Box *gMcp = new G4Box("gMcp", fMcpTotal[0] / 2., fMcpTotal[1] / 2., fMcpTotal[2] / 2.);
     lMcp = new G4LogicalVolume(gMcp, BarMaterial, "lMcp", 0, 0, 0);
 
-    fNpix1 = 16;
-    fNpix2 = 16;
+    fNpix1 = 40;
+    fNpix2 = 40;
     fRun->setNpix(fNpix1 * fNpix1);
 
     std::cout << "fNpix1=" << fNpix1 << " fNpix2=" << fNpix2<< " size = "<<fMcpActive[0] / fNpix1<< std::endl;
