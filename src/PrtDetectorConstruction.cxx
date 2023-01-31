@@ -159,7 +159,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   if (fLensId == 3) {
     fLens[0] = fPrizm[3];
     fLens[1] = fPrizm[0] / fNBar;
-    fLens[2] = 15;
+    fLens[2] = 12;
     if (fNBar == 1) fLens[1] = fPrizm[0] / 11.;
   }
 
@@ -228,7 +228,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   G4Box *gBar = new G4Box("gBar", 0.5 * fBar[0], 0.5 * fBar[1], 0.5 * fBar[2]);
   lBar = new G4LogicalVolume(gBar, BarMaterial, "lBar", 0, 0, 0);
   // wBar =  new G4PVPlacement(0,G4ThreeVector(0,0,0),lBar,"wBar", lDirc,false,0);
-  double evprismhight = fBar[0]; //fPrizm[3]; // fBar[0]
+  double evprismhight = fPrizm[3]; // fBar[0]
   double evprismlengh = 500; // Bar[2]
   G4Box *gExpVol = new G4Box("gExpVol", 0.5 * evprismhight, 0.5 * fBoxWidth, 0.5 * evprismlengh); 
   lExpVol = new G4LogicalVolume(gExpVol, BarMaterial, "lExpVol", 0, 0, 0);
@@ -252,7 +252,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
       dirclength = fBar[2] * 3 + evprismlengh + gluethickness * 4;
       fRun->setRadiatorL(dirclength - 2 * evprismlengh);
       double sh = 0;
-      if (fLensId == 6 && fEvType == 3) sh = fLens[2];
+      if (fEvType == 3) sh = fLens[2];
       nparts = 3;
       double z = -0.5 * dirclength + 0.5 * evprismlengh + (fBar[2] + gluethickness) * 3;
       new G4PVPlacement(0, G4ThreeVector(0, 0, z + sh), lExpVol, "wExpVol", lDirc, false, id);
@@ -305,7 +305,13 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     r2 = (r2 == 0) ? 29.1 : r2;
     r1 = 62;
     r2 = 36;
-    
+
+    if (fEvType == 3) {
+      //fLens[0] = fBar[0];
+      r1 = 150;
+      r2 = 90;
+    }
+
     double thight = fBar[0];
     if (thight < 12) thight = 12;
     double cr2 = sqrt(fLens[1] * fLens[1] / 4. + thight * thight / 4.);
@@ -313,8 +319,9 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
       std::cout << "bad lens" << std::endl;
       cr2 = r2;
     }
-    fLens[2] = (2 * lensMinThikness + r2 - sqrt(r2 * r2 - cr2 * cr2) + lensMinThikness);
-    std::cout << "lens thickness " << fLens[2] << std::endl;
+    // fLens[2]
+    double optimallt= (2 * lensMinThikness + r2 - sqrt(r2 * r2 - cr2 * cr2) + lensMinThikness);
+    std::cout << "Used lens thickness = " << fLens[2] << " optimal = "<< optimallt << std::endl;
 
     G4ThreeVector zTrans1(0, 0,
                           -r1 - fLens[2] / 2. + r1 - sqrt(r1 * r1 - cr2 * cr2) + lensMinThikness);
@@ -369,10 +376,10 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     r1 = 62;
     r2 = 36;
     
-    double shight = 25;
+    double shight = fBar[0];//25;
 
     if (fEvType == 3) {
-      fLens[0] = fBar[0];
+      // fLens[0] = fBar[0];
       r1 = 150;
       r2 = 90;
     }
@@ -430,19 +437,20 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
         new G4PVPlacement(0, G4ThreeVector(0, shifty, shifth), lLens3, "wLens3", lDirc, false, i);
       }
     } else {
+      double sh = 0;
+      if (fEvType == 3) sh = evprismlengh + gluethickness;
       for (int i = 0; i < fNBar; i++) {
         double shifty = i * fLens[1] - 0.5 * (fBoxWidth - fLens[1]);
         if (fLensId != 6) {
-          new G4PVPlacement(0, G4ThreeVector(0, shifty, shifth), lLens1, "wLens1", lDirc, false, i);
-          new G4PVPlacement(0, G4ThreeVector(0, shifty, shifth), lLens2, "wLens2", lDirc, false, i);
-          if (fLensId == 3)
-            new G4PVPlacement(0, G4ThreeVector(0, shifty, shifth), lLens3, "wLens3", lDirc, false,
+          new G4PVPlacement(0, G4ThreeVector(0, shifty, shifth - sh), lLens1, "wLens1", lDirc, false, i);
+          new G4PVPlacement(0, G4ThreeVector(0, shifty, shifth - sh), lLens2, "wLens2", lDirc, false, i);
+          if (fLensId == 3) {	 
+            new G4PVPlacement(0, G4ThreeVector(0, shifty, shifth - sh), lLens3, "wLens3", lDirc, false,
                               i);
+          }
         }
       }
       if (fLensId == 6) {
-        double sh = 0;
-        if (fEvType == 3) sh = evprismlengh + gluethickness;
         new G4PVPlacement(0, G4ThreeVector(0, 0, shifth - sh), lLens1, "wLens1", lDirc, false, 0);
         new G4PVPlacement(0, G4ThreeVector(0, 0, shifth - sh), lLens2, "wLens2", lDirc, false, 0);
         new G4PVPlacement(0, G4ThreeVector(0, 0, shifth - sh), lLens3, "wLens3", lDirc, false, 0);
@@ -665,10 +673,9 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
       }
     }
     new G4PVPlacement(0, G4ThreeVector(0, 0, 0), lMcp, "wMcp", lFd, false, 1);
-  } 
-
+  }
   if (fMcpLayout == 4) {
-    // LAPPD pmt   
+    // LAPPD pmt
 
     G4Box *gMcp = new G4Box("gMcp", fMcpTotal[0] / 2., fMcpTotal[1] / 2., fMcpTotal[2] / 2.);
     lMcp = new G4LogicalVolume(gMcp, BarMaterial, "lMcp", 0, 0, 0);
@@ -677,8 +684,9 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     fNpix2 = 40;
     fRun->setNpix(fNpix1 * fNpix1);
 
-    std::cout << "fNpix1=" << fNpix1 << " fNpix2=" << fNpix2<< " size = "<<fMcpActive[0] / fNpix1<< std::endl;
-    
+    std::cout << "fNpix1=" << fNpix1 << " fNpix2=" << fNpix2 << " size = " << fMcpActive[0] / fNpix1
+              << std::endl;
+
     // The MCP Pixel
     G4Box *gPixel = new G4Box("gPixel", 0.5 * fMcpActive[0] / fNpix1, 0.5 * fMcpActive[1] / fNpix2,
                               fMcpActive[2] / 16.);
@@ -698,17 +706,19 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     int mcpId = 0;
     double gapx = 0;
     double gapy = 0;
-    
+
     for (int i = 0; i < fNCol; i++) {
       for (int j = 0; j < fNRow; j++) {
-        double shiftx = i * (fMcpTotal[0] + gapx) - 0.5 * (fFd[1] - fMcpTotal[0]) + gapx+ 0.5*(fPrizm[2] - fNCol * fMcpTotal[1]);;
-        double shifty = j * (fMcpTotal[1] + gapy) - 0.5 * (fBoxWidth - fMcpTotal[1]) + gapy + 0.5*(fBoxWidth - fNRow * fMcpTotal[1]);
+        double shiftx = i * (fMcpTotal[0] + gapx) - 0.5 * (fFd[1] - fMcpTotal[0]) + gapx +
+                        0.5 * (fPrizm[2] - fNCol * fMcpTotal[1]);
+        ;
+        double shifty = j * (fMcpTotal[1] + gapy) - 0.5 * (fBoxWidth - fMcpTotal[1]) + gapy +
+                        0.5 * (fBoxWidth - fNRow * fMcpTotal[1]);
         new G4PVPlacement(0, G4ThreeVector(shiftx, shifty, 0), lMcp, "wMcp", lFd, false, mcpId++);
       }
     }
   }
-
-   if (fMcpLayout == 2031) {
+  if (fMcpLayout == 2031) {
     // alternative mcp pmt
     // The MCP
 
@@ -730,8 +740,9 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     // fRun->setTest2(fMcpActive[0] / fNpix1);
     // fRun->setNpix(fNpix1 * fNpix1);
 
-    std::cout << "fNpix1=" << fNpix1 << " fNpix2=" << fNpix2<< " size = "<<fMcpActive[0] / fNpix1<< std::endl;
-    
+    std::cout << "fNpix1=" << fNpix1 << " fNpix2=" << fNpix2 << " size = " << fMcpActive[0] / fNpix1
+              << std::endl;
+
     // The MCP Pixel
     G4Box *gPixel = new G4Box("gPixel", 0.5 * fMcpActive[0] / fNpix1, 0.5 * fMcpActive[1] / fNpix2,
                               fMcpActive[2] / 16.);
@@ -751,7 +762,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     int mcpId = 0;
     double gapx = (fPrizm[2] - fNCol * fMcpTotal[0]) / (double)(fNCol + 1);
     double gapy = (fBoxWidth - fNRow * fMcpTotal[1]) / (double)(fNRow + 1);
-    
+
     for (int i = 0; i < fNCol; i++) {
       for (int j = 0; j < fNRow; j++) {
         // double shiftx = i*(fMcpTotal[0]+gapx)-0.5*(fPrizm[3]-fMcpTotal[0])+gapx;
