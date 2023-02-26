@@ -130,10 +130,14 @@ int main(int argc, char **argv) {
     }
   }
 
-  // if (runtype == 2 && trackres < 0) {
+  // if (runtype == 2 && trackres < 0) {      
   //   if (particle == "mix_pie") trackres = 0.0022;
   //   else trackres = 0.0005;
   // }
+
+  if (runtype == 2 && trackres > 50) {
+    trackres = -1;
+  }
 
   if (outfile == "" && (runtype == 0 || runtype == 10)) outfile = "hits.root"; // simulation
   if (outfile == "" && (runtype == 1 || runtype == 5))
