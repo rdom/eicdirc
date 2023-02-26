@@ -20,6 +20,7 @@ PrtPrimaryGeneratorAction::PrtPrimaryGeneratorAction()
   fRun = PrtManager::Instance()->getRun();
   double mom = fRun->getMomentum();
   fRunType = fRun->getRunType();
+  fTracking = fRun->getTrackingResTheta();
 
   fParticleGun = new G4ParticleGun(n_particle);
 
@@ -146,30 +147,24 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
     // vec.setPhi(phi);
     // fParticleGun->SetParticleMomentumDirection(vec);
     // fParticleGun->GeneratePrimaryVertex(anEvent);
-
-    double trackresolution = fRun->getBeamSize();
-
+    
     if (theta > 0 && theta < M_PI) {
-      if (trackresolution < 0.00001) {
+      if (fTracking < 0.00001) {
         vec.setTheta(theta);
         vec.setPhi(phi);
-      } else if (trackresolution < 10) {
-        // smear track resolution
-        G4ThreeVector vec0 = vec;
-        vec0.setTheta(theta);
-        vec0.setPhi(phi);
-        vec.setTheta(G4RandGauss::shoot(theta, trackresolution));
-        vec.setPhi(phi);
-        vec.rotate(2 * M_PI * G4UniformRand(), vec0);
-      } else {
-	std::cout << "fParticleGun->GetParticleMomentum() " << fParticleGun->GetParticleMomentum() * MeV << std::endl;
-	
+      } else if (fTracking < 10) {
+	vec.setTheta(G4RandGauss::shoot(theta, fTracking));
+        vec.setPhi(G4RandGauss::shoot(phi, fTracking));
+	std::cout << "track resolution dtheta = " << fTracking <<  " mrad, dphi = " << fTracking << " mrad" << std::endl;
+      } else {	
         double dtheta = 0.001 * get_res(grtheta, theta, 0.001 * fParticleGun->GetParticleMomentum());
         double dphi = 0.001 * get_res(grphi, theta, 0.001 * fParticleGun->GetParticleMomentum());
-	std::cout << "track resolution dtheta = " << dtheta <<  " mrad, dphi = " << dphi << " mrad" << std::endl;
+	fRun->setTrackingResTheta(dtheta);
+	fRun->setTrackingResPhi(dphi);       
 
         vec.setTheta(G4RandGauss::shoot(theta, dtheta));
         vec.setPhi(G4RandGauss::shoot(phi, dphi));
+	std::cout << "track resolution dtheta = " << dtheta <<  " mrad, dphi = " << dphi << " mrad" << std::endl;
       }
     } else {
       theta = M_PI * G4UniformRand();
@@ -178,7 +173,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
       G4ThreeVector vec0 = vec;
       vec0.setTheta(M_PI - theta);
 
-      theta = G4RandGauss::shoot(theta, trackresolution);
+      theta = G4RandGauss::shoot(theta, fTracking);
       vec.setTheta(M_PI - theta);
       vec.rotate(2 * M_PI * G4UniformRand(), vec0);
       // vec.setPhi(2 * M_PI * G4UniformRand());
@@ -214,9 +209,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
   dir *= fParticleGun->GetParticleMomentum();
 
   PrtManager::Instance()->getEvent()->setMomentum(TVector3(dir.x(), dir.y(), dir.z()));
-  PrtManager::Instance()->setMomentum(TVector3(dir.x(), dir.y(), dir.z()));
-
- 
+  PrtManager::Instance()->setMomentum(TVector3(dir.x(), dir.y(), dir.z())); 
 
 }
 

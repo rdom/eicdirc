@@ -242,9 +242,12 @@ void PrtLutReco::Run(int start, int end) {
   timeRes = frun->getTimeSigma();
   timeCut = frun->getTimeCut();
   trackRes = frun->getBeamSize();
+  double trackingResTheta = frun->getTrackingResTheta();
+  double trackingResPhi = frun->getTrackingResPhi();
   double radiatorL = frun->getRadiatorL();
   std::cout << "trackRes " << trackRes << " timeRes " << timeRes << std::endl;
-
+  std::cout << "tracking resulution: dtheta = " << trackingResTheta <<  " dphi = " << trackingResPhi  << std::endl;
+  
   int nEvents = fChain->GetEntries();
   if (end == 0) end = nEvents;
 
@@ -291,8 +294,8 @@ void PrtLutReco::Run(int start, int end) {
 
     // track smearing
     TVector3 init = rotatedmom;
-    rotatedmom.SetTheta(rotatedmom.Theta() + gRandom->Gaus(0, trackRes));
-    rotatedmom.Rotate(gRandom->Uniform(0, TMath::TwoPi()), init);
+    rotatedmom.SetTheta(gRandom->Gaus(rotatedmom.Theta(), trackRes));
+    rotatedmom.SetPhi(gRandom->Gaus(rotatedmom.Phi(), trackRes));
 
     for (int i = 0; i < 5; i++) {
       fAngle[i] =

@@ -34,6 +34,7 @@ class PrtPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
   PrtRun *fRun;
   int fRunType, fGeomType, fPid, fPdg, iter;
   double fRadiatorL, fRadiatorW, fRadiatorH;
+  double fTracking;
   G4ParticleGun *fParticleGun;
   G4ParticleDefinition *fParticleOP, *fParticle[5];
   PrtPrimaryGeneratorMessenger *fGunMessenger;

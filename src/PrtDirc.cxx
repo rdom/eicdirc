@@ -130,10 +130,10 @@ int main(int argc, char **argv) {
     }
   }
 
-  if (runtype == 2 && trackres < 0) {
-    if (particle == "mix_pie") trackres = 0.0022;
-    else trackres = 0.0005;
-  }
+  // if (runtype == 2 && trackres < 0) {
+  //   if (particle == "mix_pie") trackres = 0.0022;
+  //   else trackres = 0.0005;
+  // }
 
   if (outfile == "" && (runtype == 0 || runtype == 10)) outfile = "hits.root"; // simulation
   if (outfile == "" && (runtype == 1 || runtype == 5))
@@ -170,7 +170,8 @@ int main(int argc, char **argv) {
   if (radiator.size()) run->setRadiator(atoi(radiator));
   if (lensId.size()) run->setLens(atoi(lensId));
   if (mcpLayout.size()) run->setPmtLayout(atoi(mcpLayout));
-  if (trackres > -1) run->setBeamSize(trackres);
+  if (trackres > -1) run->setTrackingResTheta(trackres);
+  if (trackres > -1) run->setTrackingResPhi(trackres);
   if (testVal1.size()) run->setTest1(atof(testVal1));
   if (testVal2.size()) run->setTest2(atof(testVal2));
   if (testVal3.size()) run->setTest3(atof(testVal3));

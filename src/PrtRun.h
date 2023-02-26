@@ -45,6 +45,8 @@ class PrtRun : public TObject {
   Double_t getBeamX() const { return fBeamX; }
   Double_t getBeamZ() const { return fBeamZ; }
   Double_t getBeamSize() const { return fBeamSize; }
+  Double_t getTrackingResTheta() const { return fTrackingResTheta; }     	
+  Double_t getTrackingResPhi() const { return fTrackingResPhi; }
   Double_t getTimeSigma() const { return fTimeSigma; }
   Double_t getTimeCut() const { return fTimeCut; }
   Double_t getSimOffset() const { return fSimOffset; }
@@ -81,6 +83,8 @@ class PrtRun : public TObject {
   void setBeamX(Double_t v) { fBeamX = v; }
   void setBeamZ(Double_t v) { fBeamZ = v; }
   void setBeamSize(Double_t v) { fBeamSize = v; }
+  void setTrackingResTheta(Double_t v) { fTrackingResTheta = v; }
+  void setTrackingResPhi(Double_t v) { fTrackingResPhi = v; }
   void setTimeSigma(Double_t v) { fTimeSigma = v; }
   void setTimeCut(Double_t v) { fTimeCut = v; }
   void setSimOffset(Double_t v) { fSimOffset = v; }
@@ -119,6 +123,8 @@ class PrtRun : public TObject {
   Double_t fBeamX;
   Double_t fBeamZ;
   Double_t fBeamSize;
+  Double_t fTrackingResTheta;
+  Double_t fTrackingResPhi;
   Double_t fTimeSigma;
   Double_t fTimeCut;
   Double_t fSimOffset;
@@ -129,6 +135,6 @@ class PrtRun : public TObject {
   Double_t fTest2;
   Double_t fTest3;
 
-  ClassDef(PrtRun, 2);
+  ClassDef(PrtRun, 3);
 };
 #endif
