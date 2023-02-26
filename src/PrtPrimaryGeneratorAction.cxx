@@ -164,9 +164,9 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
       } else {
 	std::cout << "fParticleGun->GetParticleMomentum() " << fParticleGun->GetParticleMomentum() * MeV << std::endl;
 	
-        double dtheta = get_res(grtheta, theta, 0.001 * fParticleGun->GetParticleMomentum());
-        double dphi = get_res(grphi, theta, 0.001 * fParticleGun->GetParticleMomentum());
-	std::cout << "track resolution dtheta = " << dtheta <<  " mrad, dphi = " << dphi << "mrad" << std::endl;
+        double dtheta = 0.001 * get_res(grtheta, theta, 0.001 * fParticleGun->GetParticleMomentum());
+        double dphi = 0.001 * get_res(grphi, theta, 0.001 * fParticleGun->GetParticleMomentum());
+	std::cout << "track resolution dtheta = " << dtheta <<  " mrad, dphi = " << dphi << " mrad" << std::endl;
 
         vec.setTheta(G4RandGauss::shoot(theta, dtheta));
         vec.setPhi(G4RandGauss::shoot(phi, dphi));
