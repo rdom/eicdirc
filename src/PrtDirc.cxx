@@ -130,7 +130,7 @@ int main(int argc, char **argv) {
     }
   }
 
-  if (runtype == 2 &&trackres < 0) {
+  if (runtype == 2 && trackres < 0) {
     if (particle == "mix_pie") trackres = 0.0022;
     else trackres = 0.0005;
   }

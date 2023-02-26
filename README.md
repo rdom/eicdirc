@@ -116,8 +116,9 @@ example:
 -timecut   time cut constant [ns]
                0.5  (default)  
 
--trackres   time resolution [rad]
-               0.0005  (default)  
+-trackres   tracking resolution [rad]
+               0.0005  (default)
+	       100 use realistic, mapped values
 
 -gx target's X offset
 
