@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
   TApplication theApp("EicDirc", 0, 0);
 
   G4String macro, events, field, ev, radiator, physlist, session, geomTheta, geomPhi, displayOpt,
-    lensId, particle = "mix_pip", testVal1, testVal2, testVal3, prismStepX, prismStepY,
+    lensId, particle = "", testVal1, testVal2, testVal3, prismStepX, prismStepY,
             beamX, timeSigma, timeCut, mcpLayout;
   TString infile = "", lutfile = "", pdffile = "", outfile = "";
   int geometry(-1), firstevent(0), runtype(0), study(0), fid(0), verbose(0), batchmode(0);
