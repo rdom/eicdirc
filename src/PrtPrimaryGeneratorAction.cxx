@@ -9,6 +9,7 @@
 #include "G4ParticleDefinition.hh"
 #include "G4SystemOfUnits.hh"
 #include "globals.hh"
+#include "G4RunManager.hh"
 
 #include "PrtManager.h"
 
@@ -44,6 +45,7 @@ PrtPrimaryGeneratorAction::PrtPrimaryGeneratorAction()
 
   iter = 0;
   fPid = 4;
+  fCurrentEvent = -1;
 
 
   // set tracking resolution
@@ -81,20 +83,20 @@ PrtPrimaryGeneratorAction::PrtPrimaryGeneratorAction()
   
 }
 
-double PrtPrimaryGeneratorAction::get_res(TGraph *g[3], double theta, double mom){
+double PrtPrimaryGeneratorAction::get_res(TGraph *gg[3], double theta, double mom){
 
   double x[3], y[3];
   x[0] = 2.0 * atan(exp(-1 * 1.5)) * TMath::RadToDeg();  // 25
   x[1] = 2.0 * atan(exp(0)) * TMath::RadToDeg();         // 90
   x[2] = 2.0 * atan(exp(-1 * -1.5)) * TMath::RadToDeg(); // 155
 
-  y[0] = g[0]->Eval(mom);
-  y[1] = g[1]->Eval(mom);
-  y[2] = g[2]->Eval(mom);
+  y[0] = gg[0]->Eval(mom);
+  y[1] = gg[1]->Eval(mom);
+  y[2] = gg[2]->Eval(mom);
 
   TGraph * gr = new TGraph(3,x,y);    
   return gr->Eval(theta);;
-};
+}
 
 PrtPrimaryGeneratorAction::~PrtPrimaryGeneratorAction() {
   delete fParticleGun;
@@ -114,6 +116,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
   fRadiatorW = fRun->getRadiatorW();
   fRadiatorH = fRun->getRadiatorH();
   fGeomType = fRun->getGeometry();
+  fCurrentEvent++;
 
   if (pdg != 0) {
     if (pdg == 2212) fPid = 4;
@@ -147,7 +150,9 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
     // vec.setPhi(phi);
     // fParticleGun->SetParticleMomentumDirection(vec);
     // fParticleGun->GeneratePrimaryVertex(anEvent);
-    
+
+    if(fCurrentEvent > 10000) fTracking = 0.0005; // small smearing for PDFs
+
     if (theta > 0 && theta < M_PI) {
       if (fTracking < 0.00001) {
         vec.setTheta(theta);

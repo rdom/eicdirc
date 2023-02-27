@@ -28,7 +28,7 @@ class PrtPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
 
   void SetOptPhotonPolar();
   void SetOptPhotonPolar(G4double);
-  double get_res(TGraph *g[3], double theta, double mom);
+  double get_res(TGraph *gg[3], double theta, double mom);
 
  private:
   PrtRun *fRun;
@@ -38,6 +38,7 @@ class PrtPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
   G4ParticleGun *fParticleGun;
   G4ParticleDefinition *fParticleOP, *fParticle[5];
   PrtPrimaryGeneratorMessenger *fGunMessenger;
+  int fCurrentEvent;
 
   TGraph *grtheta[3], *grphi[3];
 };
