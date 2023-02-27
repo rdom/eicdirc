@@ -293,7 +293,6 @@ void PrtLutReco::Run(int start, int end) {
     // rotatedmom = (ppa - pb);
 
     // track smearing
-    TVector3 init = rotatedmom;
     rotatedmom.SetTheta(gRandom->Gaus(rotatedmom.Theta(), trackRes));
     rotatedmom.SetPhi(gRandom->Gaus(rotatedmom.Phi(), trackRes));
 
@@ -438,7 +437,8 @@ void PrtLutReco::Run(int start, int end) {
         }
       }
 
-      if (isGoodHit_gr || 1) { // tmp for plate ev
+      // if (isGoodHit_gr || 1) { // tmp for plate ev
+      if (isGoodHit_gr) {
         nsHits++;
         tnph_gr[pid]++;
         if (frun->getPid() == 10005) {
