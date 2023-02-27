@@ -194,12 +194,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
     ch.SetBranchAddress("cspr", &cspr);
     for (int i = 0; i < ch.GetEntries(); i++) {
       ch.GetEvent(i);
-      std::cout << pmt <<" (corr) " << corr << std::endl;
-      
       fCorr[pmt] = (fabs(corr) < 0.017) ? corr : 0.00001;
-      std::cout << " fCorr[pmt]  " <<  fCorr[pmt]  << std::endl;
-      
-      // if (pixels < 8) fCorr[pmt] = 0.00001; 
       for (int h = 0; h < 5; h++) {
         fSigma[h] = 0.001 * fabs(cspr[h]) * 0.95;
         if (fSigma[h] > 0.02) fSigma[h] = 0.01;
@@ -297,9 +292,13 @@ void PrtLutReco::Run(int start, int end) {
     // rotatedmom = (ppa - pb);
 
     // track smearing
+    // TVector3 init = rotatedmom;
+    // rotatedmom.SetTheta(gRandom->Gaus(rotatedmom.Theta(), trackRes));
+    // rotatedmom.Rotate(gRandom->Uniform(0, TMath::TwoPi()), init);
+
     rotatedmom.SetTheta(gRandom->Gaus(rotatedmom.Theta(), trackRes));
     rotatedmom.SetPhi(gRandom->Gaus(rotatedmom.Phi(), trackRes));
-
+    
     for (int i = 0; i < 5; i++) {
       fAngle[i] =
         acos(sqrt(mome * mome + ft.mass(i) * ft.mass(i)) / mome / 1.4738); // 1.4738 = 370 = 3.35
