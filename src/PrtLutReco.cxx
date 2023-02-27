@@ -194,8 +194,12 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
     ch.SetBranchAddress("cspr", &cspr);
     for (int i = 0; i < ch.GetEntries(); i++) {
       ch.GetEvent(i);
+      std::cout << pmt <<" (corr) " << corr << std::endl;
+      
       fCorr[pmt] = (fabs(corr) < 0.017) ? corr : 0.00001;
-      if (pixels < 8) fCorr[pmt] = 0.00001;
+      std::cout << " fCorr[pmt]  " <<  fCorr[pmt]  << std::endl;
+      
+      // if (pixels < 8) fCorr[pmt] = 0.00001; 
       for (int h = 0; h < 5; h++) {
         fSigma[h] = 0.001 * fabs(cspr[h]) * 0.95;
         if (fSigma[h] > 0.02) fSigma[h] = 0.01;
