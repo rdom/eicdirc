@@ -108,7 +108,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
   PrtManager::Instance()->addEvent(PrtEvent());
   int pdg = fabs(fRun->getPid());
   double theta = (180 - fRun->getTheta()) * TMath::DegToRad();
-  double theta2 = (180 - fRun->getTest1()) * TMath::DegToRad();
+  // double theta2 = (180 - fRun->getTest1()) * TMath::DegToRad();
   double phi = fRun->getPhi() * TMath::DegToRad();
   double zpos = fRun->getBeamZ();
   double ypos = fRun->getBeamX();
@@ -158,9 +158,19 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
         vec.setTheta(theta);
         vec.setPhi(phi);
       } else if (fTracking < 10) {
-	vec.setTheta(G4RandGauss::shoot(theta, fTracking));
+
+        // // smear track resolution
+        // vec.setTheta(theta);
+        // vec.setPhi(phi);
+        // G4ThreeVector vec0 = vec;
+        // vec.setTheta(G4RandGauss::shoot(theta, fTracking));
+        // vec.rotate(M_PI * G4UniformRand(), vec0.unit());
+
+        vec.setTheta(G4RandGauss::shoot(theta, fTracking));
         vec.setPhi(G4RandGauss::shoot(phi, fTracking));
-	std::cout << "track resolution dtheta = " << fTracking <<  " mrad, dphi = " << fTracking << " mrad" << std::endl;
+	
+        std::cout << "track resolution dtheta = " << fTracking << " mrad, dphi = " << fTracking
+                  << " mrad" << std::endl;
       } else {	
         double dtheta = 0.001 * get_res(grtheta, theta, 0.001 * fParticleGun->GetParticleMomentum());
         double dphi = 0.001 * get_res(grphi, theta, 0.001 * fParticleGun->GetParticleMomentum());
@@ -201,11 +211,11 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
     if (fGeomType == 2) barShift = 0;
 
     fParticleGun->SetParticlePosition(G4ThreeVector(0, barShift, 0.5 * fRadiatorL - 0.5));
-    G4ThreeVector vec(0, 0, -1);
-    vec.setTheta(acos(G4UniformRand()));
-    vec.setPhi(2 * M_PI * G4UniformRand());
+    G4ThreeVector v(0, 0, -1);
+    v.setTheta(acos(G4UniformRand()));
+    v.setPhi(2 * M_PI * G4UniformRand());
 
-    fParticleGun->SetParticleMomentumDirection(vec);
+    fParticleGun->SetParticleMomentumDirection(v);
   }
 
   fParticleGun->GeneratePrimaryVertex(anEvent);

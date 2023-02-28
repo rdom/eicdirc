@@ -125,7 +125,7 @@ G4ClassificationOfNewTrack PrtStackingAction::ClassifyNewTrack(const G4Track *aT
       aTrack->GetDynamicParticle()->GetParticleDefinition()->GetParticleName();
 
     // kill opticalphotons from secondaries
-    // if(aTrack->GetParentID() == 1 && ParticleName == "opticalphoton" ) 	  return fKill;
+    // if(aTrack->GetParentID() != 1 && ParticleName == "opticalphoton" ) 	  return fKill;
 
     if (ParticleName == "opticalphoton") {
       // apply detector efficiency at the production stage:

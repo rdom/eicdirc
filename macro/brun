@@ -29,7 +29,7 @@ echo $tseed
 # for i in {0..9}; do ../build/eicdirc -seed $tseed$i -o h_8b$i.root  -theta 30 -w 0 -g 1 -c 2038 -l 3 -t3 5 -x mix_pik -e 1 -w 0 -e 500 -b 1  > l_8b$i.log & done
 # for i in {0..9}; do ../build/eicdirc -seed $tseed$i -o h_1b$i.root  -theta 30 -w 0 -g 1 -c 2031 -l 3 -t3 5 -x mix_pik -e 1 -w 0 -e 500 -b 1  > l_1b$i.log & done
 
-for i in {0..9}; do ../build/eicdirc -seed $tseed$i -o h_b$i.root  -theta 40 -w 0 -g 1 -c 2031 -l 3 -t3 5 -x mix_pik -e 1 -w 0 -e 500 -b 1 > l_b$i.log & done
+for i in {0..24}; do ../build/eicdirc -seed $tseed$i -o h_b$i.root  -theta 30 -w 0 -g 1 -c 2031 -l 3 -x mix_pie -w 0 -e 200 -trackres 0.0022 -b 1 > l_b$i.log & done
 
 sleep 1
 
@@ -46,4 +46,4 @@ done
 
 sleep 2
 
-hadd -f h1tm_40h1phi.root h_b*.root
+hadd -f hgen_pie_ns00.root h_b*.root

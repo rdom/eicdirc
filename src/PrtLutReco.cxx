@@ -73,7 +73,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
   int col[] = {kRed + 1, kBlue + 1, kBlack};
   for (int i = 0; i < 3; i++) {
     fHistDiff[i] = new TH1F(Form("TimeDiff_%d", i), ";t_{measured}-t_{calculated} [ns];entries [#]",
-                            500, -25, 25);
+                            500, -10, 10);
     fHistDiff[i]->SetLineColor(col[i]);
   }
   for (int h = 0; h < 5; h++) {
@@ -250,7 +250,7 @@ void PrtLutReco::Run(int start, int end) {
   int nEvents = fChain->GetEntries();
   if (end == 0) end = nEvents;
 
-  int pdfstart = 10000;
+  int pdfstart = 5000;
   if (end > pdfstart) end = pdfstart;
   if (fMethod == 4) {
     start = pdfstart;
@@ -295,9 +295,9 @@ void PrtLutReco::Run(int start, int end) {
     // TVector3 init = rotatedmom;
     // rotatedmom.SetTheta(gRandom->Gaus(rotatedmom.Theta(), trackRes));
     // rotatedmom.Rotate(gRandom->Uniform(0, TMath::TwoPi()), init);
-
-    rotatedmom.SetTheta(gRandom->Gaus(rotatedmom.Theta(), trackRes));
-    rotatedmom.SetPhi(gRandom->Gaus(rotatedmom.Phi(), trackRes));
+    
+    rotatedmom.SetTheta(gRandom->Gaus(rotatedmom.Theta(), trackingResTheta));
+    rotatedmom.SetPhi(gRandom->Gaus(rotatedmom.Phi(), trackingResPhi));
     
     for (int i = 0; i < 5; i++) {
       fAngle[i] =
