@@ -653,7 +653,7 @@ void PrtLutReco::Run(int start, int end) {
         }
 
         if (fp1 == 0 && mom < 1.5) { /// handle tails
-          fLnDiffTi[fp1]->Fit("gaus", "S", "", m1 - 2.0 * s1, 500);
+          fLnDiffTi[fp1]->Fit("gaus", "S", "", m1 - 1.5 * s1, 500);
           ff = fLnDiffTi[fp1]->GetFunction("gaus");
           m2 = ff->GetParameter(1);
           s2 = ff->GetParameter(2);
@@ -673,7 +673,7 @@ void PrtLutReco::Run(int start, int end) {
           ff->SetLineColor(kBlack);
         }
         if (fp1 == 0 && mom < 1.5) { /// handle tails
-          fLnDiffTi[fp2]->Fit("gaus", "S", "", -500, m2 + 2.0 * s2);
+          fLnDiffTi[fp2]->Fit("gaus", "S", "", -500, m2 + 1.5 * s2);
           ff = fLnDiffTi[fp2]->GetFunction("gaus");
           m2 = ff->GetParameter(1);
           s2 = ff->GetParameter(2);

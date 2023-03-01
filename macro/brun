@@ -46,4 +46,4 @@ done
 
 sleep 2
 
-hadd -f hgen_pie_ns00.root h_b*.root
+hadd -f pie30.root h_b*.root
