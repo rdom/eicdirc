@@ -35,7 +35,7 @@ class PrtFastSimModelTracker : public G4VFastSimulationModel {
   
  private:
   PrtRun *fRun;
-  int fTrackingRes;
+  double fTrackingRes;
   TGraph *grtheta[3], *grphi[3];
 };
 

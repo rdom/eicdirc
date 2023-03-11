@@ -109,6 +109,8 @@ void PrtFastSimModelTracker::DoIt(const G4FastTrack &aFastTrack, G4FastStep &aFa
   dir.setPhi(G4RandGauss::shoot(dir.getPhi(), dphi));
   aFastStep.ProposePrimaryTrackFinalMomentumDirection(dir);
 
+  std::cout << "dtheta " << dtheta << std::endl;
+  
   fRun->setTrackingResTheta(dtheta);
   fRun->setTrackingResPhi(dphi);
 
