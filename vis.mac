@@ -31,7 +31,9 @@
 
 
 # Draw coordinate axes:
-# /vis/scene/add/axes 0.78 0 2.100100001 0.01 m auto false
+/vis/scene/add/axes 0.7 0 -1.82 0.01 m auto false
+/vis/scene/add/axes 0 0 0 0.01 m auto false
+/vis/scene/add/axes 0.7 0 1.33 0.01 m auto false
 
 # Draw smooth trajectories at end of event, showing trajectory points
 # as markers 2 pixels wide:

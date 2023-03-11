@@ -115,6 +115,8 @@ class PrtTools {
   void set_style(TCanvas *c);
   void save(TPad *c= NULL,TString path="", int what=0, int style=0);
 
+  double theta_to_eta(double t) { return -TMath::Log((tan(0.5 * TMath::DegToRad() * t))); }
+  double eta_to_theta(double eta) { return  2.0*atan(exp(-eta))*TMath::RadToDeg(); }
 
   void add_canvas(TString name="c",int w=800, int h=400);
   void add_canvas(TCanvas *c);

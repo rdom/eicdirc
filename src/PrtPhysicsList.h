@@ -3,6 +3,8 @@
 
 #include "globals.hh"
 #include "G4VUserPhysicsList.hh"
+#include "G4FastSimulationPhysics.hh"
+
 
 class G4Cerenkov;
 class PrtCherenkovProcess;
@@ -30,6 +32,7 @@ class PrtPhysicsList : public G4VUserPhysicsList {
   void ConstructEM();
   void ConstructHad();
   void ConstructOp();
+  void AddParameterisation();
 
   // for the Messenger
   void SetVerbose(G4int);
@@ -46,6 +49,7 @@ class PrtPhysicsList : public G4VUserPhysicsList {
   G4OpBoundaryProcess *fBoundaryProcess;
 
   PrtPhysicsListMessenger *fMessenger;
+  
 };
 
 #endif

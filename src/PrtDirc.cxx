@@ -111,7 +111,7 @@ int main(int argc, char **argv) {
       beamZ = -600;
     }
     if (geometry == 1 || geometry == 11) {
-      beamZ = -400;
+      beamZ = -0;
     }
     if (geometry == 2 || geometry == 12) {
       beamZ = 10;

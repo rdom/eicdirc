@@ -8,58 +8,38 @@
 #include "G4RunManager.hh"
 #include "G4PhysicalConstants.hh"
 
-PrtSteppingAction::PrtSteppingAction()
-: G4UserSteppingAction()
-{ 
+#include <G4TouchableHistory.hh>
+#include "PrtManager.h"
+
+PrtSteppingAction::PrtSteppingAction() : G4UserSteppingAction() {
   fScintillationCounter = 0;
-  fCerenkovCounter      = 0;
+  fCerenkovCounter = 0;
   fEventNumber = -1;
 }
 
-PrtSteppingAction::~PrtSteppingAction(){ }
+PrtSteppingAction::~PrtSteppingAction() {}
 
+void PrtSteppingAction::UserSteppingAction(const G4Step *step) {
+  G4int eventNumber = G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID();
 
-void PrtSteppingAction::UserSteppingAction(const G4Step* step)
-{
-  G4int eventNumber = G4RunManager::GetRunManager()->
-                                              GetCurrentEvent()->GetEventID();
+  G4Track *track = step->GetTrack();
 
-  // if (eventNumber != fEventNumber) {
-  //    fEventNumber = eventNumber;
-  //    fScintillationCounter = 0;
-  //    fCerenkovCounter = 0;
-  // }
-
-  G4Track* track = step->GetTrack();
-  // int parentId = track->GetParentID();
-
-  if(track->GetCurrentStepNumber()>50000 || track->GetTrackLength() > 30000) {
-    // std::cout<<"WRN: too many steps or track length > 30 m  N=" <<track->GetCurrentStepNumber()<<" Len = "<<track->GetTrackLength()/1000. <<std::endl;    
+  if (track->GetCurrentStepNumber() > 50000 || track->GetTrackLength() > 30000) {
+    // std::cout<<"WRN: too many steps or track length > 30 m  N="
+    // <<track->GetCurrentStepNumber()<<" Len = "<<track->GetTrackLength()/1000. <<std::endl;
     track->SetTrackStatus(fStopAndKill);
   }
 
-  //if(step->GetPreStepPoint()->GetPhysicalVolume()->GetName()=="Bar" && step->GetPostStepPoint()->GetPhysicalVolume()->GetName()=="ExpHall" ) track->SetTrackStatus(fStopAndKill);
-  if(step->GetPreStepPoint()->GetPhysicalVolume()->GetName()=="wMcp" && step->GetPostStepPoint()->GetPhysicalVolume()->GetName()=="wDirc" ) track->SetTrackStatus(fStopAndKill);
-  if(step->GetPreStepPoint()->GetPhysicalVolume()->GetName()=="wFd" && step->GetPostStepPoint()->GetPhysicalVolume()->GetName()=="wDirc" ) track->SetTrackStatus(fStopAndKill);
-  //if(step->GetPreStepPoint()->GetPosition().x()>10 ) track->SetTrackStatus(fStopAndKill);
-    
-  // G4String ParticleName = track->GetDynamicParticle()->GetParticleDefinition()->GetParticleName();    
-  // std::cout<<"ParticleName "<<ParticleName <<std::endl;  
-  // if (ParticleName == "opticalphoton") return;
-  // const std::vector<const G4Track*>* secondaries = step->GetSecondaryInCurrentStep();  
-  // if (secondaries->size()>0) {
-  //    for(unsigned int i=0; i<secondaries->size(); ++i) {
-  //       if (secondaries->at(i)->GetParentID()>0) {
-  //          if(secondaries->at(i)->GetDynamicParticle()->GetParticleDefinition()
-  //              == G4OpticalPhoton::OpticalPhotonDefinition()){
-  //             if (secondaries->at(i)->GetCreatorProcess()->GetProcessName()
-  //              == "Scintillation")fScintillationCounter++;
-  //             if (secondaries->at(i)->GetCreatorProcess()->GetProcessName()
-  //              == "Cerenkov")fCerenkovCounter++;
-  //          }
-  //       }
-  //    }
-  // }
-  
-}
+  int parentId = track->GetParentID();
+  G4String prevname = "", postvname = "";
+  if (step->GetPreStepPoint()->GetPhysicalVolume() &&
+      step->GetPostStepPoint()->GetPhysicalVolume()) {
+    prevname = step->GetPreStepPoint()->GetPhysicalVolume()->GetName();
+    postvname = step->GetPostStepPoint()->GetPhysicalVolume()->GetName();
+  }
 
+  // if(prevname =="Bar" && postvname =="ExpHall" ) track->SetTrackStatus(fStopAndKill);
+  if (prevname == "wMcp" && postvname == "wDirc") track->SetTrackStatus(fStopAndKill);
+  if (prevname == "wFd" && postvname == "wDirc") track->SetTrackStatus(fStopAndKill);
+  // if(step->GetPreStepPoint()->GetPosition().x()>10 ) track->SetTrackStatus(fStopAndKill);
+}

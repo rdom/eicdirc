@@ -38,6 +38,7 @@ class PrtDetectorConstruction : public G4VUserDetectorConstruction {
   G4LogicalVolume *lDirc;
   G4LogicalVolume *lFd;
   G4LogicalVolume *lBar;
+  G4LogicalVolume *lTracker;
   G4LogicalVolume *lGlue;
   G4LogicalVolume *lMirror;
   G4LogicalVolume *lLens1;
@@ -58,6 +59,7 @@ class PrtDetectorConstruction : public G4VUserDetectorConstruction {
   G4VPhysicalVolume *pDirc[100];
 
   G4VPhysicalVolume *wBar;
+  G4VPhysicalVolume *wTracker;
   G4VPhysicalVolume *wGlue;
   G4VPhysicalVolume *wMirror;
   G4VPhysicalVolume *wDirc;

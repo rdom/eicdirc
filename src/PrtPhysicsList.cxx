@@ -22,6 +22,8 @@
 #include "G4OpRayleigh.hh"
 #include "G4OpMieHG.hh"
 #include "G4OpBoundaryProcess.hh"
+#include "G4FastSimulationManagerProcess.hh"
+
 
 #include "G4LossTableManager.hh"
 #include "G4EmSaturation.hh"
@@ -75,6 +77,7 @@ void PrtPhysicsList::ConstructProcess() {
   ConstructEM();
   if(fPhysList == 2) ConstructHad();
   ConstructOp();
+  AddParameterisation();
 }
 
 #include "G4Decay.hh"
@@ -435,8 +438,6 @@ void PrtPhysicsList::ConstructHad()
     }
 }
 
-
-
 void PrtPhysicsList::ConstructOp() {
   fCerenkovProcess = new G4Cerenkov("Cerenkov");
   fCerenkovProcess0 = new PrtCherenkovProcess("Cerenkov");
@@ -522,4 +523,16 @@ void PrtPhysicsList::SetCuts() {
   SetCutsWithDefault();
 
   if (verboseLevel > 0) DumpCutValuesTable();
+}
+
+void PrtPhysicsList::AddParameterisation() {
+
+  auto fastsim = new G4FastSimulationManagerProcess();
+  auto particleIterator = GetParticleIterator();
+  particleIterator->reset();
+  while ((*particleIterator)()) {
+    G4ParticleDefinition *particle = particleIterator->value();
+    G4ProcessManager *pmanager = particle->GetProcessManager();
+    pmanager->AddProcess(fastsim, -1, 0, 0);
+  }
 }

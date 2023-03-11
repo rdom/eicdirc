@@ -29,6 +29,8 @@
 #include "G4UniformMagField.hh"
 #include "G4TransportationManager.hh"
 #include "G4FieldManager.hh"
+#include "G4AutoDelete.hh"
+#include "G4ProductionCuts.hh"
 
 
 #include "PrtManager.h"
@@ -36,6 +38,8 @@
 #include "PrtPrizmSD.h"
 #include "PrtPixelSD.h"
 #include "PrtField.h"
+#include "PrtFastSimModelTracker.h"
+
 
 PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction() {
 
@@ -94,7 +98,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
 
   if (fGeomType == 1 || fGeomType == 11) { // ePIC ECCE
     fNBoxes = 12;
-    fRadius = 729.6;
+    fRadius = 700 + 0.5 * fBar[0]; // old = 729.6;
     fNBar = 10;
     fBar[2] = 1050;
   }
@@ -220,7 +224,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
 
       G4RotationMatrix *tRot = new G4RotationMatrix();
       tRot->rotateZ(-tphi);
-      new G4PVPlacement(tRot, G4ThreeVector(dx, dy, 0), lDirc, "wDirc", lExpHall, false, i);
+      new G4PVPlacement(tRot, G4ThreeVector(dx, dy, 420 - 170 + 30 ), lDirc, "wDirc", lExpHall, false, i); // makes end at -182
     }
   }
 
@@ -239,6 +243,10 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   G4Box *gGlueE = new G4Box("gGlueE", 0.5 * evprismhight, 0.5 * fBoxWidth, 0.5 * gluethickness);
   lGlueE = new G4LogicalVolume(gGlueE, epotekMaterial, "lGlueE", 0, 0, 0);
 
+  // Tracker
+  G4Box *gTracker = new G4Box("gTracker", 0.5, fNBar * 0.5 * fBar[1], 4 * 0.5 * fBar[2]);
+  lTracker = new G4LogicalVolume(gTracker, defaultMaterial, "lTracker", 0, 0, 0);
+
   if (fNBar == 1) {
     for (int j = 0; j < 4; j++) {
       double z = -0.5 * dirclength + 0.5 * fBar[2] + (fBar[2] + gluethickness) * j;
@@ -246,6 +254,8 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
       wGlue = new G4PVPlacement(0, G4ThreeVector(0, 0, z + 0.5 * (fBar[2] + gluethickness)), lGlue,
                                 "wGlue", lDirc, false, 0);
     }
+    wTracker = new G4PVPlacement(0, G4ThreeVector(-0.5 * fBar[0] - 1, 0, 0), lTracker, "wTracker",
+                                 lDirc, false, 0);
   } else {
     int id = 0, nparts = 4;
     if (fEvType == 3 || fEvType == 5) {
@@ -270,6 +280,8 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
         id++;
       }
     }
+    wTracker = new G4PVPlacement(0, G4ThreeVector(-0.5 * fBar[0] - 1, 0, 0), lTracker, "wTracker",
+                                 lDirc, false, 0);
   }
 
   // The Mirror
@@ -1207,7 +1219,7 @@ void PrtDetectorConstruction::SetVisualization() {
   waBar->SetVisibility(true);
   lBar->SetVisAttributes(waBar);
   lExpVol->SetVisAttributes(waBar);
-
+  
   G4VisAttributes *waGlue = new G4VisAttributes(G4Colour(0., 0.4, 0.9, 0.1));
   waGlue->SetVisibility(true);
   lGlue->SetVisAttributes(waGlue);
@@ -1217,6 +1229,10 @@ void PrtDetectorConstruction::SetVisualization() {
   waMirror->SetVisibility(true);
   lMirror->SetVisAttributes(waMirror);
 
+  G4VisAttributes *waTracker = new G4VisAttributes(G4Colour(1., 1., 0.7, 0.2));
+  waTracker->SetVisibility(true);
+  lTracker->SetVisAttributes(waTracker);
+  
   double transp = 0.4;
   G4VisAttributes *vaLens = new G4VisAttributes(G4Colour(0., 1., 1., transp));
   vaLens->SetForceWireframe(true);
@@ -1264,6 +1280,15 @@ void PrtDetectorConstruction::SetVisualization() {
 }
 
 void PrtDetectorConstruction::ConstructSDandField() {
+
+  // smearing at the tracker
+  G4Region *r = new G4Region("BarRegion");
+  r->AddRootLogicalVolume(lTracker);
+  auto fastSimModelTracker = new PrtFastSimModelTracker("tracker", r);
+
+  // // Register the fast simulation model for deleting
+  G4AutoDelete::Register(fastSimModelTracker);
+
   // Sensitive detectors
   PrtPixelSD *pixelSD = new PrtPixelSD("PixelSD", "PixelHitsCollection");
   G4SDManager::GetSDMpointer()->AddNewDetector(pixelSD);
