@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
             beamX, timeSigma, timeCut, mcpLayout;
   TString infile = "", lutfile = "", pdffile = "", outfile = "";
   int geometry(-1), firstevent(0), runtype(0), study(0), fid(0), verbose(0), batchmode(0);
-  double momentum(-1), beamZ(20000), trackres(-1);
+  double momentum(-1), beamZ(20000), trackingres(-1);
 
   G4long myseed = 0;
   for (G4int i = 1; i < argc; i = i + 2) {
@@ -90,7 +90,7 @@ int main(int argc, char **argv) {
     else if (G4String(argv[i]) == "-gx") beamX = argv[i + 1];
     else if (G4String(argv[i]) == "-timeres") timeSigma = argv[i + 1];
     else if (G4String(argv[i]) == "-timecut") timeCut = argv[i + 1];
-    else if (G4String(argv[i]) == "-trackres") trackres = atof(argv[i + 1]);
+    else if (G4String(argv[i]) == "-trackingres") trackingres = atof(argv[i + 1]);
     else if (G4String(argv[i]) == "-v") verbose = atoi(argv[i + 1]);
     else if (G4String(argv[i]) == "-d") displayOpt = argv[i + 1];
 
@@ -120,7 +120,7 @@ int main(int argc, char **argv) {
       if (particle == "mix_pie") momentum = 1.2;
       else if (particle == "mix_kp") momentum = 12;
       else momentum = 6;
-      if (trackres < 0) trackres = 0.0005;
+      if (trackingres < 0) trackingres = 0.0005;
     }
     if (runtype == 1) {
       particle = "opticalphoton";
@@ -130,13 +130,13 @@ int main(int argc, char **argv) {
     }
   }
 
-  // if (runtype == 2 && trackres < 0) {      
-  //   if (particle == "mix_pie") trackres = 0.0022;
-  //   else trackres = 0.0005;
+  // if (runtype == 2 && trackingres < 0) {      
+  //   if (particle == "mix_pie") trackingres = 0.0022;
+  //   else trackingres = 0.0005;
   // }
 
-  if (runtype == 2 && trackres > 50) {
-    trackres = -1;
+  if (runtype == 2 && trackingres > 50) {
+    trackingres = -1;
   }
 
   if (outfile == "" && (runtype == 0 || runtype == 10)) outfile = "hits.root"; // simulation
@@ -174,8 +174,8 @@ int main(int argc, char **argv) {
   if (radiator.size()) run->setRadiator(atoi(radiator));
   if (lensId.size()) run->setLens(atoi(lensId));
   if (mcpLayout.size()) run->setPmtLayout(atoi(mcpLayout));
-  if (trackres > -1) run->setTrackingResTheta(trackres);
-  if (trackres > -1) run->setTrackingResPhi(trackres);
+  if (trackingres > -1) run->setTrackingResTheta(trackingres);
+  if (trackingres > -1) run->setTrackingResPhi(trackingres);
   if (testVal1.size()) run->setTest1(atof(testVal1));
   if (testVal2.size()) run->setTest2(atof(testVal2));
   if (testVal3.size()) run->setTest3(atof(testVal3));

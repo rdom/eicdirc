@@ -116,7 +116,7 @@ example:
 -timecut   time cut constant [ns]
                0.5  (default)  
 
--trackres   tracking resolution [rad]
+-trackingres   tracking resolution [rad], applied at tracking layer
                0.0005  (default)
 	       100 use realistic, mapped values
 

@@ -21,6 +21,7 @@ PrtFastSimModelTracker::PrtFastSimModelTracker(G4String aModelName, G4Region *aE
   : G4VFastSimulationModel(aModelName, aEnvelope) {
 
   fRun = PrtManager::Instance()->getRun();
+  fTrackingRes = fRun->getTrackingResTheta();
 
   // set tracking resolution
   double mombins[] = {0.75, 1.25, 1.75, 2.5,  3.5,  4.5,  5.5,  6.5,  7.5,  8.5, 9.5,
@@ -95,8 +96,14 @@ void PrtFastSimModelTracker::DoIt(const G4FastTrack &aFastTrack, G4FastStep &aFa
   double mom = track.GetMomentum().mag();
 
   double theta = dir.getTheta();
-  double dtheta = 0.001 * get_res(grtheta, theta, 0.001 * mom);
-  double dphi = 0.001 * get_res(grphi, theta, 0.001 * mom);
+  double dtheta = 0, dphi = 0;
+  if (fTrackingRes < 1) {
+    dtheta = fTrackingRes;
+    dphi = fTrackingRes;
+  } else {
+    dtheta = 0.001 * get_res(grtheta, theta, 0.001 * mom);
+    dphi = 0.001 * get_res(grphi, theta, 0.001 * mom);
+  }
 
   dir.setTheta(G4RandGauss::shoot(dir.getTheta(), dtheta));
   dir.setPhi(G4RandGauss::shoot(dir.getPhi(), dphi));
