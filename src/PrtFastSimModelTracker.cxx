@@ -130,5 +130,5 @@ double PrtFastSimModelTracker::get_res(TGraph *gg[3], double theta, double mom){
   y[2] = gg[2]->Eval(mom);
 
   TGraph * gr = new TGraph(3,x,y);    
-  return gr->Eval(theta)*100;
+  return gr->Eval(theta);
 }

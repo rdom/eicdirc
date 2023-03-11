@@ -118,16 +118,13 @@ G4ClassificationOfNewTrack PrtStackingAction::ClassifyNewTrack(const G4Track *aT
 
   if (fRunType == 0 || fRunType == 5 || fRunType == 10) { // for the simulation run
 
-    if (aTrack->GetDefinition()->GetParticleName() == "opticalphoton" && aTrack->GetParentID() > 2)
-      return fKill;
+    if (aTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition()) {
 
-    G4String ParticleName =
-      aTrack->GetDynamicParticle()->GetParticleDefinition()->GetParticleName();
+      if (aTrack->GetParentID() > 2) return fKill;
 
-    // kill opticalphotons from secondaries
-    // if(aTrack->GetParentID() != 1 && ParticleName == "opticalphoton" ) 	  return fKill;
+      // kill opticalphotons from secondaries
+      // if(aTrack->GetParentID() != 1 ) 	  return fKill;
 
-    if (ParticleName == "opticalphoton") {
       // apply detector efficiency at the production stage:
       if (true) {
         double lambda = 197.0 * 2.0 * pi / (aTrack->GetMomentum().mag() * 1.0E6);
@@ -138,8 +135,7 @@ G4ClassificationOfNewTrack PrtStackingAction::ClassifyNewTrack(const G4Track *aT
       }
 
       // double angle = aTrack->GetMomentum().angle(G4ThreeVector(0, 0, 1));
-      // if(angle > 0.3) return fKill;      
-
+      // if(angle > 0.3) return fKill;
     }
   }
 
