@@ -928,7 +928,7 @@ void PrtDetectorConstruction::DefineMaterials() {
   PbF2Material->AddElement(Si, natoms = 1);
   PbF2Material->AddElement(O, natoms = 2);
 
-  SapphireMaterial = new G4Material("Sapphire", density = 4.220 * g / cm3, ncomponents = 2);
+  SapphireMaterial = new G4Material("Sapphire", density = 3.98 * g / cm3, ncomponents = 2);
   SapphireMaterial->AddElement(Al, natoms = 2);
   SapphireMaterial->AddElement(O, natoms = 3);
 

@@ -68,8 +68,6 @@ G4bool PrtFastSimModelTracker::ModelTrigger(const G4FastTrack & /*aFastTrack*/) 
 
 void PrtFastSimModelTracker::DoIt(const G4FastTrack &aFastTrack, G4FastStep &aFastStep) {
 
-  G4cout << " tracker model triggered" << G4endl;
-
   // Calculate the final position (at the outer boundary of the tracking detector)
   // of the particle with the momentum at the entrance of the tracking detector.
 
@@ -109,8 +107,6 @@ void PrtFastSimModelTracker::DoIt(const G4FastTrack &aFastTrack, G4FastStep &aFa
   dir.setPhi(G4RandGauss::shoot(dir.getPhi(), dphi));
   aFastStep.ProposePrimaryTrackFinalMomentumDirection(dir);
 
-  std::cout << "dtheta " << dtheta << std::endl;
-  
   fRun->setTrackingResTheta(dtheta);
   fRun->setTrackingResPhi(dphi);
 
