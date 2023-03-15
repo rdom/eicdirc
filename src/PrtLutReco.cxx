@@ -135,6 +135,9 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
       fTime[h][i] = new TH1F(Form("h_%d_%d", h, i), "pdf;LE time [ns]; entries [#]", 2000, 0, 100);
     }
     fSigma[h] = 0.007;
+    if (fp1 == 0) { // electron
+      fSigma[0] = 0.005;
+    }
   }
 
   // read lut
@@ -996,7 +999,7 @@ void PrtLutReco::FindPeak(double (&cangle)[5], double (&spr)[5]) {
       else cangle[h] = hthetac[h]->GetXaxis()->GetBinCenter(hthetac[h]->GetMaximumBin());
 
       fFit->SetParameters(100, cangle[h], 0.005, 10);
-      fFit->FixParameter(2, 0.003);                   // width
+      fFit->FixParameter(2, 0.005);                   // width
       // fFit->SetParLimits(2, 0.001, 0.02);      
       hthetac[h]->Fit("fgaus", "Q", "", cangle[h] - 3.5 * fSigma[h], cangle[h] + 3.5 * fSigma[h]);
       fFit->ReleaseParameter(2); // width
