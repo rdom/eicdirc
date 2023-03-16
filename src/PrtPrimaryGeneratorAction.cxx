@@ -102,7 +102,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
     // fParticleGun->SetParticleMomentumDirection(vec);
     // fParticleGun->GeneratePrimaryVertex(anEvent);
 
-    if(fCurrentEvent > 10000) fTracking = 0.0005; // small smearing for PDFs
+    // if(fCurrentEvent > 10000) fTracking = 0.0005; // small smearing for PDFs
 
     if (theta > 0 && theta < M_PI) {
 
@@ -140,12 +140,12 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
       theta = M_PI * G4UniformRand();
       theta = acos((cos(30 * deg) - cos(150 * deg)) * G4UniformRand() + cos(150 * deg));
 
-      G4ThreeVector vec0 = vec;
-      vec0.setTheta(M_PI - theta);
+      // G4ThreeVector vec0 = vec;
+      // vec0.setTheta(M_PI - theta);
 
-      theta = G4RandGauss::shoot(theta, fTracking);
+      // theta = G4RandGauss::shoot(theta, fTracking);
       vec.setTheta(M_PI - theta);
-      vec.rotate(2 * M_PI * G4UniformRand(), vec0);
+      // vec.rotate(2 * M_PI * G4UniformRand(), vec0);
       // vec.setPhi(2 * M_PI * G4UniformRand());
     }
 
