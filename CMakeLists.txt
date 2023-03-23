@@ -25,6 +25,11 @@ find_package(ROOT REQUIRED)
 include_directories(SYSTEM ${Geant4_INCLUDE_DIR} ${ROOT_INCLUDE_DIRS})
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
+# add tensorflow, cppflow 
+include_directories($ENV{HOME}/usr/include)
+include_directories(cppflow/include)
+link_directories($ENV{HOME}/usr/lib)
+
 include(${ROOT_USE_FILE})
 include(${Geant4_USE_FILE})
 
@@ -38,7 +43,7 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/src/*.h)
 ROOT_GENERATE_DICTIONARY(G__Prt PrtHit.h PrtEvent.h PrtRun.h PrtLutNode.h PrtTools.h LINKDEF src/PrtLinkDef.h MODULE Prt)
 add_library(Prt SHARED src/PrtHit.cxx src/PrtEvent.cxx src/PrtRun.cxx src/PrtLutNode.cxx src/PrtTools.cxx G__Prt.cxx)
 
-target_link_libraries(Prt ${ROOT_LIBRARIES} -lSpectrum -lHistPainter)
+target_link_libraries(Prt ${ROOT_LIBRARIES} -lSpectrum -lHistPainter -ltensorflow)
 
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4 libraries

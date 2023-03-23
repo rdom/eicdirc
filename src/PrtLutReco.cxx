@@ -7,6 +7,8 @@
 
 #include "PrtLutReco.h"
 
+#include "cppflow/cppflow.h"
+
 using std::cout;
 using std::endl;
 
@@ -223,6 +225,8 @@ void PrtLutReco::Run(int start, int end) {
   bool reflected = kFALSE;
   gStyle->SetOptFit(111);
 
+  cppflow::model model("/home/drc/dirc/eicdirc/macro/models/prtai");
+
   TVector3 fnX1 = TVector3(1, 0, 0);
   TVector3 fnY1 = TVector3(0, 1, 0);
   int nsHits(0), nsEvents(0);
@@ -314,6 +318,8 @@ void PrtLutReco::Run(int start, int end) {
 
     // double stime = FindStartTime(fEvent);
 
+    std::vector<double> vinput(6144, 0.0);
+    
     for (auto hit : fEvent->getHits()) {
 
       hitTime = hit.getLeadTime() + gRandom->Gaus(0, timeRes);
@@ -450,6 +456,7 @@ void PrtLutReco::Run(int start, int end) {
         if (frun->getPid() == 10005) {
           if (pid == 3) ft.fill_digi(mcp, pix);
         } else if (pid == 2) ft.fill_digi(mcp, pix);
+	vinput[ch] = 1;
       }
 
       isGoodHit_ti = true;
@@ -518,7 +525,7 @@ void PrtLutReco::Run(int start, int end) {
     if (tnph_gr[pid] > 1) hnph_gr[pid]->Fill(tnph_gr[pid]);
 
     double sum_nph = 0;
-    // if (mome < 2.5) { // photon yield likelihood
+    // if (mome < 2.5) {  // photon yield likelihood
     //   TF1 *f_pi = new TF1("gaus", "gaus", 0, 150);
     //   f_pi->SetParameters(1, 50, 8.7); // fix me
     //   TF1 *f_p = new TF1("gaus", "gaus", 0, 150);
@@ -536,6 +543,21 @@ void PrtLutReco::Run(int start, int end) {
       if (fabs(sum_ti) > 0.1) fLnDiffTi[pid]->Fill(1.0 * sum_ti);
     }
 
+    if(1){ // newral network
+      
+      // std::vector<int> input(6144,0);
+      // input = cppflow::cast(input, TF_UINT8, TF_FLOAT);
+      
+      // Creates a tensor from the vector with shape [X_dim, Y_dim]
+      auto input = cppflow::tensor(vinput, {1, 6144}); 
+      input = cppflow::cast(input, TF_FLOAT, TF_INT64);
+      auto output = model(input);
+       
+      // Show the predicted class
+      std::cout << output << std::endl;
+      std::cout << cppflow::arg_max(output, 1) << std::endl;
+    }
+
     if (fVerbose == 1) {
       ft.add_canvas("ff", 800, 400);
       if (hthetac[fp1]->GetMaximum() > 0) hthetac[fp1]->Scale(1 / hthetac[fp1]->GetMaximum());
@@ -551,7 +573,7 @@ void PrtLutReco::Run(int start, int end) {
 
     if (++nsEvents >= end) break;
   }
-
+  
   if (fMethod == 4) { // create pdf
     std::cout << "saving pdfs into " << fPdfPath << std::endl;
 
@@ -886,8 +908,8 @@ void PrtLutReco::Run(int start, int end) {
       ft.add_canvas(cdigi);
     }
 
-    {
-      // cherenkov ring
+    {  // cherenkov ring
+    
       // ft.add_canvas("ring" + nid, 500, 500);
 
       // fHist4->SetStats(0);
@@ -971,7 +993,6 @@ void PrtLutReco::Run(int start, int end) {
       ft.add_canvas("time" + nid, 800, 400);
       fHist1->Draw();
     }
-    std::cout << "fCorrFile " << fCorrFile << std::endl;
     
     TString filedir = fCorrFile;
     if (filedir.Contains("/")) {
