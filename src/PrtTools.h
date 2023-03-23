@@ -82,7 +82,7 @@ class PrtTools {
   void modify_run(PrtRun *run);
   PrtRun *find_run(int sid, int fid = 0);
   PrtRun *find_run(TString path);
-  void fill_digi(int pmt, int pix);
+  void fill_digi(int pmt, int pix, double w = 1);
   
   void set_palette(int p = 1);
   void set_pmtlayout(int v) { _pmtlayout = v; }
@@ -90,7 +90,8 @@ class PrtTools {
   TString get_inpath();
   TString get_outpath();
   TString get_lutpath();
-  TString get_pdfpath();  
+  TString get_pdfpath();
+  TString get_dbpath() { return _dbpath; }
   int get_channel(int tdc, int tdcch);
   int get_tdcid(int ch);
   TString rand_str(int len = 10);
@@ -105,7 +106,8 @@ class PrtTools {
   void normalize_to(TH1F *hists[], int size, double max = 1);
   TGraph *smooth(TGraph *g, int smoothness = 1);
   int shift_hist(TH1 *hist, double double_shift);
-
+  double calculate_efficiency(TH1F *h1, TH1F *h2);
+  
   TString dir(TString path);
   TString create_dir(TString inpath = "");
   void write_info(TString filename);
@@ -178,7 +180,7 @@ class PrtTools {
 
   std::vector<PrtRun *> _runs;
   PrtRun* _run;
-  array<TH2F *, 36> _hdigi{};
+  array<TH2F *, 28> _hdigi{};
   int _entries;
   int _iter = -1;
   int _printstep = 1000;

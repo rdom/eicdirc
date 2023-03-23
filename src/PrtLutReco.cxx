@@ -104,7 +104,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
                            Form("fHistMcp_%d;#theta_{C} [rad];entries [#]", i), 150, -0.05, 0.05);
   }
 
-  double pixels = frun->getTest1();
+  // double pixels = frun->getTest1();
   double range = 100;
   if (fMomentum < 5) range = 200;
   if (fMomentum < 3) range = 400;
@@ -129,8 +129,10 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
     TString la = ";ln L(K) - ln L(#pi);entries [#]";
     fLnDiffGr[h] = new TH1F(Form("LnDiffGr_%d", h), la, 400, -range, range);
     fLnDiffTi[h] = new TH1F(Form("LnDiffTi_%d", h), la, 400, -range, range);
+    fLnDiffNn[h] = new TH1F(Form("LnDiffNn_%d", h), la, 400, -range, range);
     fLnDiffGr[h]->SetLineColor(ft.color(h));
     fLnDiffTi[h]->SetLineColor(ft.color(h));
+    fLnDiffNn[h]->SetLineColor(ft.color(h));
     fLnDiffTi[h]->SetMarkerColor(ft.color(h) + 1);
  
     for (int i = 0; i < fmaxch; i++) {
@@ -158,6 +160,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
   fTimeImaging = (fMethod == 4) ? true : false;
 
   // read pdf
+  fPdfPath = pdffile;
   if (fPdfPath == "") {
     fPdfPath = infile;
     fPdfPath.ReplaceAll(".root", ".pdf.root");
@@ -222,6 +225,7 @@ void PrtLutReco::Run(int start, int end) {
   TVector3 dird, dir, momInBar(0, 0, 1), posInBar;
   double mom = fMomentum, tangle, tdiff, evtime, bartime, lenz, dirz, luttheta, hitTime;
   int tofPid(fp1), distPid(0), likePid(0);
+  int eff_total[4] = {0}, eff_nn[4] = {0};
   bool reflected = kFALSE;
   gStyle->SetOptFit(111);
 
@@ -539,23 +543,30 @@ void PrtLutReco::Run(int start, int end) {
     if (fMethod == 2 && fTimeImaging) { // time imaging
       if (tnph_ti[pid] > 1) hnph_ti[pid]->Fill(tnph_ti[pid]);
 
-      double sum_ti = 1.5 * (sumti1 - sumti2) + 30 * sum_nph;
+      double sum_ti = 1.5 * (sumti2 - sumti1) + 30 * sum_nph;
       if (fabs(sum_ti) > 0.1) fLnDiffTi[pid]->Fill(1.0 * sum_ti);
     }
 
-    if(1){ // newral network
-      
+    if (1) { // newral network
+
       // std::vector<int> input(6144,0);
       // input = cppflow::cast(input, TF_UINT8, TF_FLOAT);
-      
+
       // Creates a tensor from the vector with shape [X_dim, Y_dim]
-      auto input = cppflow::tensor(vinput, {1, 6144}); 
+      auto input = cppflow::tensor(vinput, {1, 6144});
       input = cppflow::cast(input, TF_FLOAT, TF_INT64);
       auto output = model(input);
-       
+      auto t = cppflow::arg_max(output, 1).get_tensor();
+      float* ll = static_cast<float*>(TF_TensorData(output.get_tensor().get()));
+      int nn_pid = static_cast<int*>(TF_TensorData(t.get()))[0];
+
+      fLnDiffNn[pid]->Fill(5 * (ll[fp2] - ll[fp1]));
+
       // Show the predicted class
       std::cout << output << std::endl;
-      std::cout << cppflow::arg_max(output, 1) << std::endl;
+      std::cout <<"PID "<< pid<< " nn " << nn_pid << std::endl;
+      if(pid == nn_pid) eff_nn[nn_pid]++;
+      eff_total[pid]++;
     }
 
     if (fVerbose == 1) {
@@ -572,6 +583,15 @@ void PrtLutReco::Run(int start, int end) {
     }
 
     if (++nsEvents >= end) break;
+  }
+
+  { // calclulate efficiencies
+    double eff = ft.calculate_efficiency(fLnDiffGr[fp1],fLnDiffGr[fp2]);
+    std::cout << "GR eff = " << eff << std::endl;
+    std::cout << "NN eff = " << eff_nn[2] / (float) eff_total[2] << std::endl;
+    std::cout << "eff_total " << eff_total[2] <<  " eff_nn " << eff_nn[2] << std::endl;
+    
+
   }
   
   if (fMethod == 4) { // create pdf
@@ -891,6 +911,12 @@ void PrtLutReco::Run(int start, int end) {
         fLnDiffTi[fp1]->SetName(Form("s_%2.2f", sep_ti));
         fLnDiffTi[fp1]->Draw("E same");
       }
+
+      ft.add_canvas("lh_nn" + nid, 800, 400);
+      fLnDiffNn[fp2]->GetXaxis()->SetTitle(lhtitle);
+      fLnDiffNn[fp2]->Draw();
+      fLnDiffNn[fp1]->Draw("same");
+
     }
 
     { // chromatic corrections
@@ -1233,7 +1259,6 @@ double PrtLutReco::CalcRejection(TH1F *h1, TH1F *h2, double eff) {
 
   double id = h1->Integral(ax1->FindBin(b), ax1->FindBin(range));
   double misid = h2->Integral(ax2->FindBin(b), ax2->FindBin(range));
-  std::cout << " B " << b << " " << id << " " << misid << std::endl;
   if(misid == 0) misid = 0.001; 
   return id / misid;
 }

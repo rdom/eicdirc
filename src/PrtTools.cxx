@@ -122,13 +122,13 @@ TString PrtTools::get_outpath() {
     return _dbpath + Form("%d/%sC.rec.root", _run->getStudy(), _run->getName().Data());
 }
 
-void PrtTools::fill_digi(int pmt, int pix){
+void PrtTools::fill_digi(int pmt, int pix, double w){
 
   int n = sqrt(_npix);
-  
+
   if (pmt < _npmt) {
-    if (_run->getGeometry() == 2) _hdigi[pmt]->Fill(pix / n, pix % n);
-    else _hdigi[pmt]->Fill(pix % n, pix / n);
+    if (_run->getGeometry() == 2) _hdigi[pmt]->Fill(pix / n, pix % n, w);
+    else _hdigi[pmt]->Fill(pix % n, pix / n, w);
   }
 }
 
@@ -1070,6 +1070,18 @@ int PrtTools::shift_hist(TH1 *hist, double double_shift) {
     return 0;
   }
   return 1;
+}
+
+double PrtTools::calculate_efficiency(TH1F *h1, TH1F *h2){
+  double eff = 0;
+  double left = h1->GetXaxis()->GetBinCenter(1);
+  double right = h1->GetXaxis()->GetBinCenter(h1->GetNbinsX());
+
+  double tozero = integral(h1, left, 0);
+  double total = integral(h1, left, right);
+  if (total > 0) eff = tozero / total;
+
+  return eff;
 }
 
 void PrtTools::save_canvas(int what, int style, bool rm){

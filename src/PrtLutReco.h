@@ -91,6 +91,7 @@ class PrtLutReco {
   TF1 *fFunc[5];
   TH1F *fLnDiffGr[5];
   TH1F *fLnDiffTi[5];
+  TH1F *fLnDiffNn[5];
   double fCriticalAngle;
   TString fCorrFile;
   TH1F *fTime[5][99000]; //7000
