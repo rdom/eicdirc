@@ -460,9 +460,9 @@ void PrtLutReco::Run(int start, int end) {
         if (frun->getPid() == 10005) {
           if (pid == 3) ft.fill_digi(mcp, pix);
         } else if (pid == 2) ft.fill_digi(mcp, pix);
-	vinput[ch] = 1;
       }
 
+      vinput[ch] = 1;
       isGoodHit_ti = true;
       if (fTimeImaging && isGoodHit_ti) {
 
@@ -557,10 +557,13 @@ void PrtLutReco::Run(int start, int end) {
       input = cppflow::cast(input, TF_FLOAT, TF_INT64);
       auto output = model(input);
       auto t = cppflow::arg_max(output, 1).get_tensor();
-      float* ll = static_cast<float*>(TF_TensorData(output.get_tensor().get()));
-      int nn_pid = static_cast<int*>(TF_TensorData(t.get()))[0];
+      float *ll = static_cast<float *>(TF_TensorData(output.get_tensor().get()));
+      int nn_pid = static_cast<int *>(TF_TensorData(t.get()))[0];
+      if (nn_pid == 0) nn_pid = 2;
+      if (nn_pid == 1) nn_pid = 3;
 
-      fLnDiffNn[pid]->Fill(5 * (ll[fp2] - ll[fp1]));
+      // fLnDiffNn[pid]->Fill(5 * (ll[fp2] - ll[fp1]));
+      fLnDiffNn[pid]->Fill(5 * (ll[0] - ll[1]));
 
       // Show the predicted class
       std::cout << output << std::endl;
@@ -588,8 +591,8 @@ void PrtLutReco::Run(int start, int end) {
   { // calclulate efficiencies
     double eff = ft.calculate_efficiency(fLnDiffGr[fp1],fLnDiffGr[fp2]);
     std::cout << "GR eff = " << eff << std::endl;
-    std::cout << "NN eff = " << eff_nn[2] / (float) eff_total[2] << std::endl;
-    std::cout << "eff_total " << eff_total[2] <<  " eff_nn " << eff_nn[2] << std::endl;
+    std::cout << "NN eff = " << eff_nn[3] / (float) eff_total[3] << std::endl;
+    std::cout << "eff_total " << eff_total[3] <<  " eff_nn " << eff_nn[3] << std::endl;
     
 
   }
