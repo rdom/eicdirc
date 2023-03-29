@@ -10,6 +10,11 @@ cd build
 cmake ..
 make -j4
 
+#neural network
+install tensorflow libs, cppflow and run:
+cmake -DAI ..
+
+
 #test event display
 ./eicdirc -r 0 -theta 30 -x "pi+" -p 6.0 -w 0 -h 11 -c 2031 -l 3 -v 0 -gz 1 -g 1 -ev 0 -e 1
 ```
