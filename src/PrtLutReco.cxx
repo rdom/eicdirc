@@ -7,7 +7,9 @@
 
 #include "PrtLutReco.h"
 
+#ifdef AI
 #include "cppflow/cppflow.h"
+#endif
 
 using std::cout;
 using std::endl;
@@ -66,7 +68,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
     fp2 = 3;
     fp1 = 4;
   }
- 
+
   fChain->SetBranchAddress("PrtEvent", &fEvent);
 
   fFit = new TF1("fgaus", "[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +[3]", 0.35, 0.9);
@@ -229,7 +231,10 @@ void PrtLutReco::Run(int start, int end) {
   bool reflected = kFALSE;
   gStyle->SetOptFit(111);
 
+#ifdef AI
   cppflow::model model("/home/drc/dirc/eicdirc/macro/models/prtai");
+  std::cout << "000000000000000000000000000000 " << 000000000000000000000000000000 << std::endl;  
+#endif
 
   TVector3 fnX1 = TVector3(1, 0, 0);
   TVector3 fnY1 = TVector3(0, 1, 0);
@@ -309,7 +314,7 @@ void PrtLutReco::Run(int start, int end) {
     
     rotatedmom.SetTheta(gRandom->Gaus(rotatedmom.Theta(), trackingResTheta));
     rotatedmom.SetPhi(gRandom->Gaus(rotatedmom.Phi(), trackingResPhi));
-    
+
     for (int i = 0; i < 5; i++) {
       fAngle[i] =
         acos(sqrt(mome * mome + ft.mass(i) * ft.mass(i)) / mome / 1.4738); // 1.4738 = 370 = 3.35
@@ -371,7 +376,7 @@ void PrtLutReco::Run(int start, int end) {
 
       // if(!spath.EqualTo("87")) continue;
       // if(spath.Contains("1")) continue;
-
+      
       for (int i = 0; i < size; i++) {
         dird = node->GetEntry(i);
 
@@ -383,7 +388,7 @@ void PrtLutReco::Run(int start, int end) {
         // std::cout<<"slpath "<<slpath<<std::endl;
         // if(!ipath) continue;
         // if(lpath!=387) continue;
-        // if(node->GetNRefl(i)>8) continue;
+        // if(node->GetNRefl(i)>8) continue;	
 
         evtime = node->GetTime(i);
         for (int u = 0; u < 4; u++) {
@@ -547,6 +552,7 @@ void PrtLutReco::Run(int start, int end) {
       if (fabs(sum_ti) > 0.1) fLnDiffTi[pid]->Fill(1.0 * sum_ti);
     }
 
+#ifdef AI
     if (1) { // newral network
 
       // std::vector<int> input(6144,0);
@@ -567,10 +573,11 @@ void PrtLutReco::Run(int start, int end) {
 
       // Show the predicted class
       std::cout << output << std::endl;
-      std::cout <<"PID "<< pid<< " nn " << nn_pid << std::endl;
-      if(pid == nn_pid) eff_nn[nn_pid]++;
+      std::cout << "PID " << pid << " nn " << nn_pid << std::endl;
+      if (pid == nn_pid) eff_nn[nn_pid]++;
       eff_total[pid]++;
     }
+#endif
 
     if (fVerbose == 1) {
       ft.add_canvas("ff", 800, 400);
@@ -591,7 +598,7 @@ void PrtLutReco::Run(int start, int end) {
   { // calclulate efficiencies
     double eff = ft.calculate_efficiency(fLnDiffGr[fp1],fLnDiffGr[fp2]);
     std::cout << "GR eff = " << eff << std::endl;
-    std::cout << "NN eff = " << eff_nn[3] / (float) eff_total[3] << std::endl;
+    if (eff_total[3] > 0) std::cout << "NN eff = " << eff_nn[3] / (float) eff_total[3] << std::endl;
     std::cout << "eff_total " << eff_total[3] <<  " eff_nn " << eff_nn[3] << std::endl;
     
 

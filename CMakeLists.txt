@@ -43,15 +43,21 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/src/*.h)
 ROOT_GENERATE_DICTIONARY(G__Prt PrtHit.h PrtEvent.h PrtRun.h PrtLutNode.h PrtTools.h LINKDEF src/PrtLinkDef.h MODULE Prt)
 add_library(Prt SHARED src/PrtHit.cxx src/PrtEvent.cxx src/PrtRun.cxx src/PrtLutNode.cxx src/PrtTools.cxx G__Prt.cxx)
 
-target_link_libraries(Prt ${ROOT_LIBRARIES} -lSpectrum -lHistPainter -ltensorflow)
+target_link_libraries(Prt ${ROOT_LIBRARIES} -lSpectrum -lHistPainter)
 
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4 libraries
 
+if(AI)
+  add_definitions( -DAI )
+  set(AI_LIB "-ltensorflow")
+else()
+  set(AI_LIB "")
+endif()
+
 set(CMAKE_CXX_STANDARD 17)
 add_executable(eicdirc ${sources})
-target_link_libraries(eicdirc -lGLU ${Geant4_LIBRARIES} Prt)
-# target_link_libraries(eicdirc -lGLU ${Geant4_LIBRARIES} ${ROOT_LIBRARIES} Prt -lSpectrum -lHistPainter)
+target_link_libraries(eicdirc -lGLU ${AI_LIB} ${Geant4_LIBRARIES} Prt)
 
 #----------------------------------------------------------------------------
 # Copy all scripts to the build directory, i.e. the directory in which we
