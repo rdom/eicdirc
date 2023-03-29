@@ -233,7 +233,6 @@ void PrtLutReco::Run(int start, int end) {
 
 #ifdef AI
   cppflow::model model("/home/drc/dirc/eicdirc/macro/models/prtai");
-  std::cout << "000000000000000000000000000000 " << 000000000000000000000000000000 << std::endl;  
 #endif
 
   TVector3 fnX1 = TVector3(1, 0, 0);
