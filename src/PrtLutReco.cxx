@@ -232,7 +232,7 @@ void PrtLutReco::Run(int start, int end) {
   gStyle->SetOptFit(111);
 
 #ifdef AI
-  cppflow::model model("/home/drc/dirc/eicdirc/macro/models/prtai");
+  cppflow::model model("../macro/models/prtai");
 #endif
 
   TVector3 fnX1 = TVector3(1, 0, 0);
@@ -599,8 +599,6 @@ void PrtLutReco::Run(int start, int end) {
     std::cout << "GR eff = " << eff << std::endl;
     if (eff_total[3] > 0) std::cout << "NN eff = " << eff_nn[3] / (float) eff_total[3] << std::endl;
     std::cout << "eff_total " << eff_total[3] <<  " eff_nn " << eff_nn[3] << std::endl;
-    
-
   }
   
   if (fMethod == 4) { // create pdf
@@ -620,17 +618,18 @@ void PrtLutReco::Run(int start, int end) {
 
   if (fMethod == 2) {
     FindPeak(cangle, spr);
-
+ 
     for (int h = 0; h < 5; h++) {
-      if (hnph_gr[h]->GetEntries() < 20) continue;
-      hnph_gr[h]->Fit("gaus", "", "S", 5, 250);
+      if (hnph_gr[h]->Integral() < 20) continue;
+      hnph_gr[h]->Fit("gaus", "SQ", "", 5, 250);
       auto f = hnph_gr[h]->GetFunction("gaus");
       if (f) {
         nph_gr[h] = f->GetParameter(1);
         nph_gr_err[h] = f->GetParError(1);
       }
 
-      hnph_ti[h]->Fit("gaus", "", "S", 5, 250);
+      if (hnph_ti[h]->Integral() < 20) continue;
+      hnph_ti[h]->Fit("gaus", "SQ", "", 5, 250);
       f = hnph_ti[h]->GetFunction("gaus");
       if (f) {
         nph_ti[h] = f->GetParameter(1);
@@ -640,8 +639,8 @@ void PrtLutReco::Run(int start, int end) {
 
     TF1 *ff;
     double m1 = 0, m2 = 0, s1 = 100, s2 = 100, dm1 = 0, dm2 = 0, ds1 = 0, ds2 = 0;
-    if (fLnDiffGr[fp2]->GetEntries() > 10) {
-      fLnDiffGr[fp2]->Fit("gaus", "S");
+    if (fLnDiffGr[fp2]->Integral() > 10) {
+      fLnDiffGr[fp2]->Fit("gaus", "SQ");
       ff = fLnDiffGr[fp2]->GetFunction("gaus");
       if (ff) {
         m1 = ff->GetParameter(1);
@@ -650,7 +649,7 @@ void PrtLutReco::Run(int start, int end) {
         ds1 = ff->GetParError(2);
       }
       if (fp1 == 0 && mom < 1.5) { // handle tails
-        fLnDiffGr[fp2]->Fit("gaus", "S", "", m1 - 2.0 * s1, 500);
+        fLnDiffGr[fp2]->Fit("gaus", "SQ", "", m1 - 2.0 * s1, 500);
         ff = fLnDiffGr[fp2]->GetFunction("gaus");
         if (ff) {
           m1 = ff->GetParameter(1);
@@ -660,8 +659,8 @@ void PrtLutReco::Run(int start, int end) {
         }
       }
     }
-    if (fLnDiffGr[fp1]->GetEntries() > 10) {
-      fLnDiffGr[fp1]->Fit("gaus", "S");
+    if (fLnDiffGr[fp1]->Integral() > 10) {
+      fLnDiffGr[fp1]->Fit("gaus", "SQ");
       ff = fLnDiffGr[fp1]->GetFunction("gaus");
       if (ff) {
         m2 = ff->GetParameter(1);
@@ -670,7 +669,7 @@ void PrtLutReco::Run(int start, int end) {
         ds2 = ff->GetParError(2);
       }
       if (fp1 == 0 && mom < 1.5) { /// handle tails
-        fLnDiffGr[fp1]->Fit("gaus", "S", "", -500, m2 + 2.0 * s2);
+        fLnDiffGr[fp1]->Fit("gaus", "SQ", "", -500, m2 + 2.0 * s2);
         ff = fLnDiffGr[fp1]->GetFunction("gaus");
         if (ff) {
           m2 = ff->GetParameter(1);
@@ -1048,7 +1047,7 @@ void PrtLutReco::FindPeak(double (&cangle)[5], double (&spr)[5]) {
     spr[h] = 0;
     cangle[h] = 0;
 
-    if (hthetac[h]->GetEntries() > 20) {
+    if (hthetac[h]->Integral() > 20) {
       gROOT->SetBatch(1);
       int nfound = fSpect->Search(hthetac[h], 1, "", 0.9); // 0.6
       if (nfound > 0) cangle[h] = fSpect->GetPositionX()[0];

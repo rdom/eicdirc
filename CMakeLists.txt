@@ -38,6 +38,7 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/src/*.h)
 
 # MESSAGE(STATUS ${PROJECT_SOURCE_DIR})
 
+set(CMAKE_CXX_STANDARD 17)
 #----------------------------------------------------------------------------
 # Generate dictionary for root
 ROOT_GENERATE_DICTIONARY(G__Prt PrtHit.h PrtEvent.h PrtRun.h PrtLutNode.h PrtTools.h LINKDEF src/PrtLinkDef.h MODULE Prt)
@@ -55,7 +56,6 @@ else()
   set(AI_LIB "")
 endif()
 
-set(CMAKE_CXX_STANDARD 17)
 add_executable(eicdirc ${sources})
 target_link_libraries(eicdirc -lGLU ${AI_LIB} ${Geant4_LIBRARIES} Prt)
 
