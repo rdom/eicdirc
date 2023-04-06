@@ -17,7 +17,6 @@ void draw_hp(TString infile = "../build/hits.root") {
       double time = hit.getLeadTime();
 
       if (t.pid() == 2) t.fill_digi(pmt, pix);
-      
     }
   }
 

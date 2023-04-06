@@ -52,7 +52,7 @@ int main(int argc, char **argv) {
   G4String macro, events, field, ev, radiator, physlist, session, geomTheta, geomPhi, displayOpt,
     lensId, particle = "", testVal1, testVal2, testVal3, prismStepX, prismStepY,
             beamX, timeSigma, timeCut, mcpLayout;
-  TString infile = "", lutfile = "", pdffile = "", outfile = "";
+  TString infile = "", lutfile = "", pdffile = "", nnfile = "", outfile = "";
   int geometry(-1), firstevent(0), runtype(0), study(0), fid(0), verbose(0), batchmode(0);
   double momentum(-1), beamZ(20000), trackingres(-1);
 
@@ -64,6 +64,7 @@ int main(int argc, char **argv) {
     else if (G4String(argv[i]) == "-i") infile = argv[i + 1];
     else if (G4String(argv[i]) == "-u") lutfile = argv[i + 1];
     else if (G4String(argv[i]) == "-pdf") pdffile = argv[i + 1];
+    else if (G4String(argv[i]) == "-nn") nnfile = argv[i + 1];
     else if (G4String(argv[i]) == "-field") field = argv[i + 1];
     else if (G4String(argv[i]) == "-g") geometry = atoi(argv[i + 1]);
     else if (G4String(argv[i]) == "-ev") ev = argv[i + 1];
@@ -216,7 +217,7 @@ int main(int argc, char **argv) {
   std::cout << "=== Run info:  " << std::endl << run->getInfo() << std::endl;
 
   if (runtype == 2 || runtype == 3 || runtype == 4) {
-    PrtLutReco *reco = new PrtLutReco(infile, lutfile, pdffile, verbose);
+    PrtLutReco *reco = new PrtLutReco(infile, lutfile, pdffile, nnfile, verbose);
     reco->Run(firstevent, atoi(events));
     return 0;
   }

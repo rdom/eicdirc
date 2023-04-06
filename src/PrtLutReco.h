@@ -26,11 +26,15 @@
 #include "PrtLutNode.h"
 #include "PrtTools.h"
 
+#ifdef AI
+#include "cppflow/cppflow.h"
+#endif
+
 class PrtLutReco {
 
  public:
   // Standard constructors
-  PrtLutReco(TString infile, TString lutfile, TString pdffile,int verbose = 0);
+  PrtLutReco(TString infile, TString lutfile, TString pdffile, TString nnfile, int verbose = 0);
 
   // Destructor
   ~PrtLutReco();
@@ -80,6 +84,7 @@ class PrtLutReco {
   double fCorrSpr;
   TString fCorrPath;
   TString fPdfPath;
+  TString fNNPath;
   
   TF1 *fFit;  
   TSpectrum *fSpect;
@@ -96,6 +101,11 @@ class PrtLutReco {
   TString fCorrFile;
   TH1F *fTime[5][99000]; //7000
   TGraph *fPdf[5][99000];
+
+#ifdef AI
+  cppflow::model *fNNmodel;
+#endif
+  
 };
 
 #endif

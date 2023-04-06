@@ -33,6 +33,7 @@ example:
 -i    input file name
 -u    look-up file name
 -pdf  look-up file name
+-nn   path to the neural network
 
 -r    run type
                 0    simulation

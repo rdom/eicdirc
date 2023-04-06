@@ -40,10 +40,11 @@ int gg_i(0);
 TGraph gg_gr;
 
 // -----   Default constructor   -------------------------------------------
-PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int verbose) {
+PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, TString nnfile, int verbose) {
   fVerbose = verbose;
   fCriticalAngle = asin(1.00028 / 1.47125); // n_quarzt = 1.47125; //(1.47125 <==> 390nm)
 
+  fNNPath = nnfile;
   fChain = new TChain("data");
   fChain->Add(infile);
   fEvent = new PrtEvent();
@@ -216,6 +217,16 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, int ver
     std::cout << "------- corr file not found  " << fCorrFile << std::endl;
   }
 
+  // read neural network model
+#ifdef AI
+  if (!gSystem->AccessPathName(fNNPath)) {
+    std::cout << "------- reading  " << fNNPath << std::endl;
+    fNNmodel = new cppflow::model(fNNPath.Data());
+  } else {
+    std::cout << "------- neural net model not found  " << fNNPath << std::endl;
+  }
+#endif
+
   cout << "-I- PrtLutReco: Intialization successfull" << endl;
 }
 
@@ -231,20 +242,17 @@ void PrtLutReco::Run(int start, int end) {
   bool reflected = kFALSE;
   gStyle->SetOptFit(111);
 
-#ifdef AI
-  cppflow::model model("../macro/models/prtai");
-#endif
-
   TVector3 fnX1 = TVector3(1, 0, 0);
   TVector3 fnY1 = TVector3(0, 1, 0);
   int nsHits(0), nsEvents(0);
 
   TString outFile = PrtManager::Instance()->getOutName();
-  double theta(0), phi(0), cangle[5] = {0}, spr[5] = {0}, trr[5] = {0}, nph_gr[5] = {0},
-                           nph_gr_err[5] = {0}, nph_ti[5] = {0}, nph_ti_err[5] = {0}, par5(0),
-                           par6(0), timeRes(0), timeCut(0), ctimeRes(0), trackRes(0), test1(0),
-                           test2(0), test3(0), sep_gr(0), sep_gr_err(0), sep_ti(0), sep_ti_err(0),
-                           total[5] = {0}, epi_rejection1(0), epi_rejection2(0), epi_rejection3(0);
+  double theta(0), phi(0),
+    cangle[5] = {0}, spr[5] = {0}, trr[5] = {0}, nph_gr[5] = {0}, nph_gr_err[5] = {0},
+    nph_ti[5] = {0}, nph_ti_err[5] = {0}, par5(0), par6(0), timeRes(0), timeCut(0), ctimeRes(0),
+    trackRes(0), test1(0), test2(0), test3(0), sep_gr(0), sep_gr_err(0), sep_ti(0), sep_ti_err(0),
+    sep_nn(0), sep_nn_err(0), total[5] = {0}, epi_rejection1(0), epi_rejection2(0),
+    epi_rejection3(0);
 
   ft.set_palette(1);
   ft.create_maps();
@@ -464,9 +472,14 @@ void PrtLutReco::Run(int start, int end) {
         if (frun->getPid() == 10005) {
           if (pid == 3) ft.fill_digi(mcp, pix);
         } else if (pid == 2) ft.fill_digi(mcp, pix);
+
+        int tpix = pix - 1;
+	int tx = int(16 * (mcp % 6) + tpix % 16);
+        int ty = int(16 * (mcp / 6) + tpix / 16);
+        int tc = 16 * 6 * ty + tx;
+        if (tc > -1) vinput[tc] = hitTime;
       }
 
-      vinput[ch] = 1;
       isGoodHit_ti = true;
       if (fTimeImaging && isGoodHit_ti) {
 
@@ -558,18 +571,17 @@ void PrtLutReco::Run(int start, int end) {
       // input = cppflow::cast(input, TF_UINT8, TF_FLOAT);
 
       // Creates a tensor from the vector with shape [X_dim, Y_dim]
-      auto input = cppflow::tensor(vinput, {1, 6144});
+      auto input = cppflow::tensor(vinput, {1, 64, 96, 1});
       input = cppflow::cast(input, TF_FLOAT, TF_INT64);
-      auto output = model(input);
+      auto output = (*fNNmodel)(input);
       auto t = cppflow::arg_max(output, 1).get_tensor();
       float *ll = static_cast<float *>(TF_TensorData(output.get_tensor().get()));
       int nn_pid = static_cast<int *>(TF_TensorData(t.get()))[0];
-      if (nn_pid == 0) nn_pid = 2;
-      if (nn_pid == 1) nn_pid = 3;
+      // if (nn_pid == 0) nn_pid = 2;
+      // if (nn_pid == 1) nn_pid = 3;
+      double dll = 5 * (ll[fp2] - ll[fp1]);
 
-      // fLnDiffNn[pid]->Fill(5 * (ll[fp2] - ll[fp1]));
-      fLnDiffNn[pid]->Fill(5 * (ll[0] - ll[1]));
-
+      if (fabs(0.7 - dll) > 0.3) fLnDiffNn[pid]->Fill(dll);
       // Show the predicted class
       std::cout << output << std::endl;
       std::cout << "PID " << pid << " nn " << nn_pid << std::endl;
@@ -595,10 +607,20 @@ void PrtLutReco::Run(int start, int end) {
   }
 
   { // calclulate efficiencies
-    double eff = ft.calculate_efficiency(fLnDiffGr[fp1],fLnDiffGr[fp2]);
-    std::cout << "GR eff = " << eff << std::endl;
-    if (eff_total[3] > 0) std::cout << "NN eff = " << eff_nn[3] / (float) eff_total[3] << std::endl;
-    std::cout << "eff_total " << eff_total[3] <<  " eff_nn " << eff_nn[3] << std::endl;
+    // double eff = ft.calculate_efficiency(fLnDiffGr[fp1],fLnDiffGr[fp2]);
+    // std::cout << "GR eff = " << eff << std::endl;
+    // if (eff_total[3] > 0) std::cout << "NN eff = " << eff_nn[3] / (float) eff_total[3] << std::endl;
+    // std::cout << "eff_total " << eff_total[3] <<  " eff_nn " << eff_nn[3] << std::endl;
+
+    double eff_gr = ft.calculate_efficiency(fLnDiffGr[fp1], fLnDiffGr[fp2]);
+    std::cout << "Eff GR = " << eff_gr << std::endl;
+    double eff_ti = ft.calculate_efficiency(fLnDiffTi[fp1], fLnDiffTi[fp2]);
+    std::cout << "Eff TI = " << eff_ti << std::endl;
+    double eff_nnt = ft.calculate_efficiency(fLnDiffNn[fp1], fLnDiffNn[fp2]);
+    std::cout << "Eff NN = " << eff_nnt << std::endl;
+
+    if (eff_total[2] > 0) std::cout << "Eff NN (pi) = " << eff_nn[2] / (float)eff_total[2] << std::endl;
+    if (eff_total[3] > 0) std::cout << "Eff NN (K) = " << eff_nn[3] / (float)eff_total[3] << std::endl;
   }
   
   if (fMethod == 4) { // create pdf
@@ -759,6 +781,44 @@ void PrtLutReco::Run(int start, int end) {
       sep_ti_err = sqrt(e1 * e1 + e2 * e2 + e3 * e3 + e4 * e4);
     }
 
+    if (1) {
+      m1 = 0;
+      m2 = 0;
+      dm1 = 0;
+      dm2 = 0;
+      if (fLnDiffNn[fp2]->Integral() > 10) {
+        fLnDiffNn[fp2]->Fit("gaus", "Q");
+        ff = fLnDiffNn[fp2]->GetFunction("gaus");
+        if (ff) {
+          m1 = ff->GetParameter(1);
+          s1 = ff->GetParameter(2);
+          dm1 = ff->GetParError(1);
+          ds1 = ff->GetParError(2);
+          ff->SetLineColor(kBlack);
+        }
+      }
+
+      if (fLnDiffNn[fp1]->Integral() > 10) {
+        fLnDiffNn[fp1]->Fit("gaus", "Q");
+        ff = fLnDiffNn[fp1]->GetFunction("gaus");
+        if (ff) {
+          m2 = ff->GetParameter(1);
+          s2 = ff->GetParameter(2);
+          dm2 = ff->GetParError(1);
+          ds2 = ff->GetParError(2);
+          ff->SetLineColor(kBlack);
+        }
+      }
+
+      sep_nn = (fabs(m1 - m2)) / (0.5 * (s1 + s2));
+
+      e1 = 2 / (s1 + s2) * dm1;
+      e2 = -2 / (s1 + s2) * dm2;
+      e3 = -2 * (m1 - m2) / ((s1 + s2) * (s1 + s2)) * ds1;
+      e4 = -2 * (m1 - m2) / ((s1 + s2) * (s1 + s2)) * ds2;
+      sep_nn_err = sqrt(e1 * e1 + e2 * e2 + e3 * e3 + e4 * e4);
+    }
+
     std::cout << Form("%3d : SPR = %2.2f N_gr = %2.2f +/- %2.2f  N_ti = %2.2f +/- %2.2f",
                       ft.pdg(fp1), spr[fp1], nph_gr[fp1], nph_gr_err[fp1], nph_ti[fp1],
                       nph_ti_err[fp1])
@@ -834,6 +894,8 @@ void PrtLutReco::Run(int start, int end) {
     tree.Branch("sep_gr_err", &sep_gr_err, "sep_gr_err/D");
     tree.Branch("sep_ti", &sep_ti, "sep_ti/D");
     tree.Branch("sep_ti_err", &sep_ti_err, "sep_ti_err/D");
+    tree.Branch("sep_nn", &sep_nn, "sep_nn/D");
+    tree.Branch("sep_nn_err", &sep_nn_err, "sep_nn_err/D");
 
     tree.Branch("trackres", &trackRes, "trackRes/D");
     tree.Branch("timeres", &timeRes, "timeRes/D");
@@ -889,6 +951,8 @@ void PrtLutReco::Run(int start, int end) {
       fLnDiffGr[fp2]->SetStats(0);
       fLnDiffTi[fp1]->SetStats(0);
       fLnDiffTi[fp2]->SetStats(0);
+       fLnDiffNn[fp1]->SetStats(0);
+       fLnDiffNn[fp2]->SetStats(0);
 
       ft.add_canvas("lh_gr" + nid, 800, 400);
       ft.normalize(fLnDiffGr, 5);
@@ -921,6 +985,7 @@ void PrtLutReco::Run(int start, int end) {
       }
 
       ft.add_canvas("lh_nn" + nid, 800, 400);
+      fLnDiffNn[fp2]->SetTitle(Form("NN separation = %2.2f s.d.", sep_nn));
       fLnDiffNn[fp2]->GetXaxis()->SetTitle(lhtitle);
       fLnDiffNn[fp2]->Draw();
       fLnDiffNn[fp1]->Draw("same");
