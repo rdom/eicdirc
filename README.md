@@ -12,7 +12,7 @@ make -j4
 
 #neural network
 install tensorflow libs, cppflow and run:
-cmake -DAI ..
+cmake -DAI=1 ..
 
 
 #test event display

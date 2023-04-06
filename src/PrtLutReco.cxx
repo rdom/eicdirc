@@ -222,6 +222,9 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, TString
   if (!gSystem->AccessPathName(fNNPath)) {
     std::cout << "------- reading  " << fNNPath << std::endl;
     fNNmodel = new cppflow::model(fNNPath.Data());
+    for(auto s : (*fNNmodel).get_operations() ){
+      std::cout << "s " << s << std::endl;   
+    }  
   } else {
     std::cout << "------- neural net model not found  " << fNNPath << std::endl;
   }
