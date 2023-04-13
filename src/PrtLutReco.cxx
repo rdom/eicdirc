@@ -276,7 +276,7 @@ void PrtLutReco::Run(int start, int end) {
   int nEvents = fChain->GetEntries();
   if (end == 0) end = nEvents;
 
-  int pdfstart = 5000;
+  int pdfstart = 50000;
   if (end > pdfstart) end = pdfstart;
   if (fMethod == 4) {
     start = pdfstart;
@@ -338,7 +338,9 @@ void PrtLutReco::Run(int start, int end) {
     // double stime = FindStartTime(fEvent);
 
     std::vector<double> vinput(6144, 0.0);
-    
+    std::vector<int> vinput2d(6144 * 350, 0);
+    std::vector<int> vinputInd(200 * 3, 0);
+ 
     for (auto hit : fEvent->getHits()) {
 
       hitTime = hit.getLeadTime() + gRandom->Gaus(0, timeRes);
@@ -477,10 +479,20 @@ void PrtLutReco::Run(int start, int end) {
         } else if (pid == 2) ft.fill_digi(mcp, pix);
 
         int tpix = pix - 1;
-	int tx = int(16 * (mcp % 6) + tpix % 16);
+        int tx = int(16 * (mcp % 6) + tpix % 16);
         int ty = int(16 * (mcp / 6) + tpix / 16);
         int tc = 16 * 6 * ty + tx;
         if (tc > -1) vinput[tc] = hitTime;
+	
+        if (hitTime < 70) {
+          int ic = ch * 350 + int(5 * hitTime);
+          vinput2d[ic] = 1;
+          if (tnph_gr[pid] < 200) {
+            vinputInd[tnph_gr[pid] * 3 + 0] = 0;
+            vinputInd[tnph_gr[pid] * 3 + 1] = ch;
+            vinputInd[tnph_gr[pid] * 3 + 2] = int(5 * hitTime);
+          }
+        }
       }
 
       isGoodHit_ti = true;
@@ -542,7 +554,7 @@ void PrtLutReco::Run(int start, int end) {
         }
       }
     }
- 
+
     double sum_gr = sum1 - sum2;
 
     if (sum_gr != 0) fLnDiffGr[pid]->Fill(sum_gr);
@@ -574,8 +586,13 @@ void PrtLutReco::Run(int start, int end) {
       // input = cppflow::cast(input, TF_UINT8, TF_FLOAT);
 
       // Creates a tensor from the vector with shape [X_dim, Y_dim]
-      auto input = cppflow::tensor(vinput, {1, 64, 96, 1});
-      input = cppflow::cast(input, TF_FLOAT, TF_INT64);
+
+      // auto input = cppflow::tensor(vinput2d, {1, 6144, 350});
+      auto input = cppflow::tensor(vinputInd, {1, 200, 3});
+      input = cppflow::cast(input, TF_INT32, TF_INT32);
+
+      // auto input = cppflow::tensor(vinput, {1, 64, 96, 1});
+      // input = cppflow::cast(input, TF_FLOAT, TF_INT64);
       auto output = (*fNNmodel)(input);
       auto t = cppflow::arg_max(output, 1).get_tensor();
       float *ll = static_cast<float *>(TF_TensorData(output.get_tensor().get()));
@@ -584,10 +601,10 @@ void PrtLutReco::Run(int start, int end) {
       // if (nn_pid == 1) nn_pid = 3;
       double dll = 5 * (ll[fp2] - ll[fp1]);
 
-      if (fabs(0.7 - dll) > 0.3) fLnDiffNn[pid]->Fill(dll);
+      if (fabs(0.0 - dll) > 0.3) fLnDiffNn[pid]->Fill(dll);
       // Show the predicted class
-      std::cout << output << std::endl;
-      std::cout << "PID " << pid << " nn " << nn_pid << std::endl;
+      // std::cout << output << std::endl;
+      // std::cout << "PID " << pid << " nn " << nn_pid << std::endl;
       if (pid == nn_pid) eff_nn[nn_pid]++;
       eff_total[pid]++;
     }

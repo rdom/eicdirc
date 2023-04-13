@@ -331,6 +331,8 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
       std::cout << "bad lens" << std::endl;
       cr2 = r2;
     }
+    std::cout << "cr2 " << cr2 << std::endl;
+    
     // fLens[2]
     double optimallt= (2 * lensMinThikness + r2 - sqrt(r2 * r2 - cr2 * cr2) + lensMinThikness);
     std::cout << "Used lens thickness = " << fLens[2] << " optimal = "<< optimallt << std::endl;
@@ -342,6 +344,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
 
     G4Box *gfbox = new G4Box("Fbox", fLens[0] / 2., fLens[1] / 2., fLens[2] / 2.);
     G4Tubs *gfstube = new G4Tubs("ftube", 0, cr2, fLens[2] / 2., 0, 360 * deg);
+    // G4Tubs *gfstube = new G4Tubs("ftube", 0, cr2, 2*2, 0, 360 * deg);
 
     G4Sphere *gsphere1 = new G4Sphere("Sphere1", 0, r1, 0, 360 * deg, 0, 360 * deg);
     G4Sphere *gsphere2 = new G4Sphere("Sphere2", 0, r2, 0, 360 * deg, 0, 360 * deg);
@@ -362,7 +365,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     G4IntersectionSolid *gLens2 =
       new G4IntersectionSolid("Lens2", gLenst, gsphere2, new G4RotationMatrix(), zTrans2);
     G4SubtractionSolid *gLens3 =
-      new G4SubtractionSolid("Lens3", gLenst, gsphere2, new G4RotationMatrix(), zTrans2);
+      new G4SubtractionSolid("Lens3", gbbox, gsphere2, new G4RotationMatrix(), zTrans2);
 
     lLens1 = new G4LogicalVolume(gLens1, BarMaterial, "lLens1", 0, 0, 0);
     // Nlak33aMaterial //PbF2Material //SapphireMaterial
@@ -1230,7 +1233,7 @@ void PrtDetectorConstruction::SetVisualization() {
   lMirror->SetVisAttributes(waMirror);
 
   G4VisAttributes *waTracker = new G4VisAttributes(G4Colour(1., 1., 0.7, 0.2));
-  waTracker->SetVisibility(true);
+  waTracker->SetVisibility(false);
   lTracker->SetVisAttributes(waTracker);
   
   double transp = 0.4;
