@@ -42,7 +42,7 @@ while t.next() and t.i() < ne_train + n_train :
         if time > 70 :
             continue
 
-        time_bin = int(5*time)
+        time_bin = int(*time)
         tx = int(16 * (pmt % 6) + pix % 16);
         ty = int(16 * (pmt // 6) + pix / 16);
 

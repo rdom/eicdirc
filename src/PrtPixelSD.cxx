@@ -170,6 +170,11 @@ G4bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
     double bounce_probX = 1 - pow(4 * pi * cos(angleX) * roughness * n_quartz / wavelength, 2);
     double bounce_probY = 1 - pow(4 * pi * cos(angleY) * roughness * n_quartz / wavelength, 2);
 
+    // fit to the data points
+    double ratio =  0.918752 + exp(5.16451 -0.0132034 * wavelength);
+    bounce_probX *= ratio;
+    bounce_probY *= ratio;
+
     double totalProb = pow(bounce_probX, nBouncesX) * pow(bounce_probY, nBouncesY);
 
     if (G4UniformRand() > totalProb) {
