@@ -25,8 +25,6 @@ y_train = np.zeros((ne_train,1))
 x_test = np.zeros((n_train,max_hits,3))
 y_test = np.zeros((n_train,1))
 
-
-
 while t.next() and t.i() < ne_train + n_train :
     i = t.i()
     ind = 0
@@ -42,9 +40,9 @@ while t.next() and t.i() < ne_train + n_train :
         if time > 70 :
             continue
 
-        time_bin = int(*time)
-        tx = int(16 * (pmt % 6) + pix % 16);
-        ty = int(16 * (pmt // 6) + pix / 16);
+        time_bin = int(5*time)
+        tx = int(16 * (pmt % 6) + pix % 16)
+        ty = int(16 * (pmt // 6) + pix / 16)
 
         if i < ne_train:
             x_train[i,ind, 1] = ch
@@ -77,5 +75,5 @@ for e in range(n_train):
         x_test[e,i, 0] = b
     b = b + 1
     
-nid = "data_ind_" + str(ne_train);
+nid = "data_ind_" + str(ne_train)
 np.savez(nid, x_train= x_train, y_train=y_train, x_test=x_test, y_test= y_test)
