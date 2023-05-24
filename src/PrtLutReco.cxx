@@ -219,6 +219,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, TString
 
   // read neural network model
 #ifdef AI
+  fNNet = true;
   if (!gSystem->AccessPathName(fNNPath)) {
     std::cout << "------- reading  " << fNNPath << std::endl;
     fNNmodel = new cppflow::model(fNNPath.Data());
@@ -226,6 +227,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, TString
       std::cout << "s " << s << std::endl;   
     }  
   } else {
+    fNNet = false;
     std::cout << "------- neural net model not found  " << fNNPath << std::endl;
   }
 #endif
@@ -580,7 +582,7 @@ void PrtLutReco::Run(int start, int end) {
     }
 
 #ifdef AI
-    if (1) { // newral network
+    if (fNNet) { // newral network
 
       // std::vector<int> input(6144,0);
       // input = cppflow::cast(input, TF_UINT8, TF_FLOAT);

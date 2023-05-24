@@ -58,6 +58,7 @@ class PrtLutReco {
   int fRadiator;
   int fStudyId;
   bool fTimeImaging;
+  bool fNNet;
 
   TClonesArray *fLut;
   TClonesArray *fTrackInfoArray;
