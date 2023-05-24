@@ -276,7 +276,7 @@ void PrtLutReco::Run(int start, int end) {
   int nEvents = fChain->GetEntries();
   if (end == 0) end = nEvents;
 
-  int pdfstart = 50000;
+  int pdfstart = 10000;
   if (end > pdfstart) end = pdfstart;
   if (fMethod == 4) {
     start = pdfstart;
@@ -574,7 +574,7 @@ void PrtLutReco::Run(int start, int end) {
 
     if (fMethod == 2 && fTimeImaging) { // time imaging
       if (tnph_ti[pid] > 1) hnph_ti[pid]->Fill(tnph_ti[pid]);
-
+ 
       double sum_ti = 1.5 * (sumti2 - sumti1) + 30 * sum_nph;
       if (fabs(sum_ti) > 0.1) fLnDiffTi[pid]->Fill(1.0 * sum_ti);
     }
