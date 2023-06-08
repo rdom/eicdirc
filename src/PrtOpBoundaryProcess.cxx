@@ -1,7 +1,7 @@
 #include "PrtOpBoundaryProcess.h"
 #include <G4TouchableHistory.hh>
 #include "PrtManager.h"
-
+#include "G4TransportationManager.hh"
 
 PrtOpBoundaryProcess::PrtOpBoundaryProcess() : G4OpBoundaryProcess() {
   fLensId = PrtManager::Instance()->getRun()->getLens();
