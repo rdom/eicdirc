@@ -20,10 +20,11 @@ PrtSteppingAction::PrtSteppingAction() : G4UserSteppingAction() {
 PrtSteppingAction::~PrtSteppingAction() {}
 
 void PrtSteppingAction::UserSteppingAction(const G4Step *step) {
+
   G4int eventNumber = G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID();
 
   G4Track *track = step->GetTrack();
-
+  
   if (track->GetCurrentStepNumber() > 50000 || track->GetTrackLength() > 30000) {
     // std::cout<<"WRN: too many steps or track length > 30 m  N="
     // <<track->GetCurrentStepNumber()<<" Len = "<<track->GetTrackLength()/1000. <<std::endl;
@@ -41,5 +42,7 @@ void PrtSteppingAction::UserSteppingAction(const G4Step *step) {
   // if(prevname =="Bar" && postvname =="ExpHall" ) track->SetTrackStatus(fStopAndKill);
   if (prevname == "wMcp" && postvname == "wDirc") track->SetTrackStatus(fStopAndKill);
   if (prevname == "wFd" && postvname == "wDirc") track->SetTrackStatus(fStopAndKill);
+  if (prevname == "wPixel" && postvname == "wMcp") track->SetTrackStatus(fStopAndKill);
   // if(step->GetPreStepPoint()->GetPosition().x()>10 ) track->SetTrackStatus(fStopAndKill);
+								   
 }

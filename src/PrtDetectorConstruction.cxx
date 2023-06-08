@@ -614,8 +614,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     lMcp = new G4LogicalVolume(gMcp, BarMaterial, "lMcp", 0, 0, 0);
 
     // The MCP Pixel
-    G4Box *gPixel =
-      new G4Box("gPixel", fMcpActive[0] / 16., fMcpActive[1] / 16., fMcpActive[2] / 16.);
+    G4Box *gPixel = new G4Box("gPixel", fMcpActive[0] / 16., fMcpActive[1] / 16., 0.01);
     lPixel = new G4LogicalVolume(gPixel, BarMaterial, "lPixel", 0, 0, 0);
 
     for (int i = 0; i < 8; i++) {
@@ -646,7 +645,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     // The MCP Pixel
     fNpix1 = 4;
     fNpix2 = 6;
-    G4Box *gPixel = new G4Box("gPixel", fMcpTotal[0] / 2., fMcpTotal[1] / 2., fMcpTotal[2] / 16.);
+    G4Box *gPixel = new G4Box("gPixel", fMcpTotal[0] / 2., fMcpTotal[1] / 2., 0.01);
     lPixel = new G4LogicalVolume(gPixel, BarMaterial, "lPixel", 0, 0, 0);
 
     // double disx = (fPrizm[0]-fNpix2*fMcpTotal[0])/(double)fNpix2;
@@ -677,7 +676,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     fNpix1 = fPrizm[2] / pixSize - 1;
     fNpix2 = fPrizm[0] / pixSize - 1;
 
-    G4Box *gPixel = new G4Box("gPixel", 0.5 * fPrizm[2] / fNpix1, 0.5 * fPrizm[0] / fNpix2, 0.2);
+    G4Box *gPixel = new G4Box("gPixel", 0.5 * fPrizm[2] / fNpix1, 0.5 * fPrizm[0] / fNpix2, 0.01);
     lPixel = new G4LogicalVolume(gPixel, BarMaterial, "lPixel", 0, 0, 0);
     for (int i = 0; i < fNpix1; i++) {
       for (int j = 0; j < fNpix2; j++) {
@@ -703,8 +702,8 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
               << std::endl;
 
     // The MCP Pixel
-    G4Box *gPixel = new G4Box("gPixel", 0.5 * fMcpActive[0] / fNpix1, 0.5 * fMcpActive[1] / fNpix2,
-                              fMcpActive[2] / 16.);
+    G4Box *gPixel =
+      new G4Box("gPixel", 0.5 * fMcpActive[0] / fNpix1, 0.5 * fMcpActive[1] / fNpix2, 0.01);
     lPixel = new G4LogicalVolume(gPixel, BarMaterial, "lPixel", 0, 0, 0);
 
     for (int i = 0; i < fNpix1; i++) {
@@ -759,8 +758,8 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
               << std::endl;
 
     // The MCP Pixel
-    G4Box *gPixel = new G4Box("gPixel", 0.5 * fMcpActive[0] / fNpix1, 0.5 * fMcpActive[1] / fNpix2,
-                              fMcpActive[2] / 16.);
+    G4Box *gPixel =
+      new G4Box("gPixel", 0.5 * fMcpActive[0] / fNpix1, 0.5 * fMcpActive[1] / fNpix2, 0.01);
     lPixel = new G4LogicalVolume(gPixel, BarMaterial, "lPixel", 0, 0, 0);
 
     for (int i = 0; i < fNpix1; i++) {
