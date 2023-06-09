@@ -582,7 +582,7 @@ void PrtLutReco::Run(int start, int end) {
     }
 
 #ifdef AI
-    if (fNNet) { // newral network
+    if (fNNet) { // neural network
 
       // std::vector<int> input(6144,0);
       // input = cppflow::cast(input, TF_UINT8, TF_FLOAT);

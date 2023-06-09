@@ -42,6 +42,7 @@ void PrtPixelSD::Initialize(G4HCofThisEvent *hce) {
 }
 
 G4bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
+
   // // energy deposit
   // G4double edep = step->GetTotalEnergyDeposit();
 
@@ -90,7 +91,7 @@ G4bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
   G4HCofThisEvent *HCofEvent = currentEvent->GetHCofThisEvent();
   PrtPrizmHitsCollection *prizmCol = (PrtPrizmHitsCollection *)(HCofEvent->GetHC(collectionID));
   double time = step->GetPreStepPoint()->GetLocalTime();
-
+  
   Long_t pathId = 0;
   int refl = 0;
   int prizmId = -1;

@@ -49,10 +49,10 @@ example:
 
 -g    geometry configuration
                 0    ATHENA one barbox
-                1    ECCE one barbox
+                1    ePIC one barbox
 		2    CORE one barbox
 		10   ATHENA whole DIRC
-		11   ECCE whole DIRC
+		11   ePIC whole DIRC
 		12   CORE whole DIRC
 		
 -ev   expansion volume type
