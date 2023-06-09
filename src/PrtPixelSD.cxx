@@ -136,6 +136,7 @@ G4bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
   // hit.SetPrizmId(prizmId);
   int mcp = touchable->GetReplicaNumber(1);
   int pix = touchable->GetReplicaNumber(0);
+  
   int ch = fMap_Mpc[mcp][pix];
   hit.setPmt(mcp);
   hit.setPixel(pix);
