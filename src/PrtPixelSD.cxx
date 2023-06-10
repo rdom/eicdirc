@@ -5,6 +5,7 @@
 #include "G4SDManager.hh"
 #include "G4ios.hh"
 #include "G4RunManager.hh"
+#include "G4SystemOfUnits.hh"
 #include <TVector3.h>
 
 #include "PrtEvent.h"
@@ -90,7 +91,8 @@ G4bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
   const G4Event *currentEvent = fRM->GetCurrentEvent();
   G4HCofThisEvent *HCofEvent = currentEvent->GetHCofThisEvent();
   PrtPrizmHitsCollection *prizmCol = (PrtPrizmHitsCollection *)(HCofEvent->GetHC(collectionID));
-  double time = step->GetPreStepPoint()->GetLocalTime();
+
+  double time = step->GetPreStepPoint()->GetLocalTime();  
   
   Long_t pathId = 0;
   int refl = 0;
@@ -147,7 +149,7 @@ G4bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
   hit.setLeadTime(time); // time since track created 
   double wavelength = 1.2398 / (track->GetMomentum().mag() * 1E6) * 1000;
   hit.setTotTime(wavelength); // set photon wavelength
-
+  
   // time since event created
   // hit.SetTrailTime(0,step->GetPreStepPoint()->GetGlobalTime()*1000);
 

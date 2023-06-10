@@ -38,11 +38,9 @@ void PrtSteppingAction::UserSteppingAction(const G4Step *step) {
     prevname = step->GetPreStepPoint()->GetPhysicalVolume()->GetName();
     postvname = step->GetPostStepPoint()->GetPhysicalVolume()->GetName();
   }
-
-  // if(prevname =="Bar" && postvname =="ExpHall" ) track->SetTrackStatus(fStopAndKill);
+  
   if (prevname == "wMcp" && postvname == "wDirc") track->SetTrackStatus(fStopAndKill);
   if (prevname == "wFd" && postvname == "wDirc") track->SetTrackStatus(fStopAndKill);
   if (prevname == "wMcp" && postvname == "wPixel") track->SetTrackStatus(fStopButAlive);
-  // if(step->GetPreStepPoint()->GetPosition().x()>10 ) track->SetTrackStatus(fStopAndKill);
-								   
+
 }
