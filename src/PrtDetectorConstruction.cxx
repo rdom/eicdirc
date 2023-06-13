@@ -80,8 +80,8 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   fPrizmT[4] = 290;
   fPrizmT[5] = 290 * cos(fdTilt);
 
-  fBBWindow[0] = 25;
-  fBBWindow[1] = fPrizm[1];
+  fBBWindow[0] = 30;
+  fBBWindow[1] = fPrizm[0];
   fBBWindow[2] = fTest3;
 
   fMcpTotal[0] = fMcpTotal[1] = 53 + 4;
