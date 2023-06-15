@@ -19,9 +19,7 @@ G4VParticleChange *PrtOpBoundaryProcess::PostStepDoIt(const G4Track &aTrack, con
   // if(parentId==1) particleChange->ProposeTrackStatus(fStopAndKill);
 
   double endofbar = 0.5 * (4200 + 4 * 0.05);
-
- 
-
+  
   // ideal focusing
   if (fLensId == 10) {
     G4ThreeVector theGlobalPoint1 = pPostStepPoint->GetPosition();

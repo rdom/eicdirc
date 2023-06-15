@@ -51,8 +51,8 @@ G4VParticleChange *PrtCherenkovProcess::PostStepDoIt(const G4Track &aTrack, cons
 
   G4double step_length = aStep.GetStepLength();
   MeanNumberOfPhotons = MeanNumberOfPhotons * step_length;
-  G4double fNumPhotons = (G4int)G4Poisson(MeanNumberOfPhotons);
-
+  G4int fNumPhotons = (G4int)G4Poisson(MeanNumberOfPhotons);
+  
   if (fNumPhotons <= 0) { //==!fStackingFlag)
     // return unchanged particle and no secondaries
     aParticleChange.SetNumberOfSecondaries(0);
@@ -99,8 +99,13 @@ G4VParticleChange *PrtCherenkovProcess::PostStepDoIt(const G4Track &aTrack, cons
       rand = G4UniformRand();
       sampledEnergy = Pmin + rand * dp;
       sampledRI = Rindex->Value(sampledEnergy);
-      cosTheta = BetaInverse / sampledRI;
+      cosTheta = BetaInverse / sampledRI;      
 
+      if (cosTheta > 1) {
+        std::cout << "Warning - PrtCherenkovProcess:  cosTheta " << cosTheta << std::endl;
+        return pParticleChange;
+      }
+      
       sin2Theta = (1.0 - cosTheta) * (1.0 + cosTheta);
       rand = G4UniformRand();
 
