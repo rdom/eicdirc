@@ -18,24 +18,31 @@ G4VParticleChange *PrtOpBoundaryProcess::PostStepDoIt(const G4Track &aTrack, con
   // std::cout<<"parentId   "<<parentId <<std::endl;
   // if(parentId==1) particleChange->ProposeTrackStatus(fStopAndKill);
 
-  double endofbar = 0.5 * (4200 + 4 * 0.05); // 1250/2.;
+  double endofbar = 0.5 * (4200 + 4 * 0.05);
+
+ 
 
   // ideal focusing
   if (fLensId == 10) {
     G4ThreeVector theGlobalPoint1 = pPostStepPoint->GetPosition();
     G4TouchableHistory *touchable = (G4TouchableHistory *)(pPostStepPoint->GetTouchable());
     G4ThreeVector lpoint = touchable->GetHistory()->GetTransform(1).TransformPoint(theGlobalPoint1);
+    
     if (lpoint.getZ() < endofbar + 0.0001 && lpoint.getZ() > endofbar - 0.0001) {
+      
       G4ThreeVector ww = pPreStepPoint->GetTouchableHandle()
                            ->GetHistory()
                            ->GetTopTransform()
                            .Inverse()
                            .TransformPoint(G4ThreeVector(0, 0, endofbar));
 
+      // in global CS
+      double newz = endofbar + (420 - 170 + 30) + 0.1; // lpoint.getZ()
       if (aStep.GetPreStepPoint()->GetPhysicalVolume()->GetName() != "wGlue")
         particleChange->ProposeTrackStatus(fStopAndKill);
-      else aParticleChange.ProposePosition(ww.getX(), ww.getY(), lpoint.getZ() - 0.0005);
-      G4TransportationManager::GetTransportationManager()->GetNavigatorForTracking()->ComputeSafety(G4ThreeVector(ww.getX(), ww.getY(), lpoint.getZ() - 0.0005));
+      else aParticleChange.ProposePosition(ww.getX(), ww.getY(),newz); 
+      G4TransportationManager::GetTransportationManager()->GetNavigatorForTracking()->ComputeSafety(
+        G4ThreeVector(ww.getX(), ww.getY(), newz));
       return G4VDiscreteProcess::PostStepDoIt(aTrack, aStep);
     }
   }
@@ -44,7 +51,7 @@ G4VParticleChange *PrtOpBoundaryProcess::PostStepDoIt(const G4Track &aTrack, con
     if (fEvType != 1) particleChange->ProposeTrackStatus(fStopAndKill);
     if (pPreStepPoint->GetPosition().z() < endofbar)
       particleChange->ProposeTrackStatus(fStopAndKill);
-  }
+  }  
 
   if (aStep.GetPostStepPoint()->GetPhysicalVolume()->GetName() == "wExpVol" &&
       pPostStepPoint->GetPosition().z() < pPreStepPoint->GetPosition().z()) {
