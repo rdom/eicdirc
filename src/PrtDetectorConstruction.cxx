@@ -217,9 +217,10 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
 
   double tphi, dphi = 360 * deg / (double)fNBoxes;
 
+  double center_shift = 280; // makes end at -182
   if (fRunType == 1) {
     // LUT
-    new G4PVPlacement(0, G4ThreeVector(0, 0, 0), lDirc, "wDirc", lExpHall, false, 0);
+    new G4PVPlacement(0, G4ThreeVector(0, 0, center_shift), lDirc, "wDirc", lExpHall, false, 0);
   } else {
     for (int i = 0; i < fNBoxes; i++) {
       tphi = dphi * i;
@@ -228,7 +229,8 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
 
       G4RotationMatrix *tRot = new G4RotationMatrix();
       tRot->rotateZ(-tphi);
-      new G4PVPlacement(tRot, G4ThreeVector(dx, dy, 420 - 170 + 30 ), lDirc, "wDirc", lExpHall, false, i); // makes end at -182
+      new G4PVPlacement(tRot, G4ThreeVector(dx, dy, center_shift), lDirc, "wDirc", lExpHall, false,
+                        i);
     }
   }
 

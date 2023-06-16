@@ -35,7 +35,7 @@ G4VParticleChange *PrtOpBoundaryProcess::PostStepDoIt(const G4Track &aTrack, con
                            .TransformPoint(G4ThreeVector(0, 0, endofbar));
 
       // in global CS
-      double newz = endofbar + (420 - 170 + 30) + 0.1; // lpoint.getZ()
+      double newz = endofbar + 280 + 0.1; // lpoint.getZ()
       if (aStep.GetPreStepPoint()->GetPhysicalVolume()->GetName() != "wGlue")
         particleChange->ProposeTrackStatus(fStopAndKill);
       else aParticleChange.ProposePosition(ww.getX(), ww.getY(),newz); 

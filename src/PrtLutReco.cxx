@@ -108,7 +108,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, TString
   }
 
   // double pixels = frun->getTest1();
-  double range = 100;
+  double range = 200;
   if (fMomentum < 5) range = 200;
   if (fMomentum < 3) range = 400;
   if (fMomentum < 0.6) range = 500;
@@ -471,7 +471,7 @@ void PrtLutReco::Run(int start, int end) {
           sum2 += -TMath::Log(fFunc[fp2]->Eval(tangle) + noise);
         }
       }
-
+ 
       // if (isGoodHit_gr || 1) { // tmp for plate ev
       if (isGoodHit_gr) {
         nsHits++;
@@ -480,6 +480,7 @@ void PrtLutReco::Run(int start, int end) {
           if (pid == 3) ft.fill_digi(mcp, pix);
         } else if (pid == 2) ft.fill_digi(mcp, pix);
 
+#ifdef AI
         int tpix = pix - 1;
         int tx = int(16 * (mcp % 6) + tpix % 16);
         int ty = int(16 * (mcp / 6) + tpix / 16);
@@ -495,6 +496,7 @@ void PrtLutReco::Run(int start, int end) {
             vinputInd[tnph_gr[pid] * 3 + 2] = int(5 * hitTime);
           }
         }
+#endif	
       }
 
       isGoodHit_ti = true;
