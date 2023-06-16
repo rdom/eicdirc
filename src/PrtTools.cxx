@@ -1256,7 +1256,8 @@ void PrtTools::save(TPad *c,TString path, int what, int style){
       TCanvas *cc;
       if(TString(c->GetName()).Contains("hp") || TString(c->GetName()).Contains("cdigi")) {
 	cc = draw_digi(_last_maxz,_last_minz);
-	cc->SetCanvasSize(800,400);
+	// cc->SetCanvasSize(800,400);
+	cc->SetCanvasSize(w,h);
 	if(name.Contains("=")) name =  name.Tokenize('=')->First()->GetName();
       }else{
       	cc = new TCanvas(TString(c->GetName())+"exp","cExport",0,0,w,h);

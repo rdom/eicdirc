@@ -59,6 +59,14 @@ G4VParticleChange *PrtCherenkovProcess::PostStepDoIt(const G4Track &aTrack, cons
     return pParticleChange;
   }
 
+  G4double Pmin = Rindex->Energy(0);
+  G4double Pmax = Rindex->GetMaxEnergy();
+
+  // d/ monochromatic photons
+  fNumPhotons = 13; // scaled for 30 deg
+  Pmin = 3.18 * 1E-6;
+  Pmax = Pmin;
+  
   ////////////////////////////////////////////////////////////////
   aParticleChange.SetNumberOfSecondaries(fNumPhotons);
 
@@ -67,13 +75,6 @@ G4VParticleChange *PrtCherenkovProcess::PostStepDoIt(const G4Track &aTrack, cons
   }
 
   ////////////////////////////////////////////////////////////////
-  G4double Pmin = Rindex->Energy(0);
-  G4double Pmax = Rindex->GetMaxEnergy();
-
-  // d/ monochromatic photons
-  fNumPhotons = 13; // scaled for 30 deg
-  Pmin = 3.18 * 1E-6;
-  Pmax = Pmin;
 
   G4double dp = Pmax - Pmin;
 
