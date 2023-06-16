@@ -759,11 +759,11 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     lMcp = new G4LogicalVolume(gMcp, BarMaterial, "lMcp", 0, 0, 0);
 
     // double pixSize = 6*mm;
-    fNpix1 = 32; // fMcpActive[1]/pixSize-1;
-    fNpix2 = 32; // fMcpActive[1]/pixSize-1;
+    // fNpix1 = 32; // fMcpActive[1]/pixSize-1;
+    // fNpix2 = 32; // fMcpActive[1]/pixSize-1;
 
-    // fNpix1 = 16;
-    // fNpix2 = 16;
+    fNpix1 = 16;
+    fNpix2 = 16;
     fRun->setNpix(fNpix1 * fNpix1);
     // fRun->setTest2(fMcpActive[0] / fNpix1);
     // fRun->setNpix(fNpix1 * fNpix1);
