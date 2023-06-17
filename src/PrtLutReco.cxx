@@ -108,10 +108,12 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, TString
   }
 
   // double pixels = frun->getTest1();
-  double range = 200;
-  if (fMomentum < 5) range = 200;
-  if (fMomentum < 3) range = 400;
+  double range = 500;
+  if (fMomentum < 5) range = 500;
+  if (fMomentum < 3) range = 500;
   if (fMomentum < 0.6) range = 500;
+  if (fMomentum > 8) range = 200;
+  if (fMomentum > 12) range = 100;
   if (fp1 == 0) {
     range = 500;
     if (fMomentum >= 2) range = 100;
