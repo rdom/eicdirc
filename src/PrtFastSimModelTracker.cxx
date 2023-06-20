@@ -105,7 +105,7 @@ void PrtFastSimModelTracker::DoIt(const G4FastTrack &aFastTrack, G4FastStep &aFa
     dtheta = 0.001 * get_res(grtheta, theta, 0.001 * mom);
     dphi = 0.001 * get_res(grphi, theta, 0.001 * mom);
   }
- 
+  
   dir.setTheta(G4RandGauss::shoot(dir.getTheta(), dtheta));
   dir.setPhi(G4RandGauss::shoot(dir.getPhi(), dphi));
 

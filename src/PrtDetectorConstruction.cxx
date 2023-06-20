@@ -62,7 +62,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   fHall[1] = 1500;
   fHall[2] = 3000;
   
-  fBar[0] = 17; fBar[1] = 32; fBar[2] = 1050; //4200;
+  fBar[0] = 17; fBar[1] = 32; fBar[2] = 1050;
   // fPrizm[0] = 170; fPrizm[1] = 300; fPrizm[2] = 30+300*tan(37*deg); fPrizm[3] = 30;
   // fPrizm[0] = 390; fPrizm[1] = 300; fPrizm[3] = 50; fPrizm[2]= fPrizm[3]+300*tan(32*deg);
 
@@ -104,7 +104,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
     fNBoxes = 12;
     fRadius = 700 + 0.5 * fBar[0]; // old = 729.6;
     fNBar = 10;
-    fBar[2] = 1050;
+    fBar[2] = 1225; // BaBar bars
   }
 
   if (fGeomType == 2 || fGeomType == 12) { // CORE    
@@ -217,7 +217,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
 
   double tphi, dphi = 360 * deg / (double)fNBoxes;
 
-  double center_shift = 280; // makes end at -182
+  double center_shift = 280 + 350; // makes end at -182
   if (fRunType == 1) {
     // LUT
     new G4PVPlacement(0, G4ThreeVector(0, 0, center_shift), lDirc, "wDirc", lExpHall, false, 0);
