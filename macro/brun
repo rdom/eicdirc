@@ -37,10 +37,11 @@ echo $tseed
 # 		     -trackingres 0.0005 -timeres 0.1 -timecut 0.2 -e 1000 -v 2 -b 1 &
 # done
 
+			 # -theta 0 -x mix_pik -w 0 -g 1 -c 2031 -l 3 -ev 0 -p 6 \
 for i in {0..19}; do
     ../build/eicdirc -r 0 -seed $tseed$i -o h_b$i.root  \
-		     -theta 90 -x mix_pik -w 0 -g 1 -c 2031 -l 3 -ev 0 -p 6 \
-		     -trackingres 0.0 -timeres 0.1 -timecut 0.2 -e 2500 -v 2 -b 1 &
+		     -theta 0 -x pi+ -w 0 -g 11 -c 4 -l 3 -ev 0 -p 6 \
+		     -trackingres 0.0 -timeres 0.1 -timecut 0.2 -e 250 -v 2 -b 1 &
 done
 
 

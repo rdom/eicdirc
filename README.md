@@ -112,6 +112,7 @@ example:
                1    run silent (without GUI)
 
 -d    display option
+               use /Prt/geom/drawHits 2 
                0    standard (default)
                1    display hit occupancy of current run
                2    display hit occupancy of occuhits.root (needs to be generated)

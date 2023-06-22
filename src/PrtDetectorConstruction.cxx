@@ -1375,11 +1375,12 @@ void PrtDetectorConstruction::DrawHitBox(int id) {
   std::cout << id << " nevent  " << nevent << std::endl;
 
   int pix(0), mcp(0), prism(0);
-  int hload[1][24][6150] = {{{0}}};
+  int npmt = fNRow * fNCol;
+  int hload[12][6][6150] = {{{0}}};
 
   for (int i = 0; i < nevent; i++) {
     tree->GetEvent(i);
-    for (auto hit : event->getHits()) {
+    for (auto hit : event->getHits()) {      
       pix = hit.getPixel();
       mcp = hit.getPmt();
       prism = hit.getPrism();
@@ -1389,8 +1390,8 @@ void PrtDetectorConstruction::DrawHitBox(int id) {
   }
 
   int maxload[16] = {0};
-  for (int p = 0; p < 1; p++) {
-    for (int im = 0; im < 24; im++) {
+  for (int p = 0; p < fNBoxes; p++) {
+    for (int im = 0; im < npmt; im++) {
       for (int i = 0; i < 6150; i++) {
         if (maxload[p] < hload[p][im][i]) maxload[p] = hload[p][im][i];
       }
@@ -1475,7 +1476,7 @@ void PrtDetectorConstruction::DrawHitBox(int id) {
   G4LogicalVolume *lHit;
   G4VisAttributes *waHit;
   G4Box *gHit;
-  for (int p = 0; p < 1; p++) {
+  for (int p = 0; p < 12; p++) {
     mcp = 0;
     double gapx = (fPrizm[2] - fNCol * fMcpTotal[0]) / (double)(fNCol + 1);
     double gapy = (fPrizm[0] - fNRow * fMcpTotal[1]) / (double)(fNRow + 1);
@@ -1484,14 +1485,15 @@ void PrtDetectorConstruction::DrawHitBox(int id) {
         double shiftx = i * (fMcpTotal[0] + gapx) - fPrizm[3] / 2. + fMcpTotal[0] / 2 + gapx;
         double shifty = j * (fMcpTotal[1] + gapy) - fPrizm[0] / 2. + fMcpTotal[1] / 2 + gapy;
         int pixelId = 0;
-        for (int j1 = 0; j1 < fNpix2; j1++) {
-          for (int i1 = 0; i1 < fNpix1; i1++) {
 
+	for (int i1 = 0; i1 < fNpix1; i1++) {
+	  for (int j1 = 0; j1 < fNpix2; j1++) {
+	    
             double colorid = hload[p][mcp][pixelId] / (double)maxload[p];
             if (colorid > 1) colorid = 1;
             double hight = colorid * 5;
             int cid = colorid * 255;
-            if (cid > 1) {
+            if (cid > 1 && maxload[p] > 10) {
               gHit = new G4Box("gHit", 0.5 * fMcpActive[0] / fNpix1, 0.5 * fMcpActive[1] / fNpix2,
                                hight + 0.2);
               lHit = new G4LogicalVolume(gHit, BarMaterial, "lHit", 0, 0, 0);

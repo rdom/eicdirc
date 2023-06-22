@@ -115,18 +115,18 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
       // vec.setPhi(2 * M_PI * G4UniformRand());
 
       // 3 tracks for visualization
-      vec.setTheta(M_PI - 30 * deg);
-      vec.setPhi(0.025);
+      vec.setTheta(M_PI - 25 * deg);
+      vec.setPhi(0.5 * deg);
       fParticleGun->SetParticleMomentumDirection(vec);
       fParticleGun->GeneratePrimaryVertex(anEvent);
       
       vec.setTheta(M_PI - 120 * deg);
-      vec.setPhi(M_PI / 3. + 0.025);
+      vec.setPhi(M_PI / 3. + 7 *deg);
       fParticleGun->SetParticleMomentumDirection(vec);
       fParticleGun->GeneratePrimaryVertex(anEvent);
 
       vec.setTheta(M_PI - 150 * deg);
-      vec.setPhi(M_PI + 0.025);
+      vec.setPhi(M_PI + 10 * deg);
     }
 
     if (fRun->getEv() == 1) {
