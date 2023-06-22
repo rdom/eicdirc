@@ -20,6 +20,7 @@ class PrtHit : public TObject {
 
   // accessors
   Int_t getChannel() { return fChannel; }
+  Int_t getPrism() { return fPrism; }
   Int_t getPmt() { return fPmt; }
   Int_t getPixel() { return fPixel; }
   Double_t getLeadTime() { return fLeadTime; }
@@ -30,6 +31,7 @@ class PrtHit : public TObject {
 
   // mutators
   void setChannel(Int_t val) { fChannel = val; }
+  void setPrism(Int_t val) { fPrism = val; }
   void setPmt(Int_t val) { fPmt = val; }
   void setPixel(Int_t val) { fPixel = val; }
   void setLeadTime(Double_t val) { fLeadTime = val; }
@@ -40,6 +42,7 @@ class PrtHit : public TObject {
 
  protected:
   Int_t fChannel;
+  Int_t fPrism;  
   Int_t fPmt;
   Int_t fPixel;
   Double_t fLeadTime;
@@ -48,7 +51,7 @@ class PrtHit : public TObject {
   TVector3 fPosition;
   TVector3 fMomentum;
 
-  ClassDef(PrtHit, 8)
+  ClassDef(PrtHit, 9)
 };
 
 #endif

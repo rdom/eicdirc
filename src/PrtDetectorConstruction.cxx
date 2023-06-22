@@ -1283,13 +1283,14 @@ void PrtDetectorConstruction::SetVisualization() {
     lFmirror->SetVisAttributes(waMirror);
   }
 
-  // G4VisAttributes *waMcp = new G4VisAttributes(G4Colour(0.1,0.1,0.9,0.3));
-  G4VisAttributes *waMcp = new G4VisAttributes(G4Colour(1.0, 0., 0.1, 0.4));
+  G4VisAttributes *waMcp = new G4VisAttributes(G4Colour(0.3,0.0,0.3,0.1));
+  //G4VisAttributes *waMcp = new G4VisAttributes(G4Colour(1.0, 0., 0.1, 0.4));
   // waMcp->SetForceWireframe(true);
   waMcp->SetForceSolid(true);
   lMcp->SetVisAttributes(waMcp);
 
-  G4VisAttributes *waPixel = new G4VisAttributes(G4Colour(0.7, 0.0, 0.1, 0.5));
+  // G4VisAttributes *waPixel = new G4VisAttributes(G4Colour(0.7, 0.0, 0.1, 0.5));
+ G4VisAttributes *waPixel = new G4VisAttributes(G4Colour(0.1, 0.4, 0.6, 0.3));
   waPixel->SetForceWireframe(true);
   if (fMcpLayout == 3) waPixel->SetVisibility(false);
   else waPixel->SetVisibility(true);
@@ -1303,7 +1304,7 @@ void PrtDetectorConstruction::ConstructSDandField() {
   r->AddRootLogicalVolume(lTracker);
   auto fastSimModelTracker = new PrtFastSimModelTracker("tracker", r);
 
-  // // Register the fast simulation model for deleting
+  // Register the fast simulation model for deleting
   G4AutoDelete::Register(fastSimModelTracker);
 
   // Sensitive detectors
@@ -1353,12 +1354,14 @@ void PrtDetectorConstruction::SetRotation(double angle) {
 
 void PrtDetectorConstruction::DrawHitBox(int id) {
 
-  Int_t dispopt = PrtManager::Instance()->getDisplayOpt();
-  if (dispopt != 1 && dispopt != 2) return;
+  // Int_t dispopt = PrtManager::Instance()->getDisplayOpt();
+  // if (dispopt != 1 && dispopt != 2) return;
 
+  std::cout << "reading occuhits.root " << std::endl;
+  
   PrtEvent *event = new PrtEvent();
   TChain *tree;
-  if (dispopt == 1) tree = (TChain *)PrtManager::Instance()->getTree();
+  if (id == 1) tree = (TChain *)PrtManager::Instance()->getTree();
   else {
     tree = new TChain("data");
     tree->Add("occuhits.root");
@@ -1371,7 +1374,7 @@ void PrtDetectorConstruction::DrawHitBox(int id) {
   Int_t nevent = tree->GetEntries();
   std::cout << id << " nevent  " << nevent << std::endl;
 
-  int pix(0), mcp(0), prizm(0);
+  int pix(0), mcp(0), prism(0);
   int hload[1][24][6150] = {{{0}}};
 
   for (int i = 0; i < nevent; i++) {
@@ -1379,9 +1382,9 @@ void PrtDetectorConstruction::DrawHitBox(int id) {
     for (auto hit : event->getHits()) {
       pix = hit.getPixel();
       mcp = hit.getPmt();
-      prizm = 0; // hit.GetPrizmId();
-      if (prizm < 0 || pix < 0 || pix > 6150 || mcp < 0) continue;
-      hload[prizm][mcp][pix]++;
+      prism = hit.getPrism();
+      if (prism < 0 || pix < 0 || pix > 6150 || mcp < 0) continue;
+      hload[prism][mcp][pix]++;
     }
   }
 
@@ -1451,14 +1454,14 @@ void PrtDetectorConstruction::DrawHitBox(int id) {
   G4VisAttributes *waDircHit = new G4VisAttributes(G4Colour(1., 1., 0.9, 0.2));
   waDircHit->SetVisibility(false);
 
-  double tphi, dphi = 22.5 * deg;
-  G4LogicalVolume *lDircHit[16];
-  for (int i = 0; i < 16; i++) {
+  double tphi, dphi = 360/fNBoxes * deg;
+  G4LogicalVolume *lDircHit[fNBoxes];
+  for (int i = 0; i < fNBoxes; i++) {
     tphi = dphi * i;
     double dx = fRadius * cos(tphi);
     double dy = fRadius * sin(tphi);
     G4ThreeVector dirc =
-      G4ThreeVector(dx, dy, 0.5 * fBar[2] * 4 + fPrizm[1] + fMcpActive[2] / 2. + fLens[2]);
+      G4ThreeVector(dx, dy, 0.5 * fBar[2] * 4 + fPrizm[1] + fMcpActive[2] / 2. + fLens[2] + 630);
 
     G4Box *gDircHit = new G4Box("gDircHit", 400., 300., 10);
     lDircHit[i] = new G4LogicalVolume(gDircHit, defaultMaterial, Form("lDircHit%d", i), 0, 0, 0);

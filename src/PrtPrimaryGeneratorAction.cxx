@@ -102,51 +102,31 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
     // fParticleGun->SetParticleMomentumDirection(vec);
     // fParticleGun->GeneratePrimaryVertex(anEvent);
 
-    // if(fCurrentEvent > 10000) fTracking = 0.0005; // small smearing for PDFs
-
     if (theta > 0 && theta < M_PI) {
-
+      
       vec.setTheta(theta);
       vec.setPhi(phi);
       
-      // if (fTracking < 0.00001) {
-      //   vec.setTheta(theta);
-      //   vec.setPhi(phi);
-      // } else if (fTracking < 10) {
-
-      //   // // smear track resolution
-      //   // vec.setTheta(theta);
-      //   // vec.setPhi(phi);
-      //   // G4ThreeVector vec0 = vec;
-      //   // vec.setTheta(G4RandGauss::shoot(theta, fTracking));
-      //   // vec.rotate(M_PI * G4UniformRand(), vec0.unit());
-
-      //   vec.setTheta(G4RandGauss::shoot(theta, fTracking));
-      //   vec.setPhi(G4RandGauss::shoot(phi, fTracking));
-	
-      //   std::cout << "track resolution dtheta = " << fTracking << " mrad, dphi = " << fTracking
-      //             << " mrad" << std::endl;
-      // // } else {	
-      // //   double dtheta = 0.001 * get_res(grtheta, theta, 0.001 * fParticleGun->GetParticleMomentum());
-      // //   double dphi = 0.001 * get_res(grphi, theta, 0.001 * fParticleGun->GetParticleMomentum());
-      // // 	fRun->setTrackingResTheta(dtheta);
-      // // 	fRun->setTrackingResPhi(dphi);       
-
-      // //   vec.setTheta(G4RandGauss::shoot(theta, dtheta));
-      // //   vec.setPhi(G4RandGauss::shoot(phi, dphi));
-      // // 	std::cout << "track resolution dtheta = " << dtheta <<  " mrad, dphi = " << dphi << " mrad" << std::endl;
-      // }
     } else {
       theta = M_PI * G4UniformRand();
       theta = acos((cos(30 * deg) - cos(150 * deg)) * G4UniformRand() + cos(150 * deg));
 
-      // G4ThreeVector vec0 = vec;
-      // vec0.setTheta(M_PI - theta);
-
-      // theta = G4RandGauss::shoot(theta, fTracking);
-      vec.setTheta(M_PI - theta);
-      // vec.rotate(2 * M_PI * G4UniformRand(), vec0);
+      // vec.setTheta(M_PI - theta);
       // vec.setPhi(2 * M_PI * G4UniformRand());
+
+      // 3 tracks for visualization
+      vec.setTheta(M_PI - 30 * deg);
+      vec.setPhi(0.025);
+      fParticleGun->SetParticleMomentumDirection(vec);
+      fParticleGun->GeneratePrimaryVertex(anEvent);
+      
+      vec.setTheta(M_PI - 120 * deg);
+      vec.setPhi(M_PI / 3. + 0.025);
+      fParticleGun->SetParticleMomentumDirection(vec);
+      fParticleGun->GeneratePrimaryVertex(anEvent);
+
+      vec.setTheta(M_PI - 150 * deg);
+      vec.setPhi(M_PI + 0.025);
     }
 
     if (fRun->getEv() == 1) {

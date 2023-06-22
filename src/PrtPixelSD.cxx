@@ -96,7 +96,7 @@ G4bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
   
   Long_t pathId = 0;
   int refl = 0;
-  int prizmId = -1;
+  int prismId = -1;
 
   double prismtime = 0;
   for (size_t i = 0; i < prizmCol->entries(); i++) {
@@ -135,11 +135,13 @@ G4bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
   // }
 
   PrtHit hit;
-  // hit.SetPrizmId(prizmId);
+
+  int prism = touchable->GetReplicaNumber(3);
   int mcp = touchable->GetReplicaNumber(1);
   int pix = touchable->GetReplicaNumber(0);
-  
+
   int ch = fMap_Mpc[mcp][pix];
+  hit.setPrism(prism);
   hit.setPmt(mcp);
   hit.setPixel(pix);
   hit.setChannel(ch);
