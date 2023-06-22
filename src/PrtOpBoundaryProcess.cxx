@@ -7,6 +7,7 @@ PrtOpBoundaryProcess::PrtOpBoundaryProcess() : G4OpBoundaryProcess() {
   fLensId = PrtManager::Instance()->getRun()->getLens();
   fRunType = PrtManager::Instance()->getRun()->getRunType();
   fEvType = PrtManager::Instance()->getRun()->getEv();
+  fRadiatorL = PrtManager::Instance()->getRun()->getRadiatorL();
 }
 
 G4VParticleChange *PrtOpBoundaryProcess::PostStepDoIt(const G4Track &aTrack, const G4Step &aStep) {
@@ -18,8 +19,8 @@ G4VParticleChange *PrtOpBoundaryProcess::PostStepDoIt(const G4Track &aTrack, con
   // std::cout<<"parentId   "<<parentId <<std::endl;
   // if(parentId==1) particleChange->ProposeTrackStatus(fStopAndKill);
 
-  double endofbar = 0.5 * (4200 + 4 * 0.05);
-  
+  double endofbar = 0.5 * fRadiatorL;
+
   // ideal focusing
   if (fLensId == 10) {
     G4ThreeVector theGlobalPoint1 = pPostStepPoint->GetPosition();

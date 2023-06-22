@@ -57,6 +57,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, TString
   fStudyId = frun->getStudy();
   fMomentum = frun->getMomentum();
   fRadiator = frun->getRadiator();
+  fRadiatorL = frun->getRadiatorL();
   fPhysList = frun->getPhysList();
   double timeRes = frun->getTimeSigma() * 1000;
   int rpid = frun->getPid();
@@ -273,7 +274,6 @@ void PrtLutReco::Run(int start, int end) {
   trackRes = frun->getBeamSize();
   double trackingResTheta = frun->getTrackingResTheta();
   double trackingResPhi = frun->getTrackingResPhi();
-  double radiatorL = frun->getRadiatorL();
   std::cout << "trackRes " << trackRes << " timeRes " << timeRes << std::endl;
   std::cout << "tracking resulution: dtheta = " << trackingResTheta <<  " dphi = " << trackingResPhi  << std::endl;
   
@@ -361,12 +361,12 @@ void PrtLutReco::Run(int start, int end) {
       cz.RotateUz(unitdir1);
       cd.RotateUz(unitdir2);
 
-      lenz = 0.5 * radiatorL - fEvent->getPosition().Z();
+      lenz = 0.5 * fRadiatorL - fEvent->getPosition().Z();
 
       double phi0 = cd.Phi();
       if (dirz < 0) {
         reflected = true;
-        lenz = 2 * radiatorL - lenz;
+        lenz = 2 * fRadiatorL - lenz;
       } else {
         reflected = false;
       }
@@ -1261,7 +1261,7 @@ double PrtLutReco::FindStartTime(PrtEvent *evt) {
 
     if (dirz < 0) reflected = kTRUE;
     else reflected = kFALSE;
-    if (reflected) lenz = 2 * 4200 - lenz;
+    if (reflected) lenz = 2 * fRadiatorL - lenz;
 
     PrtLutNode *node = (PrtLutNode *)fLut->At(ch);
     int size = node->Entries();

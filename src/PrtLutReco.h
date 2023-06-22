@@ -56,6 +56,7 @@ class PrtLutReco {
   int fMethod;
   int fPhysList;
   int fRadiator;
+  double fRadiatorL;
   int fStudyId;
   bool fTimeImaging;
   bool fNNet;

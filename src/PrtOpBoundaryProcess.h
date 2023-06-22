@@ -16,6 +16,7 @@ class PrtOpBoundaryProcess : public G4OpBoundaryProcess {
   int fLensId;
   int fRunType;
   int fEvType;
+  double fRadiatorL;
 };
 
 #endif /*PrtOpBoundaryProcess_h*/
