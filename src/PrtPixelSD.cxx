@@ -145,7 +145,7 @@ G4bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
   hit.setPmt(mcp);
   hit.setPixel(pix);
   hit.setChannel(ch);
-  hit.setPosition(position);
+  hit.setPosition(globalPos); //position);
   hit.setMomentum(momentum);
   hit.setPathInPrizm(pathId);
   hit.setLeadTime(time); // time since track created 
