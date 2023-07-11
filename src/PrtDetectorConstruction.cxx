@@ -105,6 +105,8 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
     fRadius = 700 + 0.5 * fBar[0]; // old = 729.6;
     fNBar = 10;
     fBar[2] = 1225; // BaBar bars
+    fBar[1] = 35;
+    fPrizm[0] = 350 + 1.35;
   }
 
   if (fGeomType == 2 || fGeomType == 12) { // CORE    
@@ -123,11 +125,11 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   }
 
   fBoxWidth = fPrizm[0];
-  std::cout << "fBoxWidth " << fBoxWidth << std::endl;
+  std::cout << "fBoxWidth/Prism  " << fBoxWidth<<" x "<< fPrizm[2] << std::endl;
 
   fBar[0] = 17; //fTest1;
-  fBar[1] = (fPrizm[0] - (fNBar - 1) * fBarsGap) / fNBar;
-  std::cout << "bar width " << fBar[1]<< std::endl;
+  // fBar[1] = (fPrizm[0] - (fNBar - 1) * fBarsGap) / fNBar;
+  // std::cout << "bar width " << fBar[1]<< std::endl;
   
 
   fMirror[0] = fBar[0] + 1;
@@ -488,7 +490,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   }
 
   // The Prizm
-  G4Trap *gPrizm = new G4Trap("gPrizm", fPrizm[0], fPrizm[1], fPrizm[2], fPrizm[3]);
+  G4Trap *gPrizm = new G4Trap("gPrizm", 350, fPrizm[1], fPrizm[2], fPrizm[3]);
   lPrizm = new G4LogicalVolume(gPrizm, BarMaterial, "lPrizm", 0, 0, 0);
 
   G4Trap *gPrizmT1 = new G4Trap("gPrizmT1", fPrizmT[0], fPrizmT[1], fPrizmT[2], fPrizmT[3]);
@@ -703,7 +705,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     new G4PVPlacement(0, G4ThreeVector(0, 0, 0), lMcp, "wMcp", lFd, false, 1);
   }
   if (fMcpLayout == 4) {
-    // LAPPD pmt
+    // LAPPD/HRPPD pmt
 
     G4Box *gMcp = new G4Box("gMcp", fMcpTotal[0] / 2., fMcpTotal[1] / 2., fMcpTotal[2] / 2.);
     lMcp = new G4LogicalVolume(gMcp, BarMaterial, "lMcp", 0, 0, 0);
@@ -1333,10 +1335,30 @@ void PrtDetectorConstruction::ConstructSDandField() {
   G4SDManager::GetSDMpointer()->AddNewDetector(barSD);
   SetSensitiveDetector("lBar", barSD);
 
-  // Magnetic field
-  if (fRun->getField() == 1) {
-    // G4MagneticField *mField = new G4UniformMagField(G4ThreeVector(3. * tesla, 0., 0.));
-    G4MagneticField *mField = new PrtField("../data/field.tab", 0);
+  // Magnetic Fields
+  int fid = fRun->getField();
+  if (fid == 1 || fid == 2 || fid == 3 || fid == 4) {
+
+    double ZOffset = 0.;
+    G4MagneticField *mField;
+    if (fid == 1) {
+      // CORE field
+      mField = new PrtField("../data/field.tab", ZOffset);
+    } else if (fid == 2) {
+      // MARCO 1.7T
+      mField = new PrtField(
+        "../data/MARCO_v.6.4.1.1.3_1.7T_Magnetic_Field_Map_2022_11_14_rad_coords_cm_T.CART.txt",
+        ZOffset);
+    } else if (fid == 3) {
+      // MARCO 2.0T
+      mField = new PrtField(
+        "../data/MARCO_v.6.4.1.1.3_2T_Magnetic_Field_Map_2022_11_14_rad_coords_cm_T.CART.txt",
+        ZOffset);
+    } else if (fid == 4) {
+      // simple solenoidal field
+      mField = new G4UniformMagField(G4ThreeVector(3. * tesla, 0., 0.));
+    }
+
     G4FieldManager *globalFieldMgr =
       G4TransportationManager::GetTransportationManager()->GetFieldManager();
     globalFieldMgr->SetDetectorField(mField);

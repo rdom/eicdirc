@@ -63,7 +63,7 @@ G4VParticleChange *PrtCherenkovProcess::PostStepDoIt(const G4Track &aTrack, cons
   G4double Pmax = Rindex->GetMaxEnergy();
 
   // d/ monochromatic photons
-  fNumPhotons = 13; // scaled for 30 deg
+  // fNumPhotons = 13; // scaled for 30 deg
   Pmin = 3.18 * 1E-6;
   Pmax = Pmin;
   

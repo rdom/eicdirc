@@ -45,7 +45,10 @@ example:
 
 -field    field type
                 0    no field (default)
-                1    b-field 2021
+                1    CORE b-field
+                2    ePIC MARCO 1.7T
+                3    ePIC MARCO 2.0T
+		4    solenoidal 3.0T
 
 -g    geometry configuration
                 0    ATHENA one barbox

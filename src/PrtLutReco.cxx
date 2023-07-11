@@ -109,7 +109,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, TString
   }
 
   // double pixels = frun->getTest1();
-  double range = 100;
+  double range = 200;
   if (fMomentum < 5) range = 500;
   if (fMomentum < 3) range = 500;
   if (fMomentum < 0.6) range = 500;
@@ -508,7 +508,7 @@ void PrtLutReco::Run(int start, int end) {
           tnph_ti[pid]++;
           double t = hitTime;
           // if(fabs(besttdiff) < 0.3) t -= besttdiff;
-          double noiseti = 0.5e-5;
+          double noiseti = 0.5e-6;//0.5e-5;
 
           double lh1 = fTime[fp1][ch]->GetBinContent(fTime[fp1][ch]->FindBin(t));
           double lh2 = fTime[fp2][ch]->GetBinContent(fTime[fp2][ch]->FindBin(t));

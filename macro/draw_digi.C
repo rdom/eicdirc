@@ -63,11 +63,15 @@ void draw_digi(TString infile = "../build/hits.root") {
             (fmod(hit_pos_y - hit_mcp_y_edge, pixel_dim) == 0))
           pixel_y -= 1;
 
+
         int pixel_num = (16 * pixel_x) + pixel_y;
 
         hist_mcp_num_default->Fill(pmt);
         hist_mcp_num_new->Fill(mcp_num);
 
+	if(pix != pixel_num) std::cout << "pix " << pix << std::endl;
+	if (pix != pixel_num) std::cout << "pix " << pix << " " << pixel_num << std::endl;	
+	
         hist_pixel_num_default->Fill(pix);
         hist_pixel_num_new->Fill(pixel_num);
       }

@@ -19,8 +19,8 @@ void draw_hp(TString infile = "../build/hits.root") {
       if (t.pid() == 2) t.fill_digi(pmt, pix);
     }
   }
-  // auto c  = new TCanvas("hp", "hp", 1200, 600);
-  auto cdigi = t.draw_digi(0, 0);
+  
+  auto cdigi = t.draw_digi(0, 0);//, new TCanvas("hp", "hp", 1200, 600));
   t.add_canvas(cdigi);
   t.save_canvas("data/draw_hp", 0);
 }
