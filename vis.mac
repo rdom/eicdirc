@@ -137,13 +137,14 @@
 # /vis/viewer/set/viewpointThetaPhi 129.792  1.39204  deg
 # /vis/viewer/set/targetPoint 100 20 210 cm
 
-# # side xy
-# /vis/viewer/set/viewpointVector 0 0 -1
-# /vis/viewer/set/upVector 0 1 0
-# /vis/viewer/set/projection orthogonal
-# /vis/viewer/zoomTo 2.2
-# /vis/viewer/scaleTo 1 1 1
+# side xy
+/vis/viewer/set/viewpointVector 0 0 -1
+/vis/viewer/set/upVector 0 1 0
+/vis/viewer/set/projection orthogonal
+/vis/viewer/zoomTo 2.2
+/vis/viewer/scaleTo 1 1 1
 # /vis/viewer/set/targetPoint 0 0 15.6294 cm
+/vis/viewer/set/targetPoint 0 0 150 cm
 
 # # side xz
 # /vis/viewer/set/viewpointVector 1.31839e-16 -1 -6.93889e-18
@@ -153,12 +154,12 @@
 # /vis/viewer/scaleTo 1 1 1
 # /vis/viewer/set/targetPoint 0.8 0 0.4 m
 
-# side yz
-/vis/viewer/set/viewpointVector 1 0 0
-/vis/viewer/set/upVector 0 1 0
-/vis/viewer/set/projection orthogonal
-/vis/viewer/zoomTo 5
-/vis/viewer/set/targetPoint 0.8 0 1.5 m
+# # side yz
+# /vis/viewer/set/viewpointVector 1 0 0
+# /vis/viewer/set/upVector 0 1 0
+# /vis/viewer/set/projection orthogonal
+# /vis/viewer/zoomTo 5
+# /vis/viewer/set/targetPoint 0.8 0 1.5 m
 
 # # side wedge
 # /vis/viewer/set/viewpointVector -5.20417e-17 1 -3.46945e-18

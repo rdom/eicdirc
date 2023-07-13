@@ -212,7 +212,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   fRun->setRadiatorL(dirclength);
 
   // The DIRC
-  G4Box *gDirc = new G4Box("gDirc", 500, 300, 0.5 * dirclength + 550);
+  G4Box *gDirc = new G4Box("gDirc", 230, 180, 0.5 * dirclength + 550);
   lDirc = new G4LogicalVolume(gDirc, defaultMaterial, "lDirc", 0, 0, 0);
   G4Box *gFd = new G4Box("gFd", 0.5 * fFd[1], 0.5 * fFd[0], 0.5 * fFd[2]);
   lFd = new G4LogicalVolume(gFd, defaultMaterial, "lFd", 0, 0, 0);
