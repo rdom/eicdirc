@@ -36,7 +36,7 @@ include(${Geant4_USE_FILE})
 file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cxx)
 file(GLOB headers ${PROJECT_SOURCE_DIR}/src/*.h)
 
-# MESSAGE(STATUS ${PROJECT_SOURCE_DIR})
+MESSAGE(STATUS ${PROJECT_SOURCE_DIR})
 
 set(CMAKE_CXX_STANDARD 17)
 #----------------------------------------------------------------------------

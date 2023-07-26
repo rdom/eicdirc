@@ -29,8 +29,8 @@
 #/vis/viewer/set/style wireframe
 
 # Draw coordinate axes:
-/vis/scene/add/axes 0.7 0 -1.82 0.01 m auto false
-/vis/scene/add/axes 0 0 0 0.01 m auto false
+# /vis/scene/add/axes 0.7 0 -1.82 0.01 m auto false
+# /vis/scene/add/axes 0 0 0 0.01 m auto false
 # /vis/scene/add/axes 0.7 0 1.33 0.01 m auto false
 # /vis/scene/add/axes 0.7 0 2.38 0.01 m auto false
 
@@ -118,7 +118,7 @@
 # /vis/viewer/set/targetPoint -72.0016 -53.2675 68.1293 cm
 /vis/viewer/set/targetPoint -70 -50 150 cm
 
-# /vis/viewer/set/background white
+/vis/viewer/set/background white
 
 #fp
 
@@ -137,14 +137,14 @@
 # /vis/viewer/set/viewpointThetaPhi 129.792  1.39204  deg
 # /vis/viewer/set/targetPoint 100 20 210 cm
 
-# side xy
-/vis/viewer/set/viewpointVector 0 0 -1
-/vis/viewer/set/upVector 0 1 0
-/vis/viewer/set/projection orthogonal
-/vis/viewer/zoomTo 2.2
-/vis/viewer/scaleTo 1 1 1
-# /vis/viewer/set/targetPoint 0 0 15.6294 cm
-/vis/viewer/set/targetPoint 0 0 150 cm
+# # side xy
+# /vis/viewer/set/viewpointVector 0 0 -1
+# /vis/viewer/set/upVector 0 1 0
+# /vis/viewer/set/projection orthogonal
+# /vis/viewer/zoomTo 2.2
+# /vis/viewer/scaleTo 1 1 1
+# # /vis/viewer/set/targetPoint 0 0 15.6294 cm
+# /vis/viewer/set/targetPoint 0 0 150 cm
 
 # # side xz
 # /vis/viewer/set/viewpointVector 1.31839e-16 -1 -6.93889e-18

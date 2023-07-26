@@ -54,6 +54,12 @@ PrtFastSimModelTracker::PrtFastSimModelTracker(G4String aModelName, G4Region *aE
   grphi[0] = new TGraph(21, mombins, rphi_0);
   grphi[1] = new TGraph(21, mombins, rphi_1);
   grphi[2] = new TGraph(21, mombins, rphi_2);
+
+  TFile *file = TFile::Open("../data/tracking_resolution_map_220723.root");
+  fTrMapTheta = new TH2F();
+  fTrMapPhi = new TH2F();
+  file->GetObject("tr_theta", fTrMapTheta);
+  file->GetObject("tr_phi", fTrMapPhi);
 }
 
 PrtFastSimModelTracker::~PrtFastSimModelTracker() {}
@@ -102,8 +108,12 @@ void PrtFastSimModelTracker::DoIt(const G4FastTrack &aFastTrack, G4FastStep &aFa
     dtheta = fTrackingRes;
     dphi = fTrackingRes;
   } else {
-    dtheta = 0.001 * get_res(grtheta, theta, 0.001 * mom);
-    dphi = 0.001 * get_res(grphi, theta, 0.001 * mom);
+    // dtheta = 0.001 * get_res(grtheta, theta, 0.001 * mom);
+    // dphi = 0.001 * get_res(grphi, theta, 0.001 * mom);
+
+    theta = 180 - theta / deg;
+    dtheta = 0.001 * fTrMapTheta->GetBinContent(fTrMapTheta->FindBin(0.001 * mom, theta));
+    dphi = 0.001 * fTrMapPhi->GetBinContent(fTrMapPhi->FindBin(0.001 * mom, theta));    
   }
   
   dir.setTheta(G4RandGauss::shoot(dir.getTheta(), dtheta));
@@ -133,3 +143,4 @@ double PrtFastSimModelTracker::get_res(TGraph *gg[3], double theta, double mom){
   TGraph * gr = new TGraph(3,x,y);    
   return gr->Eval(theta);
 }
+

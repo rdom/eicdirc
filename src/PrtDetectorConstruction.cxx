@@ -109,18 +109,18 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
     fPrizm[0] = 350 + 1.35;
   }
 
-  if (fGeomType == 2 || fGeomType == 12) { // CORE    
+  if (fGeomType == 2 || fGeomType == 12) { // CORE
     fNBoxes = 16;
     fRadius = 501.7;
     fNBar = 5;
     fBar[2] = 700;
-	
+
     fNRow = 3;
     fNCol = 4;
     fPrizm[0] = 175;
 
     // fNBoxes = 12; // alternative
-    // fNBar = 7;	
+    // fNBar = 7;
     // fPrizm[0] = 245;
   }
 

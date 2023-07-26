@@ -7,6 +7,7 @@
 
 #include "PrtRun.h"
 #include "TGraph.h"
+#include "TH2F.h"
 
 class PrtFastSimModelTracker : public G4VFastSimulationModel {
  public:
@@ -26,6 +27,7 @@ class PrtFastSimModelTracker : public G4VFastSimulationModel {
   PrtRun *fRun;
   double fTrackingRes;
   TGraph *grtheta[3], *grphi[3];
+  TH2F *fTrMapTheta, *fTrMapPhi;
 };
 
 #endif
