@@ -60,7 +60,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
 
   fHall[0] = 1500;
   fHall[1] = 1500;
-  fHall[2] = 3000;
+  fHall[2] = 3500;
   
   fBar[0] = 17; fBar[1] = 32; fBar[2] = 1050;
   // fPrizm[0] = 170; fPrizm[1] = 300; fPrizm[2] = 30+300*tan(37*deg); fPrizm[3] = 30;
@@ -219,7 +219,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
 
   double tphi, dphi = 360 * deg / (double)fNBoxes;
 
-  double center_shift = 280 + 350; // makes end at -182
+  double center_shift = 630; // makes end at -182
   if (fRunType == 1) {
     // LUT
     new G4PVPlacement(0, G4ThreeVector(0, 0, center_shift), lDirc, "wDirc", lExpHall, false, 0);
@@ -1222,6 +1222,7 @@ void PrtDetectorConstruction::SetVisualization() {
 
   G4VisAttributes *waExpHall = new G4VisAttributes(DircColour);
   waExpHall->SetVisibility(false);
+  waExpHall->SetForceWireframe(true);
   lExpHall->SetVisAttributes(waExpHall);
 
   G4VisAttributes *waDirc = new G4VisAttributes(DircColour);
