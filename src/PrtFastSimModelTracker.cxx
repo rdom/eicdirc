@@ -100,7 +100,7 @@ void PrtFastSimModelTracker::DoIt(const G4FastTrack &aFastTrack, G4FastStep &aFa
   double mom = track.GetMomentum().mag();
 
   // use 0.5 mrad smearing for PDF 
-  if(G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID() > 5000) fTrackingRes = 0.0005;
+  if(G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID() > 5000 && fTrackingRes < 0.0005) fTrackingRes = 0.0005;
 
   double theta = dir.getTheta();
   double dtheta = 0, dphi = 0;
