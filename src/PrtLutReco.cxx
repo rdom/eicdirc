@@ -280,7 +280,7 @@ void PrtLutReco::Run(int start, int end) {
   int nEvents = fChain->GetEntries();
   if (end == 0) end = nEvents;
 
-  int pdfstart = 10000;
+  int pdfstart = 5000;
   if (end > pdfstart) end = pdfstart;
   if (fMethod == 4) {
     start = pdfstart;
