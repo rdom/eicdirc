@@ -742,9 +742,9 @@ void PrtLutReco::Run(int start, int end) {
       epi_rejection2 = CalcRejection(fLnDiffTi[fp1], fLnDiffTi[fp2], 0.95);
       epi_rejection3 = CalcRejection(fLnDiffTi[fp1], fLnDiffTi[fp2], 0.98);
 
-      if (fLnDiffTi[fp1]->Integral() > 10) {
-        fLnDiffTi[fp1]->Fit("gaus", "Q");
-        ff = fLnDiffTi[fp1]->GetFunction("gaus");
+      if (fLnDiffTi[fp2]->Integral() > 10) {
+        fLnDiffTi[fp2]->Fit("gaus", "Q");
+        ff = fLnDiffTi[fp2]->GetFunction("gaus");
         if (ff) {
           m1 = ff->GetParameter(1);
           s1 = ff->GetParameter(2);
@@ -754,8 +754,8 @@ void PrtLutReco::Run(int start, int end) {
         }
 
         if (fp1 == 0 && mom < 1.5) { /// handle tails
-          fLnDiffTi[fp1]->Fit("gaus", "S", "", m1 - 1.5 * s1, 500);
-          ff = fLnDiffTi[fp1]->GetFunction("gaus");
+          fLnDiffTi[fp2]->Fit("gaus", "S", "", m1 - 1.5 * s1, 500);
+          ff = fLnDiffTi[fp2]->GetFunction("gaus");
           m2 = ff->GetParameter(1);
           s2 = ff->GetParameter(2);
           dm2 = ff->GetParError(1);
@@ -763,9 +763,9 @@ void PrtLutReco::Run(int start, int end) {
         }
       }
 
-      if (fLnDiffTi[fp2]->Integral() > 10) {
-        fLnDiffTi[fp2]->Fit("gaus", "Q");
-        ff = fLnDiffTi[fp2]->GetFunction("gaus");
+      if (fLnDiffTi[fp1]->Integral() > 10) {
+        fLnDiffTi[fp1]->Fit("gaus", "Q");
+        ff = fLnDiffTi[fp1]->GetFunction("gaus");
         if (ff) {
           m2 = ff->GetParameter(1);
           s2 = ff->GetParameter(2);
@@ -774,8 +774,8 @@ void PrtLutReco::Run(int start, int end) {
           ff->SetLineColor(kBlack);
         }
         if (fp1 == 0 && mom < 1.5) { /// handle tails
-          fLnDiffTi[fp2]->Fit("gaus", "S", "", -500, m2 + 1.5 * s2);
-          ff = fLnDiffTi[fp2]->GetFunction("gaus");
+          fLnDiffTi[fp1]->Fit("gaus", "S", "", -500, m2 + 1.5 * s2);
+          ff = fLnDiffTi[fp1]->GetFunction("gaus");
           m2 = ff->GetParameter(1);
           s2 = ff->GetParameter(2);
           dm2 = ff->GetParError(1);
