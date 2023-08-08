@@ -116,7 +116,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, TString
   if (fMomentum > 8) range = 200;
   if (fMomentum > 12) range = 100;
   if (fp1 == 0) {
-    range = 500;
+    range = 200;
     if (fMomentum >= 2) range = 100;
   }
 
