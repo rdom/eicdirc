@@ -977,8 +977,8 @@ void PrtLutReco::Run(int start, int end) {
       fLnDiffGr[fp2]->SetStats(0);
       fLnDiffTi[fp1]->SetStats(0);
       fLnDiffTi[fp2]->SetStats(0);
-       fLnDiffNn[fp1]->SetStats(0);
-       fLnDiffNn[fp2]->SetStats(0);
+      fLnDiffNn[fp1]->SetStats(0);
+      fLnDiffNn[fp2]->SetStats(0);
 
       ft.add_canvas("lh_gr" + nid, 800, 400);
       ft.normalize(fLnDiffGr, 5);

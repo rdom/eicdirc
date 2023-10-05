@@ -27,6 +27,10 @@
 #include "../../prttools/PrtTools.h"
 
 #include "G4PhysListFactory.hh"
+#include "G4OpticalPhysics.hh"
+#include "G4OpticalParameters.hh"
+#include "FTFP_BERT.hh"
+
 
 
 namespace {
@@ -53,7 +57,7 @@ int main(int argc, char **argv) {
     lensId, particle = "", testVal1, testVal2, testVal3, prismStepX, prismStepY,
             beamX, timeSigma, timeCut, mcpLayout;
   TString infile = "", lutfile = "", pdffile = "", nnfile = "", outfile = "";
-  int geometry(-1), firstevent(0), runtype(0), study(0), fid(0), verbose(0), batchmode(0);
+  int geometry(-1), firstevent(0), runtype(0), study(0), fid(0), verbose(0), batchmode(0), physlistid(0);
   double momentum(-1), beamZ(20000), trackingres(-1);
 
   G4long myseed = 0;
@@ -168,7 +172,10 @@ int main(int argc, char **argv) {
   run->setRunType(runtype);
 
   if (momentum > -1) run->setMomentum(momentum);
-  if (physlist.size()) run->setPhysList(atoi(physlist));
+  if (physlist.size()) {
+    physlistid = atoi(physlist);
+    run->setPhysList(physlistid);
+  }
   if (field.size()) run->setField(atoi(field));
   if (geometry > -1) run->setGeometry(geometry);
   if (ev.size()) run->setEv(atoi(ev));
@@ -236,11 +243,22 @@ int main(int argc, char **argv) {
   // G4PhysListFactory *physListFactory = new G4PhysListFactory();
   // G4VUserPhysicsList *physicsList = physListFactory->GetReferencePhysList("QGSP_BERT");
   // for(auto v : physListFactory->AvailablePhysLists()) std::cout << "v " << v << std::endl;
+
+  if (physlistid == 3) {
+    G4VModularPhysicsList *physicsList = new FTFP_BERT;
+    G4OpticalPhysics *opticalPhysics = new G4OpticalPhysics();
+    auto opticalParams = G4OpticalParameters::Instance();
+    opticalParams->SetCerenkovMaxPhotonsPerStep(20);
+    opticalParams->SetCerenkovMaxBetaChange(10.0);
+    opticalParams->SetCerenkovTrackSecondariesFirst(true);
+    physicsList->RegisterPhysics(opticalPhysics);
+    runManager->SetUserInitialization(physicsList);
+  }else{
+    runManager->SetUserInitialization(new PrtPhysicsList());
+  }
   
   runManager->SetUserInitialization(new PrtDetectorConstruction());
-  runManager->SetUserInitialization(new PrtPhysicsList());
   runManager->SetUserInitialization(new PrtActionInitialization());
-  // runManager->SetUserInitialization(physicsList);
   runManager->Initialize();
 
  
