@@ -75,7 +75,7 @@ void PrtPhysicsList::ConstructProcess() {
   AddTransportation();
   ConstructDecay();
   ConstructEM();
-  // if(fPhysList == 2) ConstructHad();
+  if(fPhysList == 2) ConstructHad();
   ConstructOp();
   AddParameterisation();
 }
