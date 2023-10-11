@@ -147,8 +147,9 @@ mkdir data
 ```
 
 Visualization of 100 events:
+```
 ./eicdirc -o data/tmp.root -r 1 -g 1 -c 2031 -l 3 -v 0 -ev 0 -x "opticalphoton" -p "3.18 eV"  -e 100
-
+```
 ![alt text](https://github.com/rdom/eicdirc/raw/master/pic/eicdirc_lut_gen.png)
 
 
