@@ -197,7 +197,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, TString
   fCorrFile = infile + "_corr.root";
   for (int i = 0; i < fnpmt; i++) fCorr[i] = 0;
   if (!gSystem->AccessPathName(fCorrFile)) {
-    std::cout << "------- reading  " << fCorrFile << std::endl;
+    std::cout << "--- reading  " << fCorrFile << std::endl;
     int pmt;
     double corr, cspr[5];
     TChain ch;
@@ -217,21 +217,21 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, TString
                 << fSigma[3] << std::endl;
     }
   } else {
-    std::cout << "------- corr file not found  " << fCorrFile << std::endl;
+    std::cout << "--- corr file not found  " << fCorrFile << std::endl;
   }
 
   // read neural network model
 #ifdef AI
   fNNet = true;
   if (!gSystem->AccessPathName(fNNPath)) {
-    std::cout << "------- reading  " << fNNPath << std::endl;
+    std::cout << "--- reading  " << fNNPath << std::endl;
     fNNmodel = new cppflow::model(fNNPath.Data());
     for(auto s : (*fNNmodel).get_operations() ){
       std::cout << "s " << s << std::endl;   
     }  
   } else {
     fNNet = false;
-    std::cout << "------- neural net model not found  " << fNNPath << std::endl;
+    std::cout << "--- neural net model not found  " << fNNPath << std::endl;
   }
 #endif
 

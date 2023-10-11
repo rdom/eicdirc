@@ -32,7 +32,7 @@ example:
 -o    output file name
 -i    input file name
 -u    look-up file name
--pdf  look-up file name
+-pdf  PDFs file name
 -nn   path to the neural network
 
 -r    run type
@@ -141,29 +141,56 @@ example:
 ## LUT generation
 
 ```
-eicdirc -o ../data/lut.root -r 1 -g 1 -h 11 -c 2031 -l 3 -v 0 -ev 0 -x "opticalphoton" -p "3.18 eV"  -e 1000000 -b 1
+cd eicdirc/build
+mkdir data
+./eicdirc -o data/lut.root -r 1 -g 1 -c 2031 -l 3 -v 0 -ev 0 -x "opticalphoton" -p "3.18 eV"  -e 1000000 -b 1
 ```
 
 Visualization of 100 events:
-eicdirc -o ../data/lut.root -r 1 -g 1 -h 11 -c 2031 -l 3 -v 0 -ev 0 -x "opticalphoton" -p "3.18 eV"  -e 100
+./eicdirc -o data/tmp.root -r 1 -g 1 -c 2031 -l 3 -v 0 -ev 0 -x "opticalphoton" -p "3.18 eV"  -e 100
 
 ![alt text](https://github.com/rdom/eicdirc/raw/master/pic/eicdirc_lut_gen.png)
 
 
 LUT averaging:
 ```
-root -q -b loadlib.C lutmean.C'("../data/lut")'
+cd eicdirc/macro
+root -q -b loadlib.C lutmean.C'("../build/data/lut.root")'
 ```
 
-## Simulation:
+## Simulation/Reconstruction:
+
+For geometrical reconstruction one needs to generate ~2000 events (example for 6 GeV/c pion/kaon mix @ 30 degree polar angle):
 ```
-eicdirc -r 1 -o hits.root -r 0 -theta 30 -x "mix_pik" -p 6 -w 0 -g 1 -h 11 -c 2031 -l 3 -trackres 0.0005 -v 0 -gz 1 -ev 0 -b 1 -e 2000
+cd eicdirc/build
+./eicdirc -r 0 -o data/sim.root -theta 30 -x "mix_pik" -p 6 -w 0 -g 1 -c 2031 -l 3 -trackingres 0.0005 -e 2000 -b 1
+```
+Geometrical reconstruction requires LUT (lut.avr.root which was previously creaded):
+```
+./eicdirc -r 2 -i data/sim.root -u data/lut.avr.root -o data/reco.root -trackingres 0.0005 -timeres 0.1 -timecut 0.2 -e 2000 -v 2
+```
+after first execution it will create per-pmt corrections "sim.root_corr.root" which will be automatically applied during next executions (use same command):
+```
+./eicdirc -r 2 -i data/sim.root -u data/lut.avr.root -o data/reco.root -trackingres 0.0005 -timeres 0.1 -timecut 0.2 -e 2000 -v 3
+```
+as a result the program will create figures of relevant parameters (in "data/reco") and store PID information in "data/reco.root"
+
+For time imaging one needs to generate ~25000 events.
+```
+./eicdirc -r 0 -o data/sim.root -theta 30 -x "mix_pik" -p 6 -w 0 -g 1 -c 2031 -l 3 -trackingres 0.0005 -e 25000 -b 1
+```
+the last 20k events [5000,20000] will be used to generate Probability Density Functions (needed for time imaging):
+```
+./eicdirc -r 4 -i data/sim.root -u data/lut.avr.root -trackingres 0.0005 -timeres 0.1 -timecut 0.2 -e 5000
+```
+it will create "data/sim.pdf.root". Note: the start event number for PDFs (5000) is hardcoded at the moment.
+
+The time imaging reconstruction 
+```
+./eicdirc -r 2 -i data/sim.root -u data/lut.avr.root -pdf data/sim.pdf.root -o data/reco.root -trackingres 0.0005 -timeres 0.1 -timecut 0.2 -e 5000 -v 3
+
 ```
 
-## Reconstruction:
-```
-eicdirc -s 2 -i hits.root -u ../data/lut_avr.root -s 2 -tc 0.5 -v 3 -e 0 -t1 0.0005
-```
 
 
 ## Example of script usage from macro folder
@@ -171,13 +198,8 @@ eicdirc -s 2 -i hits.root -u ../data/lut_avr.root -s 2 -tc 0.5 -v 3 -e 0 -t1 0.0
 Hit pattern:
 
 ```
-root loadlib.C drawHP.C'("../build/hits.root")'
+cd eicdirc/macro
+root loadlib.C draw_hp.C'("../build/data/sim.root")'
 ```
 Example of 1k of 6 GeV/c pions @ 30 degree:
 ![alt text](https://github.com/rdom/eicdirc/raw/master/pic/hp_pi_1k.png)
-
-Angle scan:
-```
-ba_scan -j6 -r0 -s5 -e50 -t1 -v0
-root da_scan.C'("r_spr39498736070.root","ttt1.root")'
-```
