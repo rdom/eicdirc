@@ -166,7 +166,7 @@ For geometrical reconstruction one needs to generate ~2000 events (example for 6
 cd eicdirc/build
 ./eicdirc -r 0 -o data/sim.root -theta 30 -x "mix_pik" -p 6 -w 0 -g 1 -c 2031 -l 3 -trackingres 0.0005 -e 2000 -b 1
 ```
-Geometrical reconstruction requires LUT (lut.avr.root which was previously creaded):
+Geometrical reconstruction requires LUT ("lut.avr.root" which was previously creaded):
 ```
 ./eicdirc -r 2 -i data/sim.root -u data/lut.avr.root -o data/reco.root -trackingres 0.0005 -timeres 0.1 -timecut 0.2 -e 2000 -v 2
 ```
@@ -186,7 +186,7 @@ the last 20k events [5000,20000] will be used to generate Probability Density Fu
 ```
 it will create "data/sim.pdf.root". Note: the start event number for PDFs (5000) is hardcoded at the moment.
 
-The time imaging reconstruction 
+The time imaging reconstruction:
 ```
 ./eicdirc -r 2 -i data/sim.root -u data/lut.avr.root -pdf data/sim.pdf.root -o data/reco.root -trackingres 0.0005 -timeres 0.1 -timecut 0.2 -e 5000 -v 3
 
