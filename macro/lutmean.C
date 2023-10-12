@@ -1,3 +1,8 @@
+#if defined(__ACLIC__)
+#include "PrtTools.h"
+#else
+R__LOAD_LIBRARY(../build/libPrt.so)
+#endif
 
 void lutmean(TString inFile = "../data/lut.root") {
   TString outFile = inFile.Copy().ReplaceAll(".root", ".avr.root");

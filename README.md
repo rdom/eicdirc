@@ -156,7 +156,7 @@ Visualization of 100 events:
 LUT averaging:
 ```
 cd eicdirc/macro
-root -q -b loadlib.C lutmean.C'("../build/data/lut.root")'
+root -q -b lutmean.C'("../build/data/lut.root")'
 ```
 
 ## Simulation/Reconstruction:
