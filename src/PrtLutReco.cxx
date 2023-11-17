@@ -581,7 +581,7 @@ void PrtLutReco::Run(int start, int end) {
     if (fMethod == 2 && fTimeImaging) { // time imaging
       if (tnph_ti[pid] > 1) hnph_ti[pid]->Fill(tnph_ti[pid]);
  
-      double sum_ti = 1.5 * (sumti2 - sumti1) + 30 * sum_nph;
+      double sum_ti = 1.5 * (sumti1 - sumti2) + 30 * sum_nph;
       if (fabs(sum_ti) > 0.1) fLnDiffTi[pid]->Fill(1.0 * sum_ti);
     }
 
@@ -984,8 +984,7 @@ void PrtLutReco::Run(int start, int end) {
       ft.normalize(fLnDiffGr, 5);
       fLnDiffGr[fp2]->SetName(Form("s_%2.2f", sep_gr));
       fLnDiffGr[fp2]->SetTitle(Form("GR separation = %2.2f s.d.", sep_gr));
-      TString lhtitle = "ln L(" + ft.lname(fp2) + ") - ln L(" + ft.lname(fp1) + ")";
-      if (fp1 == 0) lhtitle = "ln L(" + ft.lname(fp1) + ") - ln L(" + ft.lname(fp2) + ")";
+      TString lhtitle = "ln L(" + ft.lname(fp1) + ") - ln L(" + ft.lname(fp2) + ")";
       fLnDiffGr[fp2]->GetXaxis()->SetTitle(lhtitle);
 
       fLnDiffGr[fp2]->Draw();

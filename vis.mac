@@ -1,5 +1,6 @@
 # Use this open statement to create an OpenGL view:
-/vis/open OGL 600x600-0+0
+/vis/open OGLIQt
+#/vis/open OGL 600x600-0+0
 
 #
 # Use this open statement to create a .prim file suitable for
@@ -30,6 +31,7 @@
 
 # Draw coordinate axes:
 # /vis/scene/add/axes 0.7 0 -1.82 0.01 m auto false
+# /vis/scene/add/axes 0.7 0 2.2176 0.1 m
 # /vis/scene/add/axes 0 0 0 0.01 m auto false
 # /vis/scene/add/axes 0.7 0 1.33 0.01 m auto false
 # /vis/scene/add/axes 0.7 0 2.38 0.01 m auto false

@@ -22,13 +22,12 @@ G4VParticleChange *PrtOpBoundaryProcess::PostStepDoIt(const G4Track &aTrack, con
   double endofbar = 0.5 * fRadiatorL;
 
   // ideal focusing
-  if (fLensId == 10) {
+  if (fLensId == 10 && fEvType != 3) {
     G4ThreeVector theGlobalPoint1 = pPostStepPoint->GetPosition();
     G4TouchableHistory *touchable = (G4TouchableHistory *)(pPostStepPoint->GetTouchable());
     G4ThreeVector lpoint = touchable->GetHistory()->GetTransform(1).TransformPoint(theGlobalPoint1);
-    
+
     if (lpoint.getZ() < endofbar + 0.0001 && lpoint.getZ() > endofbar - 0.0001) {
-      
       G4ThreeVector ww = pPreStepPoint->GetTouchableHandle()
                            ->GetHistory()
                            ->GetTopTransform()
@@ -37,11 +36,45 @@ G4VParticleChange *PrtOpBoundaryProcess::PostStepDoIt(const G4Track &aTrack, con
 
       // in global CS
       double newz = endofbar + 630 + 0.1; // lpoint.getZ()
+
       if (aStep.GetPreStepPoint()->GetPhysicalVolume()->GetName() != "wGlue")
         particleChange->ProposeTrackStatus(fStopAndKill);
-      else aParticleChange.ProposePosition(ww.getX(), ww.getY(),newz); 
+      else aParticleChange.ProposePosition(ww.getX(), ww.getY(), newz);
       G4TransportationManager::GetTransportationManager()->GetNavigatorForTracking()->ComputeSafety(
         G4ThreeVector(ww.getX(), ww.getY(), newz));
+      return G4VDiscreteProcess::PostStepDoIt(aTrack, aStep);
+    }
+  }
+
+  // ideal focusing
+  if (fLensId == 10 && fEvType == 3) {
+    endofbar = endofbar + 630;
+    G4ThreeVector gpoint = pPostStepPoint->GetPosition();
+    G4TouchableHistory *touchable = (G4TouchableHistory *)(pPostStepPoint->GetTouchable());
+    G4ThreeVector lpoint = touchable->GetHistory()->GetTransform(1).TransformPoint(gpoint);
+    
+    if (gpoint.getZ() < endofbar + 0.1 && gpoint.getZ() > endofbar - 0.1) {
+
+      if(fEvType == 3) endofbar = endofbar - 500;
+      G4ThreeVector ww = pPreStepPoint->GetTouchableHandle()
+                           ->GetHistory()
+                           ->GetTopTransform()
+                           .Inverse()
+                           .TransformPoint(G4ThreeVector(0, 0, endofbar));
+
+      // in global CS
+      double newz = endofbar + 500 + 0.1; // lpoint.getZ()
+      // if (aStep.GetPreStepPoint()->GetPhysicalVolume()->GetName() != "wGlue")
+        // particleChange->ProposeTrackStatus(fStopAndKill);
+      // else
+      aParticleChange.ProposePosition(ww.getX(), ww.getY(),newz); 
+      G4TransportationManager::GetTransportationManager()->GetNavigatorForTracking()->ComputeSafety(
+        G4ThreeVector(ww.getX(), ww.getY(), newz));
+
+      // //cyl lens
+      // aParticleChange.ProposePosition(ww.getX(), lpoint.getY(), newz);
+      // G4TransportationManager::GetTransportationManager()->GetNavigatorForTracking()->ComputeSafety(
+      //   G4ThreeVector(ww.getX(), lpoint.getY(), newz));
       return G4VDiscreteProcess::PostStepDoIt(aTrack, aStep);
     }
   }
