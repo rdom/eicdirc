@@ -31,6 +31,8 @@
 #include "G4OpticalParameters.hh"
 #include "FTFP_BERT.hh"
 
+#include "G4FastSimulationManagerProcess.hh"
+
 
 
 namespace {
@@ -252,6 +254,25 @@ int main(int argc, char **argv) {
     opticalParams->SetCerenkovMaxBetaChange(10.0);
     opticalParams->SetCerenkovTrackSecondariesFirst(true);
     physicsList->RegisterPhysics(opticalPhysics);
+
+
+
+    // std::cout << "0000000 " << 0000000 << std::endl;
+    
+    // auto fastsim = new G4FastSimulationManagerProcess();
+    // // const G4PTblDicIterator* particleIterator = physicsList->GetParticleIterator();
+    // std::cout << "11111111 " << 11111111 << std::endl;
+    
+    // auto* particleIterator = G4ParticleTable::GetParticleTable()->GetIterator();
+    // std::cout << "particleIterator " << particleIterator << std::endl;
+    
+    // particleIterator->reset();
+    // while ((*particleIterator)()) {
+    //   G4ParticleDefinition *particle = particleIterator->value();
+    //   G4ProcessManager *pmanager = particle->GetProcessManager();
+    //   pmanager->AddProcess(fastsim, -1, 0, 0);
+    // }
+
     runManager->SetUserInitialization(physicsList);
   }else{
     runManager->SetUserInitialization(new PrtPhysicsList());
