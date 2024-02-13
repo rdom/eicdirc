@@ -38,6 +38,9 @@ void PrtSteppingAction::UserSteppingAction(const G4Step *step) {
     prevname = step->GetPreStepPoint()->GetPhysicalVolume()->GetName();
     postvname = step->GetPostStepPoint()->GetPhysicalVolume()->GetName();
   }
+
+  // stop track after radiator
+  if (track->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition() && prevname == "wBar" && postvname == "wDirc") track->SetTrackStatus(fStopAndKill);
   
   if (prevname == "wMcp" && postvname == "wDirc") track->SetTrackStatus(fStopAndKill);
   if (prevname == "wFd" && postvname == "wDirc") track->SetTrackStatus(fStopAndKill);
