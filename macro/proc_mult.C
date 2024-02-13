@@ -19,15 +19,19 @@ void proc_mult(TString in = "../build/hits.root") {
   }
 
   hmult->Draw();
-  double nph = hmult->GetMean();
-  std::cout << "nph " << nph << std::endl;
+  double nph_mean = hmult->GetMean();
+  TFitResultPtr rx = hmult->Fit("gaus", "SL");
+  double nph_fit = rx->Parameter(2);
+  std::cout << "nph_mean = " << nph_mean <<"  hph_fit = "<<nph_fit << std::endl;
     
   TFile fc(in + "_r.root", "recreate");
   TTree *tc = new TTree("reco", "reco");
   tc->Branch("mom", &mom, "mom/D");
   tc->Branch("theta", &theta, "theta/D");
   tc->Branch("phi", &phi, "phi/D");
-  tc->Branch("nph", &nph, "nph/D");
+  tc->Branch("nph_fit", &nph_fit, "nph_fit/D");
+  tc->Branch("nph_mean", &nph_mean, "nph_mean/D");
+  tc->Branch("nph_fit", &nph_fit, "nph_fit/D");
   tc->Branch("pid", &pid, "nph/I");
   tc->Fill();
   tc->Write();
