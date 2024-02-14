@@ -24,7 +24,7 @@ void PrtSteppingAction::UserSteppingAction(const G4Step *step) {
   G4int eventNumber = G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID();
 
   G4Track *track = step->GetTrack();
-  
+
   if (track->GetCurrentStepNumber() > 50000 || track->GetTrackLength() > 30000) {
     // std::cout<<"WRN: too many steps or track length > 30 m  N="
     // <<track->GetCurrentStepNumber()<<" Len = "<<track->GetTrackLength()/1000. <<std::endl;
@@ -39,12 +39,13 @@ void PrtSteppingAction::UserSteppingAction(const G4Step *step) {
     postvname = step->GetPostStepPoint()->GetPhysicalVolume()->GetName();
   }
 
-  // stop track after radiator
-  if (track->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition() && prevname == "wBar" && postvname == "wDirc") track->SetTrackStatus(fStopAndKill);
-  
+  // stop track after bar box
+  if (track->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition() && prevname == "wDirc" &&
+      postvname == "wExpHall")
+    track->SetTrackStatus(fStopAndKill);
+
   if (prevname == "wMcp" && postvname == "wDirc") track->SetTrackStatus(fStopAndKill);
   if (prevname == "wFd" && postvname == "wDirc") track->SetTrackStatus(fStopAndKill);
   if (prevname == "wBBWindow" && postvname == "wDirc") track->SetTrackStatus(fStopAndKill);
   if (prevname == "wMcp" && postvname == "wPixel") track->SetTrackStatus(fStopButAlive);
-
 }

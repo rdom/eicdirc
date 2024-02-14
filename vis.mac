@@ -131,13 +131,7 @@
 # /vis/viewer/set/upVector 0 1
 # /vis/viewer/set/viewpointThetaPhi 9  41  deg
 # /vis/viewer/zoomTo 6
-# /vis/viewer/set/targetPoint 88.5358 -17.0546 18.8692 cm 
-
-
-# lens
-# /vis/viewer/zoomTo 20
-# /vis/viewer/set/viewpointThetaPhi 129.792  1.39204  deg
-# /vis/viewer/set/targetPoint 100 20 210 cm
+# /vis/viewer/set/targetPoint 88.5358 -17.0546 18.8692 cm
 
 # # side xy
 # /vis/viewer/set/viewpointVector 0 0 -1
@@ -146,15 +140,16 @@
 # /vis/viewer/zoomTo 2.2
 # /vis/viewer/scaleTo 1 1 1
 # # /vis/viewer/set/targetPoint 0 0 15.6294 cm
-# /vis/viewer/set/targetPoint 0 0 150 cm
+# /vis/viewer/set/targetPoint 0 0 1 m
 
 # side xz
 /vis/viewer/set/viewpointVector 1.31839e-16 -1 -6.93889e-18
 /vis/viewer/set/upVector 0 1 0
 /vis/viewer/set/projection orthogonal
-/vis/viewer/zoomTo 1.6
+/vis/viewer/zoomTo 1.4
 /vis/viewer/scaleTo 1 1 1
-/vis/viewer/set/targetPoint 0.8 0 0.4 m
+/vis/viewer/set/targetPoint 0.8 0 0.8 m
+/vis/viewer/set/rotationStyle freeRotation
 
 # # side yz
 # /vis/viewer/set/viewpointVector 1 0 0
@@ -171,9 +166,16 @@
 # /vis/viewer/scaleTo 1 1 1
 # /vis/viewer/set/targetPoint 0.8 0 2.17344 m
 
+# # side lens
+# /vis/viewer/set/viewpointVector 1.31839e-16 -1 -6.93889e-18
+# /vis/viewer/set/upVector 0 1 0
+# /vis/viewer/set/projection orthogonal
+# /vis/viewer/zoomTo 8
+# /vis/viewer/set/targetPoint 0.8 0 3.2 m
+
 # # whole length
-# /vis/viewer/zoomTo 7.0883
-# /vis/viewer/set/targetPoint 1.11348 -0.128502 0.164898 m
+# /vis/viewer/zoomTo 2
+# /vis/viewer/set/targetPoint 0.5 0 1 m
 
 # /vis/ogl/export ev_1.svg 1000 1000
 

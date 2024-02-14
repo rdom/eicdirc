@@ -31,7 +31,6 @@ void proc_mult(TString in = "../build/hits.root") {
   tc->Branch("phi", &phi, "phi/D");
   tc->Branch("nph_fit", &nph_fit, "nph_fit/D");
   tc->Branch("nph_mean", &nph_mean, "nph_mean/D");
-  tc->Branch("nph_fit", &nph_fit, "nph_fit/D");
   tc->Branch("pid", &pid, "nph/I");
   tc->Fill();
   tc->Write();
