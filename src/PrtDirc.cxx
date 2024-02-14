@@ -296,6 +296,7 @@ int main(int argc, char **argv) {
     // UImanager->ApplyCommand("/control/execute ../prt.mac");
   }
 
+  UImanager->ApplyCommand("/process/inactivate Decay pi+");
   if (batchmode == 1) { // batch mode
     UImanager->ApplyCommand("/run/beamOn " + events);    
   } else { // UI session for interactive mode
