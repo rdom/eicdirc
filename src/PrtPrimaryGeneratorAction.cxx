@@ -32,13 +32,13 @@ PrtPrimaryGeneratorAction::PrtPrimaryGeneratorAction()
   G4ParticleTable *particleTable = G4ParticleTable::GetParticleTable();
   
   fParticle[0] = particleTable->FindParticle("e-");
-  fParticle[1] = particleTable->FindParticle("mu+");
+  fParticle[1] = particleTable->FindParticle("mu-");
   fParticle[2] = particleTable->FindParticle("pi+");
   fParticle[3] = particleTable->FindParticle("kaon+");
   fParticle[4] = particleTable->FindParticle("proton");
   
   fParticle[5] = particleTable->FindParticle("e+");
-  fParticle[6] = particleTable->FindParticle("mu-");
+  fParticle[6] = particleTable->FindParticle("mu+");
   fParticle[7] = particleTable->FindParticle("pi-");
   fParticle[8] = particleTable->FindParticle("kaon-");  
 
