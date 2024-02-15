@@ -207,13 +207,14 @@ int main(int argc, char **argv) {
     int pdgid = 0;
     if (particle == "proton") pdgid = 2212;
     if (particle == "pi+") pdgid = 211;
+    if (particle == "pi-") pdgid = -211;
     if (particle == "pi0") pdgid = 111;
     if (particle == "kaon+") pdgid = 321;
     if (particle == "kaon-") pdgid = -321;
-    if (particle == "mu-") pdgid = -13;
-    if (particle == "e-") pdgid = -11;
-    if (particle == "mu+") pdgid = 13;
-    if (particle == "e+") pdgid = 11;
+    if (particle == "e-") pdgid = 11;
+    if (particle == "e+") pdgid = -11;
+    if (particle == "mu-") pdgid = 13;
+    if (particle == "mu+") pdgid = -13;
     if (particle == "opticalphoton") pdgid = 0;
     if (particle == "mix_pie") pdgid = 10000;
     if (particle == "mix_pimu") pdgid = 10001;

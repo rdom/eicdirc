@@ -30,11 +30,18 @@ PrtPrimaryGeneratorAction::PrtPrimaryGeneratorAction()
 
   // default kinematic
   G4ParticleTable *particleTable = G4ParticleTable::GetParticleTable();
-  fParticle[4] = particleTable->FindParticle("proton");
-  fParticle[3] = particleTable->FindParticle("kaon+");
-  fParticle[2] = particleTable->FindParticle("pi+");
-  fParticle[1] = particleTable->FindParticle("mu+");
+  
   fParticle[0] = particleTable->FindParticle("e-");
+  fParticle[1] = particleTable->FindParticle("mu+");
+  fParticle[2] = particleTable->FindParticle("pi+");
+  fParticle[3] = particleTable->FindParticle("kaon+");
+  fParticle[4] = particleTable->FindParticle("proton");
+  
+  fParticle[5] = particleTable->FindParticle("e+");
+  fParticle[6] = particleTable->FindParticle("mu-");
+  fParticle[7] = particleTable->FindParticle("pi-");
+  fParticle[8] = particleTable->FindParticle("kaon-");  
+
   fParticleOP = particleTable->FindParticle("opticalphoton");
 
   fParticleGun->SetParticleDefinition(fParticle[2]);
@@ -56,7 +63,7 @@ PrtPrimaryGeneratorAction::~PrtPrimaryGeneratorAction() {
 void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
 
   PrtManager::Instance()->addEvent(PrtEvent());
-  int pdg = fabs(fRun->getPid());
+  int pdg = fRun->getPid();
   double theta = (180 - fRun->getTheta()) * TMath::DegToRad();
   // double theta2 = (180 - fRun->getTest1()) * TMath::DegToRad();
   double phi = fRun->getPhi() * TMath::DegToRad();
@@ -74,6 +81,10 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
     else if (pdg == 13) fPid = 1;
     else if (pdg == 211) fPid = 2;
     else if (pdg == 321) fPid = 3;
+    else if (pdg == -11) fPid = 5;
+    else if (pdg == -13) fPid = 6;
+    else if (pdg == -211) fPid = 7;
+    else if (pdg == -321) fPid = 8;    
     else if (pdg == 10000 && fPid != 2) fPid = 2;
     else if (pdg == 10000) fPid = 0;
     else if (pdg == 10001 && fPid != 2) fPid = 2;
@@ -103,30 +114,30 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
     // fParticleGun->GeneratePrimaryVertex(anEvent);
 
     if (theta > 0 && theta < M_PI) {
-      
       vec.setTheta(theta);
       vec.setPhi(phi);
       
     } else {
-      theta = M_PI * G4UniformRand();
+      // theta = M_PI * G4UniformRand();
       theta = acos((cos(25 * deg) - cos(160 * deg)) * G4UniformRand() + cos(160 * deg));
-
-      vec.setTheta(M_PI - theta);
+      theta = M_PI - theta;
+	    
+      vec.setTheta(theta);
       vec.setPhi(2 * M_PI * G4UniformRand());
 
       // // 3 tracks for visualization
-      // vec.setTheta(M_PI - 25 * deg);
+      // vec.setTheta(25 * deg);
       // vec.setPhi(0.5 * deg);
       // fParticleGun->SetParticleMomentumDirection(vec);
       // fParticleGun->GeneratePrimaryVertex(anEvent);
       
-      // vec.setTheta(M_PI - 120 * deg);
+      // vec.setTheta(120 * deg);
       // vec.setPhi(M_PI / 3. + 7 *deg);
       // fParticleGun->SetParticleMomentumDirection(vec);
       // fParticleGun->GeneratePrimaryVertex(anEvent);
 
-      // vec.setTheta(M_PI - 150 * deg);
-      // vec.setPhi(M_PI + 10 * deg);
+      // vec.setTheta(150 * deg);
+      // vec.setPhi(10 * deg);
     }
 
     if (fRun->getEv() == 1) {
