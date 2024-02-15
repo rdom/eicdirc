@@ -53,7 +53,7 @@ void PrtTools::init() {
 bool PrtTools::init_run(TString in, int bdigi, TString savepath, int setupid) {
 
   
-  if (in == "" || gSystem->AccessPathName(in)) {
+  if ((in == "" || gSystem->AccessPathName(in)) && !in.Contains("*")) {
     std::cout << "file not found " << in << std::endl;
     return false;
   }

@@ -109,7 +109,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
       
     } else {
       theta = M_PI * G4UniformRand();
-      theta = acos((cos(30 * deg) - cos(150 * deg)) * G4UniformRand() + cos(150 * deg));
+      theta = acos((cos(25 * deg) - cos(160 * deg)) * G4UniformRand() + cos(160 * deg));
 
       vec.setTheta(M_PI - theta);
       vec.setPhi(2 * M_PI * G4UniformRand());
