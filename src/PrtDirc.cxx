@@ -297,7 +297,15 @@ int main(int argc, char **argv) {
     // UImanager->ApplyCommand("/control/execute ../prt.mac");
   }
 
-  UImanager->ApplyCommand("/process/inactivate Decay pi+");
+  if (physlistid == 1) {
+    UImanager->ApplyCommand("/process/inactivate Decay all");
+    UImanager->ApplyCommand("/process/inactivate compt all");
+    UImanager->ApplyCommand("/process/inactivate hIoni all");
+    UImanager->ApplyCommand("/process/inactivate eIoni all");
+    UImanager->ApplyCommand("/process/inactivate muIoni all");
+    UImanager->ApplyCommand("/process/inactivate conv all");
+  }
+
   if (batchmode == 1) { // batch mode
     UImanager->ApplyCommand("/run/beamOn " + events);    
   } else { // UI session for interactive mode

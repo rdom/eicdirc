@@ -33,7 +33,7 @@ echo $tseed
 #sim
 for i in {0..19}; do
     ../build/eicdirc -r 0 -seed $tseed$i -o h_b$i.root  \
-		     -theta -1 -x pi+ -p 0.3 -w 1 -g 11 -c 2031 -l 10 -field 2 \
+		     -theta -1 -x proton -p 1 -w 1 -g 11 -c 2031 -l 3 -field 2 \
 		     -trackingres 0 -timeres 0.1 -timecut 0.2 -e 10000 -v 2 -b 1 -ev 0 &
 done
 
