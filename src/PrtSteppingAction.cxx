@@ -8,7 +8,7 @@
 #include "G4RunManager.hh"
 #include "G4PhysicalConstants.hh"
 
-#include <G4TouchableHistory.hh>
+#include "G4TouchableHistory.hh"
 #include "PrtManager.h"
 
 PrtSteppingAction::PrtSteppingAction() : G4UserSteppingAction() {

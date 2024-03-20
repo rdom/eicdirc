@@ -22,5 +22,4 @@ private:
 				     G4MaterialPropertyVector* Rindex) const;
 };
 
-
 #endif /*PrtCherenkovProcess_h*/
