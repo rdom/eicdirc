@@ -26,15 +26,15 @@ echo $tseed
 # #LUT
 # ../build/eicdirc -r 1 $args -o lut.root \
 # 		 -theta 30 -x mix_pik -w 0 -g 1 -c 2031 -l 3 -ev 0 \
-# 		 -x "opticalphoton" -p "3.18 eV"  -e 15000000 -b 1 
+# 		 -x "opticalphoton" -p "3.18 eV"  -e 1000000 -b 1 
 
-# root loadlib.C lutmean.C'("lut.root")'
+# root -b -q lutmean.C'("lut.root")'
 
 #sim
 for i in {0..19}; do
     ../build/eicdirc -r 0 -seed $tseed$i -o h_b$i.root  \
-		     -theta -1 -x proton -p 1 -w 1 -g 11 -c 2031 -l 3 -field 2 \
-		     -trackingres 0 -timeres 0.1 -timecut 0.2 -e 10000 -v 2 -b 1 -ev 0 &
+		     -theta 30 -x mix_pik -p 6 -w 0 -g 1 -c 2031 -l 3 -field 0 \
+		     -trackingres 0.0005 -timeres 0.1 -timecut 0.2 -e 200 -v 2 -b 1 -ev 0 &
 done
 
 			 # -theta 0 -x mix_pik -w 0 -g 1 -c 2031 -l 3 -ev 0 -p 6 \

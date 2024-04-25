@@ -797,6 +797,8 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     double gapx = (fPrizm[2] - fNCol * fMcpTotal[0]) / (double)(fNCol + 1);
     double gapy = (fBoxWidth - fNRow * fMcpTotal[1]) / (double)(fNRow + 1);
 
+
+    fNRow = 6;    
     for (int i = 0; i < fNCol; i++) {
       for (int j = 0; j < fNRow; j++) {
         // double shiftx = i*(fMcpTotal[0]+gapx)-0.5*(fPrizm[3]-fMcpTotal[0])+gapx;
@@ -807,6 +809,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
 
         double shiftx = i * (fMcpTotal[0] + gapx) - 0.5 * (fFd[1] - fMcpTotal[0]) + gapx;
         double shifty = j * (fMcpTotal[1] + gapy) - 0.5 * (fBoxWidth - fMcpTotal[1]) + gapy;
+	// shifty += 0.5*fMcpTotal[0];
         new G4PVPlacement(0, G4ThreeVector(shiftx, shifty, 0), lMcp, "wMcp", lFd, false, mcpId++);
       }
     }

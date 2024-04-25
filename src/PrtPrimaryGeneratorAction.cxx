@@ -103,7 +103,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
   G4ThreeVector vec(0, 0, 1);
   if (fRunType == 0 || fRunType == 10 || fRunType == 5) { // simulation
     
-    if (fGeomType < 2) ypos = 0.5 * fRadiatorW;
+    if (fGeomType < 2) ypos = 4.5 * fRadiatorW;
     
     fParticleGun->SetParticlePosition(G4ThreeVector(0, ypos, zpos));
 
@@ -152,7 +152,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
 
   if (fRunType == 1) { // LUT generation
 
-    double barShift = 0.5 * fRadiatorW; // 390/12./2;
+    double barShift = 4.5 * fRadiatorW; // 390/12./2;
     if (fRun->getEv() == 1) barShift = 0.5 * 35;
     if (fGeomType == 2) barShift = 0;
 

@@ -70,7 +70,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, TString
     fp2 = 3;
     fp1 = 4;
   }
-
+  
   fChain->SetBranchAddress("PrtEvent", &fEvent);
 
   fFit = new TF1("fgaus", "[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +[3]", 0.35, 0.9);
@@ -157,7 +157,6 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, TString
     fTree = (TTree *)fFile->Get("prtlut");   
     fLut = new TClonesArray("PrtLutNode");
     fTree->SetBranchAddress("LUT", &fLut);
-    
     fTree->GetEntry(0);
   } else {
     std::cout << "--- lut file not found  " << lutfile << std::endl;
@@ -352,7 +351,7 @@ void PrtLutReco::Run(int start, int end) {
       int mcp = hit.getPmt();
       int pix = hit.getPixel();
       int ch = hit.getChannel();
-
+      
       TVector3 dir0 = hit.getMomentum().Unit();
       TVector3 cz = TVector3(-rotatedmom.X(), rotatedmom.Y(), rotatedmom.Z());
       TVector3 cd = TVector3(-dir0.X(), dir0.Y(), dir0.Z());
