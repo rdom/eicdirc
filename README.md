@@ -64,6 +64,7 @@ example:
                 3    prism with plate, lens between bars and plate
 		4    tilted EV
 		5    prism with plate, lens between plate and EV
+		6    spit prism
 
 -h    number of bars in one radiator box
 

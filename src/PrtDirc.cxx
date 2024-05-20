@@ -33,8 +33,6 @@
 
 #include "G4FastSimulationManagerProcess.hh"
 
-
-
 namespace {
 void PrintUsage() {
   G4cerr << " read README.md " << G4endl;

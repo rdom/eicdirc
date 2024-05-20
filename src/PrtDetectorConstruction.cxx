@@ -128,10 +128,9 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   fBoxWidth = fPrizm[0];
   std::cout << "fBoxWidth/Prism  " << fBoxWidth<<" x "<< fPrizm[2] << std::endl;
 
-  fBar[0] = 17; //fTest1;
+  fBar[0] = 17; // fTest1;
   // fBar[1] = (fPrizm[0] - (fNBar - 1) * fBarsGap) / fNBar;
-  // std::cout << "bar width " << fBar[1]<< std::endl;
-  
+  // std::cout << "N bars " << fNBar << " bar width " << fBar[1] << std::endl;
 
   fMirror[0] = fBar[0] + 1;
   fMirror[1] = fPrizm[0];
@@ -245,6 +244,9 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   double evprismhight = fPrizm[3]; // fBar[0]
   double evprismlengh = 500; // Bar[2] // fTest1
 
+  G4Box *gExpVol = new G4Box("gExpVol", 0.5 * evprismhight, 0.5 * fBoxWidth, 0.5 * evprismlengh); 
+  lExpVol = new G4LogicalVolume(gExpVol, BarMaterial, "lExpVol", 0, 0, 0);
+  
   // Glue
   G4Box *gGlue = new G4Box("gGlue", 0.5 * fBar[0], 0.5 * fBar[1], 0.5 * gluethickness);
   lGlue = new G4LogicalVolume(gGlue, epotekMaterial, "lGlue", 0, 0, 0);
@@ -281,6 +283,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
       if (fEvType == 3) sh = fLens[2];
       nparts = 3;
       double z = -0.5 * dirclength + 0.5 * evprismlengh + (fBar[2] + gluethickness) * 3;
+      new G4PVPlacement(0, G4ThreeVector(rshift, 0, z + sh), lExpVol, "wExpVol", lDirc, false, id);
       new G4PVPlacement(0, G4ThreeVector(rshift, 0, z + 0.5 * (evprismlengh + gluethickness) + sh),
                         lGlueE, "wGlue", lDirc, false, id);
     }
@@ -489,9 +492,6 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   }
 
   // The Prizm
-  G4Trap *gPrizm = new G4Trap("gPrizm", 350, fPrizm[1], fPrizm[2], fPrizm[3]);
-  lPrizm = new G4LogicalVolume(gPrizm, BarMaterial, "lPrizm", 0, 0, 0);
-
   G4Trap *gPrizmT1 = new G4Trap("gPrizmT1", fPrizmT[0], fPrizmT[1], fPrizmT[2], fPrizmT[3]);
   lPrizmT1 = new G4LogicalVolume(gPrizmT1, BarMaterial, "lPrizmT1", 0, 0, 0);
 
@@ -617,16 +617,32 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     new G4PVPlacement(
       fdrot, G4ThreeVector(rshift + 0.5 * fFd[1] - 0.5 * fPrizm[3] - evshiftx, 0, evshiftz), lFd,
       "wFd", lDirc, false, 0);
+  } else if (fEvType == 6){ // split prism
+    
+    G4Trap *gPrizm = new G4Trap("gPrizm", 0.5 * fPrizm[0] - 0.1, fPrizm[1], fPrizm[2], fPrizm[3]);
+    lPrizm = new G4LogicalVolume(gPrizm, BarMaterial, "lPrizm", 0, 0, 0);
+    fPrismShift = G4ThreeVector(rshift + (fPrizm[2] + fPrizm[3]) / 4. - 0.5 * fPrizm[3], -0.25 * fPrizm[0],
+                                0.5 * (dirclength + fPrizm[1]) + fLens[2] + fBBWindow[2]);
+    new G4PVPlacement(xRot, fPrismShift, lPrizm, "wPrizm", lDirc, false, 0);
+    
+    fPrismShift = G4ThreeVector(rshift + (fPrizm[2] + fPrizm[3]) / 4. - 0.5 * fPrizm[3], 0.25 * fPrizm[0],
+                                0.5 * (dirclength + fPrizm[1]) + fLens[2] + fBBWindow[2]);
+    new G4PVPlacement(xRot, fPrismShift, lPrizm, "wPrizm", lDirc, false, 1);
+
   } else { // normal prism
 
+    G4Trap *gPrizm = new G4Trap("gPrizm", fPrizm[0], fPrizm[1], fPrizm[2], fPrizm[3]);
+    lPrizm = new G4LogicalVolume(gPrizm, BarMaterial, "lPrizm", 0, 0, 0);
+    
     fPrismShift = G4ThreeVector(rshift + (fPrizm[2] + fPrizm[3]) / 4. - 0.5 * fPrizm[3], 0,
                                 0.5 * (dirclength + fPrizm[1]) + fLens[2] + fBBWindow[2]);
     new G4PVPlacement(xRot, fPrismShift, lPrizm, "wPrizm", lDirc, false, 0);
-    new G4PVPlacement(
-      fdrot, G4ThreeVector(rshift + 0.5 * fFd[1] - 0.5 * fPrizm[3] - evshiftx, 0, evshiftz), lFd,
-      "wFd", lDirc, false, 0);
   }
 
+  new G4PVPlacement(fdrot,
+                    G4ThreeVector(rshift + 0.5 * fFd[1] - 0.5 * fPrizm[3] - evshiftx, 0, evshiftz),
+                    lFd, "wFd", lDirc, false, 0);
+    
   if (fMcpLayout == 1) {
     // standard mcp pmt layout
     // The MCP
@@ -1245,6 +1261,7 @@ void PrtDetectorConstruction::SetVisualization() {
   waBar->SetVisibility(true);
   if(fBBWindow[2] > 0.1) lBBWindow->SetVisAttributes(waBar);
   lBar->SetVisAttributes(waBar);
+  lExpVol->SetVisAttributes(waBar);
   
   G4VisAttributes *waGlue = new G4VisAttributes(G4Colour(0., 0.4, 0.9, 0.1));
   waGlue->SetVisibility(true);
