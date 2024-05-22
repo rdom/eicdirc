@@ -134,7 +134,10 @@ example:
 
 -gx target's X offset
 
--gz target's Z offset 
+-gz target's Z offset
+
+-dn dark noise
+               [int] amount on dark hits per event
 
 
 ```

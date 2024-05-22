@@ -54,10 +54,11 @@ int main(int argc, char **argv) {
   TApplication theApp("EicDirc", 0, 0);
 
   G4String macro, events, field, ev, radiator, physlist, session, geomTheta, geomPhi, displayOpt,
-    lensId, particle = "", testVal1, testVal2, testVal3, prismStepX, prismStepY,
-            beamX, timeSigma, timeCut, mcpLayout;
+    lensId, particle = "", testVal1, testVal2, testVal3, prismStepX, prismStepY, beamX, timeSigma,
+            timeCut, mcpLayout;
   TString infile = "", lutfile = "", pdffile = "", nnfile = "", outfile = "";
-  int geometry(-1), firstevent(0), runtype(0), study(0), fid(0), verbose(0), batchmode(0), physlistid(0);
+  int geometry(-1), firstevent(0), runtype(0), study(0), fid(0), verbose(0), batchmode(0),
+    physlistid(0), dark_noise(0);
   double momentum(-1), beamZ(20000), trackingres(-1);
 
   G4long myseed = 0;
@@ -98,6 +99,7 @@ int main(int argc, char **argv) {
     else if (G4String(argv[i]) == "-trackingres") trackingres = atof(argv[i + 1]);
     else if (G4String(argv[i]) == "-v") verbose = atoi(argv[i + 1]);
     else if (G4String(argv[i]) == "-d") displayOpt = argv[i + 1];
+    else if (G4String(argv[i]) == "-dn") dark_noise = atoi(argv[i + 1]);
 
 #ifdef G4MULTITHREADED
     else if (G4String(argv[i]) == "-t") {
@@ -189,6 +191,7 @@ int main(int argc, char **argv) {
   if (testVal1.size()) run->setTest1(atof(testVal1));
   if (testVal2.size()) run->setTest2(atof(testVal2));
   if (testVal3.size()) run->setTest3(atof(testVal3));
+  if (dark_noise != 0) run->setDarkNoise(dark_noise);
   if (geomTheta.size()) run->setTheta(atof(geomTheta));
   if (geomPhi.size()) run->setPhi(atof(geomPhi));
   if (prismStepX.size()) run->setPrismStepX(atof(prismStepX));

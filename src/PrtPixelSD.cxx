@@ -197,16 +197,15 @@ G4bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
 
 void PrtPixelSD::EndOfEvent(G4HCofThisEvent *) {
 
-  bool dark_counts(0);
-  int noise_amount = 10;
-
-  if (dark_counts) {
+  int dark_noise = PrtManager::Instance()->getRun()->getDarkNoise();
+  
+  if (dark_noise) {
     PrtHit hit;
     int npmt = PrtManager::Instance()->getRun()->getNpmt();
     int npix = PrtManager::Instance()->getRun()->getNpix();
-    for (int i = 0; i < noise_amount; i++) {
+
+    for (int i = 0; i < dark_noise; i++) {
       double dn_time = 100 * G4UniformRand();
-      std::cout << "dn_time " << dn_time << std::endl;
       
       int dn_mcp = (int)npmt * G4UniformRand();
       int dn_pix = (int)npix * G4UniformRand();
