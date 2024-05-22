@@ -241,8 +241,8 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   // The Bar
   G4Box *gBar = new G4Box("gBar", 0.5 * fBar[0], 0.5 * fBar[1], 0.5 * fBar[2]);
   lBar = new G4LogicalVolume(gBar, BarMaterial, "lBar", 0, 0, 0);
-  double evprismhight = fPrizm[3]; // fBar[0]
-  double evprismlengh = 500; // Bar[2] // fTest1
+  double evprismhight = fBar[0]; //fPrizm[3]; // fBar[0]
+  double evprismlengh = 893; // Bar[2] // fTest1
 
   G4Box *gExpVol = new G4Box("gExpVol", 0.5 * evprismhight, 0.5 * fBoxWidth, 0.5 * evprismlengh); 
   lExpVol = new G4LogicalVolume(gExpVol, BarMaterial, "lExpVol", 0, 0, 0);

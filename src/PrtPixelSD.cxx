@@ -191,11 +191,35 @@ G4bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
   }
 
   PrtManager::Instance()->addHit(hit, localPos);
-
+ 
   return true;
 }
 
 void PrtPixelSD::EndOfEvent(G4HCofThisEvent *) {
+
+  bool dark_counts(1);
+  int noise_amount = 10;
+
+  if (dark_counts) {
+    PrtHit hit;
+    int npmt = PrtManager::Instance()->getRun()->getNpmt();
+    int npix = PrtManager::Instance()->getRun()->getNpix();
+    for (int i = 0; i < noise_amount; i++) {
+      double dn_time = 100 * G4UniformRand();
+      std::cout << "dn_time " << dn_time << std::endl;
+      
+      int dn_mcp = (int)npmt * G4UniformRand();
+      int dn_pix = (int)npix * G4UniformRand();
+
+      int dn_ch = fMap_Mpc[dn_mcp][dn_pix];
+      hit.setPmt(dn_mcp);
+      hit.setPixel(dn_pix);
+      hit.setChannel(dn_ch);
+      hit.setLeadTime(dn_time);
+      PrtManager::Instance()->addHit(hit, TVector3(0,0,0));
+    }
+  }
+
   int eventNumber = G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID();
   if (eventNumber % 1 == 0 && (fRunType == 0 || fRunType == 5))
     std::cout << " : " << PrtManager::Instance()->getEvent()->getHits().size() << std::endl;
