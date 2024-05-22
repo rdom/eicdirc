@@ -63,6 +63,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   fHall[2] = 3500;
   
   fBar[0] = 17; fBar[1] = 32; fBar[2] = 1050;
+
   // fPrizm[0] = 170; fPrizm[1] = 300; fPrizm[2] = 30+300*tan(37*deg); fPrizm[3] = 30;
   // fPrizm[0] = 390; fPrizm[1] = 300; fPrizm[3] = 50; fPrizm[2]= fPrizm[3]+300*tan(32*deg);
 
@@ -128,7 +129,6 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   fBoxWidth = fPrizm[0];
   std::cout << "fBoxWidth/Prism  " << fBoxWidth<<" x "<< fPrizm[2] << std::endl;
 
-  fBar[0] = 17; // fTest1;
   // fBar[1] = (fPrizm[0] - (fNBar - 1) * fBarsGap) / fNBar;
   // std::cout << "N bars " << fNBar << " bar width " << fBar[1] << std::endl;
 

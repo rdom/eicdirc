@@ -139,6 +139,15 @@ example:
 -dn dark noise
                [int] amount on dark hits per event
 
+-t1            test variable
+               [double]
+
+-t2            test variable
+               [double]
+
+-t3            test variable
+               [double]
+
 
 ```
 
