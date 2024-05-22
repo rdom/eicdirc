@@ -197,7 +197,7 @@ G4bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
 
 void PrtPixelSD::EndOfEvent(G4HCofThisEvent *) {
 
-  bool dark_counts(1);
+  bool dark_counts(0);
   int noise_amount = 10;
 
   if (dark_counts) {
