@@ -197,25 +197,27 @@ G4bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
 
 void PrtPixelSD::EndOfEvent(G4HCofThisEvent *) {
 
-  int dark_noise = PrtManager::Instance()->getRun()->getDarkNoise();
+  // mean value of the Gaussian distribution for dark noise
+  int dark_noise_mean = PrtManager::Instance()->getRun()->getDarkNoise();
 
-  if (dark_noise) {
+  if (dark_noise_mean) {
     PrtHit hit;
     int npmt = PrtManager::Instance()->getRun()->getNpmt();
     int npix = PrtManager::Instance()->getRun()->getNpix();
+    int dark_noise_gauss = G4RandGauss::shoot(dark_noise_mean, sqrt(dark_noise_mean));
 
-    for (int i = 0; i < dark_noise; i++) {
-      double dn_time = 100 * G4UniformRand();
+    for (int p = 0; p < npmt; p++) {
+      for (int i = 0; i < dark_noise_gauss; i++) {
+        double dn_time = 100 * G4UniformRand(); // [0,100] ns
+        int dn_pix = npix * G4UniformRand();
 
-      int dn_mcp = (int)npmt * G4UniformRand();
-      int dn_pix = (int)npix * G4UniformRand();
-
-      int dn_ch = fMap_Mpc[dn_mcp][dn_pix];
-      hit.setPmt(dn_mcp);
-      hit.setPixel(dn_pix);
-      hit.setChannel(dn_ch);
-      hit.setLeadTime(dn_time);
-      PrtManager::Instance()->addHit(hit, TVector3(0, 0, 0));
+        int dn_ch = fMap_Mpc[p][dn_pix];
+        hit.setPmt(p);
+        hit.setPixel(dn_pix);
+        hit.setChannel(dn_ch);
+        hit.setLeadTime(dn_time);
+        PrtManager::Instance()->addHit(hit, TVector3(0, 0, 0));
+      }
     }
   }
 
