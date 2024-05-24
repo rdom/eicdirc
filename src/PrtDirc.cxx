@@ -55,10 +55,10 @@ int main(int argc, char **argv) {
 
   G4String macro, events, field, ev, radiator, physlist, session, geomTheta, geomPhi, displayOpt,
     lensId, particle = "", testVal1, testVal2, testVal3, prismStepX, prismStepY, beamX, timeSigma,
-            timeCut, mcpLayout;
+            timeCut;
   TString infile = "", lutfile = "", pdffile = "", nnfile = "", outfile = "";
   int geometry(-1), firstevent(0), runtype(0), study(0), fid(0), verbose(0), batchmode(0),
-    physlistid(0);
+    physlistid(0), mcpLayout(0);
   double momentum(-1), beamZ(20000), trackingres(-1), dark_noise(0);
 
   G4long myseed = 0;
@@ -86,7 +86,7 @@ int main(int argc, char **argv) {
     else if (G4String(argv[i]) == "-r") runtype = atoi(argv[i + 1]);
     else if (G4String(argv[i]) == "-study") study = atoi(argv[i + 1]);
     else if (G4String(argv[i]) == "-fid") fid = atoi(argv[i + 1]);
-    else if (G4String(argv[i]) == "-c") mcpLayout = argv[i + 1];
+    else if (G4String(argv[i]) == "-c") mcpLayout = atoi(argv[i + 1]);
     else if (G4String(argv[i]) == "-t1") testVal1 = argv[i + 1];
     else if (G4String(argv[i]) == "-t2") testVal2 = argv[i + 1];
     else if (G4String(argv[i]) == "-t3") testVal3 = argv[i + 1];
@@ -183,9 +183,9 @@ int main(int argc, char **argv) {
   if (ev.size()) run->setEv(atoi(ev));
   if (radiator.size()) run->setRadiator(atoi(radiator));
   if (lensId.size()) run->setLens(atoi(lensId));
-  if (mcpLayout.size()) {
-    run->setPmtLayout(atoi(mcpLayout));
-    run->setNpmt(6);    
+  if (mcpLayout != 0) {
+    run->setPmtLayout(mcpLayout);
+    if(mcpLayout == 4) run->setNpmt(6);    
   }
   if (trackingres > -1) {
     run->setTrackingResTheta(trackingres);
