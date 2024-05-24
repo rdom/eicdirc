@@ -197,25 +197,28 @@ G4bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
 
 void PrtPixelSD::EndOfEvent(G4HCofThisEvent *) {
 
-  // mean value of the Gaussian distribution for dark noise
-  int dark_noise_mean = PrtManager::Instance()->getRun()->getDarkNoise();
+  double dark_noise_pmt = PrtManager::Instance()->getRun()->getDarkNoise();
 
-  if (dark_noise_mean) {
+  if (dark_noise_pmt) {
     PrtHit hit;
     int npmt = PrtManager::Instance()->getRun()->getNpmt();
     int npix = PrtManager::Instance()->getRun()->getNpix();
-    int dark_noise_gauss = G4RandGauss::shoot(dark_noise_mean, sqrt(dark_noise_mean));
-
+ 
+    //probability to have a noise hit in 100 ns window
+    double prob = dark_noise_pmt * 100 / (double) 1E9;
+    
     for (int p = 0; p < npmt; p++) {
-      for (int i = 0; i < dark_noise_gauss; i++) {
-        double dn_time = 100 * G4UniformRand(); // [0,100] ns
+      for (int i = 0; i <= prob; i++) {
+	if(i == 0 && prob - int(prob) < G4UniformRand()) continue; 
+		
+	double dn_time = 100 * G4UniformRand(); // [1,100] ns
         int dn_pix = npix * G4UniformRand();
-
         int dn_ch = fMap_Mpc[p][dn_pix];
         hit.setPmt(p);
         hit.setPixel(dn_pix);
         hit.setChannel(dn_ch);
         hit.setLeadTime(dn_time);
+	
         PrtManager::Instance()->addHit(hit, TVector3(0, 0, 0));
       }
     }

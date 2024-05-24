@@ -136,8 +136,8 @@ example:
 
 -gz target's Z offset
 
--dn dark noise
-               [int] amount on dark hits per event
+-dn dark noise per PMT
+               [int] amount on dark hits per event (mean of the Gaussian)
 
 -t1            test variable
                [double]

@@ -58,8 +58,8 @@ int main(int argc, char **argv) {
             timeCut, mcpLayout;
   TString infile = "", lutfile = "", pdffile = "", nnfile = "", outfile = "";
   int geometry(-1), firstevent(0), runtype(0), study(0), fid(0), verbose(0), batchmode(0),
-    physlistid(0), dark_noise(0);
-  double momentum(-1), beamZ(20000), trackingres(-1);
+    physlistid(0);
+  double momentum(-1), beamZ(20000), trackingres(-1), dark_noise(0);
 
   G4long myseed = 0;
   for (G4int i = 1; i < argc; i = i + 2) {
@@ -99,7 +99,7 @@ int main(int argc, char **argv) {
     else if (G4String(argv[i]) == "-trackingres") trackingres = atof(argv[i + 1]);
     else if (G4String(argv[i]) == "-v") verbose = atoi(argv[i + 1]);
     else if (G4String(argv[i]) == "-d") displayOpt = argv[i + 1];
-    else if (G4String(argv[i]) == "-dn") dark_noise = atoi(argv[i + 1]);
+    else if (G4String(argv[i]) == "-dn") dark_noise = atof(argv[i + 1]);
 
 #ifdef G4MULTITHREADED
     else if (G4String(argv[i]) == "-t") {
@@ -183,7 +183,10 @@ int main(int argc, char **argv) {
   if (ev.size()) run->setEv(atoi(ev));
   if (radiator.size()) run->setRadiator(atoi(radiator));
   if (lensId.size()) run->setLens(atoi(lensId));
-  if (mcpLayout.size()) run->setPmtLayout(atoi(mcpLayout));
+  if (mcpLayout.size()) {
+    run->setPmtLayout(atoi(mcpLayout));
+    run->setNpmt(6);    
+  }
   if (trackingres > -1) {
     run->setTrackingResTheta(trackingres);
     run->setTrackingResPhi(trackingres);

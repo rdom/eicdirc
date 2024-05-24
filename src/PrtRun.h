@@ -53,7 +53,7 @@ class PrtRun : public TObject {
   Double_t getRadiatorL() const { return fRadiatorL; }
   Double_t getRadiatorW() const { return fRadiatorW; }
   Double_t getRadiatorH() const { return fRadiatorH; }
-  Int_t getDarkNoise() const { return fDarkNoise; }
+  Double_t getDarkNoise() const { return fDarkNoise; }
   Double_t getTest1() const { return fTest1; }
   Double_t getTest2() const { return fTest2; }
   Double_t getTest3() const { return fTest3; }
@@ -92,7 +92,7 @@ class PrtRun : public TObject {
   void setRadiatorL(Double_t v) { fRadiatorL = v; }
   void setRadiatorW(Double_t v) { fRadiatorW = v; }
   void setRadiatorH(Double_t v) { fRadiatorH = v; }
-  void setDarkNoise(Int_t v) { fDarkNoise = v; }
+  void setDarkNoise(Double_t v) { fDarkNoise = v; }
   void setTest1(Double_t v) { fTest1 = v; }
   void setTest2(Double_t v) { fTest2 = v; }
   void setTest3(Double_t v) { fTest3 = v; }
@@ -132,7 +132,7 @@ class PrtRun : public TObject {
   Double_t fSimOffset;
 
   Double_t fRadiatorL, fRadiatorW, fRadiatorH;
-  Int_t fDarkNoise;
+  Double_t fDarkNoise;
   
   Double_t fTest1;
   Double_t fTest2;
