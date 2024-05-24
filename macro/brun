@@ -33,7 +33,7 @@ echo $tseed
 #sim
 for i in {0..19}; do
     ../build/eicdirc -r 0 -seed $tseed$i -o h_b$i.root  \
-		     -theta 155 -x mix_pik -p 6 -w 0 -g 1 -c 2031 -l 3 -field 0 \
+		     -theta 155 -x mix_pik -p 6 -w 0 -g 1 -c 2031 -l 0 -field 0 \
 		     -trackingres 0.0005 -timeres 0.1 -timecut 0.2 -e 2500 -v 2 -b 1 -ev 5 &
 done
 
@@ -51,4 +51,4 @@ done
 waitForMe 1
 sleep 1
 
-hadd -f sim5_155.root h_b*.root
+hadd -f sim5_155l0.root h_b*.root

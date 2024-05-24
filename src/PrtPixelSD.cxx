@@ -198,7 +198,7 @@ G4bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
 void PrtPixelSD::EndOfEvent(G4HCofThisEvent *) {
 
   int dark_noise = PrtManager::Instance()->getRun()->getDarkNoise();
-  
+
   if (dark_noise) {
     PrtHit hit;
     int npmt = PrtManager::Instance()->getRun()->getNpmt();
@@ -206,7 +206,7 @@ void PrtPixelSD::EndOfEvent(G4HCofThisEvent *) {
 
     for (int i = 0; i < dark_noise; i++) {
       double dn_time = 100 * G4UniformRand();
-      
+
       int dn_mcp = (int)npmt * G4UniformRand();
       int dn_pix = (int)npix * G4UniformRand();
 
@@ -215,7 +215,7 @@ void PrtPixelSD::EndOfEvent(G4HCofThisEvent *) {
       hit.setPixel(dn_pix);
       hit.setChannel(dn_ch);
       hit.setLeadTime(dn_time);
-      PrtManager::Instance()->addHit(hit, TVector3(0,0,0));
+      PrtManager::Instance()->addHit(hit, TVector3(0, 0, 0));
     }
   }
 
