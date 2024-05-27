@@ -176,6 +176,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
 
   if (fLensId == 6) {
     fLens[1] = fPrizm[0];
+    if (fEvType == 8) fLens[1] = 0.5 * fPrizm[0];
   }
 
 
@@ -491,7 +492,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
       if (fEvType == 3 || fEvType == 7) sh = evprismlengh + gluethickness;
       for (int i = 0; i < fNBar; i++) {
         double shifty = i * fLens[1] - 0.5 * (fBoxWidth - fLens[1]);
-	if ((fEvType == 6 || fEvType == 8) && i >= 5) shifty += 0.05; // lens gap for slited plism
+        if ((fEvType == 6 || fEvType == 8) && i >= 5) shifty += 0.05; // lens gap for slited plism
         if (fLensId != 6) {
           auto pos = G4ThreeVector(rshift, shifty, shifth - sh);
           new G4PVPlacement(0, pos, lLens1, "wLens1", lDirc, false, i);
@@ -501,9 +502,20 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
       }
       if (fLensId == 6) {
         auto pos = G4ThreeVector(rshift, 0, shifth - sh);
-        new G4PVPlacement(0, pos, lLens1, "wLens1", lDirc, false, 0);
-        new G4PVPlacement(0, pos, lLens2, "wLens2", lDirc, false, 0);
-        new G4PVPlacement(0, pos, lLens3, "wLens3", lDirc, false, 0);
+        if (fEvType == 8) {
+	  pos = G4ThreeVector(rshift, - 0.5 * (fBoxWidth - fLens[1])-0.025, shifth - sh);
+          new G4PVPlacement(0, pos, lLens1, "wLens1", lDirc, false, 0);
+          new G4PVPlacement(0, pos, lLens2, "wLens2", lDirc, false, 0);
+          new G4PVPlacement(0, pos, lLens3, "wLens3", lDirc, false, 0);
+	  pos = G4ThreeVector(rshift, 0.5 * (fBoxWidth - fLens[1]) + 0.025, shifth - sh);
+          new G4PVPlacement(0, pos, lLens1, "wLens1", lDirc, false, 1);
+          new G4PVPlacement(0, pos, lLens2, "wLens2", lDirc, false, 1);
+          new G4PVPlacement(0, pos, lLens3, "wLens3", lDirc, false, 1);
+        }else{
+	  new G4PVPlacement(0, pos, lLens1, "wLens1", lDirc, false, 0);
+	  new G4PVPlacement(0, pos, lLens2, "wLens2", lDirc, false, 0);
+	  new G4PVPlacement(0, pos, lLens3, "wLens3", lDirc, false, 0);	  
+	}
       }
     }
   }
