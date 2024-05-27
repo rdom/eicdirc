@@ -157,9 +157,9 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   if (fEvType == 4) {
     fFd[1] = fPrizmT[4];
   }
-  if (fEvType == 3) {
+  if (fEvType == 3 || fEvType == 7 ) {
     fLens[0] =  fBar[0];
-    fLens[2] = 9;
+    fLens[2] = 12;
   }
   
   if (fLensId == 0 || fLensId == 10) {
@@ -241,16 +241,17 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   // The Bar
   G4Box *gBar = new G4Box("gBar", 0.5 * fBar[0], 0.5 * fBar[1], 0.5 * fBar[2]);
   lBar = new G4LogicalVolume(gBar, BarMaterial, "lBar", 0, 0, 0);
-  double evprismhight = fBar[0]; //fPrizm[3]; // fBar[0]
+  double evprismheight = fPrizm[3];
+  if (fEvType == 7) evprismheight = fBar[0] + 0.5 * (fPrizm[3] - fBar[0]);
   double evprismlengh = 893; // Bar[2] // fTest1
 
-  G4Box *gExpVol = new G4Box("gExpVol", 0.5 * evprismhight, 0.5 * fBoxWidth, 0.5 * evprismlengh); 
+  G4Box *gExpVol = new G4Box("gExpVol", 0.5 * evprismheight, 0.5 * fBoxWidth, 0.5 * evprismlengh); 
   lExpVol = new G4LogicalVolume(gExpVol, BarMaterial, "lExpVol", 0, 0, 0);
   
   // Glue
   G4Box *gGlue = new G4Box("gGlue", 0.5 * fBar[0], 0.5 * fBar[1], 0.5 * gluethickness);
   lGlue = new G4LogicalVolume(gGlue, epotekMaterial, "lGlue", 0, 0, 0);
-  G4Box *gGlueE = new G4Box("gGlueE", 0.5 * evprismhight, 0.5 * fBoxWidth, 0.5 * gluethickness);
+  G4Box *gGlueE = new G4Box("gGlueE", 0.5 * evprismheight, 0.5 * fBoxWidth, 0.5 * gluethickness);
   lGlueE = new G4LogicalVolume(gGlueE, epotekMaterial, "lGlueE", 0, 0, 0);
 
   // Window
@@ -276,15 +277,18 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
                                  "wTracker", lDirc, false, 0);
   } else {
     int id = 0, nparts = 4;
-    if (fEvType == 3 || fEvType == 5) {
+    if (fEvType == 3 || fEvType == 5 || fEvType == 7) {
       dirclength = fBar[2] * 3 + evprismlengh + gluethickness * 4;
       fRun->setRadiatorL(dirclength - 2 * evprismlengh);
       double sh = 0;
-      if (fEvType == 3) sh = fLens[2];
+      if (fEvType == 3 || fEvType == 7) sh = fLens[2];
       nparts = 3;
       double z = -0.5 * dirclength + 0.5 * evprismlengh + (fBar[2] + gluethickness) * 3;
-      new G4PVPlacement(0, G4ThreeVector(rshift, 0, z + sh), lExpVol, "wExpVol", lDirc, false, id);
-      new G4PVPlacement(0, G4ThreeVector(rshift, 0, z + 0.5 * (evprismlengh + gluethickness) + sh),
+      double th = 0;
+      if (fEvType == 7) th = 0.25 * (fPrizm[3] - fBar[0]);
+      new G4PVPlacement(0, G4ThreeVector(rshift - th, 0, z + sh), lExpVol, "wExpVol", lDirc, false,
+                        id);
+      new G4PVPlacement(0, G4ThreeVector(rshift - th, 0, z + 0.5 * (evprismlengh + gluethickness) + sh),
                         lGlueE, "wGlue", lDirc, false, id);
     }
 
@@ -336,7 +340,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     r1 = 62;
     r2 = 36;
 
-    if (fEvType == 3) {
+    if (fEvType == 3 || fEvType == 7) {
       r1 = 150;
       r2 = 90;
     }
@@ -371,8 +375,11 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     G4IntersectionSolid *gsbox = new G4IntersectionSolid(
       "sbox", gfstube, gfbox, new G4RotationMatrix(), G4ThreeVector(0, 0, -lensMinThikness * 2));
 
-    G4UnionSolid *gubox =
-      new G4UnionSolid("unionbox", gbbox, gsbox, new G4RotationMatrix(), G4ThreeVector(0, 0, 0));
+    G4UnionSolid *gubox;
+    if (fEvType == 3 || fEvType == 7)
+      gubox = new G4UnionSolid("ub", gbbox, gfbox, new G4RotationMatrix(), G4ThreeVector(0, 0, 0));
+    else
+      gubox = new G4UnionSolid("ub", gbbox, gsbox, new G4RotationMatrix(), G4ThreeVector(0, 0, 0));
 
     G4IntersectionSolid *gLens1 =
       new G4IntersectionSolid("Lens1", gubox, gsphere1, new G4RotationMatrix(), zTrans1);
@@ -410,7 +417,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     
     double shight = fBar[0];//25;
 
-    if (fEvType == 3) {
+    if (fEvType == 3 || fEvType == 7) {
       // fLens[0] = fBar[0];
       fLens[2] = 9;
       r1 = 150;
@@ -472,7 +479,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
       }
     } else {
       double sh = 0;
-      if (fEvType == 3) sh = evprismlengh + gluethickness;
+      if (fEvType == 3 || fEvType == 7) sh = evprismlengh + gluethickness;
       for (int i = 0; i < fNBar; i++) {
         double shifty = i * fLens[1] - 0.5 * (fBoxWidth - fLens[1]);
         if (fLensId != 6) {
