@@ -89,8 +89,8 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   fMcpTotal[2] = 1;
   fMcpActive[0] = fMcpActive[1] = 53;
   fMcpActive[2] = 1;
-  fLens[0] = fLens[1] = 40;
-  fLens[2] = 10;
+  fLens[0] = fLens[1] = fPrizm[3];
+  fLens[2] = 12;
   fRadius = 970;
   fNBoxes = 16;
   
@@ -157,28 +157,28 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   if (fEvType == 4) {
     fFd[1] = fPrizmT[4];
   }
-
+  if (fEvType == 3) {
+    fLens[0] =  fBar[0];
+    fLens[2] = 9;
+  }
+  
   if (fLensId == 0 || fLensId == 10) {
     fLens[2] = 0;
   }
   if (fLensId == 2) {
-    fLens[0] = fPrizm[3];
     fLens[1] = 175;
     fLens[2] = 14.4;
   }
   if (fLensId == 3) {
-    fLens[0] = fPrizm[3];
     fLens[1] = fPrizm[0] / fNBar;
-    fLens[2] = 12;
     if (fNBar == 1) fLens[1] = fPrizm[0] / 11.;
   }
 
   if (fLensId == 6) {
-    fLens[0] = fPrizm[3];
     fLens[1] = fPrizm[0];
-    fLens[2] = 12;
   }
- 
+
+
   if (fMcpLayout == 4) {
     fMcpTotal[0] = fMcpTotal[1] = 120;
     fMcpActive[0] = fMcpActive[1] = 108;
@@ -337,7 +337,6 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     r2 = 36;
 
     if (fEvType == 3) {
-      //fLens[0] = fBar[0];
       r1 = 150;
       r2 = 90;
     }
@@ -413,6 +412,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
 
     if (fEvType == 3) {
       // fLens[0] = fBar[0];
+      fLens[2] = 9;
       r1 = 150;
       r2 = 90;
     }
