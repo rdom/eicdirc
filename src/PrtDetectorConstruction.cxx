@@ -241,11 +241,13 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   // The Bar
   G4Box *gBar = new G4Box("gBar", 0.5 * fBar[0], 0.5 * fBar[1], 0.5 * fBar[2]);
   lBar = new G4LogicalVolume(gBar, BarMaterial, "lBar", 0, 0, 0);
-  double evprismheight = fPrizm[3];
+  double evprismheight = fBar[0];
   if (fEvType == 7) evprismheight = fBar[0] + 0.5 * (fPrizm[3] - fBar[0]);
   double evprismlengh = 893; // Bar[2] // fTest1
 
-  G4Box *gExpVol = new G4Box("gExpVol", 0.5 * evprismheight, 0.5 * fBoxWidth, 0.5 * evprismlengh); 
+  G4Box *gExpVol = new G4Box("gExpVol", 0.5 * evprismheight, 0.5 * fBoxWidth, 0.5 * evprismlengh);
+  if (fEvType == 8) gExpVol = new G4Box("gExpVol", 0.5 * evprismheight, 0.25 * fBoxWidth, 0.5 * evprismlengh);
+  
   lExpVol = new G4LogicalVolume(gExpVol, BarMaterial, "lExpVol", 0, 0, 0);
   
   // Glue
@@ -277,7 +279,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
                                  "wTracker", lDirc, false, 0);
   } else {
     int id = 0, nparts = 4;
-    if (fEvType == 3 || fEvType == 5 || fEvType == 7) {
+    if (fEvType == 3 || fEvType == 5 || fEvType == 7 || fEvType == 8) {
       dirclength = fBar[2] * 3 + evprismlengh + gluethickness * 4;
       fRun->setRadiatorL(dirclength - 2 * evprismlengh);
       double sh = 0;
@@ -286,10 +288,18 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
       double z = -0.5 * dirclength + 0.5 * evprismlengh + (fBar[2] + gluethickness) * 3;
       double th = 0;
       if (fEvType == 7) th = 0.25 * (fPrizm[3] - fBar[0]);
-      new G4PVPlacement(0, G4ThreeVector(rshift - th, 0, z + sh), lExpVol, "wExpVol", lDirc, false,
-                        id);
-      new G4PVPlacement(0, G4ThreeVector(rshift - th, 0, z + 0.5 * (evprismlengh + gluethickness) + sh),
-                        lGlueE, "wGlue", lDirc, false, id);
+      if (fEvType == 8) {
+        new G4PVPlacement(0, G4ThreeVector(rshift - th, -0.25 * fPrizm[0] - 0.025, z + sh), lExpVol,
+                          "wExpVol", lDirc, false, id);
+        new G4PVPlacement(0, G4ThreeVector(rshift - th, 0.25 * fPrizm[0] + 0.025, z + sh), lExpVol,
+                          "wExpVol1", lDirc, false, id + 1);
+      } else {
+        new G4PVPlacement(0, G4ThreeVector(rshift - th, 0, z + sh), lExpVol, "wExpVol", lDirc,
+                          false, id);
+      }
+      new G4PVPlacement(
+        0, G4ThreeVector(rshift - th, 0, z + 0.5 * (evprismlengh + gluethickness) + sh), lGlueE,
+        "wGlue", lDirc, false, id);
     }
 
     for (int i = 0; i < fNBar; i++) {
@@ -419,7 +429,6 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
 
     if (fEvType == 3 || fEvType == 7) {
       // fLens[0] = fBar[0];
-      fLens[2] = 9;
       r1 = 150;
       r2 = 90;
     }
@@ -482,6 +491,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
       if (fEvType == 3 || fEvType == 7) sh = evprismlengh + gluethickness;
       for (int i = 0; i < fNBar; i++) {
         double shifty = i * fLens[1] - 0.5 * (fBoxWidth - fLens[1]);
+	if ((fEvType == 6 || fEvType == 8) && i >= 5) shifty += 0.05; // lens gap for slited plism
         if (fLensId != 6) {
           auto pos = G4ThreeVector(rshift, shifty, shifth - sh);
           new G4PVPlacement(0, pos, lLens1, "wLens1", lDirc, false, i);
@@ -624,7 +634,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     new G4PVPlacement(
       fdrot, G4ThreeVector(rshift + 0.5 * fFd[1] - 0.5 * fPrizm[3] - evshiftx, 0, evshiftz), lFd,
       "wFd", lDirc, false, 0);
-  } else if (fEvType == 6){ // split prism
+  } else if (fEvType == 6 || fEvType == 8){ // split prism
     
     G4Trap *gPrizm = new G4Trap("gPrizm", 0.5 * fPrizm[0] - 0.1, fPrizm[1], fPrizm[2], fPrizm[3]);
     lPrizm = new G4LogicalVolume(gPrizm, BarMaterial, "lPrizm", 0, 0, 0);
