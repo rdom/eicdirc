@@ -152,7 +152,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, TString
 
   // read lut
   if (!gSystem->AccessPathName(lutfile)) {
-    std::cout << "--- reading  " << lutfile << std::endl;
+    std::cout << "-I- reading  " << lutfile << std::endl;
     fFile = new TFile(lutfile);
     fTree = (TTree *)fFile->Get("prtlut");   
     fLut = new TClonesArray("PrtLutNode");
@@ -160,7 +160,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, TString
     fTree->GetEntry(0);
     fGeomReco = true;
   } else {
-    std::cout << "--- lut file not found  " << lutfile << std::endl;
+    std::cout << "-I- lut file not found  " << lutfile << std::endl;
     fGeomReco = false;
   }
   
@@ -175,7 +175,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, TString
 
   if (fMethod == 2) {
     if (!gSystem->AccessPathName(fPdfPath)) {
-      std::cout << "--- reading  " << fPdfPath << std::endl;
+      std::cout << "-I- reading  " << fPdfPath << std::endl;
       TFile pdfFile(fPdfPath);
       int binfactor = (int)(timeRes / 50. + 0.1);
       for (int h : {fp1, fp2}) {
@@ -191,14 +191,17 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, TString
           fTimeImaging = true;
         }
       }
-    } else fTimeImaging = false;
+    } else {
+      std::cout << "-I- pdf file not found  " << fPdfPath << std::endl;    
+      fTimeImaging = false;
+    }
   }
 
   // read corrections
   fCorrFile = infile + "_corr.root";
   for (int i = 0; i < fnpmt; i++) fCorr[i] = 0;
   if (!gSystem->AccessPathName(fCorrFile)) {
-    std::cout << "--- reading  " << fCorrFile << std::endl;
+    std::cout << "-I- reading  " << fCorrFile << std::endl;
     int pmt;
     double corr, cspr[5];
     TChain ch;
@@ -218,25 +221,24 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, TString
                 << fSigma[3] << std::endl;
     }
   } else {
-    std::cout << "--- corr file not found  " << fCorrFile << std::endl;
+    std::cout << "-I- corr file not found  " << fCorrFile << std::endl;
   }
 
   // read neural network model
 #ifdef AI
   fNNet = true;
   if (!gSystem->AccessPathName(fNNPath)) {
-    std::cout << "--- reading  " << fNNPath << std::endl;
+    std::cout << "-I- reading  " << fNNPath << std::endl;
     fNNmodel = new cppflow::model(fNNPath.Data());
     for(auto s : (*fNNmodel).get_operations() ){
       std::cout << "s " << s << std::endl;   
     }  
   } else {
     fNNet = false;
-    std::cout << "--- neural net model not found  " << fNNPath << std::endl;
+    std::cout << "-I- neural net model not found  " << fNNPath << std::endl;
   }
 #endif
 
-  cout << "-I- PrtLutReco: Intialization successfull" << endl;
 }
 
 // -----   Destructor   ----------------------------------------------------
@@ -275,8 +277,7 @@ void PrtLutReco::Run(int start, int end) {
   trackRes = frun->getBeamSize();
   double trackingResTheta = frun->getTrackingResTheta();
   double trackingResPhi = frun->getTrackingResPhi();
-  std::cout << "trackRes " << trackRes << " timeRes " << timeRes << std::endl;
-  std::cout << "tracking resulution: dtheta = " << trackingResTheta <<  " dphi = " << trackingResPhi  << std::endl;
+  std::cout << "-I- tracking resulution: dtheta = " << trackingResTheta <<  " dphi = " << trackingResPhi << " time res " << timeRes   << std::endl;
   
   int nEvents = fChain->GetEntries();
   if (end == 0) end = nEvents;
@@ -289,10 +290,11 @@ void PrtLutReco::Run(int start, int end) {
     end = nEvents;
   }
 
-  std::cout << "Run started for [" << start << "," << end << "]" << std::endl;
+  std::cout << "-I- Run started for [" << start << "," << end << "]" << std::endl;
 
   for (int ievent = start; ievent < nEvents && ievent < pdfstart; ievent++) {
     fChain->GetEntry(ievent);
+
     theta = (fEvent->getMomentum().Angle(TVector3(0, 0, -1))) * TMath::RadToDeg();
     double mome = fEvent->getMomentum().Mag() / 1000.;
     int pid = fEvent->getPid();    
@@ -342,10 +344,12 @@ void PrtLutReco::Run(int start, int end) {
 
     // double stime = FindStartTime(fEvent);
 
+#ifdef AI
     std::vector<double> vinput(6144, 0.0);
     std::vector<int> vinput2d(6144 * 350, 0);
     std::vector<int> vinputInd(200 * 3, 0);
- 
+#endif
+    
     for (auto hit : fEvent->getHits()) {
 
       hitTime = hit.getLeadTime() + gRandom->Gaus(0, timeRes);
@@ -481,7 +485,7 @@ void PrtLutReco::Run(int start, int end) {
       }
  
       // if (isGoodHit_gr || 1) { // tmp for plate ev
-      if (isGoodHit_gr) {
+      if (isGoodHit_gr || (!fGeomReco)) {
         nsHits++;
         tnph_gr[pid]++;
         if (frun->getPid() == 10005) {
