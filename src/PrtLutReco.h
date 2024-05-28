@@ -59,6 +59,7 @@ class PrtLutReco {
   double fRadiatorL;
   int fStudyId;
   bool fTimeImaging;
+  bool fGeomReco;
   bool fNNet;
 
   TClonesArray *fLut;

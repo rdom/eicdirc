@@ -158,8 +158,10 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, TString
     fLut = new TClonesArray("PrtLutNode");
     fTree->SetBranchAddress("LUT", &fLut);
     fTree->GetEntry(0);
+    fGeomReco = true;
   } else {
     std::cout << "--- lut file not found  " << lutfile << std::endl;
+    fGeomReco = false;
   }
   
   fTimeImaging = (fMethod == 4) ? true : false;
@@ -373,8 +375,13 @@ void PrtLutReco::Run(int start, int end) {
       double theta0 = rotatedmom.Angle(dir0);
       fHist5->Fill(theta0 * TMath::Sin(phi0), theta0 * TMath::Cos(phi0));
 
-      PrtLutNode *node = (PrtLutNode *)fLut->At(ch);
-      int size = node->Entries();
+      PrtLutNode *node;
+      int size = 0;
+      if (fGeomReco) {
+        node = (PrtLutNode *)fLut->At(ch);
+        size = node->Entries();
+      }
+
       bool isGoodHit_gr(false), isGoodHit_ti(false);
 
       // double fAngle =  fEvent->GetAngle()-90;
@@ -1062,7 +1069,7 @@ void PrtLutReco::Run(int start, int end) {
       // gg_gr.Set(0);
     }
 
-    { // corrections
+    if (fGeomReco) { // corrections
       if (fabs(fCorr[0]) < 0.00000001 && fabs(fCorr[10]) < 0.00000001 &&
           fabs(fCorr[20]) < 0.00000001) {
         std::cout << "Writing " << fCorrFile << std::endl;
