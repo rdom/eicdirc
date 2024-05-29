@@ -426,9 +426,10 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     r1 = 62;
     r2 = 36;
     
-    double shight = fBar[0];//25;
+    double shight = 25; //fBar[0];//25;
 
     if (fEvType == 3 || fEvType == 7) {
+      shight = fBar[0];
       // fLens[0] = fBar[0];
       r1 = 150;
       r2 = 90;
