@@ -220,7 +220,13 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
 
   double tphi, dphi = 360 * deg / (double)fNBoxes;
 
+  double evprismheight = fBar[0];
+  if (fEvType == 7) evprismheight = fBar[0] + 0.5 * (fPrizm[3] - fBar[0]);
+  double evprismlengh = 893; // Bar[2] // fTest1
+  
   double center_shift = 630; // makes end at -182
+  if(fEvType == 3 || fEvType > 4 ) center_shift -= 0.5*(fBar[2] - evprismlengh); 
+  
   double rshift = -100; // shift x-center of the bar box to avoid overlaps
   if (fRunType == 1) {
     // LUT
@@ -242,9 +248,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   // The Bar
   G4Box *gBar = new G4Box("gBar", 0.5 * fBar[0], 0.5 * fBar[1], 0.5 * fBar[2]);
   lBar = new G4LogicalVolume(gBar, BarMaterial, "lBar", 0, 0, 0);
-  double evprismheight = fBar[0];
-  if (fEvType == 7) evprismheight = fBar[0] + 0.5 * (fPrizm[3] - fBar[0]);
-  double evprismlengh = 893; // Bar[2] // fTest1
+ 
 
   G4Box *gExpVol = new G4Box("gExpVol", 0.5 * evprismheight, 0.5 * fBoxWidth, 0.5 * evprismlengh);
   if (fEvType == 8) gExpVol = new G4Box("gExpVol", 0.5 * evprismheight, 0.25 * fBoxWidth, 0.5 * evprismlengh);
