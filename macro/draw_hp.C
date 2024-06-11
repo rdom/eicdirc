@@ -11,8 +11,7 @@ void draw_hp(TString infile = "../build/hits.root") {
 
   while (t.next() && t.i() < 10000) {
     double th = t.event()->getMomentum().Theta();
-    std::cout << "th " << th*TMath::RadToDeg() << std::endl;
-    
+
     for (auto hit : t.event()->getHits()) {
 
       int ch = hit.getChannel();
