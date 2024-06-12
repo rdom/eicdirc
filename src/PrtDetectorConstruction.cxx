@@ -358,8 +358,8 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     if (fEvType == 3 || fEvType == 7) {
       // r1 = 150; // for 500 mm ev-prism
       // r2 = 90;
-      r1 = fTest1; //290; //fTest1;
-      r2 = fTest2; //190; //fTest2;
+      r1 = 290; //fTest1; // for 893 mm ev-prism
+      r2 = 190; //fTest2;
     }
 
     double thight = fBar[0];
@@ -440,7 +440,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
       // r1 = 150;
       // r2 = 90;
       r1 = 290; //fTest1; 
-      r2 = 240; //fTest2;      
+      r2 = 190; //fTest2;      
     }
 
     G4ThreeVector zTrans1(
