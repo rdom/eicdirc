@@ -359,7 +359,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
       // r1 = 150; // for 500 mm ev-prism
       // r2 = 90;
       r1 = fTest1; //290; //fTest1;
-      r2 = fTest2; //240; //fTest2;
+      r2 = fTest2; //190; //fTest2;
     }
 
     double thight = fBar[0];

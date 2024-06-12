@@ -65,7 +65,7 @@ G4bool PrtBarSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
   G4ThreeVector lpos = touchable->GetHistory()->GetTransform(1).TransformPoint(gpos);
 
   if (fHitsCollection->entries() == 0) {
-    // PrtManager::Instance()->getEvent()->setMomentum(TVector3(gmom.x(), gmom.y(), gmom.z()));
+    // PrtManager::Instance()->getEvent()->setMomentum(TVector3(gmom.x(), gmom.y(), gmom.z())); 
     PrtManager::Instance()->getEvent()->setPosition(TVector3(lpos.x(), lpos.y(), lpos.z()));
   } else {    
     PrtManager::Instance()->getEvent()->setMomentumAfter(TVector3(gmom.x(), gmom.y(), gmom.z()));
