@@ -157,7 +157,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   if (fEvType == 4) {
     fFd[1] = fPrizmT[4];
   }
-  if (fEvType == 3 || fEvType == 7 ) {
+  if (fEvType == 3 || fEvType == 7 || fEvType == 9 ) {
     fLens[0] =  fBar[0];
     fLens[2] = 12;
   }
@@ -176,7 +176,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
 
   if (fLensId == 6) {
     fLens[1] = fPrizm[0];
-    if (fEvType == 8) fLens[1] = 0.5 * fPrizm[0];
+    if (fEvType == 8 || fEvType == 9) fLens[1] = 0.5 * fPrizm[0];
   }
 
 
@@ -251,7 +251,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
  
 
   G4Box *gExpVol = new G4Box("gExpVol", 0.5 * evprismheight, 0.5 * fBoxWidth, 0.5 * evprismlengh);
-  if (fEvType == 8) gExpVol = new G4Box("gExpVol", 0.5 * evprismheight, 0.25 * fBoxWidth, 0.5 * evprismlengh);
+  if (fEvType == 8 || fEvType == 9) gExpVol = new G4Box("gExpVol", 0.5 * evprismheight, 0.25 * fBoxWidth, 0.5 * evprismlengh);
   
   lExpVol = new G4LogicalVolume(gExpVol, BarMaterial, "lExpVol", 0, 0, 0);
   
@@ -284,16 +284,16 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
                                  "wTracker", lDirc, false, 0);
   } else {
     int id = 0, nparts = 4;
-    if (fEvType == 3 || fEvType == 5 || fEvType == 7 || fEvType == 8) {
+    if (fEvType == 3 || fEvType == 5 || fEvType == 7 || fEvType == 8 || fEvType == 9) {
       dirclength = fBar[2] * 3 + evprismlengh + gluethickness * 4;
       fRun->setRadiatorL(dirclength - 2 * evprismlengh);
       double sh = 0;
-      if (fEvType == 3 || fEvType == 7) sh = fLens[2];
+      if (fEvType == 3 || fEvType == 7 || fEvType == 9) sh = fLens[2];
       nparts = 3;
       double z = -0.5 * dirclength + 0.5 * evprismlengh + (fBar[2] + gluethickness) * 3;
       double th = 0;
       if (fEvType == 7) th = 0.25 * (fPrizm[3] - fBar[0]);
-      if (fEvType == 8) {
+      if (fEvType == 8 || fEvType == 9) {
         new G4PVPlacement(0, G4ThreeVector(rshift - th, -0.25 * fPrizm[0] - 0.025, z + sh), lExpVol,
                           "wExpVol", lDirc, false, id);
         new G4PVPlacement(0, G4ThreeVector(rshift - th, 0.25 * fPrizm[0] + 0.025, z + sh), lExpVol,
@@ -355,7 +355,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     r1 = 62;
     r2 = 36;
 
-    if (fEvType == 3 || fEvType == 7) {
+    if (fEvType == 3 || fEvType == 7 || fEvType == 9) {
       // r1 = 150; // for 500 mm ev-prism
       // r2 = 90;
       r1 = 290; //fTest1; // for 893 mm ev-prism
@@ -393,7 +393,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
       "sbox", gfstube, gfbox, new G4RotationMatrix(), G4ThreeVector(0, 0, -lensMinThikness * 2));
 
     G4UnionSolid *gubox;
-    if (fEvType == 3 || fEvType == 7)
+    if (fEvType == 3 || fEvType == 7 || fEvType == 9)
       gubox = new G4UnionSolid("ub", gbbox, gfbox, new G4RotationMatrix(), G4ThreeVector(0, 0, 0));
     else
       gubox = new G4UnionSolid("ub", gbbox, gsbox, new G4RotationMatrix(), G4ThreeVector(0, 0, 0));
@@ -434,11 +434,8 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     
     double shight = 25; //fBar[0];//25;
 
-    if (fEvType == 3 || fEvType == 7) {
+    if (fEvType == 3 || fEvType == 7 || fEvType == 9) {
       shight = fBar[0];
-      // fLens[0] = fBar[0];
-      // r1 = 150;
-      // r2 = 90;
       r1 = 290; //fTest1; 
       r2 = 190; //fTest2;      
     }
@@ -498,10 +495,10 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
       }
     } else {
       double sh = 0;
-      if (fEvType == 3 || fEvType == 7) sh = evprismlengh + gluethickness;
+      if (fEvType == 3 || fEvType == 7 || fEvType == 9) sh = evprismlengh + gluethickness;
       for (int i = 0; i < fNBar; i++) {
         double shifty = i * fLens[1] - 0.5 * (fBoxWidth - fLens[1]);
-        if ((fEvType == 6 || fEvType == 8) && i >= 5) shifty += 0.05; // lens gap for slited plism
+        if ((fEvType == 6 || fEvType == 8 || fEvType == 9) && i >= 5) shifty += 0.05; // lens gap for splited plism
         if (fLensId != 6) {
           auto pos = G4ThreeVector(rshift, shifty, shifth - sh);
           new G4PVPlacement(0, pos, lLens1, "wLens1", lDirc, false, i);
@@ -511,7 +508,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
       }
       if (fLensId == 6) {
         auto pos = G4ThreeVector(rshift, 0, shifth - sh);
-        if (fEvType == 8) {
+        if (fEvType == 8 || fEvType == 9) {
 	  pos = G4ThreeVector(rshift, - 0.5 * (fBoxWidth - fLens[1])-0.025, shifth - sh);
           new G4PVPlacement(0, pos, lLens1, "wLens1", lDirc, false, 0);
           new G4PVPlacement(0, pos, lLens2, "wLens2", lDirc, false, 0);
@@ -655,7 +652,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     new G4PVPlacement(
       fdrot, G4ThreeVector(rshift + 0.5 * fFd[1] - 0.5 * fPrizm[3] - evshiftx, 0, evshiftz), lFd,
       "wFd", lDirc, false, 0);
-  } else if (fEvType == 6 || fEvType == 8){ // split prism
+  } else if (fEvType == 6 || fEvType == 8 || fEvType == 9){ // split prism
     
     G4Trap *gPrizm = new G4Trap("gPrizm", 0.5 * fPrizm[0] - 0.1, fPrizm[1], fPrizm[2], fPrizm[3]);
     lPrizm = new G4LogicalVolume(gPrizm, BarMaterial, "lPrizm", 0, 0, 0);
