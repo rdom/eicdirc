@@ -165,11 +165,8 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   if (fLensId == 0 || fLensId == 10) {
     fLens[2] = 0;
   }
-  if (fLensId == 2) {
-    fLens[1] = 175;
-    fLens[2] = 14.4;
-  }
-  if (fLensId == 3) {
+
+  if (fLensId == 3 || fLensId == 2) {
     fLens[1] = fPrizm[0] / fNBar;
     if (fNBar == 1) fLens[1] = fPrizm[0] / 11.;
   }
@@ -329,18 +326,16 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
 
   // The Lenses
   if (fLensId == 2) { // 2-layer lens
-    double lensrad = 70;
+    double r = 70;
     double lensMinThikness = 2;
-    G4Box *gfbox = new G4Box("Fbox", fLens[0] / 2., fLens[1] / 2., fLens[2] / 2.);
-    G4ThreeVector zTrans(0, 0, -lensrad + fLens[2] / 2. - lensMinThikness);
+    G4Box *gfbox = new G4Box("Fbox", 0.5 * fLens[0], 0.5 * fLens[1], 0.5 * fLens[2]);
+    G4ThreeVector zTrans(0, 0, -r + 0.5 * fLens[2] - lensMinThikness);
 
-    G4Sphere *gsphere = new G4Sphere("Sphere", 0, 70, 0. * deg, 360. * deg, 0. * deg, 380. * deg);
-    G4IntersectionSolid *gLens1 =
-      new G4IntersectionSolid("Fbox*Sphere", gfbox, gsphere, new G4RotationMatrix(), zTrans);
-    G4SubtractionSolid *gLens2 =
-      new G4SubtractionSolid("Fbox-Sphere", gfbox, gsphere, new G4RotationMatrix(), zTrans);
+    G4Sphere *gsphere = new G4Sphere("sphere", 0, r, 0, 360 * deg, 0, 360 * deg);
+    auto gLens1 = new G4IntersectionSolid("lens1", gfbox, gsphere, new G4RotationMatrix(), zTrans);
+    auto gLens2 = new G4SubtractionSolid("lens2", gfbox, gsphere, new G4RotationMatrix(), zTrans);
 
-    lLens1 = new G4LogicalVolume(gLens1, Nlak33aMaterial, "lLens1", 0, 0, 0); // Nlak33aMaterial
+    lLens1 = new G4LogicalVolume(gLens1, Nlak33aMaterial, "lLens1", 0, 0, 0);
     lLens2 = new G4LogicalVolume(gLens2, BarMaterial, "lLens2", 0, 0, 0);
   }
 
@@ -501,8 +496,8 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
         if ((fEvType == 6 || fEvType == 8 || fEvType == 9) && i >= 5) shifty += 0.05; // lens gap for splited plism
         if (fLensId != 6) {
           auto pos = G4ThreeVector(rshift, shifty, shifth - sh);
-          new G4PVPlacement(0, pos, lLens1, "wLens1", lDirc, false, i);
-          new G4PVPlacement(0, pos, lLens2, "wLens2", lDirc, false, i);
+	  new G4PVPlacement(0, pos, lLens1, "wLens1", lDirc, false, i);
+	  new G4PVPlacement(0, pos, lLens2, "wLens2", lDirc, false, i);
           if (fLensId == 3) new G4PVPlacement(0, pos, lLens3, "wLens3", lDirc, false, i);
         }
       }
@@ -1381,7 +1376,7 @@ void PrtDetectorConstruction::ConstructSDandField() {
     if (fLensId == 2 || fLensId == 3 || fLensId == 6) {
       SetSensitiveDetector("lLens1", prizmSD);
       SetSensitiveDetector("lLens2", prizmSD);
-      SetSensitiveDetector("lLens3", prizmSD);
+      if (fLensId == 3 || fLensId == 6) SetSensitiveDetector("lLens3", prizmSD);
     }
   } else if (fEvType == 1) {
     SetSensitiveDetector("lWedge", prizmSD);
