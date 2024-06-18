@@ -744,31 +744,41 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
 
     double pixSize = 3 * mm;
 
-    fNpix1 = fPrizm[2] / pixSize - 1;
-    fNpix2 = fPrizm[0] / pixSize - 1;
+    fNpix1 = (int)(fPrizm[2] / pixSize);
+    fNpix2 = (int)(fPrizm[0] / pixSize);
+    fRun->setNpix(fNpix1 * fNpix2);
 
-    G4Box *gPixel = new G4Box("gPixel", 0.5 * fPrizm[2] / fNpix1, 0.5 * fPrizm[0] / fNpix2, 0.01);
+    std::cout << "fNpix1=" << fNpix1 << " fNpix2=" << fNpix2 << " size = " << pixSize << std::endl;
+
+    int pixId = 0;
+    G4Box *gPixel = new G4Box("gPixel", 0.5 * pixSize, 0.5 * pixSize, 0.01);
     lPixel = new G4LogicalVolume(gPixel, BarMaterial, "lPixel", 0, 0, 0);
     for (int i = 0; i < fNpix1; i++) {
       for (int j = 0; j < fNpix2; j++) {
-        double shiftx = i * (fPrizm[2] / fNpix1) - 0.5 * fPrizm[2] + 0.5 * fPrizm[2] / fNpix1;
-        double shifty = j * (fPrizm[0] / fNpix2) - 0.5 * fPrizm[0] + 0.5 * fPrizm[0] / fNpix2;
+        double shiftx = (i + 0.5) * pixSize - 0.5 * fPrizm[2];
+        double shifty = (j + 0.5) * pixSize - 0.5 * fPrizm[0];
         new G4PVPlacement(fdRot, G4ThreeVector(shiftx, shifty, 0), lPixel, "wPixel", lMcp, false,
-                          fNpix1 * i + j);
+                          pixId++);
       }
     }
-    new G4PVPlacement(0, G4ThreeVector(0, 0, 0), lMcp, "wMcp", lFd, false, 1);
+    
+    new G4PVPlacement(0, G4ThreeVector(0, 0, 0), lMcp, "wMcp", lFd, false, 0);
   }
   if (fMcpLayout == 4) {
     // LAPPD/HRPPD pmt
 
-    G4Box *gMcp = new G4Box("gMcp", fMcpTotal[0] / 2., fMcpTotal[1] / 2., fMcpTotal[2] / 2.);
+    G4Box *gMcp = new G4Box("gMcp", 0.5 * fMcpTotal[0], 0.5 * fMcpTotal[1], 0.5 * fMcpTotal[2]);
     lMcp = new G4LogicalVolume(gMcp, BarMaterial, "lMcp", 0, 0, 0);
 
     fNpix1 = 40;
     fNpix2 = 40;
-    fRun->setNpix(fNpix1 * fNpix1);
+    fRun->setNpix(fNpix1 * fNpix2);
 
+    int mcpId = 0;
+    int pixId = 0;
+    double gapx = 0;
+    double gapy = 0;
+    
     std::cout << "fNpix1=" << fNpix1 << " fNpix2=" << fNpix2 << " size = " << fMcpActive[0] / fNpix1
               << std::endl;
 
@@ -779,24 +789,17 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
 
     for (int i = 0; i < fNpix1; i++) {
       for (int j = 0; j < fNpix2; j++) {
-        double shiftx =
-          i * (fMcpActive[0] / fNpix1) - fMcpActive[0] / 2. + 0.5 * fMcpActive[0] / fNpix1;
-        double shifty =
-          j * (fMcpActive[1] / fNpix2) - fMcpActive[1] / 2. + 0.5 * fMcpActive[1] / fNpix2;
+        double shiftx = (i + 0.5) * (fMcpActive[0] / fNpix1) - 0.5 * fMcpActive[0];
+        double shifty = (j + 0.5) * (fMcpActive[1] / fNpix2) - 0.5 * fMcpActive[1];
         new G4PVPlacement(0, G4ThreeVector(shiftx, shifty, 0), lPixel, "wPixel", lMcp, false,
-                          fNpix1 * i + j);
+                          pixId++);
       }
-    }
-
-    int mcpId = 0;
-    double gapx = 0;
-    double gapy = 0;
+    }  
 
     for (int i = 0; i < fNCol; i++) {
       for (int j = 0; j < fNRow; j++) {
         double shiftx = i * (fMcpTotal[0] + gapx) - 0.5 * (fFd[1] - fMcpTotal[0]) + gapx +
                         0.5 * (fPrizm[2] - fNCol * fMcpTotal[1]);
-        ;
         double shifty = j * (fMcpTotal[1] + gapy) - 0.5 * (fBoxWidth - fMcpTotal[1]) + gapy +
                         0.5 * (fBoxWidth - fNRow * fMcpTotal[1]);
         new G4PVPlacement(0, G4ThreeVector(shiftx, shifty, 0), lMcp, "wMcp", lFd, false, mcpId++);
@@ -825,6 +828,11 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     // fRun->setTest2(fMcpActive[0] / fNpix1);
     // fRun->setNpix(fNpix1 * fNpix1);
 
+    int mcpId = 0;
+    int pixId = 0;
+    double gapx = (fPrizm[2] - fNCol * fMcpTotal[0]) / (double)(fNCol + 1);
+    double gapy = (fBoxWidth - fNRow * fMcpTotal[1]) / (double)(fNRow + 1);    
+    
     std::cout << "fNpix1=" << fNpix1 << " fNpix2=" << fNpix2 << " size = " << fMcpActive[0] / fNpix1
               << std::endl;
 
@@ -835,19 +843,12 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
 
     for (int i = 0; i < fNpix1; i++) {
       for (int j = 0; j < fNpix2; j++) {
-        double shiftx =
-          i * (fMcpActive[0] / fNpix1) - fMcpActive[0] / 2. + 0.5 * fMcpActive[0] / fNpix1;
-        double shifty =
-          j * (fMcpActive[1] / fNpix2) - fMcpActive[1] / 2. + 0.5 * fMcpActive[1] / fNpix2;
+        double shiftx = (i + 0.5) * (fMcpActive[0] / fNpix1) - 0.5 * fMcpActive[0];
+        double shifty = (j + 0.5) * (fMcpActive[1] / fNpix2) - 0.5 * fMcpActive[1];
         new G4PVPlacement(0, G4ThreeVector(shiftx, shifty, 0), lPixel, "wPixel", lMcp, false,
-                          fNpix1 * i + j);
+                          pixId++);
       }
     }
-
-    int mcpId = 0;
-    double gapx = (fPrizm[2] - fNCol * fMcpTotal[0]) / (double)(fNCol + 1);
-    double gapy = (fBoxWidth - fNRow * fMcpTotal[1]) / (double)(fNRow + 1);
-
 
     fNRow = 6;    
     for (int i = 0; i < fNCol; i++) {
@@ -1352,9 +1353,9 @@ void PrtDetectorConstruction::SetVisualization() {
 
   // G4VisAttributes *waPixel = new G4VisAttributes(G4Colour(0.7, 0.0, 0.1, 0.5));
  G4VisAttributes *waPixel = new G4VisAttributes(G4Colour(0.1, 0.4, 0.6, 0.3));
-  waPixel->SetForceWireframe(true);
-  if (fMcpLayout == 3) waPixel->SetVisibility(false);
-  else waPixel->SetVisibility(true);
+  waPixel->SetForceWireframe(true);  
+  waPixel->SetVisibility(true);
+  // if (fMcpLayout == 3) waPixel->SetVisibility(false);
   lPixel->SetVisAttributes(waPixel);
 }
 

@@ -156,7 +156,7 @@ class PrtTools {
   void set_path(TString v) { _savepath = v; }
 
   array<int, 100000> map_pmt{}, map_pix{}, map_row{}, map_col{}, map_tdc{};
-  array<array<int, 4096>, 100> map_pmtpix{};
+  array<array<int, 10000>, 24> map_pmtpix{};
 
  private:
   TChain *_chain;

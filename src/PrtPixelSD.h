@@ -24,8 +24,7 @@ class PrtPixelSD : public G4VSensitiveDetector {
  private:
   int fEvType, fLensType, fMcpLayout, fRunType;
   double fRadiatorL, fRadiatorW, fRadiatorH;
-  int fMultHit[24][4096]; // 265
-  int fMap_Mpc[24][4096];
+  std::array<std::array<int, 10000>, 24> fMap_Mpc{};
 };
 
 #endif

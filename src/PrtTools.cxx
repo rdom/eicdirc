@@ -144,6 +144,7 @@ void PrtTools::fill_digi(int pmt, int pix, double w){
 // _pmtlayout == 2032 - EIC DIRC focusing prism
 // _pmtlayout == 3000 - GlueX
 // _pmtlayout == 4 - EIC DIRC prism, LAPD
+// _pmtlayout == 3 - one pmt covering whole PD
 TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
   
   _last_maxz = maxz;
@@ -212,6 +213,10 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
   if (_pmtlayout == 4) {
     nrow = 2;
     ncol = 3;
+  }
+  if (_pmtlayout == 3) {
+    nrow = 1;
+    ncol = 1;
   }
   if (_run->getGeometry() == 2) {
     nrow = 3;
@@ -311,16 +316,20 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
           tbh = 0.005;
           padi = j * ncol + i;
         }
+	if (_pmtlayout == 3) {
+          margin = 0.05;
+          shift = 0;
+          shiftw = 0.01;
+          tbw = 0.001;
+          tbh = 0.001;
+          padi = j * ncol + i;
+        }
 
         pads[padi] = new TPad(
           sid + Form("P%d", padi), "T", i / (ncol + 2 * margin) + tbw + shift + shiftw,
           j / (double)nrow + tbh + shifth, (i + 1) / (ncol + 2 * margin) - tbw + shift + shiftw,
           (1 + j) / (double)nrow - tbh + shifth, 21);
 	
-        // glx_hpads[padi] = new TPad(
-        //   Form("P%d", padi), "T", i / (Double_t)ncol + bw, 1 - ((j + 1) / (Double_t)nrow - bh),
-        //   (i + 1) / (Double_t)ncol - bw, 1 - (j / (Double_t)nrow + bh), 21);
-
         auto b =
           new TBox(i / (ncol + 2 * margin) + tbw + shift + shiftw, j / (double)nrow + tbh + shifth,
                    (i + 1) / (ncol + 2 * margin) - tbw + shift + shiftw,
@@ -428,7 +437,7 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
   TPaletteAxis *palette;
   if (_pmtlayout == 2018 || _pmtlayout == 2023)
     palette = new TPaletteAxis(0.89, 0.1, 0.93, 0.90, (TH1 *)_hdigi[nnmax]);
-  else if (_pmtlayout == 2032 || _pmtlayout == 4)
+  else if (_pmtlayout == 2032 || _pmtlayout == 4 || _pmtlayout == 3)
     palette = new TPaletteAxis(0.91, 0.1, 0.94, 0.90, (TH1 *)_hdigi[nnmax]);
   else
     palette = new TPaletteAxis(0.82, 0.1, 0.86, 0.90, (TH1 *)_hdigi[nnmax]);

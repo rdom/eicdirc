@@ -185,7 +185,14 @@ int main(int argc, char **argv) {
   if (lensId.size()) run->setLens(atoi(lensId));
   if (mcpLayout != 0) {
     run->setPmtLayout(mcpLayout);
-    if(mcpLayout == 4) run->setNpmt(6);    
+    if(mcpLayout == 4) {
+      run->setNpmt(6);
+      run->setNpix(4096);
+    }
+    if(mcpLayout == 3) {
+      run->setNpmt(1);
+      run->setNpix(10000);
+    }
   }
   if (trackingres > -1) {
     run->setTrackingResTheta(trackingres);

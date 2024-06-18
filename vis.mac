@@ -183,3 +183,14 @@
 # /vis/scene/add/magneticField 5 lightArrow
 # /vis/scene/add/magneticField 8
 
+
+
+# #for lut visualization
+# /vis/scene/endOfEventAction accumulate 1000000
+# /vis/multithreading/maxEventQueueSize 100000
+# /vis/filtering/trajectories/create/encounteredVolumeFilter
+# /vis/filtering/trajectories/encounteredVolumeFilter-0/add wPixel:100
+
+# /vis/filtering/trajectories/create/attributeFilter
+# /vis/filtering/trajectories/attributeFilter-0/setAttribute FVPath
+# /vis/filtering/trajectories/attributeFilter-0/addValue wPrizm:0

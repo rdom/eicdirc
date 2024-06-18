@@ -28,7 +28,8 @@ PrtPixelSD::PrtPixelSD(const G4String &name, const G4String &hitsCollectionName)
   fRadiatorL = PrtManager::Instance()->getRun()->getRadiatorL();
   fRadiatorW = PrtManager::Instance()->getRun()->getRadiatorW();
   fRadiatorH = PrtManager::Instance()->getRun()->getRadiatorH();
-
+  std::cout << "npmt " << npmt <<  " npix " << npix << std::endl;
+ 
   // create MPC map
   for (int ch = 0; ch < npmt * npix; ch++) {
     int mcp = ch / npix;
@@ -113,7 +114,7 @@ G4bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
       }
     }
   }
-
+ 
   // store time in prism
   if (fRunType == 5) time -= prismtime;
   
@@ -139,7 +140,7 @@ G4bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
   int prism = touchable->GetReplicaNumber(3);
   int mcp = touchable->GetReplicaNumber(1);
   int pix = touchable->GetReplicaNumber(0);
-
+ 
   int ch = fMap_Mpc[mcp][pix];
   hit.setPrism(prism);
   hit.setPmt(mcp);

@@ -10,6 +10,7 @@
 #include "G4SystemOfUnits.hh"
 #include "globals.hh"
 #include "G4RunManager.hh"
+#include "G4RandomDirection.hh"
 
 #include "PrtManager.h"
 
@@ -163,6 +164,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
     // v.setPhi( M_PI);
     v.setPhi(2 * M_PI * G4UniformRand());
 
+    fParticleGun->SetParticlePolarization(G4RandomDirection());
     fParticleGun->SetParticleMomentumDirection(v);
   }
 
