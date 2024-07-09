@@ -272,6 +272,7 @@ void PrtLutReco::Run(int start, int end) {
   test1 = frun->getTest1();
   test2 = frun->getTest2();
   test3 = frun->getTest3();
+  double dark_noise = frun->getDarkNoise();
   timeRes = frun->getTimeSigma();
   timeCut = frun->getTimeCut();
   trackRes = frun->getBeamSize();
@@ -936,6 +937,7 @@ void PrtLutReco::Run(int start, int end) {
     tree.Branch("test1", &test1, "test1/D");
     tree.Branch("test2", &test2, "test2/D");
     tree.Branch("test3", &test3, "test3/D");
+    tree.Branch("dark_noise", &dark_noise, "dark_noise/D");
     tree.Branch("par5", &par5, "par5/D");
     tree.Branch("par6", &par6, "par6/D");
     tree.Branch("epi_rejection1", &epi_rejection1, "epi_rejection1/D");
