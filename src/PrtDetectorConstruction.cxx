@@ -101,6 +101,8 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
     fBar[2] = 1100;
   }
 
+  fBoxWidth = fPrizm[0];
+  
   if (fGeomType == 1 || fGeomType == 11) { // ePIC ECCE
     fNBoxes = 12;
     // fRadius = 700 + 0.5 * fBar[0]; // old = 729.6;
@@ -109,6 +111,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
     fBar[2] = 1225; // BaBar bars
     fBar[1] = 35;
     fPrizm[0] = 350 + 1.35;
+    fBoxWidth = fNBar * (fBar[1] + fBarsGap);
   }
 
   if (fGeomType == 2 || fGeomType == 12) { // CORE
@@ -126,14 +129,11 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
     // fPrizm[0] = 245;
   }
 
-  fBoxWidth = fPrizm[0];
-  std::cout << "fBoxWidth/Prism  " << fBoxWidth<<" x "<< fPrizm[2] << std::endl;
-
   // fBar[1] = (fPrizm[0] - (fNBar - 1) * fBarsGap) / fNBar;
   // std::cout << "N bars " << fNBar << " bar width " << fBar[1] << std::endl;
 
   fMirror[0] = fBar[0] + 1;
-  fMirror[1] = fPrizm[0];
+  fMirror[1] = fBoxWidth;
   fMirror[2] = 1;
 
   if (fEvType == 1) { // BaBar
@@ -150,7 +150,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
 
   if (fGeomType < 10) fNBoxes = 1;
 
-  fFd[0] = fBoxWidth;
+  fFd[0] = fPrizm[0];
   fFd[1] = fPrizm[2];
   fFd[2] = 1;
 
@@ -167,13 +167,13 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   }
 
   if (fLensId == 3 || fLensId == 2) {
-    fLens[1] = fPrizm[0] / fNBar;
-    if (fNBar == 1) fLens[1] = fPrizm[0] / 11.;
+    fLens[1] = fBoxWidth / fNBar;
+    if (fNBar == 1) fLens[1] = fBoxWidth / 11.;
   }
 
   if (fLensId == 6) {
-    fLens[1] = fPrizm[0];
-    if (fEvType == 8 || fEvType == 9) fLens[1] = 0.5 * fPrizm[0];
+    fLens[1] = fBoxWidth;
+    if (fEvType == 8 || fEvType == 9) fLens[1] = 0.5 * fBoxWidth;
   }
 
 
@@ -210,7 +210,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   fRun->setRadiatorL(dirclength);
 
   // The DIRC bar box
-  G4Box *gDirc = new G4Box("gDirc", 130, 180, 0.5 * dirclength + 500);
+  G4Box *gDirc = new G4Box("gDirc", 0.5 * fPrizm[2] + 10, 0.5 *fPrizm[0] + 1, 0.5 * dirclength + 500);
   lDirc = new G4LogicalVolume(gDirc, defaultMaterial, "lDirc", 0, 0, 0);
   G4Box *gFd = new G4Box("gFd", 0.5 * fFd[1], 0.5 * fFd[0], 0.5 * fFd[2]);
   lFd = new G4LogicalVolume(gFd, defaultMaterial, "lFd", 0, 0, 0);
