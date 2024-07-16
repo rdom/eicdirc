@@ -191,7 +191,7 @@ int main(int argc, char **argv) {
     }
     if(mcpLayout == 3) {
       run->setNpmt(1);
-      run->setNpix(10000);
+      run->setNpix(100000); // max number of pixels
     }
   }
   if (trackingres > -1) {

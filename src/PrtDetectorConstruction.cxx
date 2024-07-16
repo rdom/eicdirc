@@ -743,7 +743,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     fNpix2 = (int)(fPrizm[0] / pixSize);
     fRun->setNpix(fNpix1 * fNpix2);
 
-    std::cout << "fNpix1=" << fNpix1 << " fNpix2=" << fNpix2 << " size = " << pixSize << std::endl;
+    std::cout << "Number of pixels =" << fNpix1 * fNpix2 << "  pixel's size = " << pixSize << std::endl;
 
     int pixId = 0;
     G4Box *gPixel = new G4Box("gPixel", 0.5 * pixSize, 0.5 * pixSize, 0.01);
