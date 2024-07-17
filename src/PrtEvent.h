@@ -28,6 +28,7 @@ class PrtEvent : public TObject {
   Double_t getTofPi() { return fTofPi; }
   Double_t getTofP() { return fTofP; }
   TVector3 getMomentum() const { return fMomentum; }
+  TVector3 getMomentumBefore() { return fMomentumBefore; }
   TVector3 getMomentumAfter() { return fMomentumAfter; }
   TVector3 getPosition() const { return fPosition; }
   TVector3 getPositionAfter() const { return fPositionAfter; }
@@ -40,6 +41,7 @@ class PrtEvent : public TObject {
   void setTofPi(Double_t v) { fTofPi = v; }
   void setTofP(Double_t v) { fTofP = v; }
   void setMomentum(TVector3 v) { fMomentum = v; }
+  void setMomentumBefore(TVector3 val) { fMomentumBefore = val; }
   void setMomentumAfter(TVector3 val) { fMomentumAfter = val; }
   void setPosition(TVector3 v) { fPosition = v; }
   void setPositionAfter(TVector3 v) { fPositionAfter = v; }
@@ -51,11 +53,12 @@ class PrtEvent : public TObject {
   Double_t fTofPi;
   Double_t fTofP;
   TVector3 fMomentum;
+  TVector3 fMomentumBefore;
   TVector3 fMomentumAfter;
   TVector3 fPosition;
   TVector3 fPositionAfter;
   std::vector<PrtHit> fHitArray;
 
-  ClassDef(PrtEvent, 7);
+  ClassDef(PrtEvent, 8);
 };
 #endif

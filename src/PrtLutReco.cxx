@@ -21,6 +21,9 @@ TH2F *fDiff =
   new TH2F("diff", ";measured time [ns];t_{measured}-t_{calc} [ns]", 500, 0, 100, 150, -5, 5);
 TH2F *fHist4 = new TH2F("Time4", "4", 200, -1, 1, 200, -1, 1);
 TH2F *fHist5 = new TH2F("Time5", "5", 200, -1, 1, 200, -1, 1);
+TH1F *fTrackAngle0 = new TH1F("fTrackAngle0", ";#Delta [mrad];entries [#]", 500, -10, 10);
+TH1F *fTrackAngle1 = new TH1F("fTrackAngle1", ";#Delta [mrad];entries [#]", 500, -10, 10);
+
 TH1F *fFindTime = new TH1F("ft", ";t_{measured}-t_{calculated} [ns];entries [#]", 2000, -100, 100);
 TH1F *fFindTimeA[20];
 TH1F *fFindTimeRes = new TH1F("ftr", "ftr", 100, -2, 2);
@@ -307,8 +310,13 @@ void PrtLutReco::Run(int start, int end) {
     double minChangle = 0.35;
     double maxChangle = 0.9;
     TVector3 rotatedmom = fEvent->getMomentum().Unit();
+    TVector3 mom_before = fEvent->getMomentumBefore().Unit();
+    TVector3 mom_after = fEvent->getMomentumAfter().Unit();
     double sum1(0), sum2(0), sumti1(0), sumti2(0), noise(0.2);
 
+    double theta_diff = rotatedmom.Theta() - mom_before.Theta();
+    fTrackAngle0->Fill(1000 * theta_diff);
+    
     // // post-dirc tracking layer
     // TVector3 pa = fEvent->getPositionAfter();
     // TVector3 ma = fEvent->getMomentumAfter().Unit();
@@ -358,8 +366,8 @@ void PrtLutReco::Run(int start, int end) {
       TVector3 dir0 = hit.getMomentum().Unit();
       TVector3 cz = TVector3(-rotatedmom.X(), rotatedmom.Y(), rotatedmom.Z());
       TVector3 cd = TVector3(-dir0.X(), dir0.Y(), dir0.Z());
-      TVector3 unitdir1 = rotatedmom.Unit();
-      TVector3 unitdir2 = rotatedmom.Unit();
+      TVector3 unitdir1 = rotatedmom;
+      TVector3 unitdir2 = rotatedmom;
       cz.RotateUz(unitdir1);
       cd.RotateUz(unitdir2);
 
@@ -462,14 +470,15 @@ void PrtLutReco::Run(int start, int end) {
           fhChromL->Fill(tdiff / (lenz / cos(luttheta)), (tangle - fAngle[pid]) * 1000);
 
           if (fabs(tangle - fAngle[fp2]) > 0.05 && fabs(tangle - fAngle[fp1]) > 0.05) continue;
-
-          if (tangle > minChangle && tangle < maxChangle) {
+	  
+	  if (fabs(tangle - fAngle[fp2]) < 0.01 || fabs(tangle - fAngle[fp1]) < 0.01){		      
             TVector3 rdir = TVector3(-dir.X(), dir.Y(), dir.Z());
-            TVector3 unitdir3 = rotatedmom.Unit();
-            rdir.RotateUz(unitdir3);
+            rdir.RotateUz(rotatedmom);
             double cphi = rdir.Phi();
+	    
             // if(tangle*TMath::Cos(cphi)<0) continue;
             fHist4->Fill(tangle * TMath::Sin(cphi), tangle * TMath::Cos(cphi));
+	    // fHist4->Fill(tangle * TMath::Sin(cphi), -tangle * TMath::Cos(cphi));
             gg_gr.SetPoint(gg_i, tangle * TMath::Sin(cphi), tangle * TMath::Cos(cphi));
             gg_i++;
           }
@@ -480,7 +489,7 @@ void PrtLutReco::Run(int start, int end) {
           sum2 += -TMath::Log(fFunc[fp2]->Eval(tangle) + noise);
         }
       }
- 
+      
       // if (isGoodHit_gr || 1) { // tmp for plate ev
       if (isGoodHit_gr || (!fGeomReco)) {
         nsHits++;
@@ -568,6 +577,62 @@ void PrtLutReco::Run(int start, int end) {
       }
     }
 
+    // ring fit
+    fHist4->SetStats(0);
+    fHist4->GetXaxis()->SetTitle("#theta_{c}sin(#varphi_{c})");
+    fHist4->GetYaxis()->SetTitle("#theta_{c}cos(#varphi_{c})");
+    fHist4->SetTitle(Form("Calculated from LUT, #theta = %1.2f#circ", theta));
+    fHist4->Draw("colz");
+
+    double x0(0), y0(0), a(fAngle[2]);
+    a = 0.5 *(fAngle[fp1] + fAngle[fp2]);
+    FitRing(x0, y0, a);
+    TVector3 corr(x0, y0, 1 - TMath::Sqrt(x0 * x0 + y0 * y0));
+    corr = corr.Unit();
+    TLegend *leg = new TLegend(0.32, 0.42, 0.67, 0.59);
+    leg->SetFillStyle(0);
+    leg->SetBorderSize(0);
+    leg->AddEntry((TObject *)0, Form("Entries %0.0f", fHist4->GetEntries()), "");
+    leg->AddEntry((TObject *)0, Form("#Delta#theta_{c} %f [mrad]", corr.Theta() * 1000), "");
+    leg->AddEntry((TObject *)0, Form("#Delta#varphi_{c} %f [rad]", corr.Phi()), "");
+    leg->Draw();
+
+    TArc *arc = new TArc(x0, y0, fAngle[2]);
+    arc->SetLineColor(kRed);
+    arc->SetLineWidth(1);
+    arc->SetFillStyle(0);
+    arc->Draw();
+
+    TVector3 oo = rotatedmom;
+    oo.Print();
+    oo.RotateY(-corr.Theta());
+    oo.Rotate(corr.Phi() + TMath::PiOver2(), rotatedmom);
+    oo.Print();
+
+    // corr.RotateUz(uv);    
+    // corr.Print();
+    
+    // TVector3 oo = rotatedmom;
+    // std::cout << "oo.Theta() " << oo.Theta() <<  " oo.Theta() " << corr.Theta() << std::endl;
+    
+    // oo.SetTheta(oo.Theta() + corr.Theta() );
+    // // oo.RotateX(-corr.Theta());
+    // // oo.Rotate(corr.Phi(), rotatedmom);
+    // oo = corr;
+    
+    double theta_diff1 = oo.Theta() - mom_before.Theta();
+    std::cout << "TD  " << corr.Theta() * 1000 << "," << corr.Phi()
+              << " ------------ " << 1000 * theta_diff << " " << 1000 * theta_diff1 << std::endl;
+
+    gg_i = 0;
+    gg_gr.Set(0);     
+    
+    // gPad->Update();
+    // gPad->WaitPrimitive();
+    // fHist4->Reset();
+    
+    fTrackAngle1->Fill(1000 * theta_diff1);
+    
     double sum_gr = sum1 - sum2;
 
     if (sum_gr != 0) fLnDiffGr[pid]->Fill(sum_gr);
@@ -1016,12 +1081,13 @@ void PrtLutReco::Run(int start, int end) {
         fLnDiffTi[fp1]->SetName(Form("s_%2.2f", sep_ti));
         fLnDiffTi[fp1]->Draw("E same");
       }
-
+#ifdef AI
       ft.add_canvas("lh_nn" + nid, 800, 400);
       fLnDiffNn[fp2]->SetTitle(Form("NN separation = %2.2f s.d.", sep_nn));
       fLnDiffNn[fp2]->GetXaxis()->SetTitle(lhtitle);
       fLnDiffNn[fp2]->Draw();
       fLnDiffNn[fp1]->Draw("same");
+#endif
 
     }
 
@@ -1042,33 +1108,32 @@ void PrtLutReco::Run(int start, int end) {
 
     {  // cherenkov ring
     
-      // ft.add_canvas("ring" + nid, 500, 500);
+      ft.add_canvas("ring" + nid, 500, 500);
 
-      // fHist4->SetStats(0);
-      // fHist4->GetXaxis()->SetTitle("#theta_{c}sin(#varphi_{c})");
-      // fHist4->GetYaxis()->SetTitle("#theta_{c}cos(#varphi_{c})");
-      // fHist4->SetTitle(Form("Calculated from LUT, #theta = %1.2f#circ", theta));
-      // fHist4->Draw("colz");
-      // double x0(0), y0(0);
-      // FitRing(x0, y0, fAngle[2]);
-      // TVector3 corr(x0, y0, 1 - TMath::Sqrt(x0 * x0 + y0 * y0));
-      // // std::cout<<"Tcorr "<< corr.Theta()*1000<< "  Pcorr "<< corr.Phi() <<std::endl;
+      fHist4->SetStats(0);
+      fHist4->GetXaxis()->SetTitle("#theta_{c}sin(#varphi_{c})");
+      fHist4->GetYaxis()->SetTitle("#theta_{c}cos(#varphi_{c})");
+      fHist4->SetTitle(Form("Calculated from LUT, #theta = %1.2f#circ", theta));
+      fHist4->Draw("colz");
+      double x0(0), y0(0), a = 0.5 * (fAngle[2] + fAngle[3]);
+      FitRing(x0, y0, a);
+      TVector3 corr(x0, y0, 1 - TMath::Sqrt(x0 * x0 + y0 * y0));
 
-      // TLegend *leg = new TLegend(0.32, 0.42, 0.67, 0.59);
-      // leg->SetFillStyle(0);
-      // leg->SetBorderSize(0);
-      // leg->AddEntry((TObject *)0, Form("Entries %0.0f", fHist4->GetEntries()), "");
-      // leg->AddEntry((TObject *)0, Form("#Delta#theta_{c} %f [mrad]", corr.Theta() * 1000), "");
-      // leg->AddEntry((TObject *)0, Form("#Delta#varphi_{c} %f [rad]", corr.Phi()), "");
-      // leg->Draw();
+      TLegend *leg = new TLegend(0.32, 0.42, 0.67, 0.59);
+      leg->SetFillStyle(0);
+      leg->SetBorderSize(0);
+      leg->AddEntry((TObject *)0, Form("Entries %0.0f", fHist4->GetEntries()), "");
+      leg->AddEntry((TObject *)0, Form("#Delta#theta_{c} %f [mrad]", corr.Theta() * 1000), "");
+      leg->AddEntry((TObject *)0, Form("#Delta#varphi_{c} %f [rad]", corr.Phi()), "");
+      leg->Draw();
 
-      // TArc *arc = new TArc(x0, y0, fAngle[2]);
-      // arc->SetLineColor(kRed);
-      // arc->SetLineWidth(1);
-      // arc->SetFillStyle(0);
-      // arc->Draw();
-      // gg_i = 0;
-      // gg_gr.Set(0);
+      TArc *arc = new TArc(x0, y0, fAngle[2]);
+      arc->SetLineColor(kRed);
+      arc->SetLineWidth(1);
+      arc->SetFillStyle(0);
+      arc->Draw();
+      gg_i = 0;
+      gg_gr.Set(0);
     }
 
     if (fGeomReco) { // corrections
@@ -1125,7 +1190,17 @@ void PrtLutReco::Run(int start, int end) {
       ft.add_canvas("time" + nid, 800, 400);
       fHist1->Draw();
     }
-    
+
+    { // track smearing
+      ft.add_canvas("track_smear" + nid, 800, 400);
+      ft.normalize(fTrackAngle0, fTrackAngle1);
+      fTrackAngle0->Fit("gaus");
+      fTrackAngle1->Fit("gaus");
+      fTrackAngle1->SetLineColor(kRed);
+      fTrackAngle0->Draw();
+      fTrackAngle1->Draw("same");
+    }
+
     TString filedir = fCorrFile;
     if (filedir.Contains("/")) {
       filedir.Remove(filedir.Last('/'));
@@ -1186,8 +1261,8 @@ void circleFcn2(int &, double *, double &f, double *par, int) {
     double u = x[i] + par[0];
     double v = y[i] + par[1];
     double dr = par[2] - TMath::Sqrt(u * u + v * v);
-    if (dr > 0.07) f += dr * dr;
-    else f += fabs(dr);
+    if (dr < 0.05) f += dr * dr;
+    // else f += fabs(dr);
   }
 }
 
@@ -1199,7 +1274,7 @@ void PrtLutReco::FitRing(double &x0, double &y0, double &theta) {
   double *x = gg_gr.GetX();
   double *y = gg_gr.GetY();
   for (int i = 0; i < np; i++) {
-    if (fabs(theta - TMath::Sqrt(x[i] * x[i] + y[i] * y[i])) < 0.05) {
+    if (fabs(theta - TMath::Sqrt(x[i] * x[i] + y[i] * y[i])) < 0.008) {
       ff_gr.SetPoint(ff_i, x[i], y[i]);
       ff_i++;
     }
@@ -1213,16 +1288,16 @@ void PrtLutReco::FitRing(double &x0, double &y0, double &theta) {
   fitter->SetMaxIterations(1000);
   double arglist[] = {-1};
   fitter->ExecuteCommand("SET PRINT", arglist, 1);
-
+ 
   fitter->SetFCN(circleFcn);
-  fitter->SetParameter(0, "x0", 0.03, 0.01, -0.05, 0.05);
-  fitter->SetParameter(1, "y0", 0, 0.01, -0.05, 0.05);
-  fitter->SetParameter(2, "R", theta, 0.01, theta - 0.05, theta + 0.05);
+  fitter->SetParameter(0, "x0", 0, 0.005, -0.05, 0.05);
+  fitter->SetParameter(1, "y0", 0, 0.005, -0.05, 0.05);
+  fitter->SetParameter(2, "R", theta, 0.001, theta - 0.015, theta + 0.015);
 
   // fitter->FixParameter(0);
   // fitter->FixParameter(1);
-
-  fitter->FixParameter(2);
+  // fitter->FixParameter(2);
+  
   fitter->ExecuteCommand("MINIMIZE", arglist, 0);
 
   // fitter->SetFCN(circleFcn2);
