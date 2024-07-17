@@ -424,7 +424,7 @@ void PrtLutReco::Run(int start, int end) {
         evtime = node->GetTime(i);
         for (int u = 0; u < 4; u++) {
           if (u == 0) dir = dird;
-          if (u == 1) dir.SetXYZ(dird.X(), -dird.Y(), dird.Z());
+	  if (u == 1) dir.SetXYZ(dird.X(), -dird.Y(), dird.Z());
           if (u == 2) dir.SetXYZ(-dird.X(), dird.Y(), dird.Z());
           if (u == 3) dir.SetXYZ(-dird.X(), -dird.Y(), dird.Z());
           if (reflected) dir.SetXYZ(dir.X(), dir.Y(), -dir.Z());
@@ -471,7 +471,7 @@ void PrtLutReco::Run(int start, int end) {
 
           if (fabs(tangle - fAngle[fp2]) > 0.05 && fabs(tangle - fAngle[fp1]) > 0.05) continue;
 	  
-	  if (fabs(tangle - fAngle[fp2]) < 0.01 || fabs(tangle - fAngle[fp1]) < 0.01){		      
+	  if ((fabs(tangle - fAngle[fp2]) < 0.01 || fabs(tangle - fAngle[fp1]) < 0.01)){		      
             TVector3 rdir = TVector3(-dir.X(), dir.Y(), dir.Z());
             rdir.RotateUz(rotatedmom);
             double cphi = rdir.Phi();
@@ -604,14 +604,11 @@ void PrtLutReco::Run(int start, int end) {
     arc->Draw();
 
     TVector3 oo = rotatedmom;
-    oo.Print();
     oo.RotateY(-corr.Theta());
     oo.Rotate(corr.Phi() + TMath::PiOver2(), rotatedmom);
-    oo.Print();
 
     // corr.RotateUz(uv);    
-    // corr.Print();
-    
+    // corr.Print();    
     // TVector3 oo = rotatedmom;
     // std::cout << "oo.Theta() " << oo.Theta() <<  " oo.Theta() " << corr.Theta() << std::endl;
     
@@ -621,8 +618,8 @@ void PrtLutReco::Run(int start, int end) {
     // oo = corr;
     
     double theta_diff1 = oo.Theta() - mom_before.Theta();
-    std::cout << "TD  " << corr.Theta() * 1000 << "," << corr.Phi()
-              << " ------------ " << 1000 * theta_diff << " " << 1000 * theta_diff1 << std::endl;
+    // std::cout << "TD  " << corr.Theta() * 1000 << "," << corr.Phi()
+    //           << " ------------ " << 1000 * theta_diff << " " << 1000 * theta_diff1 << std::endl;
 
     gg_i = 0;
     gg_gr.Set(0);     
@@ -1274,7 +1271,7 @@ void PrtLutReco::FitRing(double &x0, double &y0, double &theta) {
   double *x = gg_gr.GetX();
   double *y = gg_gr.GetY();
   for (int i = 0; i < np; i++) {
-    if (fabs(theta - TMath::Sqrt(x[i] * x[i] + y[i] * y[i])) < 0.008) {
+    if (fabs(theta - TMath::Sqrt(x[i] * x[i] + y[i] * y[i])) < 0.015) {
       ff_gr.SetPoint(ff_i, x[i], y[i]);
       ff_i++;
     }
