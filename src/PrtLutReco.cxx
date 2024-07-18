@@ -473,7 +473,7 @@ void PrtLutReco::Run(int start, int end) {
 
           if (fabs(tangle - fAngle[fp2]) > 0.05 && fabs(tangle - fAngle[fp1]) > 0.05) continue;
 	  
-	  if ((fabs(tangle - fAngle[fp2]) < 0.01 || fabs(tangle - fAngle[fp1]) < 0.01)){		      
+	  if ((fabs(tangle - fAngle[fp2]) < 0.015 || fabs(tangle - fAngle[fp1]) < 0.015)){		      
             TVector3 rdir = TVector3(-dir.X(), dir.Y(), dir.Z());
             rdir.RotateUz(rotatedmom);
             double cphi = rdir.Phi();
@@ -620,8 +620,8 @@ void PrtLutReco::Run(int start, int end) {
     // oo = corr;
     
     double theta_diff1 = oo.Theta() - mom_before.Theta();
-    std::cout << "TD  " << corr.Theta() * 1000 << "," << corr.Phi()
-	      << " ------------ " << 1000 * theta_diff << " " << 1000 * theta_diff1 << std::endl;
+    // std::cout << "TD  " << corr.Theta() * 1000 << "," << corr.Phi()
+    // 	      << " ------------ " << 1000 * theta_diff << " " << 1000 * theta_diff1 << std::endl;
 
     gg_i = 0;
     gg_gr.Set(0);     
@@ -1008,6 +1008,7 @@ void PrtLutReco::Run(int start, int end) {
     tree.Branch("track_res2", &track_res2, "track_res2/D");
 
     tree.Branch("trackres", &trackRes, "trackRes/D");
+    tree.Branch("trackingResTheta", &trackingResTheta, "trackingResTheta/D");
     tree.Branch("timeres", &timeRes, "timeRes/D");
     tree.Branch("timecut", &timeCut, "timeCut/D");
     tree.Branch("ctimeres", &ctimeRes, "ctimeRes/D");
