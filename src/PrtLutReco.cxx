@@ -23,6 +23,7 @@ TH2F *fHist4 = new TH2F("Time4", "4", 200, -1, 1, 200, -1, 1);
 TH2F *fHist5 = new TH2F("Time5", "5", 200, -1, 1, 200, -1, 1);
 TH1F *fTrackAngle0 = new TH1F("fTrackAngle0", ";#Delta [mrad];entries [#]", 500, -10, 10);
 TH1F *fTrackAngle1 = new TH1F("fTrackAngle1", ";#Delta [mrad];entries [#]", 500, -10, 10);
+TH1F *fTrackAngle2 = new TH1F("fTrackAngle2", ";#Delta [mrad];entries [#]", 500, -10, 10);
 
 TH1F *fFindTime = new TH1F("ft", ";t_{measured}-t_{calculated} [ns];entries [#]", 2000, -100, 100);
 TH1F *fFindTimeA[20];
@@ -266,7 +267,7 @@ void PrtLutReco::Run(int start, int end) {
     nph_ti[5] = {0}, nph_ti_err[5] = {0}, par5(0), par6(0), timeRes(0), timeCut(0), ctimeRes(0),
     trackRes(0), test1(0), test2(0), test3(0), sep_gr(0), sep_gr_err(0), sep_ti(0), sep_ti_err(0),
     sep_nn(0), sep_nn_err(0), total[5] = {0}, epi_rejection1(0), epi_rejection2(0),
-    epi_rejection3(0);
+    epi_rejection3(0), track_res0(0), track_res1(0), track_res2(0);
 
   ft.set_palette(1);
   ft.create_maps();
@@ -316,7 +317,8 @@ void PrtLutReco::Run(int start, int end) {
 
     double theta_diff = rotatedmom.Theta() - mom_before.Theta();
     fTrackAngle0->Fill(1000 * theta_diff);
-    
+    fTrackAngle2->Fill(1000 * (rotatedmom.Theta() - mom_after.Theta()));
+
     // // post-dirc tracking layer
     // TVector3 pa = fEvent->getPositionAfter();
     // TVector3 ma = fEvent->getMomentumAfter().Unit();
@@ -618,8 +620,8 @@ void PrtLutReco::Run(int start, int end) {
     // oo = corr;
     
     double theta_diff1 = oo.Theta() - mom_before.Theta();
-    // std::cout << "TD  " << corr.Theta() * 1000 << "," << corr.Phi()
-    //           << " ------------ " << 1000 * theta_diff << " " << 1000 * theta_diff1 << std::endl;
+    std::cout << "TD  " << corr.Theta() * 1000 << "," << corr.Phi()
+	      << " ------------ " << 1000 * theta_diff << " " << 1000 * theta_diff1 << std::endl;
 
     gg_i = 0;
     gg_gr.Set(0);     
@@ -968,6 +970,16 @@ void PrtLutReco::Run(int start, int end) {
     }
   }
 
+  { // track resolution with cherenkov ring fit
+    auto r = fTrackAngle0->Fit("gaus","SQ");
+    if (r > -1) track_res0 = r->Parameter(2);
+    r = fTrackAngle1->Fit("gaus","SQ");
+    if (r > -1) track_res1 = r->Parameter(2);
+    r = fTrackAngle2->Fit("gaus","SQ");
+    if (r > -1) track_res2 = r->Parameter(2);
+    
+  }
+
   { // tree
     // outFile.ReplaceAll("reco_", Form("reco_%d_", frun->getId()));
     TFile file(outFile, "recreate");
@@ -991,6 +1003,9 @@ void PrtLutReco::Run(int start, int end) {
     tree.Branch("sep_ti_err", &sep_ti_err, "sep_ti_err/D");
     tree.Branch("sep_nn", &sep_nn, "sep_nn/D");
     tree.Branch("sep_nn_err", &sep_nn_err, "sep_nn_err/D");
+    tree.Branch("track_res0", &track_res0, "track_res0/D");
+    tree.Branch("track_res1", &track_res1, "track_res1/D");
+    tree.Branch("track_res2", &track_res2, "track_res2/D");
 
     tree.Branch("trackres", &trackRes, "trackRes/D");
     tree.Branch("timeres", &timeRes, "timeRes/D");
@@ -1190,9 +1205,7 @@ void PrtLutReco::Run(int start, int end) {
 
     { // track smearing
       ft.add_canvas("track_smear" + nid, 800, 400);
-      ft.normalize(fTrackAngle0, fTrackAngle1);
-      fTrackAngle0->Fit("gaus");
-      fTrackAngle1->Fit("gaus");
+      ft.normalize(fTrackAngle0, fTrackAngle1);     
       fTrackAngle1->SetLineColor(kRed);
       fTrackAngle0->Draw();
       fTrackAngle1->Draw("same");
