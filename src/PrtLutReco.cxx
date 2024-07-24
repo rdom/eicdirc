@@ -315,9 +315,10 @@ void PrtLutReco::Run(int start, int end) {
     TVector3 mom_after = fEvent->getMomentumAfter().Unit();
     double sum1(0), sum2(0), sumti1(0), sumti2(0), noise(0.2);
 
-    double theta_diff = rotatedmom.Theta() - mom_before.Theta();
-    fTrackAngle0->Fill(1000 * theta_diff);
-    fTrackAngle2->Fill(1000 * (rotatedmom.Theta() - mom_after.Theta()));
+    double theta_diff0 = 1000 * (rotatedmom.Theta() - mom_before.Theta());
+    double theta_diff2 = 1000 * (rotatedmom.Theta() - mom_after.Theta());
+    fTrackAngle0->Fill(theta_diff0);
+    fTrackAngle2->Fill(theta_diff2);
 
     // // post-dirc tracking layer
     // TVector3 pa = fEvent->getPositionAfter();
@@ -435,7 +436,7 @@ void PrtLutReco::Run(int start, int end) {
           luttheta = dir.Theta();
           if (luttheta > TMath::PiOver2()) luttheta = TMath::Pi() - luttheta;
 
-          bartime = lenz / cos(luttheta) / 198.5; // 198.5
+          bartime = lenz / cos(luttheta) / 199.5; // 198.5
 
           fHist1->Fill(hitTime);
           double luttime = bartime + evtime;
@@ -449,7 +450,8 @@ void PrtLutReco::Run(int start, int end) {
 	  
           // if(tangle>TMath::PiOver2()) tangle = TMath::Pi()-tangle;
 
-          if (fabs(tdiff) < 2 && fPhysList < 10) tangle -= 0.008 * tdiff; // chromatic correction // 0.012
+	  // if (fabs(tdiff) < 2 && fPhysList < 10) tangle -= 0.008 * tdiff; // chromatic correction // 0.008
+	  if (fabs(tdiff) < 2 && fPhysList < 10) tangle -= 50 * tdiff / (lenz / cos(luttheta));
           if (fabs(tdiff) > timeCut + luttime * 0.035) continue;
           fDiff->Fill(hitTime, tdiff);
 
@@ -461,7 +463,6 @@ void PrtLutReco::Run(int start, int end) {
           // }
           // if(fabs(theta-145)<10) if(fabs(tdiff)<1.5) tangle += 0.02*tdiff;
 
-          // if(tangle>TMath::Pi()/2.) tangle = TMath::Pi()-tangle;
           // if(fabs(0.8218-tangle)>0.002) continue;
           // if(fabs(0.83-tangle)>0.003) continue;
 
@@ -473,9 +474,13 @@ void PrtLutReco::Run(int start, int end) {
 
           if (fabs(tangle - fAngle[fp2]) > 0.05 && fabs(tangle - fAngle[fp1]) > 0.05) continue;
 	  
-	  if ((fabs(tangle - fAngle[fp2]) < 0.015 || fabs(tangle - fAngle[fp1]) < 0.015)){		      
+	  if ((fabs(tangle - fAngle[fp2]) < 0.02 || fabs(tangle - fAngle[fp1]) < 0.02)){		      
             TVector3 rdir = TVector3(-dir.X(), dir.Y(), dir.Z());
+	    // rdir.RotateX(0.004);
+	    // rdir.Rotate(1.57 + TMath::PiOver2(), rotatedmom);
+	     
             rdir.RotateUz(rotatedmom);
+	    
             double cphi = rdir.Phi();
 	    
             // if(tangle*TMath::Cos(cphi)<0) continue;
@@ -619,9 +624,9 @@ void PrtLutReco::Run(int start, int end) {
     // // oo.Rotate(corr.Phi(), rotatedmom);
     // oo = corr;
     
-    double theta_diff1 = oo.Theta() - mom_before.Theta();
-    // std::cout << "TD  " << corr.Theta() * 1000 << "," << corr.Phi()
-    // 	      << " ------------ " << 1000 * theta_diff << " " << 1000 * theta_diff1 << std::endl;
+    double theta_diff1 = 1000 * (oo.Theta() - mom_before.Theta());
+    std::cout << "TD  " << corr.Theta() * 1000 << "," << corr.Phi() << " ------------ "
+              << theta_diff0 << " " << theta_diff1 << " " << theta_diff2 << std::endl;
 
     gg_i = 0;
     gg_gr.Set(0);     
@@ -630,7 +635,7 @@ void PrtLutReco::Run(int start, int end) {
     // gPad->WaitPrimitive();
     // fHist4->Reset();
     
-    fTrackAngle1->Fill(1000 * theta_diff1);
+    fTrackAngle1->Fill(theta_diff1);
     
     double sum_gr = sum1 - sum2;
 
@@ -977,7 +982,7 @@ void PrtLutReco::Run(int start, int end) {
     if (r > -1) track_res1 = r->Parameter(2);
     r = fTrackAngle2->Fit("gaus","SQ");
     if (r > -1) track_res2 = r->Parameter(2);
-    
+    std::cout << "track_res0 " << track_res0 <<  " track_res1 " << track_res1 <<" track_res2 " << track_res2 << std::endl;
   }
 
   { // tree
@@ -1285,7 +1290,7 @@ void PrtLutReco::FitRing(double &x0, double &y0, double &theta) {
   double *x = gg_gr.GetX();
   double *y = gg_gr.GetY();
   for (int i = 0; i < np; i++) {
-    if (fabs(theta - TMath::Sqrt(x[i] * x[i] + y[i] * y[i])) < 0.015) {
+    if (fabs(theta - TMath::Sqrt(x[i] * x[i] + y[i] * y[i])) < 0.01) {
       ff_gr.SetPoint(ff_i, x[i], y[i]);
       ff_i++;
     }

@@ -20,7 +20,7 @@ G4VParticleChange *PrtOpBoundaryProcess::PostStepDoIt(const G4Track &aTrack, con
   // if(parentId==1) particleChange->ProposeTrackStatus(fStopAndKill);
 
   double endofbar = 0.5 * fRadiatorL;
-
+ 
   // ideal focusing
   if (fLensId == 10 && fEvType != 3) {
     G4ThreeVector theGlobalPoint1 = pPostStepPoint->GetPosition();
@@ -48,14 +48,14 @@ G4VParticleChange *PrtOpBoundaryProcess::PostStepDoIt(const G4Track &aTrack, con
 
   // ideal focusing
   if (fLensId == 10 && fEvType == 3) {
-    endofbar = endofbar + 630;
+    endofbar =  1855.15;
     G4ThreeVector gpoint = pPostStepPoint->GetPosition();
     G4TouchableHistory *touchable = (G4TouchableHistory *)(pPostStepPoint->GetTouchable());
     G4ThreeVector lpoint = touchable->GetHistory()->GetTransform(1).TransformPoint(gpoint);
-    
-    if (gpoint.getZ() < endofbar + 0.1 && gpoint.getZ() > endofbar - 0.1) {
 
-      if(fEvType == 3) endofbar = endofbar - 500;
+    if (gpoint.getZ() < endofbar + 0.1 && gpoint.getZ() > endofbar - 10.1) {
+
+      // if(fEvType == 3) endofbar = endofbar - evprismlengh;
       G4ThreeVector ww = pPreStepPoint->GetTouchableHandle()
                            ->GetHistory()
                            ->GetTopTransform()
@@ -63,7 +63,8 @@ G4VParticleChange *PrtOpBoundaryProcess::PostStepDoIt(const G4Track &aTrack, con
                            .TransformPoint(G4ThreeVector(0, 0, endofbar));
 
       // in global CS
-      double newz = endofbar + 500 + 0.1; // lpoint.getZ()
+      endofbar = 1855.15;
+      double newz = endofbar + 0.1; // lpoint.getZ()
       // if (aStep.GetPreStepPoint()->GetPhysicalVolume()->GetName() != "wGlue")
         // particleChange->ProposeTrackStatus(fStopAndKill);
       // else

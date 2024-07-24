@@ -139,7 +139,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   if (fEvType == 1) { // BaBar
     fBar[0] = 17.25;
     fBar[1] = 35;
-    fBar[2] = 1050;
+    fBar[2] = 1225;
     fNBar = 12;
     fRadius = 900;
     fLensId = 0;
@@ -283,7 +283,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     int id = 0, nparts = 4;
     if (fEvType == 3 || fEvType == 5 || fEvType == 7 || fEvType == 8 || fEvType == 9) {
       dirclength = fBar[2] * 3 + evprismlengh + gluethickness * 4;
-      fRun->setRadiatorL(dirclength - 2 * evprismlengh);
+      fRun->setRadiatorL(dirclength - evprismlengh);
       double sh = 0;
       if (fEvType == 3 || fEvType == 7 || fEvType == 9) sh = fLens[2];
       nparts = 3;
@@ -1453,8 +1453,10 @@ void PrtDetectorConstruction::DrawHitBox(int id) {
 
   int pix(0), mcp(0), prism(0);
   int npmt = fNRow * fNCol;
-  int hload[12][6][6150] = {{{0}}};
-
+  
+  using namespace std;
+  vector<vector<vector<int>>> hload(12, vector<vector<int>>(24, vector<int>(6150)));
+ 
   for (int i = 0; i < nevent; i++) {
     tree->GetEvent(i);
     for (auto hit : event->getHits()) {      
@@ -1565,7 +1567,6 @@ void PrtDetectorConstruction::DrawHitBox(int id) {
 
 	for (int i1 = 0; i1 < fNpix1; i1++) {
 	  for (int j1 = 0; j1 < fNpix2; j1++) {
-	    
             double colorid = hload[p][mcp][pixelId] / (double)maxload[p];
             if (colorid > 1) colorid = 1;
             double hight = colorid * 5;
@@ -1586,14 +1587,14 @@ void PrtDetectorConstruction::DrawHitBox(int id) {
               auto vpix = G4ThreeVector(shiftx1, shifty1, hight);
               new G4PVPlacement(0, vpix, lHit, "wDircHit", lDircHit[p], false, pixelId);
             }
-            pixelId++;
+            pixelId++;	    
           }
         }
         mcp++;
       }
     }
   }
-
+  
   G4RunManager::GetRunManager()->GeometryHasBeenModified();
   G4UImanager::GetUIpointer()->ApplyCommand("/vis/scene/notifyHandlers");
 }
