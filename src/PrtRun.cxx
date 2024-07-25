@@ -21,26 +21,31 @@ void PrtRun::setPmtLayout(Int_t v) {
 }
 
 TString PrtRun::getInfo() {
-  TString info = fShortInfo;
-  info += Form("Run type %d \n", fRunType);
-  info += Form("Study %d \n", fStudy);
-  info += Form("Filed id %d \n", fField);
-  info += Form("Geometry id %d \n", fGeometry);
-  info += Form("EV id %d \n", fEv);
-  info += Form("Pmt layout id %d \n", fPmtLayout);
-  info += Form("Lens  id %d \n", fLens);
-  info += Form("Radiator  id %d \n", fRadiator);
-  info += Form("Physics list %d \n", fPhysList);
-  info += Form("Particle  id %d \n", fPid);
-  info += Form("Particle momentum %f \n", fMomentum);
-  info += Form("Theta %f \n", fTheta);
-  info += Form("Phi %f \n", fPhi);
-  info += Form("beam X:Z   %f : %f \n", fBeamX, fBeamZ);
-  info += Form("Prism step X:Y  %f :%f \n", fPrismStepX, fPrismStepY);
-  info += Form("Pmt's time resolution %f \n", fTimeSigma);
-  info += Form("Time cut constant %f \n", fTimeCut);
-  info += Form("Dark Noise %f \n", fDarkNoise);
-  info += Form("Tracking resolution: dtheta = %f dphi = %f \n", fTrackingResTheta, fTrackingResPhi);
+  int b = 10;
+  TString info =  "------------------------------------------------ run info ---\n";
+  info += fShortInfo;
+  info += Form("%-50s %*d \n", "Run type",b, fRunType);
+  info += Form("%-50s %*d \n", "Study", b, fStudy);
+  info += Form("%-50s %*d \n", "Filed id", b, fField);
+  info += Form("%-50s %*d \n", "Geometry id", b, fGeometry);
+  info += Form("%-50s %*d \n", "EV id", b, fEv);
+  info += Form("%-50s %*d \n", "Pmt layout id", b, fPmtLayout);
+  info += Form("%-50s %*d \n", "Lens  id ",  b,fLens);
+  info += Form("%-50s %*d \n", "Radiator  id", b, fRadiator);
+  info += Form("%-50s %*d \n", "Physics list", b, fPhysList);
+  info += Form("%-50s %*d \n", "Particle  id", b, fPid);
+  info += Form("%-50s %*.4f \n", "Particle momentum", b, fMomentum);
+  info += Form("%-50s %*.4f \n", "Theta", b, fTheta);
+  info += Form("%-50s %*.4f \n", "Phi", b, fPhi);
+  info += Form("%-50s %*.4f \n", "Pmt's time resolution ", b, fTimeSigma);
+  info += Form("%-50s %*.4f \n", "Time cut constant",  b,fTimeCut);
+  info += Form("%-50s %*.4f \n", "Dark Noise ", b, fDarkNoise);
+
+  info += Form("%-40s %*.4f%*.4f \n", "beam (x,z)", b, fBeamX, b, fBeamZ);
+  info += Form("%-40s %*.4f%*.4f \n", "Prism step (x,y)", b, fPrismStepX, b, fPrismStepY);
+  info += Form("%-40s %*.4f%*.4f \n", "Tracking resolution (theta, phi)", b, fTrackingResTheta, b,
+               fTrackingResPhi);
+  info += "-------------------------------------------------------------\n";
   return info;
 }
 

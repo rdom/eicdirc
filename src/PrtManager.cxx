@@ -39,13 +39,10 @@ PrtManager::PrtManager(TString filename, PrtRun *run) {
   fnX1 = TVector3(1, 0, 0);
   fnY1 = TVector3(0, 1, 0);
   fCriticalAngle = asin(1.00028 / 1.47125);
-
-  std::cout << "PrtManager has been successfully initialized. " << std::endl;
 }
 
 PrtManager *PrtManager::Instance(TString outfile, PrtRun *run) {
   if (!fInstance) {
-    std::cout << "Info in (PrtManager::Instance): Making a new instance. " << std::endl;
     fInstance = new PrtManager(outfile, run);
   }
   return fInstance;

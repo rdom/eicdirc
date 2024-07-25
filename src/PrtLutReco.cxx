@@ -221,6 +221,8 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, TString
     ch.SetBranchAddress("pmt", &pmt);
     ch.SetBranchAddress("corr", &corr);
     ch.SetBranchAddress("cspr", &cspr);
+
+    std::cout << "pmt    corr   spr_pi   spr_k" << std::endl;
     for (int i = 0; i < ch.GetEntries(); i++) {
       ch.GetEvent(i);
       fCorr[pmt] = (fabs(corr) < 0.017) ? corr : 0.00001;
@@ -228,8 +230,10 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, TString
         fSigma[h] = 0.001 * fabs(cspr[h]) * 0.95;
         if (fSigma[h] > 0.02) fSigma[h] = 0.01;
       }
-      std::cout << "pmt " << pmt << "  " << fCorr[pmt] << " spr = (2) " << fSigma[2] << "  (3) "
-                << fSigma[3] << std::endl;
+      cout.precision(2);
+      std::cout << std::fixed << std::setw(3) << pmt << std::setw(8) << 1000 * fCorr[pmt]
+                << std::setw(8) << 1000 * fSigma[2] << std::setw(8) << 1000 * fSigma[3]
+                << std::endl;
     }
   } else {
     std::cout << "-I- corr file not found  " << fCorrFile << std::endl;

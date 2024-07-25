@@ -40,6 +40,7 @@ void PrintUsage() {
 } // namespace
 
 int main(int argc, char **argv) {
+  std::cout << "----------------------------------------------- used args ---\n";
   for (G4int i = 1; i < argc; i = i + 2) std::cout << argv[i] << "  " << argv[i + 1] << std::endl;
 
   // Evaluate arguments
@@ -156,7 +157,7 @@ int main(int argc, char **argv) {
   if (!events.size()) events = "0";
 
   PrtTools t;
-  PrtRun *run = t.find_run(study, fid);
+  PrtRun *run = t.set_run();
   if (infile != "") run = t.get_run(infile); 
   run->setRunType(runtype);
 
@@ -222,7 +223,7 @@ int main(int argc, char **argv) {
     PrtManager::Instance()->getRun()->setPid(pdgid);
   }
 
-  std::cout << "=== Run info:  " << std::endl << run->getInfo() << std::endl;
+  std::cout << run->getInfo() << std::endl;
 
   if (runtype == 2 || runtype == 3 || runtype == 4 || runtype > 19) {
     PrtLutReco *reco = new PrtLutReco(infile, lutfile, pdffile, nnfile, verbose);
