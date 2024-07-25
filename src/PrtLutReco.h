@@ -60,6 +60,7 @@ class PrtLutReco {
   int fStudyId;
   bool fTimeImaging;
   bool fGeomReco;
+  bool fRingFit;
   bool fNNet;
 
   TClonesArray *fLut;

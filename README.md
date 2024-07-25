@@ -38,10 +38,11 @@ example:
 -r    run type
                 0    simulation
                 1    look-up table generation
-                2    geometrical reconstruction
+                2    geometrical reconstruction and time imaging
                 3    likelihood calculation
 		4    create pdf
 		5    simulate pdf
+		20   2 with Cherenkov ring fit 
 
 -field    field type
                 0    no field (default)
@@ -119,7 +120,7 @@ example:
                1    run silent (without GUI)
 
 -d    display option
-               use /Prt/geom/drawHits 2 
+               don't use this argument, instead use /Prt/geom/drawHits 2 
                0    standard (default)
                1    display hit occupancy of current run
                2    display hit occupancy of occuhits.root (needs to be generated)

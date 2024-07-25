@@ -146,31 +146,18 @@ int main(int argc, char **argv) {
     trackingres = -1;
   }
 
-  if (outfile == "" && (runtype == 0 || runtype == 10)) outfile = "hits.root"; // simulation
-  if (outfile == "" && (runtype == 1 || runtype == 5))
-    outfile = "../data/lut.root"; // lookup table generation
-  if (outfile == "" && (runtype == 2 || runtype == 3 || runtype == 4))
-    outfile = "reco.root"; // reconstruction
+  if (outfile == "") {
+    outfile = "reco.root";  // reconstruction
+    if (runtype == 0 || runtype == 10) outfile = "hits.root";       // simulation
+    if (runtype == 1 || runtype == 5) outfile = "../data/lut.root"; // lookup table generation
+  }
 
   if (batchmode == 1) gROOT->SetBatch(kTRUE);
   if (!events.size()) events = "0";
 
   PrtTools t;
   PrtRun *run = t.find_run(study, fid);
-
-  if (runtype == 2 || runtype == 3 || runtype == 4) {
-    if (infile == "") {
-      infile = t.get_inpath();
-      std::cout << "--- infile  " << infile << std::endl;
-    }
-    run = t.get_run(infile);
-    if (outfile == "") {
-      outfile = t.get_outpath();
-      if (run->getStudy() == 0) outfile = "reco.root";
-      std::cout << "--- outfile  " << outfile << std::endl;
-    }
-  }
-
+  if (infile != "") run = t.get_run(infile); 
   run->setRunType(runtype);
 
   if (momentum > -1) run->setMomentum(momentum);
@@ -237,7 +224,7 @@ int main(int argc, char **argv) {
 
   std::cout << "=== Run info:  " << std::endl << run->getInfo() << std::endl;
 
-  if (runtype == 2 || runtype == 3 || runtype == 4) {
+  if (runtype == 2 || runtype == 3 || runtype == 4 || runtype > 19) {
     PrtLutReco *reco = new PrtLutReco(infile, lutfile, pdffile, nnfile, verbose);
     reco->Run(firstevent, atoi(events));
     return 0;
