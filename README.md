@@ -53,7 +53,7 @@ example:
 
 -g    geometry configuration
                 0    ATHENA one barbox
-                1    ePIC one barbox
+                1    ePIC one barbox (default)
 		2    CORE one barbox
 		10   ATHENA whole DIRC
 		11   ePIC whole DIRC
@@ -72,23 +72,25 @@ example:
 
 -h    number of bars in one radiator box
 
--c    MCP layout
+-c    PMT layout
                 0    4x6 standard MCPs (pixel size == mcp size)
                 1    4x6 standard MCPs (6.4x6.4 pixels)
 		3    one MCP covers whole PD plain (3 mm x 3 mm pixels)
 		4    2x3 LAPD
-		2031    4x6 MCPs with compact packing and 32x32 pixels (2 mm x 2 mm)
+		2031    4x6 MCPs with compact packing and 32x32 pixels (2 mm x 2 mm) (default)
 		
 -l    focusing system
                 0    no lens
-                3    3-layer spherical lens
+                3    3-layer spherical lens (default)
                 6    3-layer cylindrical lens
                 10   ideal lens (thickness = 0, ideal focusing)
 
 -theta    polar between particle beam and bar radiator [deg]
-      if theta == 0 then theta = [30,160]
+                25 default
+                if theta == 0 then theta = [30,160]
 
 -phi  azimuth angle between particle beam and bar radiator [deg]
+                0 default
 
 -e    number of simulated events
 
@@ -107,7 +109,7 @@ example:
 -p    particle momentum [GeV/c]
 
 -w    physical list
-                0    standard EM
+                0    standard EM (default)
                 1    without multiple scattering and bremsstrahlung
 		2    standard EM with HAD (elastic/inelastic/absorption)
 		3    FTFP_BERT
@@ -126,7 +128,7 @@ example:
                2    display hit occupancy of occuhits.root (needs to be generated)
 
 -timeres   time resolution [ns]
-               0.2  (default)
+               0.1  (default)
 
 -timecut   time cut constant [ns]
                0.5  (default)  
@@ -136,8 +138,10 @@ example:
 	       100 use realistic, mapped values
 
 -gx target's X offset
+               0 default
 
 -gz target's Z offset
+               0 default
 
 -dn dark noise per PMT
                amount of dark noise hits per-pmt [Hz]
