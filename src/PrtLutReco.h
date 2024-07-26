@@ -62,6 +62,7 @@ class PrtLutReco {
   bool fGeomReco;
   bool fRingFit;
   bool fNNet;
+  int fCorrLevel;
 
   TClonesArray *fLut;
   TClonesArray *fTrackInfoArray;

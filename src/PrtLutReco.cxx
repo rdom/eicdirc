@@ -37,8 +37,13 @@ TH2F *fhChrom =
   new TH2F("chrom", ";t_{measured}-t_{calculated} [ns];#theta_{C} [rad]", 100, -2, 2, 100, -30, 30);
 TH2F *fhChromL = new TH2F("chroml", ";(t_{measured}-t_{calculated})/L_{path};#theta_{C} [rad]", 100,
                           -0.0002, 0.0002, 100, -30, 30);
-TH1F *fHistMcp[28];
-double fCorr[28];
+TH1F *fPmt_a[28], *fPmt_td[28], *fPmt_tr[28];
+
+struct {
+  double ca;
+  double td;
+  double tr;
+} cor[28] = {0, 0, 0};
 
 int gg_i(0);
 TGraph gg_gr;
@@ -115,11 +120,12 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, TString
   }
 
   for (int i = 0; i < 28; i++) {
-    fHistMcp[i] = new TH1F(Form("fHistMcp_%d", i),
-                           Form("fHistMcp_%d;#theta_{C} [rad];entries [#]", i), 150, -0.05, 0.05);
+    fPmt_a[i] = new TH1F(Form("pmt_a_%d", i), Form("pmt %d;#theta_{C} [rad];entries [#]", i), 150,
+                         -0.05, 0.05);
+    fPmt_td[i] = new TH1F(Form("pmt_td_%d", i), Form("pmt_td%d;t_{m}-t_{c} [ns]", i), 150, -5, 5);
+    fPmt_tr[i] = new TH1F(Form("pmt_tr_%d", i), Form("pmt_tr%d;t_{m}-t_{c} [ns]", i), 150, -5, 5);
   }
 
-  // double pixels = frun->getTest1();
   double range = 100;
   if (fMomentum < 5) range = 500;
   if (fMomentum < 3) range = 500;
@@ -210,31 +216,39 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, TString
 
   // read corrections
   fCorrFile = infile + "_corr.root";
-  for (int i = 0; i < fnpmt; i++) fCorr[i] = 0;
+
   if (!gSystem->AccessPathName(fCorrFile)) {
     std::cout << "-I- reading  " << fCorrFile << std::endl;
-    int pmt;
-    double corr, cspr[5];
+    int pmt, lvl;
+    double c_ca, c_td, c_tr, spr[5];
     TChain ch;
-    ch.SetName("corr");
+    ch.SetName("corrections");
     ch.Add(fCorrFile);
+    ch.SetBranchAddress("lvl", &lvl);
     ch.SetBranchAddress("pmt", &pmt);
-    ch.SetBranchAddress("corr", &corr);
-    ch.SetBranchAddress("cspr", &cspr);
+    ch.SetBranchAddress("c_ca", &c_ca);
+    ch.SetBranchAddress("c_td", &c_td);
+    ch.SetBranchAddress("c_tr", &c_tr);
+    ch.SetBranchAddress("spr", &spr);
 
-    std::cout << "pmt    corr   spr_pi   spr_k" << std::endl;
+    std::cout << "lvl  pmt    c_ca    c_td    c_tr  spr_pi    spr_k" << std::endl;
     for (int i = 0; i < ch.GetEntries(); i++) {
       ch.GetEvent(i);
-      fCorr[pmt] = (fabs(corr) < 0.017) ? corr : 0.00001;
+      cor[pmt].ca = (fabs(c_ca) < 0.017) ? c_ca : 0;
+      cor[pmt].td = (fabs(c_td) < 0.5) ? c_td : 0;
+      cor[pmt].tr = (fabs(c_tr) < 0.5) ? c_tr : 0;
       for (int h = 0; h < 5; h++) {
-        fSigma[h] = 0.001 * fabs(cspr[h]) * 0.95;
+        fSigma[h] = 0.001 * fabs(spr[h]) * 0.95;
         if (fSigma[h] > 0.02) fSigma[h] = 0.01;
       }
       cout.precision(2);
-      std::cout << std::fixed << std::setw(3) << pmt << std::setw(8) << 1000 * fCorr[pmt]
+      std::cout << std::fixed << std::setw(3) << lvl << std::setw(5) << pmt << std::setw(8)
+                << 1000 * cor[pmt].ca << std::setw(8) << cor[pmt].td << std::setw(8) << cor[pmt].tr
                 << std::setw(8) << 1000 * fSigma[2] << std::setw(8) << 1000 * fSigma[3]
                 << std::endl;
     }
+    fCorrLevel = lvl;
+    cout.precision(-1);
   } else {
     std::cout << "-I- corr file not found  " << fCorrFile << std::endl;
   }
@@ -391,8 +405,10 @@ void PrtLutReco::Run(int start, int end) {
       if (dirz < 0) {
         reflected = true;
         lenz = 2 * fRadiatorL - lenz;
+	hitTime += cor[mcp].tr;
       } else {
         reflected = false;
+	hitTime += cor[mcp].td;
       }
 
       double theta0 = rotatedmom.Angle(dir0);
@@ -457,32 +473,24 @@ void PrtLutReco::Run(int start, int end) {
           if (ipath) fHistDiff[2]->Fill(tdiff);
 
           tangle = rotatedmom.Angle(dir);	  
-	  tangle += fCorr[mcp]; // per-PMT angle correction;
+	  tangle += cor[mcp].ca; // per-PMT angle correction;
 	  
           // if(tangle>TMath::PiOver2()) tangle = TMath::Pi()-tangle;
 
 	  if (fabs(tdiff) < 2 && fPhysList < 10) tangle -= 0.008 * tdiff; // chromatic correction // 0.008
-	  // if (fabs(tdiff) < 2 && fPhysList < 10) tangle -= 50 * tdiff / (lenz / cos(luttheta));
+	   // if (fabs(tdiff) < 2 && fPhysList < 10) tangle -= 35 * tdiff / (lenz / cos(luttheta));
           if (fabs(tdiff) > timeCut + luttime * 0.035) continue;
           fDiff->Fill(hitTime, tdiff);
 
-          // if(theta<50){
-          //   if(fabs(tdiff)<1.5) tangle -= 0.005*tdiff; // chromatic correction
-          // }
-          // if(fabs(theta-90)<10){
-          //   if(reflected && fabs(tdiff)<1) tangle -= 0.0128*tdiff;
-          // }
-          // if(fabs(theta-145)<10) if(fabs(tdiff)<1.5) tangle += 0.02*tdiff;
-
-          // if(fabs(0.8218-tangle)>0.002) continue;
-          // if(fabs(0.83-tangle)>0.003) continue;
-
           hthetac[pid]->Fill(tangle);
           hthetacd[pid]->Fill((tangle - fAngle[pid]) * 1000);
-          fHistMcp[mcp]->Fill(tangle - fAngle[pid]);
           fhChrom->Fill(tdiff, (tangle - fAngle[pid]) * 1000);
           fhChromL->Fill(tdiff / (lenz / cos(luttheta)), (tangle - fAngle[pid]) * 1000);
 
+	  fPmt_a[mcp]->Fill(tangle - fAngle[pid]);
+	  if(reflected) fPmt_tr[mcp]->Fill(tdiff);
+	  else fPmt_td[mcp]->Fill(tdiff);
+	  	  
           if (fabs(tangle - fAngle[fp2]) > 0.05 && fabs(tangle - fAngle[fp1]) > 0.05) continue;
 
           if (fRingFit) {
@@ -1167,40 +1175,58 @@ void PrtLutReco::Run(int start, int end) {
       gg_gr.Set(0);
     }
 
-    if (fGeomReco) { // corrections
-      if (fabs(fCorr[0]) < 0.00000001 && fabs(fCorr[10]) < 0.00000001 &&
-          fabs(fCorr[20]) < 0.00000001) {
-        std::cout << "Writing " << fCorrFile << std::endl;
+    if (fCorrLevel < 2) { // corrections
+      std::cout << "Writing " << fCorrFile << std::endl;
 
-        TFile fc(fCorrFile, "recreate");
-        TTree *tc = new TTree("corr", "corr");
-        int pmt;
-        double corr, fitrange = 0.01;
-        tc->Branch("pmt", &pmt, "pmt/I");
-        tc->Branch("corr", &corr, "corr/D");
-        tc->Branch("cspr", &spr, "cspr[5]/D");
+      TFile fc(fCorrFile, "recreate");
+      TTree *tc = new TTree("corrections", "corrections");
+      int pmt, lvl = 0;
+      double c_ca = 0, c_td = 0, c_tr = 0, fitrange = 0.01;
+      tc->Branch("lvl", &lvl, "lvl/I");
+      tc->Branch("pmt", &pmt, "pmt/I");
+      tc->Branch("c_ca", &c_ca, "c_ca/D");
+      tc->Branch("c_td", &c_td, "c_td/D");
+      tc->Branch("c_tr", &c_tr, "c_tr/D");
+      tc->Branch("spr", &spr, "spr[5]/D");
 
-        for (int i = 0; i < fnpmt; i++) {
-          if (fHistMcp[i]->GetEntries() < 20) continue;
-          if (fVerbose > 2) ft.add_canvas(Form("r_tangle_%d", i), 800, 400);
-	  
-          corr = -ft.fit(fHistMcp[i], fitrange, 20, 0.01).X();
-          // fHistMcp[i]->Fit("gaus","MQ","",-0.01,0.01).X();
-          // auto f = fHistMcp[i]->GetFunction("gaus");
-          // if(f)
-          {
-            pmt = i;
-            //  corr= -f->GetParameter(1);
-            tc->Fill();
-            std::cout << "if(mcpid==" << i << ") tangle += " << corr << ";" << std::endl;
-            fHistMcp[i]->Draw();
-          }
+      // if (fVerbose > 2)
+      TString nid = Form("cor_l%d", lvl);
+      ft.add_canvas(nid, 1600, 1000);
+      auto c = ft.get_canvas(nid);
+      c->Divide(6, 4);
+      c->cd(1);
+      for (pmt = 0; pmt < fnpmt; pmt++) {
+        if (fPmt_a[pmt]->GetEntries() < 20) continue;
+
+        if (fCorrLevel == 0) {
+	  c->cd(pmt + 1);
+	  c_td = -ft.fit(fPmt_td[pmt], 5, 20, 1).X();
+	  c_tr = -ft.fit(fPmt_tr[pmt], 5, 20, 1).X();
+
+	  lvl = 1;
+          tc->Fill();
+          std::cout << "c_td " << c_td << " c_tr " << c_tr << std::endl;
+
+	  fPmt_td[pmt]->Draw();
+	  fPmt_tr[pmt]->SetLineColor(2);
+          fPmt_tr[pmt]->Draw("same");
         }
 
-        tc->Write();
-        fc.Write();
-        fc.Close();
+        if (fCorrLevel == 1) {
+	  c->cd(pmt + 1);
+          c_ca = -ft.fit(fPmt_a[pmt], fitrange, 20, 0.01).X();
+	  c_td = cor[pmt].td;
+	  c_tr = cor[pmt].tr;
+	  lvl = 2;
+          tc->Fill();
+          std::cout << "c_ca " << c_ca << std::endl;
+          fPmt_a[pmt]->Draw();
+        }
       }
+
+      tc->Write();
+      fc.Write();
+      fc.Close();
     }
 
     { // time
