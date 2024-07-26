@@ -40,6 +40,7 @@ class PrtRun : public TObject {
   Int_t getTrigger() const { return fTrigger; }
   Int_t getNpmt() const { return fNpmt; }
   Int_t getNpix() const { return fNpix; }
+  Int_t getCorrection() const { return fCorrection; }
   Double_t getPrismStepX() const { return fPrismStepX; }
   Double_t getPrismStepY() const { return fPrismStepY; }
   Double_t getBeamX() const { return fBeamX; }
@@ -78,7 +79,8 @@ class PrtRun : public TObject {
   void setLens(Int_t v) { fLens = v; }
   void setTrigger(Int_t v) { fTrigger = v; }
   void setNpmt(Int_t v) { fNpmt = v; }
-  void setNpix(Int_t v) { fNpix = v; }
+  void setNpix(Int_t v) { fNpix = v; }  
+  void setCorrection(Int_t v) { fCorrection = v; }
   void setPrismStepX(Double_t v) { fPrismStepX = v; }
   void setPrismStepY(Double_t v) { fPrismStepY = v; }
   void setBeamX(Double_t v) { fBeamX = v; }
@@ -115,6 +117,7 @@ class PrtRun : public TObject {
   Int_t fTrigger;
   Int_t fNpmt;
   Int_t fNpix;
+  Int_t fCorrection;
 
   Double_t fTheta;
   Double_t fPhi;

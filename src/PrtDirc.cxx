@@ -29,11 +29,12 @@ int main(int argc, char **argv) {
 
   TApplication theApp("EicDirc", 0, 0);
 
-  TString macro, particle = "pi+", infile = "", lutfile = "", pdffile = "", nnfile = "", outfile = "";
-  int events(0), geometry(1), firstevent(0), runtype(0), study(0), fid(0), verbose(0), batchmode(0),
-    physlist(0), pmtLayout(2031), correction(1), field(0), ev(0), radiator(0), lensId(3),
-    displayOpt(0);
-  double momentum(-1), theta(25), phi(0), beamZ(0), trackingres(0.0005), dark_noise(0),
+  TString macro, particle = "pi+", infile = "", lutfile = "", pdffile = "", nnfile = "",
+                 outfile = "";
+  int events(0), pdgid(0), geometry(1), firstevent(0), runtype(0), study(0), fid(0), verbose(0),
+    batchmode(0), physlist(0), pmtLayout(2031), correction(1), field(0), ev(0), radiator(0),
+    lensId(3), displayOpt(0);
+  double momentum(0), theta(25), phi(0), beamZ(0), trackingres(0.0005), dark_noise(0),
     prismStepX(0), prismStepY, beamX(0), timeSigma(0.1), timeCut(0.5), testVal1(0), testVal2(0),
     testVal3(0);
   long seed = 0;
@@ -57,7 +58,7 @@ int main(int argc, char **argv) {
     else if (G4String(argv[i]) == "-e") events = atoi(argv[i + 1]);
     else if (G4String(argv[i]) == "-l") lensId = atoi(argv[i + 1]);
     else if (G4String(argv[i]) == "-x") particle = argv[i + 1];
-    else if (G4String(argv[i]) == "-p") momentum =  atof(argv[i + 1]);
+    else if (G4String(argv[i]) == "-p") momentum = atof(argv[i + 1]);
     else if (G4String(argv[i]) == "-w") physlist = atoi(argv[i + 1]);
     else if (G4String(argv[i]) == "-r") runtype = atoi(argv[i + 1]);
     else if (G4String(argv[i]) == "-study") study = atoi(argv[i + 1]);
@@ -77,7 +78,6 @@ int main(int argc, char **argv) {
     else if (G4String(argv[i]) == "-d") displayOpt = atoi(argv[i + 1]);
     else if (G4String(argv[i]) == "-dn") dark_noise = atof(argv[i + 1]);
     else if (G4String(argv[i]) == "-cor") correction = atoi(argv[i + 1]);
-
     else {
       G4cerr << "read README.md" << G4endl;
       return 1;
@@ -85,7 +85,7 @@ int main(int argc, char **argv) {
   }
 
   // default values
-  if (runtype == 0 || runtype == 1) {
+  if (runtype < 2) {
     if (geometry == 0 || geometry == 10) {
       beamZ = -600;
     }
@@ -95,7 +95,7 @@ int main(int argc, char **argv) {
     if (geometry == 2 || geometry == 12) {
       beamZ = 10;
     }
-    if (momentum < 0) {
+    if (momentum < 1e-20) {
       if (particle == "mix_pie") momentum = 1.2;
       else if (particle == "mix_kp") momentum = 12;
       else momentum = 6;
@@ -109,77 +109,74 @@ int main(int argc, char **argv) {
   }
 
   if (outfile == "") {
-    outfile = "reco.root";  // reconstruction
+    outfile = "reco.root";                                          // reconstruction
     if (runtype == 0 || runtype == 10) outfile = "hits.root";       // simulation
     if (runtype == 1 || runtype == 5) outfile = "../data/lut.root"; // lookup table generation
   }
+
+  if (particle == "proton") pdgid = 2212;
+  if (particle == "pi+") pdgid = 211;
+  if (particle == "pi-") pdgid = -211;
+  if (particle == "pi0") pdgid = 111;
+  if (particle == "kaon+") pdgid = 321;
+  if (particle == "kaon-") pdgid = -321;
+  if (particle == "e-") pdgid = 11;
+  if (particle == "e+") pdgid = -11;
+  if (particle == "mu-") pdgid = 13;
+  if (particle == "mu+") pdgid = -13;
+  if (particle == "opticalphoton") pdgid = 0;
+  if (particle == "mix_pie") pdgid = 10000;
+  if (particle == "mix_pimu") pdgid = 10001;
+  if (particle == "mix_pik") pdgid = 10003;
+  if (particle == "mix_pip") pdgid = 10004;
+  if (particle == "mix_kp") pdgid = 10005;
 
   if (batchmode == 1) gROOT->SetBatch(kTRUE);
 
   PrtTools t;
   PrtRun *run = t.set_run();
-  if (infile != "") run = t.get_run(infile); 
+
+  if (infile != "") run = t.get_run(infile);
+  PrtManager::Instance(outfile, run);
+  PrtManager::Instance()->setDisplayOpt(displayOpt);
+
   run->setRunType(runtype);
-
-  if (momentum > -1) run->setMomentum(momentum);
-  run->setPhysList(physlist);
-
-  run->setField(field);
-  run->setGeometry(geometry);
-  run->setEv(ev);
-  run->setRadiator(radiator);
-  run->setLens(lensId);
-  if (pmtLayout != 0) {
+  if (runtype < 2) {
+    run->setMomentum(momentum);
+    run->setPhysList(physlist);
+    run->setField(field);
+    run->setGeometry(geometry);
+    run->setEv(ev);
+    run->setRadiator(radiator);
+    run->setLens(lensId);
     run->setPmtLayout(pmtLayout);
-    if(pmtLayout == 4) {
+    if (pmtLayout == 4) {
       run->setNpmt(6);
       run->setNpix(4096);
     }
-    if(pmtLayout == 3) {
+    if (pmtLayout == 3) {
       run->setNpmt(1);
       run->setNpix(100000); // max number of pixels
     }
+    run->setTrackingResTheta(trackingres);
+    run->setTrackingResPhi(trackingres);
+    run->setDarkNoise(dark_noise);
+    run->setTheta(theta);
+    run->setPhi(phi);
+    run->setPrismStepX(prismStepX);
+    run->setPrismStepY(prismStepY);
+    run->setBeamX(beamX);
+    run->setBeamZ(beamZ);
+    run->setPid(pdgid);
   }
-  run->setTrackingResTheta(trackingres);
-  run->setTrackingResPhi(trackingres);
+
+  run->setCorrection(correction);
+  run->setTimeSigma(timeSigma);
+  run->setTimeCut(timeCut);
   run->setTest1(testVal1);
   run->setTest2(testVal2);
   run->setTest3(testVal3);
-  run->setDarkNoise(dark_noise);
-  // run->setCorrection(correction);
-  run->setTheta(theta);
-  run->setPhi(phi);
-  run->setPrismStepX(prismStepX);
-  run->setPrismStepY(prismStepY);
-  run->setBeamX(beamX);
-  run->setBeamZ(beamZ);
-  run->setTimeSigma(timeSigma);
-  run->setTimeCut(timeCut);
-
-  PrtManager::Instance(outfile, run);
-  PrtManager::Instance()->setDisplayOpt(displayOpt);
-  
-  if (particle.Sizeof()) {
-    int pdgid = 0;
-    if (particle == "proton") pdgid = 2212;
-    if (particle == "pi+") pdgid = 211;
-    if (particle == "pi-") pdgid = -211;
-    if (particle == "pi0") pdgid = 111;
-    if (particle == "kaon+") pdgid = 321;
-    if (particle == "kaon-") pdgid = -321;
-    if (particle == "e-") pdgid = 11;
-    if (particle == "e+") pdgid = -11;
-    if (particle == "mu-") pdgid = 13;
-    if (particle == "mu+") pdgid = -13;
-    if (particle == "opticalphoton") pdgid = 0;
-    if (particle == "mix_pie") pdgid = 10000;
-    if (particle == "mix_pimu") pdgid = 10001;
-    if (particle == "mix_pik") pdgid = 10003;
-    if (particle == "mix_pip") pdgid = 10004;
-    if (particle == "mix_kp") pdgid = 10005;
-    PrtManager::Instance()->getRun()->setPid(pdgid);
-  }
-
+    
   std::cout << run->getInfo() << std::endl;
 
   if (runtype == 2 || runtype == 3 || runtype == 4 || runtype > 19) {
@@ -191,7 +188,7 @@ int main(int argc, char **argv) {
   // Choose the Random engine
   G4Random::setTheEngine(new CLHEP::RanecuEngine);
   G4RunManager *runManager = new G4RunManager;
- 
+
   G4Random::setTheSeed(seed);
 
   // G4PhysListFactory *physListFactory = new G4PhysListFactory();
@@ -209,7 +206,7 @@ int main(int argc, char **argv) {
 
     // auto fastsim = new G4FastSimulationManagerProcess();
     // // const G4PTblDicIterator* particleIterator = physicsList->GetParticleIterator();
-    // auto* particleIterator = G4ParticleTable::GetParticleTable()->GetIterator();    
+    // auto* particleIterator = G4ParticleTable::GetParticleTable()->GetIterator();
     // particleIterator->reset();
     // while ((*particleIterator)()) {
     //   G4ParticleDefinition *particle = particleIterator->value();
@@ -218,14 +215,14 @@ int main(int argc, char **argv) {
     // }
 
     runManager->SetUserInitialization(physicsList);
-  }else{
+  } else {
     runManager->SetUserInitialization(new PrtPhysicsList());
   }
-  
+
   runManager->SetUserInitialization(new PrtDetectorConstruction());
   runManager->SetUserInitialization(new PrtActionInitialization());
   runManager->Initialize();
- 
+
   // Initialize visualization
   G4VisManager *visManager = new G4VisExecutive;
   visManager->Initialize();
