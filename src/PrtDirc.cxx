@@ -137,8 +137,6 @@ int main(int argc, char **argv) {
   PrtRun *run = t.set_run();
 
   if (infile != "") run = t.get_run(infile);
-  PrtManager::Instance(outfile, run);
-  PrtManager::Instance()->setDisplayOpt(displayOpt);
 
   run->setRunType(runtype);
   if (runtype < 2) {
@@ -176,7 +174,9 @@ int main(int argc, char **argv) {
   run->setTest1(testVal1);
   run->setTest2(testVal2);
   run->setTest3(testVal3);
-    
+
+  PrtManager::Instance(outfile, run);
+  PrtManager::Instance()->setDisplayOpt(displayOpt);  
   std::cout << run->getInfo() << std::endl;
 
   if (runtype == 2 || runtype == 3 || runtype == 4 || runtype > 19) {

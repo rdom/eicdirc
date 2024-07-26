@@ -480,10 +480,12 @@ void PrtLutReco::Run(int start, int end) {
 	  tangle += cor[mcp].ca; // per-PMT angle correction;
 	  
           // if(tangle>TMath::PiOver2()) tangle = TMath::Pi()-tangle;
-
-	  if (fabs(tdiff) < 2 && fPhysList < 10) tangle -= 0.008 * tdiff; // chromatic correction // 0.008
-	   // if (fabs(tdiff) < 2 && fPhysList < 10) tangle -= 35 * tdiff / (lenz / cos(luttheta));
-          if (fabs(tdiff) > timeCut + luttime * 0.035) continue;
+	  
+	  
+	  // if (fabs(tdiff) < 2 && fPhysList < 10) tangle -= 0.008 * tdiff; // chromatic correction // 0.008
+	  if (fabs(tdiff) < 2 && fPhysList < 10) tangle -= 55 * tdiff / (lenz / cos(luttheta));
+	  
+	  if (fabs(tdiff) > timeCut + luttime * 0.035) continue;
           fDiff->Fill(hitTime, tdiff);
 
           hthetac[pid]->Fill(tangle);
