@@ -324,7 +324,7 @@ void PrtLutReco::Run(int start, int end) {
     end = nEvents;
   }
 
-  std::cout << "-I- Run started for [" << start << "," << end << "]" << std::endl;
+  std::cout << "-I- run started for [" << start << "," << end << "]" << std::endl;
 
   for (int ievent = start; ievent < nEvents && ievent < pdfstart; ievent++) {
     fChain->GetEntry(ievent);
@@ -335,7 +335,7 @@ void PrtLutReco::Run(int start, int end) {
     int tnph_gr[5] = {0}, tnph_ti[5] = {0};
 
     if (ievent % 1000 == 0)
-      std::cout << "Event # " << ievent << " has " << fEvent->getHits().size() << " hits"
+      std::cout << "event # " << ievent << " has " << fEvent->getHits().size() << " hits"
                 << std::endl;
     double minChangle = 0.35;
     double maxChangle = 0.9;
@@ -1054,7 +1054,7 @@ void PrtLutReco::Run(int start, int end) {
 
     tree.Fill();
     tree.Write();
-    std::cout << "File written " << outFile << std::endl;
+    std::cout << "-I- writing " << outFile << std::endl;
   }
 
   if (fVerbose > 1) {
@@ -1180,7 +1180,7 @@ void PrtLutReco::Run(int start, int end) {
     }
 
     if (fCorrType > 0 && fCorrLevel < 1) { // corrections
-      std::cout << "Writing " << fCorrFile << std::endl;
+      std::cout << "-I- writing " << fCorrFile << std::endl;
 
       TFile fc(fCorrFile, "recreate");
       TTree *tc = new TTree("corrections", "corrections");
