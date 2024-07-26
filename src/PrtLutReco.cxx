@@ -64,6 +64,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, TString
   fnpmt = frun->getNpmt();
   fnpix = frun->getNpix();
   fMethod = frun->getRunType();
+  fCorrType = frun->getCorrection();
   fStudyId = frun->getStudy();
   fMomentum = frun->getMomentum();
   fRadiator = frun->getRadiator();
@@ -214,43 +215,46 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, TString
     }
   }
 
-  // read corrections
+  // per-pmt corrections
   fCorrFile = infile + "_corr.root";
+  if (fCorrType > 0 && fCorrType != 5) {
+    if (!gSystem->AccessPathName(fCorrFile)) {
+      std::cout << "-I- reading  " << fCorrFile << std::endl;
+      int pmt, lvl;
+      double c_ca, c_td, c_tr, spr[5];
+      TChain ch;
+      ch.SetName("corrections");
+      ch.Add(fCorrFile);
+      ch.SetBranchAddress("lvl", &lvl);
+      ch.SetBranchAddress("pmt", &pmt);
+      ch.SetBranchAddress("c_ca", &c_ca);
+      ch.SetBranchAddress("c_td", &c_td);
+      ch.SetBranchAddress("c_tr", &c_tr);
+      ch.SetBranchAddress("spr", &spr);
 
-  if (!gSystem->AccessPathName(fCorrFile)) {
-    std::cout << "-I- reading  " << fCorrFile << std::endl;
-    int pmt, lvl;
-    double c_ca, c_td, c_tr, spr[5];
-    TChain ch;
-    ch.SetName("corrections");
-    ch.Add(fCorrFile);
-    ch.SetBranchAddress("lvl", &lvl);
-    ch.SetBranchAddress("pmt", &pmt);
-    ch.SetBranchAddress("c_ca", &c_ca);
-    ch.SetBranchAddress("c_td", &c_td);
-    ch.SetBranchAddress("c_tr", &c_tr);
-    ch.SetBranchAddress("spr", &spr);
-
-    std::cout << "lvl  pmt    c_ca    c_td    c_tr  spr_pi    spr_k" << std::endl;
-    for (int i = 0; i < ch.GetEntries(); i++) {
-      ch.GetEvent(i);
-      cor[pmt].ca = (fabs(c_ca) < 0.017) ? c_ca : 0;
-      cor[pmt].td = (fabs(c_td) < 0.5) ? c_td : 0;
-      cor[pmt].tr = (fabs(c_tr) < 0.5) ? c_tr : 0;
-      for (int h = 0; h < 5; h++) {
-        fSigma[h] = 0.001 * fabs(spr[h]) * 0.95;
-        if (fSigma[h] > 0.02) fSigma[h] = 0.01;
+      std::cout << "lvl  pmt    c_ca    c_td    c_tr  spr_pi    spr_k" << std::endl;
+      for (int i = 0; i < ch.GetEntries(); i++) {
+        ch.GetEvent(i);
+        cor[pmt].ca = (fabs(c_ca) < 0.017) ? c_ca : 0;
+	if(fCorrType == 2){
+	  cor[pmt].td = (fabs(c_td) < 0.5) ? c_td : 0;
+	  cor[pmt].tr = (fabs(c_tr) < 0.5) ? c_tr : 0;
+	}
+        for (int h = 0; h < 5; h++) {
+          fSigma[h] = 0.001 * fabs(spr[h]) * 0.95;
+          if (fSigma[h] > 0.02) fSigma[h] = 0.01;
+        }
+        cout.precision(2);
+        std::cout << std::fixed << std::setw(3) << lvl << std::setw(5) << pmt << std::setw(8)
+                  << 1000 * cor[pmt].ca << std::setw(8) << cor[pmt].td << std::setw(8)
+                  << cor[pmt].tr << std::setw(8) << 1000 * fSigma[2] << std::setw(8)
+                  << 1000 * fSigma[3] << std::endl;
       }
-      cout.precision(2);
-      std::cout << std::fixed << std::setw(3) << lvl << std::setw(5) << pmt << std::setw(8)
-                << 1000 * cor[pmt].ca << std::setw(8) << cor[pmt].td << std::setw(8) << cor[pmt].tr
-                << std::setw(8) << 1000 * fSigma[2] << std::setw(8) << 1000 * fSigma[3]
-                << std::endl;
+      fCorrLevel = lvl;
+      cout.precision(-1);
+    } else {
+      std::cout << "-I- corr file not found  " << fCorrFile << std::endl;
     }
-    fCorrLevel = lvl;
-    cout.precision(-1);
-  } else {
-    std::cout << "-I- corr file not found  " << fCorrFile << std::endl;
   }
 
   // read neural network model
@@ -410,7 +414,7 @@ void PrtLutReco::Run(int start, int end) {
         reflected = false;
 	hitTime += cor[mcp].td;
       }
-
+      
       double theta0 = rotatedmom.Angle(dir0);
       fHist5->Fill(theta0 * TMath::Sin(phi0), theta0 * TMath::Cos(phi0));
 
@@ -1175,7 +1179,7 @@ void PrtLutReco::Run(int start, int end) {
       gg_gr.Set(0);
     }
 
-    if (fCorrLevel < 2) { // corrections
+    if (fCorrType > 0 && fCorrLevel < 1) { // corrections
       std::cout << "Writing " << fCorrFile << std::endl;
 
       TFile fc(fCorrFile, "recreate");
@@ -1189,39 +1193,32 @@ void PrtLutReco::Run(int start, int end) {
       tc->Branch("c_tr", &c_tr, "c_tr/D");
       tc->Branch("spr", &spr, "spr[5]/D");
 
-      // if (fVerbose > 2)
-      TString nid = Form("cor_l%d", lvl);
+      TString nid = Form("cor_a%d", lvl);
       ft.add_canvas(nid, 1600, 1000);
       auto c = ft.get_canvas(nid);
       c->Divide(6, 4);
+      nid = Form("cor_t%d", lvl);
+      ft.add_canvas(nid, 1600, 1000);
+      auto c2 = ft.get_canvas(nid);
+      c2->Divide(6, 4);
       c->cd(1);
       for (pmt = 0; pmt < fnpmt; pmt++) {
         if (fPmt_a[pmt]->GetEntries() < 20) continue;
 
-        if (fCorrLevel == 0) {
 	  c->cd(pmt + 1);
 	  c_td = -ft.fit(fPmt_td[pmt], 5, 20, 1).X();
 	  c_tr = -ft.fit(fPmt_tr[pmt], 5, 20, 1).X();
 
-	  lvl = 1;
-          tc->Fill();
-          std::cout << "c_td " << c_td << " c_tr " << c_tr << std::endl;
-
 	  fPmt_td[pmt]->Draw();
 	  fPmt_tr[pmt]->SetLineColor(2);
           fPmt_tr[pmt]->Draw("same");
-        }
 
-        if (fCorrLevel == 1) {
-	  c->cd(pmt + 1);
+	  c2->cd(pmt + 1);
           c_ca = -ft.fit(fPmt_a[pmt], fitrange, 20, 0.01).X();
-	  c_td = cor[pmt].td;
-	  c_tr = cor[pmt].tr;
 	  lvl = 2;
           tc->Fill();
-          std::cout << "c_ca " << c_ca << std::endl;
           fPmt_a[pmt]->Draw();
-        }
+	  std::cout <<"c_ca " << c_ca << "c_td " << c_td << " c_tr " << c_tr << std::endl;
       }
 
       tc->Write();

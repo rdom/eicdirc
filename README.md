@@ -137,6 +137,12 @@ example:
                0.0005  (default)
 	       100 use realistic, mapped values
 
+-cor           per-pmt correction
+               0 without correction
+	       1 Cherenkov angle correction (default)
+	       2 Cherenkov angle and time correction
+	       5 create correction file
+
 -gx target's X offset
                0 default
 
