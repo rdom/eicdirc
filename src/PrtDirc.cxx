@@ -4,30 +4,24 @@
 
 #include "G4RunManager.hh"
 #include "G4UImanager.hh"
-#include "TROOT.h"
-
-#include "PrtPhysicsList.h"
-#include "PrtDetectorConstruction.h"
-
-#include "PrtActionInitialization.h"
-#include "time.h"
-
 #include "G4VisExecutive.hh"
 #include "G4UIExecutive.hh"
-
-#include "TApplication.h"
-
-#include "PrtManager.h"
-#include "PrtLutReco.h"
-#include "../../prttools/PrtTools.h"
-
 #include "G4PhysListFactory.hh"
 #include "G4OpticalPhysics.hh"
 #include "G4OpticalParameters.hh"
 #include "FTFP_BERT.hh"
-
 #include "G4FastSimulationManagerProcess.hh"
 
+#include "TROOT.h"
+#include "TApplication.h"
+
+#include "PrtManager.h"
+#include "PrtLutReco.h"
+#include "PrtPhysicsList.h"
+#include "PrtDetectorConstruction.h"
+#include "PrtActionInitialization.h"
+
+#include "time.h"
 
 int main(int argc, char **argv) {
   std::cout << "----------------------------------------------- used args ---\n";
@@ -35,8 +29,7 @@ int main(int argc, char **argv) {
 
   TApplication theApp("EicDirc", 0, 0);
 
-  G4String macro, session, particle = "pi-";
-  TString infile = "", lutfile = "", pdffile = "", nnfile = "", outfile = "";
+  TString macro, particle = "pi+", infile = "", lutfile = "", pdffile = "", nnfile = "", outfile = "";
   int events(0), geometry(1), firstevent(0), runtype(0), study(0), fid(0), verbose(0), batchmode(0),
     physlist(0), pmtLayout(2031), correction(1), field(0), ev(0), radiator(0), lensId(3),
     displayOpt(0);
@@ -86,7 +79,7 @@ int main(int argc, char **argv) {
     else if (G4String(argv[i]) == "-cor") correction = atoi(argv[i + 1]);
 
     else {
-      G4cerr << " read README.md " << G4endl;
+      G4cerr << "read README.md" << G4endl;
       return 1;
     }
   }
@@ -166,7 +159,7 @@ int main(int argc, char **argv) {
   PrtManager::Instance(outfile, run);
   PrtManager::Instance()->setDisplayOpt(displayOpt);
   
-  if (particle.size()) {
+  if (particle.Sizeof()) {
     int pdgid = 0;
     if (particle == "proton") pdgid = 2212;
     if (particle == "pi+") pdgid = 211;
@@ -240,7 +233,7 @@ int main(int argc, char **argv) {
   // Get the pointer to the User Interface manager
   G4UImanager *UImanager = G4UImanager::GetUIpointer();
 
-  if (macro.size()) {
+  if (macro.Sizeof()) {
     UImanager->ApplyCommand("/control/execute " + macro);
   } else {
     // UImanager->ApplyCommand("/control/execute ../prt.mac");
@@ -259,7 +252,7 @@ int main(int argc, char **argv) {
     UImanager->ApplyCommand(Form("/run/beamOn %d", events));
   } else { // UI session for interactive mode
 
-    G4UIExecutive *ui = new G4UIExecutive(argc, argv, session);
+    G4UIExecutive *ui = new G4UIExecutive(argc, argv);
     UImanager->ApplyCommand("/control/execute ../vis.mac");
     if (ui->IsGUI()) UImanager->ApplyCommand("/control/execute gui.mac");
     UImanager->ApplyCommand(Form("/run/beamOn %d", events));

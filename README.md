@@ -95,7 +95,7 @@ example:
 -e    number of simulated events
 
 -x    particle type
-              "pi+"
+              "pi+" (default)
               "proton"
               "kaon+"
                  ...
