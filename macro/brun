@@ -30,13 +30,17 @@ echo $tseed
 
 # root -b -q lutmean.C'("lut.root")'
 
-#sim
+# #sim
+# for i in {0..19}; do
+#     ../build/eicdirc -r 0 -seed $tseed$i -o h_b$i.root  \
+# 		     -theta 30 -x mix_pik -p 6 -w 10 -g 1 -c 2031 -l 10 -field 0 \
+# 		     -trackingres 0.0005 -timeres 0.1 -timecut 0.2 -e 150 -v 2 -b 1 -ev 3 &
+# done
+
 for i in {0..19}; do
     ../build/eicdirc -r 0 -seed $tseed$i -o h_b$i.root  \
-		     -theta 30 -x mix_pik -p 6 -w 10 -g 1 -c 2031 -l 10 -field 0 \
-		     -trackingres 0.0005 -timeres 0.1 -timecut 0.2 -e 150 -v 2 -b 1 -ev 3 &
+		     -theta 30 -l 3 -e 150 -b 1 &
 done
-
 			 # -theta 0 -x mix_pik -w 0 -g 1 -c 2031 -l 3 -ev 0 -p 6 \
 # for i in {0..19}; do
 #     ../build/eicdirc -r 0 -seed $tseed$i -o h_b$i.root  \

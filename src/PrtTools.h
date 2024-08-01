@@ -99,6 +99,8 @@ class PrtTools {
                int peakSearch = 1, int bkg = 0, TString opt = "MQ");
   TGraph *fit_slices(TH2F *h, double minrange = 0, double maxrange = 0, double fitrange = 1,
                      int rebin = 1, int ret = 0);
+  TGraph *fit_slices_x(TH2F *h, double minrange = 0, double maxrange = 0, double fitrange = 1,
+		       int rebin = 1, int ret = 0);  
   void style_graph(TGraph *g, int id);
   double integral(TH1F *h, double xmin, double xmax);
   void normalize(TH1F *h1, TH1F *h2);

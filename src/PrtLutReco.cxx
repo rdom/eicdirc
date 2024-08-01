@@ -34,9 +34,9 @@ TH2F *fdtl =
   new TH2F("dtl", ";t_{measured}-t_{calculated} [ns];path length [m]", 1000, -2, 2, 1000, 0, 15);
 TH2F *fdtp = new TH2F("dtp", ";#theta_{l} [deg];path length [m]", 1000, 0, 90, 1000, 0, 15);
 TH2F *fhChrom =
-  new TH2F("chrom", ";t_{measured}-t_{calculated} [ns];#theta_{C} [rad]", 100, -2, 2, 100, -30, 30);
+  new TH2F("chrom", ";t_{measured}-t_{calculated} [ns];#theta_{C} [rad]", 100, -2, 2, 100, -0.03, 0.03);
 TH2F *fhChromL = new TH2F("chroml", ";(t_{measured}-t_{calculated})/L_{path};#theta_{C} [rad]", 100,
-                          -0.0002, 0.0002, 100, -30, 30);
+                          -0.0002, 0.0002, 100, -0.03, 0.03);
 TH1F *fPmt_a[28], *fPmt_td[28], *fPmt_tr[28];
 
 struct {
@@ -91,6 +91,9 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, TString
   fChain->SetBranchAddress("PrtEvent", &fEvent);
 
   fFit = new TF1("fgaus", "[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +[3]", 0.35, 0.9);
+
+  fChromCor = new TF1("fchrom1", "x<87? 23.15+0.41837*x : 93.82 - 0.435507*x", 15, 165);
+   
   fSpect = new TSpectrum(10);
 
   int col[] = {kRed + 1, kBlue + 1, kBlack};
@@ -280,7 +283,7 @@ PrtLutReco::~PrtLutReco() {}
 //-------------- Loop over tracks ------------------------------------------
 void PrtLutReco::Run(int start, int end) {
   TVector3 dird, dir, momInBar(0, 0, 1), posInBar;
-  double mom = fMomentum, tangle, tdiff, evtime, bartime, lenz, dirz, luttheta, hitTime;
+  double mom = fMomentum, tangle, tdiff, evtime, bartime, lenz, len, dirz, luttheta, hitTime, hitTime_nc;
   int tofPid(fp1), distPid(0), likePid(0);
   int eff_total[4] = {0}, eff_nn[4] = {0};
   bool reflected = kFALSE;
@@ -330,7 +333,7 @@ void PrtLutReco::Run(int start, int end) {
     fChain->GetEntry(ievent);
 
     theta = (fEvent->getMomentum().Angle(TVector3(0, 0, -1))) * TMath::RadToDeg();
-    double mome = fEvent->getMomentum().Mag() / 1000.;
+
     int pid = fEvent->getPid();    
     int tnph_gr[5] = {0}, tnph_ti[5] = {0};
 
@@ -339,13 +342,14 @@ void PrtLutReco::Run(int start, int end) {
                 << std::endl;
     double minChangle = 0.35;
     double maxChangle = 0.9;
-    TVector3 rotatedmom = fEvent->getMomentum().Unit();
+    double m = 0.001 * fEvent->getMomentum().Mag();
+    TVector3 mom_vertex = fEvent->getMomentum().Unit();
     TVector3 mom_before = fEvent->getMomentumBefore().Unit();
-    TVector3 mom_after = fEvent->getMomentumAfter().Unit();
+    TVector3 mom_after = fEvent->getMomentumAfter().Unit();    
     double sum1(0), sum2(0), sumti1(0), sumti2(0), noise(0.2);
 
-    double theta_diff0 = 1000 * (rotatedmom.Theta() - mom_before.Theta());
-    double theta_diff2 = 1000 * (rotatedmom.Theta() - mom_after.Theta());
+    double theta_diff0 = 1000 * (mom_vertex.Theta() - mom_before.Theta());
+    double theta_diff2 = 1000 * (mom_vertex.Theta() - mom_after.Theta());
     fTrackAngle0->Fill(theta_diff0);
     fTrackAngle2->Fill(theta_diff2);
 
@@ -370,8 +374,7 @@ void PrtLutReco::Run(int start, int end) {
     // rotatedmom.SetPhi(gRandom->Gaus(rotatedmom.Phi(), trackingResPhi));
 
     for (int i = 0; i < 5; i++) {
-      fAngle[i] =
-        acos(sqrt(mome * mome + ft.mass(i) * ft.mass(i)) / mome / 1.4738); // 1.4738 = 370 = 3.35
+      fAngle[i] = acos(sqrt(m * m + ft.mass(i) * ft.mass(i)) / m / 1.4738); // 1.4738 = 370 = 3.35
       fFunc[i]->SetParameter(0, 1);
       fFunc[i]->SetParameter(1, fAngle[i]);
       fFunc[i]->SetParameter(2, fSigma[i]);
@@ -390,16 +393,17 @@ void PrtLutReco::Run(int start, int end) {
     for (auto hit : fEvent->getHits()) {
 
       hitTime = hit.getLeadTime() + gRandom->Gaus(0, timeRes);
+      hitTime_nc = hitTime;
       dirz = hit.getMomentum().Z();
       int mcp = hit.getPmt();
       int pix = hit.getPixel();
       int ch = hit.getChannel();
       
       TVector3 dir0 = hit.getMomentum().Unit();
-      TVector3 cz = TVector3(-rotatedmom.X(), rotatedmom.Y(), rotatedmom.Z());
+      TVector3 cz = TVector3(-mom_vertex.X(), mom_vertex.Y(), mom_vertex.Z());
       TVector3 cd = TVector3(-dir0.X(), dir0.Y(), dir0.Z());
-      TVector3 unitdir1 = rotatedmom;
-      TVector3 unitdir2 = rotatedmom;
+      TVector3 unitdir1 = mom_vertex;
+      TVector3 unitdir2 = mom_vertex;
       cz.RotateUz(unitdir1);
       cd.RotateUz(unitdir2);
 
@@ -415,7 +419,7 @@ void PrtLutReco::Run(int start, int end) {
 	hitTime += cor[mcp].td;
       }
       
-      double theta0 = rotatedmom.Angle(dir0);
+      double theta0 = mom_vertex.Angle(dir0);
       fHist5->Fill(theta0 * TMath::Sin(phi0), theta0 * TMath::Cos(phi0));
 
       PrtLutNode *node;
@@ -428,17 +432,14 @@ void PrtLutReco::Run(int start, int end) {
       bool isGoodHit_gr(false), isGoodHit_ti(false);
 
       // double fAngle =  fEvent->GetAngle()-90;
-      // TVector3 rotatedmom = momInBar;
-      // rotatedmom.RotateY(-fAngle/180.*TMath::Pi());
+      // TVector3 mom_vertex = momInBar;
+      // mom_vertex.RotateY(-fAngle/180.*TMath::Pi());
       // std::cout<<"fAngle   "<<fAngle <<std::endl;
-      // rotatedmom.Print();
+      // mom_vertex.Print();
 
       Long_t hpath = hit.getPathInPrizm();
       TString spath = Form("%ld", hpath);
       // if(spath.Length()>8) continue;
-
-      // std::cout<<ch<<" "<<mcp<<" ========================= spath "<<spath<<std::endl;
-
       // if(!spath.EqualTo("87")) continue;
       // if(spath.Contains("1")) continue;
       
@@ -467,7 +468,8 @@ void PrtLutReco::Run(int start, int end) {
           luttheta = dir.Theta();
           if (luttheta > TMath::PiOver2()) luttheta = TMath::Pi() - luttheta;
 
-          bartime = lenz / cos(luttheta) / 199.5; // 198.5
+	  len = lenz / cos(luttheta);
+          bartime = len / 199.5; // 198.5
 
           fHist1->Fill(hitTime);
           double luttime = bartime + evtime;
@@ -476,26 +478,23 @@ void PrtLutReco::Run(int start, int end) {
           fHistDiff[reflected]->Fill(tdiff);
           if (ipath) fHistDiff[2]->Fill(tdiff);
 
-          tangle = rotatedmom.Angle(dir);	  
+          tangle = mom_vertex.Angle(dir);	  
 	  tangle += cor[mcp].ca; // per-PMT angle correction;
-	  
-          // if(tangle>TMath::PiOver2()) tangle = TMath::Pi()-tangle;
-	  
-	  
-	  // if (fabs(tdiff) < 2 && fPhysList < 10) tangle -= 0.008 * tdiff; // chromatic correction // 0.008
-	  if (fabs(tdiff) < 2 && fPhysList < 10) tangle -= 55 * tdiff / (lenz / cos(luttheta));
+	  	  
+	  // if (fabs(tdiff) < 2 && fPhysList < 10) tangle -= 0.008 * tdiff; // chromatic correction
+	  if (fabs(tdiff) < 2 && fPhysList < 10) tangle -= fChromCor->Eval(theta) * (hitTime_nc - luttime) / len;
 	  
 	  if (fabs(tdiff) > timeCut + luttime * 0.035) continue;
-          fDiff->Fill(hitTime, tdiff);
 
+          fDiff->Fill(hitTime, tdiff);
           hthetac[pid]->Fill(tangle);
           hthetacd[pid]->Fill((tangle - fAngle[pid]) * 1000);
-          fhChrom->Fill(tdiff, (tangle - fAngle[pid]) * 1000);
-          fhChromL->Fill(tdiff / (lenz / cos(luttheta)), (tangle - fAngle[pid]) * 1000);
+          fhChrom->Fill(tdiff, (tangle - fAngle[pid]));
+          fhChromL->Fill(tdiff / len, (tangle - fAngle[pid]));
+          fPmt_a[mcp]->Fill(tangle - fAngle[pid]);
 
-	  fPmt_a[mcp]->Fill(tangle - fAngle[pid]);
-	  if(reflected) fPmt_tr[mcp]->Fill(tdiff);
-	  else fPmt_td[mcp]->Fill(tdiff);
+          if (reflected) fPmt_tr[mcp]->Fill(tdiff);
+          else fPmt_td[mcp]->Fill(tdiff);
 	  	  
           if (fabs(tangle - fAngle[fp2]) > 0.05 && fabs(tangle - fAngle[fp1]) > 0.05) continue;
 
@@ -503,9 +502,9 @@ void PrtLutReco::Run(int start, int end) {
             if ((fabs(tangle - fAngle[fp2]) < 0.02 || fabs(tangle - fAngle[fp1]) < 0.02)) {
               TVector3 rdir = TVector3(-dir.X(), dir.Y(), dir.Z());
               // rdir.RotateX(0.004);
-              // rdir.Rotate(1.57 + TMath::PiOver2(), rotatedmom);
+              // rdir.Rotate(1.57 + TMath::PiOver2(), mom_vertex);
 
-              rdir.RotateUz(rotatedmom);
+              rdir.RotateUz(mom_vertex);
               double cphi = rdir.Phi();
 
               // if(tangle*TMath::Cos(cphi)<0) continue;
@@ -523,7 +522,6 @@ void PrtLutReco::Run(int start, int end) {
         }
       }
       
-      // if (isGoodHit_gr || 1) { // tmp for plate ev
       if (isGoodHit_gr || (!fGeomReco)) {
         nsHits++;
         tnph_gr[pid]++;
@@ -636,18 +634,18 @@ void PrtLutReco::Run(int start, int end) {
       arc->SetFillStyle(0);
       arc->Draw();
 
-      TVector3 oo = rotatedmom;
+      TVector3 oo = mom_vertex;
       oo.RotateY(-corr.Theta());
-      oo.Rotate(corr.Phi() + TMath::PiOver2(), rotatedmom);
+      oo.Rotate(corr.Phi() + TMath::PiOver2(), mom_vertex);
 
       // corr.RotateUz(uv);
       // corr.Print();
-      // TVector3 oo = rotatedmom;
+      // TVector3 oo = mom_vertex;
       // std::cout << "oo.Theta() " << oo.Theta() <<  " oo.Theta() " << corr.Theta() << std::endl;
 
       // oo.SetTheta(oo.Theta() + corr.Theta() );
       // // oo.RotateX(-corr.Theta());
-      // // oo.Rotate(corr.Phi(), rotatedmom);
+      // // oo.Rotate(corr.Phi(), mom_vertex);
       // oo = corr;
 
       double theta_diff1 = 1000 * (oo.Theta() - mom_before.Theta());
@@ -670,7 +668,7 @@ void PrtLutReco::Run(int start, int end) {
     if (tnph_gr[pid] > 1) hnph_gr[pid]->Fill(tnph_gr[pid]);
 
     double sum_nph = 0;
-    // if (mome < 2.5) {  // photon yield likelihood
+    // if (m < 2.5) {  // photon yield likelihood
     //   TF1 *f_pi = new TF1("gaus", "gaus", 0, 150);
     //   f_pi->SetParameters(1, 50, 8.7); // fix me
     //   TF1 *f_p = new TF1("gaus", "gaus", 0, 150);
@@ -682,6 +680,7 @@ void PrtLutReco::Run(int start, int end) {
     // }
 
     if (fMethod == 2 && fTimeImaging) { // time imaging
+      
       if (tnph_ti[pid] > 1) hnph_ti[pid]->Fill(tnph_ti[pid]);
  
       double sum_ti = 1.5 * (sumti1 - sumti2) + 30 * sum_nph;
@@ -840,6 +839,7 @@ void PrtLutReco::Run(int start, int end) {
     sep_gr_err = sqrt(e1 * e1 + e2 * e2 + e3 * e3 + e4 * e4);
 
     if (fTimeImaging) {
+      m1 = 0, m2 = 0;
 
       epi_rejection1 = CalcRejection(fLnDiffTi[fp1], fLnDiffTi[fp2], 0.90);
       epi_rejection2 = CalcRejection(fLnDiffTi[fp1], fLnDiffTi[fp2], 0.95);
@@ -1012,6 +1012,20 @@ void PrtLutReco::Run(int start, int end) {
     std::cout << "track_res0 " << track_res0 <<  " track_res1 " << track_res1 <<" track_res2 " << track_res2 << std::endl;
   }
 
+  { // chromatic corrections 
+    fhChromL->SetStats(0);
+    auto g = ft.fit_slices_x(fhChromL, -0.00008, 0.00008, 0.03, 2, 0);
+    g->SetMarkerStyle(20);
+    g->SetLineColor(kBlack);
+    g->SetMarkerSize(1.5);
+    auto r = g->Fit("pol1", "S");
+    if (r > -1) test3 = r->Parameter(1);
+    std::cout << "test3 " << test3 << std::endl;
+    
+    fhChromL->Draw("colz");
+    g->Draw("PL");
+  }
+
   { // tree
     // outFile.ReplaceAll("reco_", Form("reco_%d_", frun->getId()));
     TFile file(outFile, "recreate");
@@ -1142,7 +1156,13 @@ void PrtLutReco::Run(int start, int end) {
       fhChrom->Draw("colz");
       ft.add_canvas("chroml" + nid, 800, 400);
       fhChromL->SetStats(0);
+      auto g = ft.fit_slices_x(fhChromL,-0.00008,0.00008,0.03,2,0);      
+      g->SetMarkerStyle(20);
+      g->SetLineColor(kBlack);
+      g->SetMarkerSize(1.5);
+      g->Fit("pol1");
       fhChromL->Draw("colz");
+      g->Draw("PL");
     }
 
     { // hp

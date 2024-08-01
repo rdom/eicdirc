@@ -92,7 +92,7 @@ class PrtLutReco {
   TString fPdfPath;
   TString fNNPath;
   
-  TF1 *fFit;  
+  TF1 *fFit, *fChromCor;  
   TSpectrum *fSpect;
   double fSigma[5];
   TH1F *hthetac[5];

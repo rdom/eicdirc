@@ -139,9 +139,9 @@ example:
 
 -cor           per-pmt correction
                0 without correction
-	       1 Cherenkov angle correction (default)
-	       2 Cherenkov angle and time correction
-	       5 create correction file
+	       1 apply Cherenkov angle correction
+	       2 apply Cherenkov angle and time corrections (default)
+	       5 (re)create corrections
 
 -gx target's X offset
                0 default

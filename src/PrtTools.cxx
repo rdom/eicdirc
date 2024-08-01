@@ -976,6 +976,32 @@ TGraph *PrtTools::fit_slices(TH2F *h, double minrange, double maxrange, double f
   return gres;
 }
 
+TGraph *PrtTools::fit_slices_x(TH2F *h, double minrange, double maxrange, double fitrange, int rebin,
+                             int ret) {
+  auto ht = (TH2F *)h->Clone("ht");
+  ht->RebinX(rebin);
+  int point(0);
+  TGraph *gres = new TGraph();
+  for (int i = 1; i < ht->GetNbinsX(); i++) {
+    double x = ht->GetXaxis()->GetBinCenter(i);
+    if (x < minrange || x > maxrange) continue;
+    auto hp = ht->ProjectionY(Form("bin%d", i), i, i);
+
+    TVector3 res = fit((TH1F *)hp, fitrange, 100, 10);  
+    double y = 0;    
+    if (ret == 0) y = res.X();
+    if (ret == 1) y = res.Y();
+    if (ret == 2) y = res.X() + 0.5 * res.Y();
+    if (ret == 3) y = res.X() - 0.5 * res.Y();
+
+    gres->SetPoint(point, x, y);
+    gres->SetLineWidth(2);
+    gres->SetLineColor(kRed);
+    point++;
+  }
+  return gres;
+}
+
 void PrtTools::style_graph(TGraph *g, int id) {
   int coll[] = {kCyan + 1, kOrange + 6, kBlue, kRed, kBlack, kOrange, 7, 8, 9, 10};
   int colm[] = {kCyan + 2, kOrange + 8, kBlue + 1, kRed + 1, kBlack, kOrange, 7, 8, 9, 10};
