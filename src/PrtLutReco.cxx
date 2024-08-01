@@ -33,8 +33,6 @@ TH2F *fdtt =
 TH2F *fdtl =
   new TH2F("dtl", ";t_{measured}-t_{calculated} [ns];path length [m]", 1000, -2, 2, 1000, 0, 15);
 TH2F *fdtp = new TH2F("dtp", ";#theta_{l} [deg];path length [m]", 1000, 0, 90, 1000, 0, 15);
-TH2F *fhChrom =
-  new TH2F("chrom", ";t_{measured}-t_{calculated} [ns];#theta_{C} [rad]", 100, -2, 2, 100, -0.03, 0.03);
 TH2F *fhChromL = new TH2F("chroml", ";(t_{measured}-t_{calculated})/L_{path};#theta_{C} [rad]", 100,
                           -0.0002, 0.0002, 100, -0.03, 0.03);
 TH1F *fPmt_a[28], *fPmt_td[28], *fPmt_tr[28];
@@ -489,7 +487,6 @@ void PrtLutReco::Run(int start, int end) {
           fDiff->Fill(hitTime, tdiff);
           hthetac[pid]->Fill(tangle);
           hthetacd[pid]->Fill((tangle - fAngle[pid]) * 1000);
-          fhChrom->Fill(tdiff, (tangle - fAngle[pid]));
           fhChromL->Fill(tdiff / len, (tangle - fAngle[pid]));
           fPmt_a[mcp]->Fill(tangle - fAngle[pid]);
 
@@ -1086,11 +1083,11 @@ void PrtLutReco::Run(int start, int end) {
       hthetac[fp2]->Draw("same");
       drawTheoryLines(mom);
 
-      ft.add_canvas("tangled" + nid, 800, 400);
-      ft.normalize(hthetacd, 5);
-      hthetacd[fp2]->SetTitle(Form("theta %1.2f", theta));
-      hthetacd[fp2]->Draw("");
-      hthetacd[fp1]->Draw("same");
+      // ft.add_canvas("tangled" + nid, 800, 400);
+      // ft.normalize(hthetacd, 5);
+      // hthetacd[fp2]->SetTitle(Form("theta %1.2f", theta));
+      // hthetacd[fp2]->Draw("");
+      // hthetacd[fp1]->Draw("same");
     }
 
     { // nph
@@ -1151,9 +1148,6 @@ void PrtLutReco::Run(int start, int end) {
     }
 
     { // chromatic corrections
-      ft.add_canvas("chrom" + nid, 800, 400);
-      fhChrom->SetStats(0);
-      fhChrom->Draw("colz");
       ft.add_canvas("chroml" + nid, 800, 400);
       fhChromL->SetStats(0);
       auto g = ft.fit_slices_x(fhChromL,-0.00008,0.00008,0.03,2,0);      
