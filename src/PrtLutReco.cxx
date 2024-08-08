@@ -14,28 +14,6 @@
 using std::cout;
 using std::endl;
 
-TH1F *fHist1 = new TH1F("Time1", "1", 1000, 0, 80);
-TH1F *fHist2 = new TH1F("Time2", "2", 1000, -10, 10);
-TH1F *fHistDiff[3];
-TH2F *fDiff =
-  new TH2F("diff", ";measured time [ns];t_{measured}-t_{calc} [ns]", 500, 0, 100, 150, -5, 5);
-TH2F *fHist4 = new TH2F("Time4", "4", 200, -1, 1, 200, -1, 1);
-TH2F *fHist5 = new TH2F("Time5", "5", 200, -1, 1, 200, -1, 1);
-TH1F *fTrackAngle0 = new TH1F("fTrackAngle0", ";#Delta [mrad];entries [#]", 500, -10, 10);
-TH1F *fTrackAngle1 = new TH1F("fTrackAngle1", ";#Delta [mrad];entries [#]", 500, -10, 10);
-TH1F *fTrackAngle2 = new TH1F("fTrackAngle2", ";#Delta [mrad];entries [#]", 500, -10, 10);
-
-TH1F *fFindTime = new TH1F("ft", ";t_{measured}-t_{calculated} [ns];entries [#]", 2000, -100, 100);
-TH1F *fFindTimeA[20];
-TH1F *fFindTimeRes = new TH1F("ftr", "ftr", 100, -2, 2);
-TH2F *fdtt =
-  new TH2F("dtt", ";t_{measured}-t_{calculated} [ns];#theta_{l} [deg]", 1000, -2, 2, 1000, 0, 90);
-TH2F *fdtl =
-  new TH2F("dtl", ";t_{measured}-t_{calculated} [ns];path length [m]", 1000, -2, 2, 1000, 0, 15);
-TH2F *fdtp = new TH2F("dtp", ";#theta_{l} [deg];path length [m]", 1000, 0, 90, 1000, 0, 15);
-TH2F *fhChromL = new TH2F("chroml", ";(t_{measured}-t_{calculated})/L_{path};#theta_{C} [rad]", 100,
-                          -0.0002, 0.0002, 100, -0.03, 0.03);
-TH1F *fPmt_a[28], *fPmt_td[28], *fPmt_tr[28];
 
 struct {
   double ca;
@@ -85,11 +63,27 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, TString
     fp2 = 3;
     fp1 = 4;
   }
-  
+
+  fHist1 = new TH1F("Time1", "1", 1000, 0, 80);
+  fHist2 = new TH1F("Time2", "2", 1000, -10, 10);
+  fDiff = new TH2F("diff", ";measured time [ns];t_{meas}-t_{calc} [ns]", 500, 0, 100, 150, -5, 5);
+  fHist4 = new TH2F("Time4", "4", 200, -1, 1, 200, -1, 1);
+  fHist5 = new TH2F("Time5", "5", 200, -1, 1, 200, -1, 1);
+  fTrackAngle0 = new TH1F("fTrackAngle0", ";#Delta [mrad];entries [#]", 500, -20, 20);
+  fTrackAngle1 = new TH1F("fTrackAngle1", ";#Delta [mrad];entries [#]", 500, -20, 20);
+  fTrackAngle2 = new TH1F("fTrackAngle2", ";#Delta [mrad];entries [#]", 500, -20, 20);
+
+  fFindTime = new TH1F("ft", ";t_{measured}-t_{calculated} [ns];entries [#]", 2000, -100, 100);
+  fFindTimeRes = new TH1F("ftr", "ftr", 100, -2, 2);
+  fdtt = new TH2F("dtt", ";t_{meas}-t_{calc} [ns];#theta_{l} [deg]", 1000, -2, 2, 1000, 0, 90);
+  fdtl = new TH2F("dtl", ";t_{meas}-t_{calc} [ns];path length [m]", 1000, -2, 2, 1000, 0, 15);
+  fdtp = new TH2F("dtp", ";#theta_{l} [deg];path length [m]", 1000, 0, 90, 1000, 0, 15);
+  fhChromL = new TH2F("chroml", ";(t_{measured}-t_{calculated})/L_{path};#theta_{C} [rad]", 100,
+                      -0.0002, 0.0002, 100, -0.03, 0.03);
+
   fChain->SetBranchAddress("PrtEvent", &fEvent);
 
   fFit = new TF1("fgaus", "[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +[3]", 0.35, 0.9);
-
   fChromCor = new TF1("fchrom1", "x<87? 23.15+0.41837*x : 93.82 - 0.435507*x", 15, 165);
    
   fSpect = new TSpectrum(10);
@@ -149,7 +143,7 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, TString
   // if(pixels > 20 && fPhysList > 0) range_gr = 1000;
   // if(fMomentum > 8) range = 500;
   // if(fMomentum > 8) range_gr = 200;
-  
+
   for (int h = 0; h < 5; h++) {
     TString la = ";ln L(K) - ln L(#pi);entries [#]";
     fLnDiffGr[h] = new TH1F(Form("LnDiffGr_%d", h), la, 400, -range, range);
@@ -159,16 +153,20 @@ PrtLutReco::PrtLutReco(TString infile, TString lutfile, TString pdffile, TString
     fLnDiffTi[h]->SetLineColor(ft.color(h));
     fLnDiffNn[h]->SetLineColor(ft.color(h));
     fLnDiffTi[h]->SetMarkerColor(ft.color(h) + 1);
- 
-    for (int i = 0; i < fmaxch; i++) {
-      fTime[h][i] = new TH1F(Form("h_%d_%d", h, i), "pdf;LE time [ns]; entries [#]", 2000, 0, 100);
+
+    if (fMethod == 4) {
+      for (int i = 0; i < fmaxch; i++) {
+        fTime[h][i] =
+          new TH1F(Form("h_%d_%d", h, i), "pdf;LE time [ns]; entries [#]", 2000, 0, 100);
+      }
     }
+
     fSigma[h] = 0.007;
     if (fp1 == 0) { // electron
       fSigma[0] = 0.005;
     }
   }
-
+  
   // read lut
   if (!gSystem->AccessPathName(lutfile)) {
     std::cout << "-I- reading  " << lutfile << std::endl;
@@ -496,7 +494,7 @@ void PrtLutReco::Run(int start, int end) {
           if (fabs(tangle - fAngle[fp2]) > 0.05 && fabs(tangle - fAngle[fp1]) > 0.05) continue;
 
           if (fRingFit) {
-            if ((fabs(tangle - fAngle[fp2]) < 0.02 || fabs(tangle - fAngle[fp1]) < 0.02)) {
+            if ((fabs(tangle - fAngle[fp2]) < 0.01 || fabs(tangle - fAngle[fp1]) < 0.01)) {
               TVector3 rdir = TVector3(-dir.X(), dir.Y(), dir.Z());
               // rdir.RotateX(0.004);
               // rdir.Rotate(1.57 + TMath::PiOver2(), mom_vertex);
@@ -1002,7 +1000,9 @@ void PrtLutReco::Run(int start, int end) {
   { // track resolution with cherenkov ring fit
     auto r = fTrackAngle0->Fit("gaus","SQ");
     if (r > -1) track_res0 = r->Parameter(2);
-    r = fTrackAngle1->Fit("gaus","SQ");
+    TF1 *mgaus = new TF1("mgaus","gaus");
+    mgaus->SetParLimits(1,-0.7,0.7);
+    r = fTrackAngle1->Fit("mgaus","SQ");
     if (r > -1) track_res1 = r->Parameter(2);
     r = fTrackAngle2->Fit("gaus","SQ");
     if (r > -1) track_res2 = r->Parameter(2);
@@ -1265,6 +1265,7 @@ void PrtLutReco::Run(int start, int end) {
       ft.add_canvas("track_smear" + nid, 800, 400);
       ft.normalize(fTrackAngle0, fTrackAngle1);     
       fTrackAngle1->SetLineColor(kRed);
+      fTrackAngle0->GetXaxis()->SetRangeUser(-10, 10);
       fTrackAngle0->Draw();
       fTrackAngle1->Draw("same");
     }
@@ -1358,8 +1359,8 @@ void PrtLutReco::FitRing(double &x0, double &y0, double &theta) {
   fitter->ExecuteCommand("SET PRINT", arglist, 1);
  
   fitter->SetFCN(circleFcn);
-  fitter->SetParameter(0, "x0", 0, 0.005, -0.05, 0.05);
-  fitter->SetParameter(1, "y0", 0, 0.005, -0.05, 0.05);
+  fitter->SetParameter(0, "x0", 0, 0.0005, -0.015, 0.015);
+  fitter->SetParameter(1, "y0", 0, 0.0005, -0.015, 0.015);
   fitter->SetParameter(2, "R", theta, 0.001, theta - 0.015, theta + 0.015);
 
   // fitter->FixParameter(0);
