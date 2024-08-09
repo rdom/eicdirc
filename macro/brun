@@ -38,10 +38,15 @@ echo $tseed
 # done
 
 for i in {0..19}; do
-    ../build/eicdirc -r 0 -seed $tseed$i -o h_b$i.root  \
-		     -theta 30 -l 3 -e 150 -b 1 &
+    ../build/eicdirc -r 0 -seed $tseed$i -o h_b$i.root -x mix_pik \
+		     -theta 90 -phi 995 -l 3 -field 2 -e 150 -b 1 & 
+    # -theta 90 -phi 0 -l 3 -field 0 -e 150 -b 1 &
 done
-			 # -theta 0 -x mix_pik -w 0 -g 1 -c 2031 -l 3 -ev 0 -p 6 \
+
+
+    
+# -theta 0 -x mix_pik -w 0 -g 1 -c 2031 -l 3 -ev 0 -p 6 \
+
 # for i in {0..19}; do
 #     ../build/eicdirc -r 0 -seed $tseed$i -o h_b$i.root  \
 # 		     -theta 0 -x pi+ -w 0 -g 11 -c 4 -l 3 -ev 0 -p 6 \

@@ -98,8 +98,11 @@ void PrtFastSimModelTracker::DoIt(const G4FastTrack &aFastTrack, G4FastStep &aFa
   aFastStep.ProposePrimaryTrackFinalPosition(endTrack.GetPosition(), false);
 
   auto dir = track.GetMomentumDirection();
-  double mom = track.GetMomentum().mag();
+  auto vmom = track.GetMomentum();
+  double mom = vmom.mag();
 
+  PrtManager::Instance()->getEvent()->setMomentum(TVector3(vmom.x(), vmom.y(), vmom.z()));
+  
   // // use 0.5 mrad smearing for PDF 
   // if(G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID() > 5000 && fTrackingRes < 0.0005) fTrackingRes = 0.0005;
 

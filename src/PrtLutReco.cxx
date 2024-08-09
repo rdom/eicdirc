@@ -644,8 +644,8 @@ void PrtLutReco::Run(int start, int end) {
       // oo = corr;
 
       double theta_diff1 = 1000 * (oo.Theta() - mom_before.Theta());
-      std::cout << "TD  " << corr.Theta() * 1000 << "," << corr.Phi() << " ------------ "
-                << theta_diff0 << " " << theta_diff1 << " " << theta_diff2 << std::endl;
+      // std::cout << "TD  " << corr.Theta() * 1000 << "," << corr.Phi() << " ------------ "
+      //           << theta_diff0 << " " << theta_diff1 << " " << theta_diff2 << std::endl;
 
       gg_i = 0;
       gg_gr.Set(0);
