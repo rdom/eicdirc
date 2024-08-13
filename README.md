@@ -52,10 +52,10 @@ example:
 		4    solenoidal 3.0T
 
 -g    geometry configuration
-                0    ATHENA one barbox
+                0    generic 
                 1    ePIC one barbox (default)
 		2    CORE one barbox
-		10   ATHENA whole DIRC
+		10   generic whole DIRC
 		11   ePIC whole DIRC
 		12   CORE whole DIRC
 		
@@ -70,7 +70,7 @@ example:
 		8    split prism with split plate, lens between plate and EV
 		9    split prism with split plate, lens between bars and plate
 
--h    number of bars in one radiator box
+-h    number of bars in one radiator box (use with "-g 0")
 
 -c    PMT layout
                 0    4x6 standard MCPs (pixel size == mcp size)

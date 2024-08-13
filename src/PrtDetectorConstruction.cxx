@@ -53,7 +53,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   fTest1 = fRun->getTest1();
   fTest2 = fRun->getTest2();
   fTest3 = fRun->getTest3();
-
+ 
   fNRow = 6;
   fNCol = 4;
   if (fNBar < 0) fNBar = 1;
@@ -63,9 +63,6 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   fHall[2] = 3500;
   
   fBar[0] = 17; fBar[1] = 32; fBar[2] = 1050;
-
-  // fPrizm[0] = 170; fPrizm[1] = 300; fPrizm[2] = 30+300*tan(37*deg); fPrizm[3] = 30;
-  // fPrizm[0] = 390; fPrizm[1] = 300; fPrizm[3] = 50; fPrizm[2]= fPrizm[3]+300*tan(32*deg);
 
   fPrizm[0] = 350;
   fPrizm[1] = 300;
@@ -83,7 +80,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
 
   fBBWindow[0] = 30;
   fBBWindow[1] = fPrizm[0];
-  fBBWindow[2] = 0; // fTest3;
+  fBBWindow[2] = 0;
 
   fMcpTotal[0] = fMcpTotal[1] = 53 + 4;
   fMcpTotal[2] = 1;
@@ -91,23 +88,23 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   fMcpActive[2] = 1;
   fLens[0] = fLens[1] = fPrizm[3];
   fLens[2] = 12;
-  fRadius = 970;
+  fRadius = 770.5;
   fNBoxes = 16;
   
-  if (fGeomType == 0 || fGeomType == 10) { // ATHENA
-    fNBoxes = 16;
-    fRadius = 972.8; // middle of the barbox at 90 degree
-    fNBar = 10;
+  fBoxWidth = fPrizm[0];
+
+  if (fGeomType == 0 || fGeomType == 10) { // generic
+    fNBoxes = 12;
+    if (fNBar == 0) fNBar = 10;    
+    fBar[1] = fBoxWidth / (double)fNBar;
     fBar[2] = 1100;
   }
 
-  fBoxWidth = fPrizm[0];
-  
   if (fGeomType == 1 || fGeomType == 11) { // ePIC ECCE
     fNBoxes = 12;
     // fRadius = 700 + 0.5 * fBar[0]; // old = 729.6;
     fRadius = 770.5;
-    fNBar = 10;
+    fNBar = 5;
     fBar[2] = 1225; // BaBar bars
     fBar[1] = 35;
     fPrizm[0] = 350 + 1.35;
@@ -119,18 +116,10 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
     fRadius = 501.7;
     fNBar = 5;
     fBar[2] = 700;
-
     fNRow = 3;
     fNCol = 4;
     fPrizm[0] = 175;
-
-    // fNBoxes = 12; // alternative
-    // fNBar = 7;
-    // fPrizm[0] = 245;
   }
-
-  // fBar[1] = (fPrizm[0] - (fNBar - 1) * fBarsGap) / fNBar;
-  // std::cout << "N bars " << fNBar << " bar width " << fBar[1] << std::endl;
 
   fMirror[0] = fBar[0] + 1;
   fMirror[1] = fBoxWidth;
@@ -821,7 +810,6 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     fNpix2 = 16;
     fRun->setNpix(fNpix1 * fNpix1);
     // fRun->setTest2(fMcpActive[0] / fNpix1);
-    // fRun->setNpix(fNpix1 * fNpix1);
 
     int mcpId = 0;
     int pixId = 0;
