@@ -56,7 +56,6 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
  
   fNRow = 6;
   fNCol = 4;
-  if (fNBar < 0) fNBar = 1;
 
   fHall[0] = 1500;
   fHall[1] = 1500;
@@ -102,7 +101,6 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
 
   if (fGeomType == 1 || fGeomType == 11) { // ePIC ECCE
     fNBoxes = 12;
-    // fRadius = 700 + 0.5 * fBar[0]; // old = 729.6;
     fRadius = 770.5;
     fNBar = 5;
     fBar[2] = 1225; // BaBar bars
@@ -177,7 +175,6 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   fRun->setRadiatorH(fBar[0]);
 
   fPrtRot = new G4RotationMatrix();
-  // create a messenger for this class
   fGeomMessenger = new PrtDetectorConstructionMessenger(this);
 }
 
