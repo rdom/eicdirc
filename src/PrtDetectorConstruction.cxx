@@ -102,7 +102,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   if (fGeomType == 1 || fGeomType == 11) { // ePIC ECCE
     fNBoxes = 12;
     fRadius = 770.5;
-    fNBar = 5;
+    fNBar = 10;
     fBar[2] = 1225; // BaBar bars
     fBar[1] = 35;
     fPrizm[0] = 350 + 1.35;
