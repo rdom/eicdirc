@@ -150,7 +150,6 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
       double ang4 = atan2(x4, y4);
       if (acharge > 0.) phi = -ang4;      // pos
       else if (acharge < 0.) phi = M_PI - ang3; // neg
-      std::cout << "phi " << phi * TMath::RadToDeg() << std::endl;
       //
     } else {
       ypos = 0.5 * fRadiatorW;

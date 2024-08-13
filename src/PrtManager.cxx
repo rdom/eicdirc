@@ -25,17 +25,6 @@ PrtManager::PrtManager(TString filename, PrtRun *run) {
     fTree->Branch("PrtEvent", "PrtEvent", &fEvent, 64000, 2);
   }
 
-  if (fRunType == 1 || fRunType == 7 || fRunType == 11) {
-    fLut = new TClonesArray("PrtLutNode");
-    fTree = new TTree("prtlut", "Look-up table for the geometrical reconstruction.");
-    fTree->Branch("LUT", &fLut, 256000, 2);
-    TClonesArray &fLuta = *fLut;
- 
-    for (Long64_t i = 0; i < fRun->getNpmt() * fRun->getNpix(); i++) {
-      new ((fLuta)[i]) PrtLutNode(i);
-    }
-  }
-
   fnX1 = TVector3(1, 0, 0);
   fnY1 = TVector3(0, 1, 0);
   fCriticalAngle = asin(1.00028 / 1.47125);
@@ -46,6 +35,19 @@ PrtManager *PrtManager::Instance(TString outfile, PrtRun *run) {
     fInstance = new PrtManager(outfile, run);
   }
   return fInstance;
+}
+
+void PrtManager::initializeLut() {
+  if (fRunType == 1 || fRunType == 7 || fRunType == 11) {
+    fLut = new TClonesArray("PrtLutNode");
+    fTree = new TTree("prtlut", "Look-up table for the geometrical reconstruction.");
+    fTree->Branch("LUT", &fLut, 256000, 2);
+    TClonesArray &fLuta = *fLut;
+
+    for (Long64_t i = 0; i < fRun->getNpmt() * fRun->getNpix(); i++) {
+      new ((fLuta)[i]) PrtLutNode(i);
+    }
+  }
 }
 
 void PrtManager::addEvent(PrtEvent event) {

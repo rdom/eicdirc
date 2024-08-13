@@ -33,6 +33,7 @@ class PrtManager {
   PrtManager(TString outfile, PrtRun *run);
   ~PrtManager(){};
   static PrtManager *Instance(TString outfile = "hits.root", PrtRun *run = nullptr);
+  void initializeLut();
   void save();
   void fill();
   void fillLut();

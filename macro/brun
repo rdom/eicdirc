@@ -39,7 +39,7 @@ echo $tseed
 
 for i in {0..19}; do
     ../build/eicdirc -r 0 -seed $tseed$i -o h_b$i.root -x mix_pik \
-		     -theta 90 -phi 995 -l 3 -field 2 -e 150 -b 1 & 
+		     -theta 100 -phi 995 -l 3 -field 0 -e 150 -b 1 & 
     # -theta 90 -phi 0 -l 3 -field 0 -e 150 -b 1 &
 done
 
