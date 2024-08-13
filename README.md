@@ -91,7 +91,8 @@ example:
 
 -phi  azimuth angle between particle beam and bar radiator [deg]
                 0 default
-		use 990 - 999 to choose which bar should be hit (works also with -field 2, for > ~4 GeV/c)
+		use [990, 999] (corresponds to bar # [0,9]) to choose which bar should be hit (works also with -field 2, for > ~4 GeV/c)
+		same use of [990, 999] for LUT generation		
 
 -e    number of simulated events
 

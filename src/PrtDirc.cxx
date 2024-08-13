@@ -104,7 +104,6 @@ int main(int argc, char **argv) {
       particle = "opticalphoton";
       momentum = 3.18e-09;
       theta = 180;
-      phi = 0;
     }
   }
 

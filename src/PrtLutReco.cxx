@@ -607,7 +607,7 @@ void PrtLutReco::Run(int start, int end) {
       fHist4->SetStats(0);
       fHist4->GetXaxis()->SetTitle("#theta_{c}sin(#varphi_{c})");
       fHist4->GetYaxis()->SetTitle("#theta_{c}cos(#varphi_{c})");
-      fHist4->SetTitle(Form("Calculated from LUT, #theta = %1.2f#circ", theta));
+      fHist4->SetTitle(Form("#theta = %1.1f#circ", theta));
       fHist4->Draw("colz");
 
       double x0(0), y0(0), a(fAngle[2]);
@@ -1167,7 +1167,7 @@ void PrtLutReco::Run(int start, int end) {
 
     if (fRingFit) { // cherenkov ring
 
-      ft.add_canvas("ring" + nid, 500, 500);
+      ft.add_canvas("ring" + nid, 800, 800);
 
       fHist4->SetStats(0);
       fHist4->GetXaxis()->SetTitle("#theta_{c}sin(#varphi_{c})");

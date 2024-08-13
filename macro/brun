@@ -26,33 +26,22 @@ echo $tseed
 # #LUT
 # ../build/eicdirc -r 1 $args -o lut.root \
 # 		 -theta 30 -x mix_pik -w 0 -g 1 -c 2031 -l 3 -ev 0 \
-# 		 -x "opticalphoton" -p "3.18 eV"  -e 1000000 -b 1 
-
+# 		 -x "opticalphoton" -p "3.18 eV"  -e 1000000 -b 1
 # root -b -q lutmean.C'("lut.root")'
 
-# #sim
-# for i in {0..19}; do
-#     ../build/eicdirc -r 0 -seed $tseed$i -o h_b$i.root  \
-# 		     -theta 30 -x mix_pik -p 6 -w 10 -g 1 -c 2031 -l 10 -field 0 \
-# 		     -trackingres 0.0005 -timeres 0.1 -timecut 0.2 -e 150 -v 2 -b 1 -ev 3 &
+# for i in {0..9}; do
+#     ../build/eicdirc -r 1 -o ../data/lut.$i.root -phi 99$i -e 5000000 -b 1 &
 # done
+# waitForMe 1
+# for i in {0..9}; do
+#     root -b -q loadlib.C lutmean.C"(\"../data/lut.$i.root\")" &
+# done
+
 
 for i in {0..19}; do
     ../build/eicdirc -r 0 -seed $tseed$i -o h_b$i.root -x mix_pik \
-		     -theta 100 -phi 995 -l 3 -field 0 -e 150 -b 1 & 
-    # -theta 90 -phi 0 -l 3 -field 0 -e 150 -b 1 &
+		     -theta 155 -phi 999 -field 0 -e 150 -b 1 & 
 done
-
-
-    
-# -theta 0 -x mix_pik -w 0 -g 1 -c 2031 -l 3 -ev 0 -p 6 \
-
-# for i in {0..19}; do
-#     ../build/eicdirc -r 0 -seed $tseed$i -o h_b$i.root  \
-# 		     -theta 0 -x pi+ -w 0 -g 11 -c 4 -l 3 -ev 0 -p 6 \
-# 		     -trackingres 0.0 -timeres 0.1 -timecut 0.2 -e 2500 -v 2 -b 1 &
-# done
-
 
 #reco
 # ../build/eicdirc -r 2 -i sim.root -u lut.avr.root -trackingres 0.0005 -timeres 0.1 -timecut 0.2 -e 1000 -v 3

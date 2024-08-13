@@ -14,7 +14,6 @@ void lutmean(TString inFile = "../data/lut.root") {
 
   auto run = t.get_run(inFile);
   int nch = run->getNpmt() * run->getNpix();
-std::cout << "nch " << nch << std::endl;
  
   TClonesArray &fLutaNew = *fLutNew;
   for (Long64_t n = 0; n < nch; n++) {

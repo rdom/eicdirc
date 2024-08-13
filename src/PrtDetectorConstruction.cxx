@@ -170,7 +170,8 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
     fNRow = 3;
     fNCol = 2;
   }
-
+  
+  fRun->setRadiator(fNBar);
   fRun->setRadiatorW(fBar[1]);
   fRun->setRadiatorH(fBar[0]);
 

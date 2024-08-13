@@ -25,8 +25,6 @@ PrtPrimaryGeneratorAction::PrtPrimaryGeneratorAction()
   fTracking = fRun->getTrackingResTheta();
 
   fParticleGun = new G4ParticleGun(n_particle);
-
-  // create a messenger for this class
   fGunMessenger = new PrtPrimaryGeneratorMessenger(this);
 
   // default kinematic
@@ -115,7 +113,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
     int kTargetBar = -1;
     double fTargetBarY = 0;
     double fBarsGap = 0.15; //!!!! ALSO DEFINED IN PrtDetectorConstruction
-    double radius =  770.5; // ePIC
+    double radius = 770.5;  // ePIC
     double acharge = fParticleGun->GetParticleCharge();
     double momentum = fParticleGun->GetParticleMomentum();
     if (fRun->getPhi() >= 990 && fRun->getPhi() <= 999) {
@@ -129,7 +127,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
       double Bval = (-1.75 + (1.75 - 1.6) * (distheta / 60.)) * CLHEP::tesla;
       double pt = momentum * sin(theta);
       double R = 1000. * (pt / CLHEP::GeV) / 0.3 / fabs(Bval / CLHEP::tesla); // meters->mm
-      if(fField == 0) R = 1E12; // no field
+      if (fField == 0) R = 1E12;                                              // no field
       double x1 = 0;                                                          // primary vertex
       double y1 = 0;                                                          // primary vertex
       double x2 = radius + fRadiatorH / 2.;                                   // target point
@@ -196,16 +194,17 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
   }
 
   if (fRunType == 1) { // LUT generation
+    int targetbar = 5;
+    int bars = fRun->getRadiator();
+    if (fRun->getPhi() >= 990 && fRun->getPhi() <= 999)  targetbar = fRun->getPhi() - 990; // [0,9]
+    double barShift = (-0.5 * bars + targetbar) * fRadiatorW + 0.5 * fRadiatorW;
 
-    double barShift = 0.5 * fRadiatorW; // 390/12./2;
     if (fRun->getEv() == 1) barShift = 0.5 * 35;
     if (fGeomType == 2) barShift = 0;
 
     fParticleGun->SetParticlePosition(G4ThreeVector(-200, barShift, 0.5 * fRadiatorL + 630 - 0.2));
     G4ThreeVector v(0, 0, -1);
     v.setTheta(acos(G4UniformRand()));
-    // v.setTheta(0.3);
-    // v.setPhi( M_PI);
     v.setPhi(2 * M_PI * G4UniformRand());
 
     fParticleGun->SetParticlePolarization(G4RandomDirection());
@@ -213,13 +212,11 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
   }
 
   fParticleGun->GeneratePrimaryVertex(anEvent);
-
   G4ThreeVector dir = fParticleGun->GetParticleMomentumDirection();
   dir *= fParticleGun->GetParticleMomentum();
 
   // PrtManager::Instance()->getEvent()->setMomentum(TVector3(dir.x(), dir.y(), dir.z()));
   PrtManager::Instance()->setMomentum(TVector3(dir.x(), dir.y(), dir.z())); 
-
 }
 
 void PrtPrimaryGeneratorAction::SetOptPhotonPolar() {
