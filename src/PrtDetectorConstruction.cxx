@@ -817,8 +817,8 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     // fNpix1 = 32; // fMcpActive[1]/pixSize-1;
     // fNpix2 = 32; // fMcpActive[1]/pixSize-1;
 
-    fNpix1 = 25;
-    fNpix2 = 25;
+    fNpix1 = 16;
+    fNpix2 = 16;
     fRun->setNpix(fNpix1 * fNpix1);
     // fRun->setTest2(fMcpActive[0] / fNpix1);
     // fRun->setNpix(fNpix1 * fNpix1);
@@ -967,8 +967,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     new G4LogicalSkinSurface("MirrorSurfaceF", lFmirror, MirrorOpSurface);
   }
 
-  SetVisualization();
-  
+  SetVisualization();  
   PrtManager::Instance()->initializeLut();  
   return wExpHall;
 }
