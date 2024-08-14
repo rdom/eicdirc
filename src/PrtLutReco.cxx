@@ -311,6 +311,7 @@ void PrtLutReco::Run(int start, int end) {
   double trackingResTheta = frun->getTrackingResTheta();
   double trackingResPhi = frun->getTrackingResPhi();
   phi = frun->getPhi();
+  theta = frun->getTheta();
   if (phi >= 990) barid = phi - 990;
   std::cout << "-I- tracking resulution: dtheta = " << trackingResTheta
             << " dphi = " << trackingResPhi << " time res " << timeRes << std::endl;
@@ -331,7 +332,7 @@ void PrtLutReco::Run(int start, int end) {
   for (int ievent = start; ievent < nEvents && ievent < pdfstart; ievent++) {
     fChain->GetEntry(ievent);
 
-    theta = (fEvent->getMomentum().Angle(TVector3(0, 0, -1))) * TMath::RadToDeg();
+    // theta = (fEvent->getMomentum().Angle(TVector3(0, 0, -1))) * TMath::RadToDeg();
 
     int pid = fEvent->getPid();    
     int tnph_gr[5] = {0}, tnph_ti[5] = {0};
