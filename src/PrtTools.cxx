@@ -987,7 +987,7 @@ TGraph *PrtTools::fit_slices_x(TH2F *h, double minrange, double maxrange, double
     if (x < minrange || x > maxrange) continue;
     auto hp = ht->ProjectionY(Form("bin%d", i), i, i);
 
-    TVector3 res = fit((TH1F *)hp, fitrange, 100, 10);  
+    TVector3 res = fit((TH1F *)hp, fitrange, 100, 0.007);
     double y = 0;    
     if (ret == 0) y = res.X();
     if (ret == 1) y = res.Y();

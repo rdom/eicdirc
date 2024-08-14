@@ -30,7 +30,7 @@ echo $tseed
 # root -b -q lutmean.C'("lut.root")'
 
 # for i in {0..9}; do
-#     ../build/eicdirc -r 1 -o ../data/lut.$i.root -phi 99$i -e 5000000 -b 1 &
+#     ../build/eicdirc -r 1 -o ../data/lut.$i.root -phi 99$i -e 15000000 -b 1 &
 # done
 # waitForMe 1
 # for i in {0..9}; do
@@ -40,7 +40,7 @@ echo $tseed
 
 for i in {0..19}; do
     ../build/eicdirc -r 0 -seed $tseed$i -o h_b$i.root -x mix_pik \
-		     -theta 155 -phi 999 -field 0 -e 150 -b 1 & 
+		     -theta 90 -phi 990 -field 0 -e 150 -b 1 & 
 done
 
 #reco

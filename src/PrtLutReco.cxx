@@ -1011,7 +1011,7 @@ void PrtLutReco::Run(int start, int end) {
 
   { // chromatic corrections 
     fhChromL->SetStats(0);
-    auto g = ft.fit_slices_x(fhChromL, -0.00008, 0.00008, 0.03, 2, 0);
+    auto g = ft.fit_slices_x(fhChromL, -0.00008, 0.00008, 0.01, 2, 0);
     g->SetMarkerStyle(20);
     g->SetLineColor(kBlack);
     g->SetMarkerSize(1.5);
