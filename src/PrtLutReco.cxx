@@ -287,7 +287,7 @@ void PrtLutReco::Run(int start, int end) {
 
   TVector3 fnX1 = TVector3(1, 0, 0);
   TVector3 fnY1 = TVector3(0, 1, 0);
-  int nsHits(0), nsEvents(0);
+  int nsHits(0), nsEvents(0), barid(0);
 
   TString outFile = PrtManager::Instance()->getOutName();
   double theta(0), phi(0),
@@ -310,8 +310,11 @@ void PrtLutReco::Run(int start, int end) {
   trackRes = frun->getBeamSize();
   double trackingResTheta = frun->getTrackingResTheta();
   double trackingResPhi = frun->getTrackingResPhi();
-  std::cout << "-I- tracking resulution: dtheta = " << trackingResTheta <<  " dphi = " << trackingResPhi << " time res " << timeRes   << std::endl;
-  
+  phi = frun->getPhi();
+  if (phi >= 990) barid = phi - 990;
+  std::cout << "-I- tracking resulution: dtheta = " << trackingResTheta
+            << " dphi = " << trackingResPhi << " time res " << timeRes << std::endl;
+
   int nEvents = fChain->GetEntries();
   if (end == 0) end = nEvents;
 
@@ -1030,6 +1033,7 @@ void PrtLutReco::Run(int start, int end) {
     tree.Branch("mom", &mom, "mom/D");
     tree.Branch("theta", &theta, "theta/D");
     tree.Branch("phi", &phi, "phi/D");
+    tree.Branch("barid", &barid, "barid/I");
     tree.Branch("tofPid", &tofPid, "tofPid/I");
     tree.Branch("distPid", &distPid, "distPid/I");
     tree.Branch("likePid", &likePid, "likePid/I");
