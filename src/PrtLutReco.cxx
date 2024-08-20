@@ -410,15 +410,26 @@ void PrtLutReco::Run(int start, int end) {
       lenz = 0.5 * fRadiatorL - fEvent->getPosition().Z();
 
       double phi0 = cd.Phi();
-      if (dirz < 0) {
-        reflected = true;
-        lenz = 2 * fRadiatorL - lenz;
-	hitTime += cor[mcp].tr;
-      } else {
-        reflected = false;
-	hitTime += cor[mcp].td;
+
+      if (dirz < 0) reflected = true;
+      else reflected = false;
+
+      if (fabs(dirz) < 1E-6) { // dark noise hit
+        if (theta > 99) reflected = false;
+        else if (theta < 81) reflected = true;
+	else{
+	  if (hitTime < 42) reflected = false;
+	  else reflected = true;
+	}
       }
-      
+
+      if (reflected) {
+        lenz = 2 * fRadiatorL - lenz;
+        hitTime += cor[mcp].tr;
+      } else {
+        hitTime += cor[mcp].td;
+      }
+
       double theta0 = mom_vertex.Angle(dir0);
       fHist5->Fill(theta0 * TMath::Sin(phi0), theta0 * TMath::Cos(phi0));
 
@@ -494,10 +505,10 @@ void PrtLutReco::Run(int start, int end) {
 
           if (reflected) fPmt_tr[mcp]->Fill(tdiff);
           else fPmt_td[mcp]->Fill(tdiff);
-	  	  
+
           if (fabs(tangle - fAngle[fp2]) > 0.05 && fabs(tangle - fAngle[fp1]) > 0.05) continue;
 
-          if (fRingFit) {
+          if (fRingFit && pid == 2) {
             if ((fabs(tangle - fAngle[fp2]) < 0.01 || fabs(tangle - fAngle[fp1]) < 0.01)) {
               TVector3 rdir = TVector3(-dir.X(), dir.Y(), dir.Z());
               // rdir.RotateX(0.004);
@@ -608,12 +619,13 @@ void PrtLutReco::Run(int start, int end) {
     }
 
     if (fRingFit) {
+      // ft.add_canvas(Form("ring_%d",ievent), 1200, 1200);
       fHist4->SetStats(0);
       fHist4->GetXaxis()->SetTitle("#theta_{c}sin(#varphi_{c})");
       fHist4->GetYaxis()->SetTitle("#theta_{c}cos(#varphi_{c})");
-      fHist4->SetTitle(Form("#theta = %1.1f#circ", theta));
+      fHist4->SetTitle(Form("%1.0f#circ polar angle", theta));
       fHist4->Draw("colz");
-
+      // fHist4->SetMaximum(1);
       double x0(0), y0(0), a(fAngle[2]);
       a = 0.5 * (fAngle[fp1] + fAngle[fp2]);
       FitRing(x0, y0, a);
@@ -622,16 +634,16 @@ void PrtLutReco::Run(int start, int end) {
       TLegend *leg = new TLegend(0.32, 0.42, 0.67, 0.59);
       leg->SetFillStyle(0);
       leg->SetBorderSize(0);
-      leg->AddEntry((TObject *)0, Form("Entries %0.0f", fHist4->GetEntries()), "");
-      leg->AddEntry((TObject *)0, Form("#Delta#theta_{c} %f [mrad]", corr.Theta() * 1000), "");
-      leg->AddEntry((TObject *)0, Form("#Delta#varphi_{c} %f [rad]", corr.Phi()), "");
-      leg->Draw();
+      // leg->AddEntry((TObject *)0, Form("Entries %0.0f", fHist4->GetEntries()), "");
+      leg->AddEntry((TObject *)0, Form("#Delta#theta_{c} %1.2f [mrad]", corr.Theta() * 1000), "");
+      leg->AddEntry((TObject *)0, Form("#Delta#varphi_{c} %1.2f [rad]", corr.Phi()), "");
+      leg->Draw("same");
 
       TArc *arc = new TArc(x0, y0, fAngle[2]);
-      arc->SetLineColor(kRed);
-      arc->SetLineWidth(1);
+      arc->SetLineColor(kBlack);
+      arc->SetLineWidth(2);
       arc->SetFillStyle(0);
-      arc->Draw();
+      arc->Draw("same");
 
       TVector3 oo = mom_vertex;
       oo.RotateY(-corr.Theta());
@@ -654,9 +666,11 @@ void PrtLutReco::Run(int start, int end) {
       gg_i = 0;
       gg_gr.Set(0);
 
-      // gPad->Update();
-      // gPad->WaitPrimitive();
-      // fHist4->Reset();
+      gPad->Update();      
+      gPad->WaitPrimitive();
+
+      // ft.save_canvas("reco", 1, 0, 1);
+      fHist4->Reset();
 
       fTrackAngle1->Fill(theta_diff1);
     }
@@ -1177,7 +1191,7 @@ void PrtLutReco::Run(int start, int end) {
       fHist4->SetStats(0);
       fHist4->GetXaxis()->SetTitle("#theta_{c}sin(#varphi_{c})");
       fHist4->GetYaxis()->SetTitle("#theta_{c}cos(#varphi_{c})");
-      fHist4->SetTitle(Form("Calculated from LUT, #theta = %1.2f#circ", theta));
+      fHist4->SetTitle(Form("%1.0f#circ polar angle", theta));
       fHist4->Draw("colz");
       double x0(0), y0(0), a = 0.5 * (fAngle[2] + fAngle[3]);
       FitRing(x0, y0, a);
@@ -1187,13 +1201,13 @@ void PrtLutReco::Run(int start, int end) {
       leg->SetFillStyle(0);
       leg->SetBorderSize(0);
       leg->AddEntry((TObject *)0, Form("Entries %0.0f", fHist4->GetEntries()), "");
-      leg->AddEntry((TObject *)0, Form("#Delta#theta_{c} %f [mrad]", corr.Theta() * 1000), "");
-      leg->AddEntry((TObject *)0, Form("#Delta#varphi_{c} %f [rad]", corr.Phi()), "");
+      leg->AddEntry((TObject *)0, Form("#Delta#theta_{c} %1.2f [mrad]", corr.Theta() * 1000), "");
+      leg->AddEntry((TObject *)0, Form("#Delta#varphi_{c} %1.2f [rad]", corr.Phi()), "");
       leg->Draw();
 
       TArc *arc = new TArc(x0, y0, fAngle[2]);
-      arc->SetLineColor(kRed);
-      arc->SetLineWidth(1);
+      arc->SetLineColor(kBlack);
+      arc->SetLineWidth(2);
       arc->SetFillStyle(0);
       arc->Draw();
       gg_i = 0;
@@ -1354,6 +1368,7 @@ void PrtLutReco::FitRing(double &x0, double &y0, double &theta) {
     }
   }
   gg_gr = ff_gr;
+  ROOT::Math::MinimizerOptions::SetDefaultPrintLevel(-1);
 
   // Fit a circle to the graph points
   TVirtualFitter::SetDefaultFitter("Minuit"); // default is Minuit
@@ -1371,7 +1386,7 @@ void PrtLutReco::FitRing(double &x0, double &y0, double &theta) {
   // fitter->FixParameter(0);
   // fitter->FixParameter(1);
   // fitter->FixParameter(2);
-  
+
   fitter->ExecuteCommand("MINIMIZE", arglist, 0);
 
   // fitter->SetFCN(circleFcn2);
@@ -1416,7 +1431,7 @@ double PrtLutReco::FindStartTime(PrtEvent *evt) {
     dirz = hit.getMomentum().Z();
 
     if (dirz < 0) reflected = kTRUE;
-    else reflected = kFALSE;
+    else reflected = kFALSE;    
     if (reflected) lenz = 2 * fRadiatorL - lenz;
 
     PrtLutNode *node = (PrtLutNode *)fLut->At(ch);
