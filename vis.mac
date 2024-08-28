@@ -143,21 +143,21 @@
 # # /vis/viewer/set/targetPoint 0 0 15.6294 cm
 # /vis/viewer/set/targetPoint 0 0 1 m
 
-# # side xz
-# /vis/viewer/set/viewpointVector 1.31839e-16 -1 -6.93889e-18
-# /vis/viewer/set/upVector 0 1 0
-# /vis/viewer/set/projection orthogonal
-# /vis/viewer/zoomTo 1.4
-# /vis/viewer/scaleTo 1 1 1
-# /vis/viewer/set/targetPoint 0.8 0 0.8 m
-# /vis/viewer/set/rotationStyle freeRotation
-
-# side yz
-/vis/viewer/set/viewpointVector 1 0 0
+# side xz
+/vis/viewer/set/viewpointVector 1.31839e-16 -1 -6.93889e-18
 /vis/viewer/set/upVector 0 1 0
 /vis/viewer/set/projection orthogonal
-/vis/viewer/zoomTo 6
-/vis/viewer/set/targetPoint 0.8 0 2.3 m
+/vis/viewer/zoomTo 1.4
+/vis/viewer/scaleTo 1 1 1
+/vis/viewer/set/targetPoint 0.8 0 0.8 m
+/vis/viewer/set/rotationStyle freeRotation
+
+# # side yz
+# /vis/viewer/set/viewpointVector 1 0 0
+# /vis/viewer/set/upVector 0 1 0
+# /vis/viewer/set/projection orthogonal
+# /vis/viewer/zoomTo 6
+# /vis/viewer/set/targetPoint 0.8 0 2.3 m
 
 # # side wedge
 # /vis/viewer/set/viewpointVector -5.20417e-17 1 -3.46945e-18
@@ -194,3 +194,16 @@
 # /vis/filtering/trajectories/create/attributeFilter
 # /vis/filtering/trajectories/attributeFilter-0/setAttribute FVPath
 # /vis/filtering/trajectories/attributeFilter-0/addValue wPrizm:0
+
+
+# # side xy zoom
+# /vis/viewer/set/viewpointVector 0 0 -1
+# /vis/viewer/set/upVector 1 0 0
+# /vis/viewer/set/projection orthogonal
+# /vis/viewer/zoomTo 10
+# /vis/viewer/scaleTo 1 1 1
+# /vis/viewer/set/targetPoint 0.85 0 1 m
+
+# /vis/geometry/set/visibility lPrizm 0 false
+# /vis/geometry/set/visibility lFd 2 false
+# /vis/viewer/set/style wireframe
