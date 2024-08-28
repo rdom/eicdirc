@@ -1071,8 +1071,8 @@ void glob_circleFcn2(int &, double *, double &f, double *par, int) {
     double u = x[i] + par[0];
     double v = y[i] + par[1];
     double dr = par[2] - TMath::Sqrt(u * u + v * v);
-    if (dr < 0.05) f += dr * dr;
-    else f += fabs(dr);
+     if (dr < 0.01) f += dr * dr;
+     else f += fabs(dr);
   }
 }
 
@@ -1356,7 +1356,9 @@ void PrtReco::geom_reco(PrtEvent *event, TVector3 mom, bool ringfit) {
         if (fabs(tdiff) > fTimeCut + luttime * 0.035) continue;
 
         if (ringfit) {
-          if (fabs(tangle - fAngle[fp2]) > 0.015 && fabs(tangle - fAngle[fp1]) > 0.015) continue;
+	  double chringcut = 0.007;
+	  if(frun->getTrackingResTheta() > 0.002) chringcut = 0.015;
+          if (fabs(tangle - fAngle[fp2]) > chringcut && fabs(tangle - fAngle[fp1]) > chringcut) continue;
 
           TVector3 rdir = TVector3(-dir.X(), dir.Y(), dir.Z());
           // rdir.RotateX(0.004);
