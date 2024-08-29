@@ -1357,7 +1357,7 @@ void PrtReco::geom_reco(PrtEvent *event, TVector3 mom, bool ringfit) {
 
         if (ringfit) {
 	  double chringcut = 0.007;
-	  if(frun->getTrackingResTheta() > 0.002) chringcut = 0.015;
+	  if(frun->getTrackingResTheta() > 0.002) chringcut = 0.01;
           if (fabs(tangle - fAngle[fp2]) > chringcut && fabs(tangle - fAngle[fp1]) > chringcut) continue;
 
           TVector3 rdir = TVector3(-dir.X(), dir.Y(), dir.Z());

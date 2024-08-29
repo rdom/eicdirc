@@ -16,7 +16,7 @@ cmake -DAI=1 ..
 
 
 #test event display
-./eicdirc -r 0 -theta 30 -x "pi+" -p 6.0 -w 0 -h 11 -c 2031 -l 3 -v 0 -gz 1 -g 1 -ev 0 -e 1
+./eicdirc -r 0 -theta 30 -x "pi+" -p 6.0 -e 1
 ```
 
 
@@ -25,7 +25,7 @@ cmake -DAI=1 ..
 eicdirc [OPTION] [ARGUMENT] ... [OPTION] [ARGUMENT]
 
 example:
-./eicdirc -r 0 -theta 30 -x "pi+" -p 6.0 -w 0 -h 11 -c 2031 -l 3 -v 0 -gz 1 -g 1 -ev 0 -e 1
+./eicdirc -r 0 -theta 30 -x "pi+" -p 6.0 -e 1
 ```
 ## Options
 ```
