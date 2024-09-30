@@ -95,11 +95,14 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
     else if (pdg == 10004) fPid = 4;
     else if (pdg == 10005 && fPid != 3) fPid = 3;
     else if (pdg == 10005) fPid = 4;
+
     fParticleGun->SetParticleDefinition(fParticle[fPid]);
+   
   } else {
     fParticleGun->SetParticleDefinition(fParticleOP);
   }
   PrtManager::Instance()->getEvent()->setPid(fPid);
+
   G4ThreeVector vec(0, 0, 1);
   if (fRunType == 0 || fRunType == 10 || fRunType == 5) { // simulation
     

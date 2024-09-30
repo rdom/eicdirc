@@ -207,3 +207,5 @@
 # /vis/geometry/set/visibility lPrizm 0 false
 # /vis/geometry/set/visibility lFd 2 false
 # /vis/viewer/set/style wireframe
+
+# /vis/geometry/set/colour lBar 1 0 1 0.9 0.3

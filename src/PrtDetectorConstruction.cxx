@@ -32,14 +32,12 @@
 #include "G4AutoDelete.hh"
 #include "G4ProductionCuts.hh"
 
-
 #include "PrtManager.h"
 #include "PrtBarSD.h"
 #include "PrtPrizmSD.h"
 #include "PrtPixelSD.h"
 #include "PrtField.h"
 #include "PrtFastSimModelTracker.h"
-
 
 PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction() {
 
@@ -1279,7 +1277,7 @@ void PrtDetectorConstruction::SetVisualization() {
   if(fBBWindow[2] > 0.1) lBBWindow->SetVisAttributes(waBar);
   lBar->SetVisAttributes(waBar);
   lExpVol->SetVisAttributes(waBar);
-  
+
   G4VisAttributes *waGlue = new G4VisAttributes(G4Colour(0., 0.4, 0.9, 0.1));
   waGlue->SetVisibility(true);
   lGlue->SetVisAttributes(waGlue);

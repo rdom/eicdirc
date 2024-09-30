@@ -196,6 +196,8 @@ PrtReco::PrtReco(TString infile, TString lutfile, TString pdffile, TString nnfil
       std::cout << "-I- reading  " << fPdfPath << std::endl;
       TFile pdfFile(fPdfPath);
       int binfactor = (int)(fTimeRes * 1000 / 50. + 0.1);
+      std::cout << "binfactor " << binfactor << std::endl;
+      
       for (int h : {fp1, fp2}) {
         for (int i = 0; i < fmaxch; i++) {
           // auto hpdf = (TH1F *)pdfFile.Get(Form("h_%d_%d",h, i));
@@ -1356,7 +1358,7 @@ void PrtReco::geom_reco(PrtEvent *event, TVector3 mom, bool ringfit) {
         if (fabs(tdiff) > fTimeCut + luttime * 0.035) continue;
 
         if (ringfit) {
-	  double chringcut = 0.007;
+	  double chringcut = 0.005;
 	  if(frun->getTrackingResTheta() > 0.002) chringcut = 0.01;
           if (fabs(tangle - fAngle[fp2]) > chringcut && fabs(tangle - fAngle[fp1]) > chringcut) continue;
 
