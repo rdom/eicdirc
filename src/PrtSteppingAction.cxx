@@ -46,6 +46,7 @@ void PrtSteppingAction::UserSteppingAction(const G4Step *step) {
 
   if (prevname == "wMcp" && postvname == "wDirc") track->SetTrackStatus(fStopAndKill);
   if (prevname == "wFd" && postvname == "wDirc") track->SetTrackStatus(fStopAndKill);
-  if (prevname == "wBBWindow" && postvname == "wDirc") track->SetTrackStatus(fStopAndKill);
+  if (prevname == "wBWindow" && postvname == "wDirc") track->SetTrackStatus(fStopAndKill);
+  if (prevname == "wCookie" && postvname == "wDirc") track->SetTrackStatus(fStopAndKill);
   if (prevname == "wMcp" && postvname == "wPixel") track->SetTrackStatus(fStopButAlive);
 }

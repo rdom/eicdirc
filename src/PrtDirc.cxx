@@ -171,6 +171,7 @@ int main(int argc, char **argv) {
   run->setCorrection(correction);
   run->setTimeSigma(timeSigma);
   run->setTimeCut(timeCut);
+  run->setStudy(study);
   run->setTest1(testVal1);
   run->setTest2(testVal2);
   run->setTest3(testVal3);

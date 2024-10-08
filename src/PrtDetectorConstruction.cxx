@@ -43,6 +43,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
 
   fRun = PrtManager::Instance()->getRun();
   fRunType = fRun->getRunType();
+  fStudy = fRun->getStudy();
   fGeomType = fRun->getGeometry();
   fEvType = fRun->getEv();
   fMcpLayout = fRun->getPmtLayout();
@@ -75,9 +76,13 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   fPrizmT[4] = 290;
   fPrizmT[5] = 290 * cos(fdTilt);
 
-  fBBWindow[0] = 30;
-  fBBWindow[1] = fPrizm[0];
-  fBBWindow[2] = 0;
+  fBWindow[0] = 55;
+  fBWindow[1] = fPrizm[0];
+  fBWindow[2] = 0;
+
+  fCookie[0] = 55;
+  fCookie[1] = fPrizm[0];
+  fCookie[2] = 0;
 
   fMcpTotal[0] = fMcpTotal[1] = 53 + 4;
   fMcpTotal[2] = 1;
@@ -142,6 +147,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   if (fEvType == 4) {
     fFd[1] = fPrizmT[4];
   }
+  
   if (fEvType == 3 || fEvType == 7 || fEvType == 9 ) {
     fLens[0] =  fBar[0];
     fLens[2] = 12;
@@ -161,14 +167,32 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
     if (fEvType == 8 || fEvType == 9) fLens[1] = 0.5 * fBoxWidth;
   }
 
-
   if (fMcpLayout == 4) {
     fMcpTotal[0] = fMcpTotal[1] = 120;
     fMcpActive[0] = fMcpActive[1] = 108;
     fNRow = 3;
     fNCol = 2;
   }
-  
+
+  if (fStudy == 103) { //
+    fLens[0] = fBar[0];
+    fLens[2] = 12;
+  }
+
+  if (fStudy == 100) {
+    fBWindow[2] = 5;
+  }
+
+  if (fStudy == 101) { // cookie
+    fBWindow[2] = 5;
+    fCookie[2] = 3;
+  }
+
+  if (fStudy == 102) { // air gap
+    fBWindow[2] = 5;
+    fCookie[2] = 0.1;
+  }
+
   fRun->setRadiator(fNBar);
   fRun->setRadiatorW(fBar[1]);
   fRun->setRadiatorH(fBar[0]);
@@ -242,14 +266,6 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   lGlue = new G4LogicalVolume(gGlue, epotekMaterial, "lGlue", 0, 0, 0);
   G4Box *gGlueE = new G4Box("gGlueE", 0.5 * evprismheight, 0.5 * fBoxWidth, 0.5 * gluethickness);
   lGlueE = new G4LogicalVolume(gGlueE, epotekMaterial, "lGlueE", 0, 0, 0);
-
-  // Window
-  if (fBBWindow[2] > 0.1) {
-    G4Box *gBBWindow = new G4Box("gBBWindow", 0.5 * fBBWindow[0], 0.5 * fBBWindow[1], 0.5 * fBBWindow[2]);
-    lBBWindow = new G4LogicalVolume(gBBWindow, BarMaterial, "lBBWindow", 0, 0, 0);    
-    new G4PVPlacement(0, G4ThreeVector(rshift, 0, 0.5 * (dirclength + fBBWindow[2])), lBBWindow,
-		      "wBBWindow", lDirc, false, 0);
-  }
     
   // Tracker
   G4Box *gTracker = new G4Box("gTracker", 0.5, fNBar * 0.5 * fBar[1], 4 * 0.5 * fBar[2]);
@@ -350,10 +366,10 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
       cr2 = r2;
     }
     std::cout << "cr2 " << cr2 << std::endl;
-    
+
     // fLens[2]
-    double optimallt= (2 * lensMinThikness + r2 - sqrt(r2 * r2 - cr2 * cr2) + lensMinThikness);
-    std::cout << "Used lens thickness = " << fLens[2] << " optimal = "<< optimallt << std::endl;
+    double optimallt = (2 * lensMinThikness + r2 - sqrt(r2 * r2 - cr2 * cr2) + lensMinThikness);
+    std::cout << "Used lens thickness = " << fLens[2] << " optimal = " << optimallt << std::endl;
 
     G4ThreeVector zTrans1(0, 0,
                           -r1 - fLens[2] / 2. + r1 - sqrt(r1 * r1 - cr2 * cr2) + lensMinThikness);
@@ -373,7 +389,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
       "sbox", gfstube, gfbox, new G4RotationMatrix(), G4ThreeVector(0, 0, -lensMinThikness * 2));
 
     G4UnionSolid *gubox;
-    if (fEvType == 3 || fEvType == 7 || fEvType == 9)
+    if (fEvType == 3 || fEvType == 7 || fEvType == 9 || fStudy == 103)
       gubox = new G4UnionSolid("ub", gbbox, gfbox, new G4RotationMatrix(), G4ThreeVector(0, 0, 0));
     else
       gubox = new G4UnionSolid("ub", gbbox, gsbox, new G4RotationMatrix(), G4ThreeVector(0, 0, 0));
@@ -462,7 +478,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   }
 
   if (fLensId != 0 && fLensId != 10) {
-    double shifth = 0.5 * (dirclength + fLens[2]) + fBBWindow[2];
+    double shifth = 0.5 * (dirclength + fLens[2]);
     if (fLensId == 100) {
       new G4PVPlacement(0, G4ThreeVector(rshift, 0, shifth), lLens3, "wLens3", lDirc, false, 0);
     } else if (fNBar == 1 && fLensId == 3) {
@@ -506,6 +522,36 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     }
   }
 
+  double currentz = 0.5 * dirclength + fLens[2];
+
+  auto aircookiemat = defaultMaterial;
+  if (fStudy == 101) aircookiemat = opticalCookieMaterial;
+
+  // Cookie / Air
+  if (fCookie[2] > 0.01) {
+    G4Box *gCookie = new G4Box("gCookie", 0.5 * fCookie[0], 0.5 * fCookie[1], 0.5 * fCookie[2]);
+    lCookie = new G4LogicalVolume(gCookie, aircookiemat, "lCookie", 0, 0, 0);
+    new G4PVPlacement(0, G4ThreeVector(rshift, 0, currentz + 0.5 * fCookie[2]), lCookie,
+                      "wCookie", lDirc, false, 0);
+    currentz += fCookie[2];
+  }
+ 
+  // Window
+  if (fBWindow[2] > 0.01) {
+    G4Box *gBWin = new G4Box("gBWin", 0.5 * fBWindow[0], 0.5 * fBWindow[1], 0.5 * fBWindow[2]);
+    lBWindow = new G4LogicalVolume(gBWin, BarMaterial, "lBWindow", 0, 0, 0);
+    new G4PVPlacement(0, G4ThreeVector(rshift, 0, currentz + 0.5 * fBWindow[2]), lBWindow,
+                      "wBWindow", lDirc, false, 0);
+    currentz += fBWindow[2];
+  }
+
+  // Cookie / Air
+  if (fCookie[2] > 0.01) {
+    new G4PVPlacement(0, G4ThreeVector(rshift, 0, currentz + 0.5 * fCookie[2]), lCookie,
+                      "wCookie", lDirc, false, 1);
+    currentz += fCookie[2];
+  }
+
   // The Prizm
   G4Trap *gPrizmT1 = new G4Trap("gPrizmT1", fPrizmT[0], fPrizmT[1], fPrizmT[2], fPrizmT[3]);
   lPrizmT1 = new G4LogicalVolume(gPrizmT1, BarMaterial, "lPrizmT1", 0, 0, 0);
@@ -518,7 +564,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
 
   G4RotationMatrix *fdRot = new G4RotationMatrix();
   G4RotationMatrix *fdrot = new G4RotationMatrix();
-  double evshiftz = 0.5 * dirclength + fPrizm[1] + fMcpActive[2] / 2. + fLens[2] + fBBWindow[2];
+  double evshiftz = currentz + fPrizm[1] + 0.5 * fMcpActive[2];
   double evshiftx = 0;
 
   if (fEvType == 1) { // focusing prism
@@ -632,25 +678,25 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     new G4PVPlacement(
       fdrot, G4ThreeVector(rshift + 0.5 * fFd[1] - 0.5 * fPrizm[3] - evshiftx, 0, evshiftz), lFd,
       "wFd", lDirc, false, 0);
-  } else if (fEvType == 6 || fEvType == 8 || fEvType == 9){ // split prism
-    
+  } else if (fEvType == 6 || fEvType == 8 || fEvType == 9) { // split prism
+
     G4Trap *gPrizm = new G4Trap("gPrizm", 0.5 * fPrizm[0] - 0.1, fPrizm[1], fPrizm[2], fPrizm[3]);
     lPrizm = new G4LogicalVolume(gPrizm, BarMaterial, "lPrizm", 0, 0, 0);
-    fPrismShift = G4ThreeVector(rshift + (fPrizm[2] + fPrizm[3]) / 4. - 0.5 * fPrizm[3], -0.25 * fPrizm[0],
-                                0.5 * (dirclength + fPrizm[1]) + fLens[2] + fBBWindow[2]);
+    fPrismShift = G4ThreeVector(rshift + (fPrizm[2] + fPrizm[3]) / 4. - 0.5 * fPrizm[3],
+                                -0.25 * fPrizm[0], currentz + 0.5 * fPrizm[1]);
     new G4PVPlacement(xRot, fPrismShift, lPrizm, "wPrizm", lDirc, false, 0);
-    
-    fPrismShift = G4ThreeVector(rshift + (fPrizm[2] + fPrizm[3]) / 4. - 0.5 * fPrizm[3], 0.25 * fPrizm[0],
-                                0.5 * (dirclength + fPrizm[1]) + fLens[2] + fBBWindow[2]);
+
+    fPrismShift = G4ThreeVector(rshift + (fPrizm[2] + fPrizm[3]) / 4. - 0.5 * fPrizm[3],
+                                0.25 * fPrizm[0], currentz + 0.5 * fPrizm[1]);
     new G4PVPlacement(xRot, fPrismShift, lPrizm, "wPrizm", lDirc, false, 1);
 
   } else { // normal prism
 
     G4Trap *gPrizm = new G4Trap("gPrizm", fPrizm[0], fPrizm[1], fPrizm[2], fPrizm[3]);
     lPrizm = new G4LogicalVolume(gPrizm, BarMaterial, "lPrizm", 0, 0, 0);
-    
+
     fPrismShift = G4ThreeVector(rshift + (fPrizm[2] + fPrizm[3]) / 4. - 0.5 * fPrizm[3], 0,
-                                0.5 * (dirclength + fPrizm[1]) + fLens[2] + fBBWindow[2]);
+                                currentz + 0.5 * fPrizm[1]);
     new G4PVPlacement(xRot, fPrismShift, lPrizm, "wPrizm", lDirc, false, 0);
   }
 
@@ -1252,6 +1298,22 @@ void PrtDetectorConstruction::DefineMaterials() {
   EpotekMPT->AddProperty("ABSLENGTH", PhotonEnergy, EpotekAbsorption, num);
   // assign this parameter table to the epotek
   epotekMaterial->SetMaterialPropertiesTable(EpotekMPT);
+
+  // Optical cookie (RTV615)
+  G4MaterialPropertiesTable *opticalCookieMPT = new G4MaterialPropertiesTable();
+  double oc_en[9] = {1.50 * eV, 2.00 * eV, 2.50 * eV, 3.00 * eV, 3.50 * eV,
+                     4.00 * eV, 4.10 * eV, 4.50 * eV, 5.00 * eV};
+  double oc_ab[9] = {14.2 * cm, 14.2 * cm, 14.2 * cm, 11.54 * cm, 5.29 * cm,
+                     2.98 * cm, 2.43 * cm, 2.43 * cm, 2.43 * cm};
+  double oc_re[9] = {1.406, 1.406, 1.406, 1.406, 1.406, 1.406, 1.406, 1.406, 1.406};
+  opticalCookieMPT->AddProperty("RINDEX", oc_en, oc_re, 9);
+  opticalCookieMPT->AddProperty("ABSLENGTH", oc_en, oc_ab, 9);
+
+  opticalCookieMaterial =
+    new G4Material("opticalCookieMaterial", density = 2.200 * g / cm3, ncomponents = 2);
+  opticalCookieMaterial->AddElement(Si, natoms = 1);
+  opticalCookieMaterial->AddElement(O, natoms = 2);
+  opticalCookieMaterial->SetMaterialPropertiesTable(opticalCookieMPT);
 }
 
 void PrtDetectorConstruction::SetVisualization() {
@@ -1274,7 +1336,6 @@ void PrtDetectorConstruction::SetVisualization() {
 
   G4VisAttributes *waBar = new G4VisAttributes(G4Colour(0., 1., 0.9, 0.05)); // 0.05
   waBar->SetVisibility(true);
-  if(fBBWindow[2] > 0.1) lBBWindow->SetVisAttributes(waBar);
   lBar->SetVisAttributes(waBar);
   lExpVol->SetVisAttributes(waBar);
 
@@ -1308,13 +1369,18 @@ void PrtDetectorConstruction::SetVisualization() {
     lLens2->SetVisAttributes(vaLens2);
     if (fLensId == 3 || fLensId == 6) lLens3->SetVisAttributes(vaLens);
   }
-
-  G4VisAttributes *waPrizm = new G4VisAttributes(G4Colour(0., 0.9, 0.9, 0.4)); // 0.4
+  
+  G4VisAttributes *waCookie = new G4VisAttributes(G4Colour(0.2, 0.1, 0.7, 0.2)); // 0.05
+  waCookie->SetVisibility(true);
+  if(fCookie[2] > 0.01) lCookie->SetVisAttributes(waCookie);
+  
+  G4VisAttributes *waPrizm = new G4VisAttributes(G4Colour(0., 0.9, 0.9, 0.3));
   // waPrizm->SetForceAuxEdgeVisible(true);
   // waPrizm->SetForceSolid(true);
   lPrizm->SetVisAttributes(waPrizm);
   lPrizmT1->SetVisAttributes(waPrizm);
   lPrizmT2->SetVisAttributes(waPrizm);
+  if(fBWindow[2] > 0.01) lBWindow->SetVisAttributes(waPrizm);    
 
   if (fEvType == 1) {
     lBlock->SetVisAttributes(waPrizm);

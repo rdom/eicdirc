@@ -56,7 +56,7 @@ class PrtDetectorConstruction : public G4VUserDetectorConstruction {
   G4LogicalVolume *lPixel;
   G4LogicalVolume *lExpVol;
   G4LogicalVolume *lGlueE;
-  G4LogicalVolume *lBBWindow;
+  G4LogicalVolume *lBWindow, *lCookie;
 
   G4VPhysicalVolume *wBar;
   G4VPhysicalVolume *wTracker;
@@ -69,6 +69,7 @@ class PrtDetectorConstruction : public G4VUserDetectorConstruction {
   G4Material *OilMaterial;
   G4Material *MirrorMaterial; // material of mirror
   G4Material *epotekMaterial;
+  G4Material *opticalCookieMaterial;
   G4Material *Nlak33aMaterial;
   G4Material *PbF2Material;
   G4Material *SapphireMaterial;
@@ -94,13 +95,14 @@ class PrtDetectorConstruction : public G4VUserDetectorConstruction {
   double fPrizm[4];
   double fPrizmT[6];
   double fLens[4];
-  double fBBWindow[3];
+  double fBWindow[3];
+  double fCookie[3];
   double fMcpTotal[3];
   double fMcpActive[3];
   double fBarsGap;
   double fRotAngle;
   double *fQuantumEfficiency;
-  int fRunType, fTest1, fTest2, fTest3;
+  int fRunType, fStudy, fTest1, fTest2, fTest3;
 
   G4ThreeVector fPrismShift;
 
