@@ -174,9 +174,10 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
     fNCol = 2;
   }
 
-  if (fStudy == 103) { //
+  if (fStudy == 103) { // low hight lens with gaps
     fLens[0] = fBar[0];
     fLens[2] = 12;
+    fLens[1] -= 0.15;
   }
 
   if (fStudy == 100) {
@@ -494,30 +495,32 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
       if (fEvType == 3 || fEvType == 7 || fEvType == 9) sh = evprismlengh + gluethickness;
       for (int i = 0; i < fNBar; i++) {
         double shifty = i * fLens[1] - 0.5 * (fBoxWidth - fLens[1]);
-        if ((fEvType == 6 || fEvType == 8 || fEvType == 9) && i >= 5) shifty += 0.05; // lens gap for splited plism
+	if (fStudy == 103)  shifty = i * (fLens[1] + 0.15) - 0.5 * (fBoxWidth - fLens[1]);
+        if ((fEvType == 6 || fEvType == 8 || fEvType == 9) && i >= 5)
+          shifty += 0.05; // lens gap for splited plism
         if (fLensId != 6) {
           auto pos = G4ThreeVector(rshift, shifty, shifth - sh);
-	  new G4PVPlacement(0, pos, lLens1, "wLens1", lDirc, false, i);
-	  new G4PVPlacement(0, pos, lLens2, "wLens2", lDirc, false, i);
+          new G4PVPlacement(0, pos, lLens1, "wLens1", lDirc, false, i);
+          new G4PVPlacement(0, pos, lLens2, "wLens2", lDirc, false, i);
           if (fLensId == 3) new G4PVPlacement(0, pos, lLens3, "wLens3", lDirc, false, i);
         }
       }
       if (fLensId == 6) {
         auto pos = G4ThreeVector(rshift, 0, shifth - sh);
         if (fEvType == 8 || fEvType == 9) {
-	  pos = G4ThreeVector(rshift, - 0.5 * (fBoxWidth - fLens[1])-0.025, shifth - sh);
+          pos = G4ThreeVector(rshift, -0.5 * (fBoxWidth - fLens[1]) - 0.025, shifth - sh);
           new G4PVPlacement(0, pos, lLens1, "wLens1", lDirc, false, 0);
           new G4PVPlacement(0, pos, lLens2, "wLens2", lDirc, false, 0);
           new G4PVPlacement(0, pos, lLens3, "wLens3", lDirc, false, 0);
-	  pos = G4ThreeVector(rshift, 0.5 * (fBoxWidth - fLens[1]) + 0.025, shifth - sh);
+          pos = G4ThreeVector(rshift, 0.5 * (fBoxWidth - fLens[1]) + 0.025, shifth - sh);
           new G4PVPlacement(0, pos, lLens1, "wLens1", lDirc, false, 1);
           new G4PVPlacement(0, pos, lLens2, "wLens2", lDirc, false, 1);
           new G4PVPlacement(0, pos, lLens3, "wLens3", lDirc, false, 1);
-        }else{
-	  new G4PVPlacement(0, pos, lLens1, "wLens1", lDirc, false, 0);
-	  new G4PVPlacement(0, pos, lLens2, "wLens2", lDirc, false, 0);
-	  new G4PVPlacement(0, pos, lLens3, "wLens3", lDirc, false, 0);	  
-	}
+        } else {
+          new G4PVPlacement(0, pos, lLens1, "wLens1", lDirc, false, 0);
+          new G4PVPlacement(0, pos, lLens2, "wLens2", lDirc, false, 0);
+          new G4PVPlacement(0, pos, lLens3, "wLens3", lDirc, false, 0);
+        }
       }
     }
   }
