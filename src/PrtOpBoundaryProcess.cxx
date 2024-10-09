@@ -102,6 +102,12 @@ G4VParticleChange *PrtOpBoundaryProcess::PostStepDoIt(const G4Track &aTrack, con
     particleChange->ProposeTrackStatus(fStopAndKill);
   }
 
+  // black edge of the lens1
+  if (aStep.GetPreStepPoint()->GetPhysicalVolume()->GetName() == "wLens1" &&
+      aStep.GetPostStepPoint()->GetPhysicalVolume()->GetName() == "wDirc") {
+    particleChange->ProposeTrackStatus(fStopAndKill);
+  }
+
   // black edge of the lens2
   if (aStep.GetPreStepPoint()->GetPhysicalVolume()->GetName() == "wLens2" &&
       aStep.GetPostStepPoint()->GetPhysicalVolume()->GetName() == "wDirc") {

@@ -92,7 +92,7 @@ G4bool PrtPrizmSD::ProcessHits(G4Step *aStep, G4TouchableHistory *hist) {
         if (normal.y() > 0.99) nid = 5;  // right
         if (normal.y() < -0.99) nid = 6; // left
         if (normal.x() > 0.99) nid = 7;  // bottom
-        if (normal.x() < -0.99) nid = 8; // top
+        if (normal.x() < -0.99) nid = 8; // top  
       } else if (vname == "wLens2") {
         nid = 9;
       } else if (fRun->getRunType() == 5 && vname == "wLens1") {
