@@ -55,6 +55,7 @@ PrtReco::PrtReco(TString infile, TString lutfile, TString pdffile, TString nnfil
   }
 
   int rpid = frun->getPid();
+  fp1 = 3;                    // k
   fp2 = 2;                    // pi
   if (rpid == 10000) fp1 = 0; // e
   if (rpid == 10001) fp1 = 1; // mu

@@ -14,6 +14,13 @@ void draw_hp(TString infile = "../build/hits.root") {
 
     for (auto hit : t.event()->getHits()) {
 
+      Long_t hpath = hit.getPathInPrizm();
+      TString spath = Form("%ld", hpath);
+      if(!spath.Contains("5") && !spath.Contains("6") && !spath.Contains("7") && !spath.Contains("8")) continue;
+      // if(spath.Contains("6")) continue;
+      // if(spath.Contains("7")) continue;
+      // if(spath.Contains("8")) continue;
+    
       int ch = hit.getChannel();
       int pmt = hit.getPmt();
       int pix = hit.getPixel();

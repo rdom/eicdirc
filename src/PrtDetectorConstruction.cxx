@@ -1593,9 +1593,11 @@ void PrtDetectorConstruction::DrawHitBox(int id) {
     tphi = dphi * i;
     double dx = fRadius * cos(tphi);
     double dy = fRadius  * sin(tphi);
+    double center_shift = 630;
+    if (fEvType == 3 || fEvType > 4) center_shift -= 0.5 * (fBar[2] - 893) - 165;
     G4ThreeVector dirc =
-      G4ThreeVector(dx, dy, 0.5 * fBar[2] * 4 + fPrizm[1] + fMcpActive[2] / 2. + fLens[2] + 630);
-
+      G4ThreeVector(dx, dy, 0.5 * fBar[2] * 4 + fPrizm[1] + fMcpActive[2] / 2. + fLens[2] + center_shift);
+    
     G4Box *gDircHit = new G4Box("gDircHit", 400., 300., 10);
     lDircHit[i] = new G4LogicalVolume(gDircHit, defaultMaterial, Form("lDircHit%d", i), 0, 0, 0);
     lDircHit[i]->SetVisAttributes(waDircHit);

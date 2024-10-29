@@ -112,14 +112,14 @@
 #/vis/viewer/set/targetPoint -110 20 -10 cm 
 # /vis/viewer/set/background white
 
-# # whole
-# /vis/viewer/set/viewpointVector 0.461081 0.309017 0.831813
-# /vis/viewer/set/upVector 0 1 0
-# /vis/viewer/set/projection perspective 35 deg
-# /vis/viewer/zoomTo 2.0
-# /vis/viewer/scaleTo 1 1 1
-# # /vis/viewer/set/targetPoint -72.0016 -53.2675 68.1293 cm
-# /vis/viewer/set/targetPoint -70 -50 150 cm
+# whole
+/vis/viewer/set/viewpointVector 0.461081 0.309017 0.831813
+/vis/viewer/set/upVector 0 1 0
+/vis/viewer/set/projection perspective 35 deg
+/vis/viewer/zoomTo 2.0
+/vis/viewer/scaleTo 1 1 1
+# /vis/viewer/set/targetPoint -72.0016 -53.2675 68.1293 cm
+/vis/viewer/set/targetPoint -70 -50 150 cm
 
 # /vis/viewer/set/background white
 
@@ -143,21 +143,21 @@
 # # /vis/viewer/set/targetPoint 0 0 15.6294 cm
 # /vis/viewer/set/targetPoint 0 0 1 m
 
-# side xz
-/vis/viewer/set/viewpointVector 1.31839e-16 -1 -6.93889e-18
-/vis/viewer/set/upVector 0 1 0
-/vis/viewer/set/projection orthogonal
-/vis/viewer/zoomTo 1.4
-/vis/viewer/scaleTo 1 1 1
-/vis/viewer/set/targetPoint 0.8 0 0.8 m
-/vis/viewer/set/rotationStyle freeRotation
-
-# # side yz
-# /vis/viewer/set/viewpointVector 1 0 0
+# # side xz
+# /vis/viewer/set/viewpointVector 1.31839e-16 -1 -6.93889e-18
 # /vis/viewer/set/upVector 0 1 0
 # /vis/viewer/set/projection orthogonal
-# /vis/viewer/zoomTo 6
-# /vis/viewer/set/targetPoint 0.8 0 2.3 m
+# /vis/viewer/zoomTo 1.4
+# /vis/viewer/scaleTo 1 1 1
+# /vis/viewer/set/targetPoint 0.8 0 0.8 m
+# /vis/viewer/set/rotationStyle freeRotation
+
+# side yz
+/vis/viewer/set/viewpointVector 1 0 0
+/vis/viewer/set/upVector 0 1 0
+/vis/viewer/set/projection orthogonal
+/vis/viewer/zoomTo 6
+/vis/viewer/set/targetPoint 0.8 0 2.3 m
 
 # # side wedge
 # /vis/viewer/set/viewpointVector -5.20417e-17 1 -3.46945e-18
@@ -171,8 +171,8 @@
 # /vis/viewer/set/viewpointVector 1.31839e-16 -1 -6.93889e-18
 # /vis/viewer/set/upVector 0 1 0
 # /vis/viewer/set/projection orthogonal
-# /vis/viewer/zoomTo 8
-# /vis/viewer/set/targetPoint 0.8 0 3.2 m
+# /vis/viewer/zoomTo 40
+# /vis/viewer/set/targetPoint 0.78 0 3.1 m
 
 # # whole length
 # /vis/viewer/zoomTo 2
