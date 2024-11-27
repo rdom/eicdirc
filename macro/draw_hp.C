@@ -1,5 +1,5 @@
 #if defined(__ACLIC__)
-#include "PrtTools.h"
+#include "../src/PrtTools.h"
 #else
 R__LOAD_LIBRARY(../build/libPrt.so)
 #endif
@@ -9,15 +9,15 @@ void draw_hp(TString infile = "../build/hits.root") {
   PrtTools t(infile);
   double t1 = t.run()->getTest1();
 
-  while (t.next() && t.i() < 10000) {
+  while (t.next() && t.i() < 100000) {
     double th = t.event()->getMomentum().Theta();
 
-    for (auto hit : t.event()->getHits()) {
+    for (auto& hit : t.event()->getHits()) {
 
-      Long_t hpath = hit.getPathInPrizm();
-      TString spath = Form("%ld", hpath);
-      if(!spath.Contains("5") && !spath.Contains("6") && !spath.Contains("7") && !spath.Contains("8")) continue;
-      // if(spath.Contains("6")) continue;
+      // Long_t hpath = hit.getPathInPrizm();
+      // TString spath = Form("%ld", hpath);
+      // if(!spath.Contains("5") && !spath.Contains("6") && !spath.Contains("7") && !spath.Contains("8")) continue;
+       // if(spath.Contains("6")) continue;
       // if(spath.Contains("7")) continue;
       // if(spath.Contains("8")) continue;
     
