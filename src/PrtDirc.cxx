@@ -227,6 +227,7 @@ int main(int argc, char **argv) {
 
   // Initialize visualization
   G4VisManager *visManager = new G4VisExecutive;
+  visManager->SetVerboseLevel(0); // set to 3 for graphics systems info
   visManager->Initialize();
 
   // Get the pointer to the User Interface manager
@@ -246,6 +247,11 @@ int main(int argc, char **argv) {
     UImanager->ApplyCommand("/process/inactivate muIoni all");
     UImanager->ApplyCommand("/process/inactivate conv all");
   }
+  
+  UImanager->ApplyCommand(G4String("/process/verbose       0"));
+  UImanager->ApplyCommand(G4String("/process/em/verbose    0"));
+  UImanager->ApplyCommand(G4String("/process/had/verbose   0"));
+  UImanager->ApplyCommand(G4String("/process/eLoss/verbose 0"));
 
   if (batchmode == 1) { // batch mode
     UImanager->ApplyCommand(Form("/run/beamOn %d", events));
