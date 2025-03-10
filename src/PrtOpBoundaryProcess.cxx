@@ -122,6 +122,7 @@ G4VParticleChange *PrtOpBoundaryProcess::PostStepDoIt(const G4Track &aTrack, con
   //   particleChange->ProposeTrackStatus(fStopAndKill);
   // }
 
+  // no reflections inside lens
   if (aStep.GetPreStepPoint()->GetPhysicalVolume()->GetName() == "wLens1" &&
       aStep.GetPostStepPoint()->GetPhysicalVolume()->GetName() == "wLens1") {
     particleChange->ProposeTrackStatus(fStopAndKill);

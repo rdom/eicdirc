@@ -77,7 +77,8 @@ example:
                 1    4x6 standard MCPs (6.4x6.4 pixels)
 		3    one MCP covers whole PD plain (3 mm x 3 mm pixels)
 		4    2x3 LAPD
-		2031    4x6 MCPs with compact packing and 32x32 pixels (2 mm x 2 mm) (default)
+		2031    4x6 PMTs with compact packing and 32x32 pixels (2 mm x 2 mm) (default)
+		2032    4x5 PMTs
 		
 -l    focusing system
                 0    no lens

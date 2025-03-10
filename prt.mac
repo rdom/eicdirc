@@ -3,7 +3,11 @@
 /run/verbose 0
 /event/verbose 0
 /particle/process/verbose 0
+
 /process/verbose 0
+/process/em/verbose    0
+/process/had/verbose   0
+/process/eLoss/verbose 0
 
 /Prt/phys/verbose 0
 

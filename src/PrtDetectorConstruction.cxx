@@ -68,6 +68,13 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   fPrizm[2] = fPrizm[3] + 300 * tan(32 * deg);
   fBarsGap = 0.15;
 
+  if (fMcpLayout == 2032) { // new design
+    fPrizm[0] = 352;
+    fPrizm[2] = fPrizm[3] + 300 * tan(33.7 * deg);
+    fNRow = 5;
+    fMcpLayout = 2031;
+  } 
+
   fdTilt = 80 * deg;
   fPrizmT[0] = 390;
   fPrizmT[1] = 400 - 290 * cos(fdTilt); //
@@ -84,7 +91,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   fCookie[1] = fPrizm[0];
   fCookie[2] = 0;
 
-  fMcpTotal[0] = fMcpTotal[1] = 53 + 4;
+  fMcpTotal[0] = fMcpTotal[1] = 53 + 6;
   fMcpTotal[2] = 1;
   fMcpActive[0] = fMcpActive[1] = 53;
   fMcpActive[2] = 1;
@@ -94,6 +101,8 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   fNBoxes = 16;
   
   fBoxWidth = fPrizm[0];
+
+ 
 
   if (fGeomType == 0 || fGeomType == 10) { // generic
     fNBoxes = 12;
@@ -878,7 +887,6 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
       }
     }
 
-    fNRow = 6;    
     for (int i = 0; i < fNCol; i++) {
       for (int j = 0; j < fNRow; j++) {
         // double shiftx = i*(fMcpTotal[0]+gapx)-0.5*(fPrizm[3]-fMcpTotal[0])+gapx;
@@ -1207,7 +1215,7 @@ void PrtDetectorConstruction::DefineMaterials() {
   double EpotekThickness = 0.001 * 2.54 * cm;
   for (int i = 0; i < num; i++) {
     WaveLength[i] = (300 + i * 10) * nanometer;
-    AirAbsorption[i] = 4. * cm; // if photon in the air -> kill it immediately
+    AirAbsorption[i] = 400. * cm; // if photon in the air -> kill it immediately
     AirRefractiveIndex[i] = 1.;
     PhotonEnergy[num - (i + 1)] = LambdaE / WaveLength[i];
 

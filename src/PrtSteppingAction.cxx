@@ -22,7 +22,7 @@ PrtSteppingAction::~PrtSteppingAction() {}
 void PrtSteppingAction::UserSteppingAction(const G4Step *step) {
 
   G4int eventNumber = G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID();
-
+ 
   G4Track *track = step->GetTrack();
 
   if (track->GetCurrentStepNumber() > 50000 || track->GetTrackLength() > 30000) {
@@ -44,9 +44,11 @@ void PrtSteppingAction::UserSteppingAction(const G4Step *step) {
       postvname == "wExpHall")
     track->SetTrackStatus(fStopAndKill);
 
-  if (prevname == "wMcp" && postvname == "wDirc") track->SetTrackStatus(fStopAndKill);
-  if (prevname == "wFd" && postvname == "wDirc") track->SetTrackStatus(fStopAndKill);
-  if (prevname == "wBWindow" && postvname == "wDirc") track->SetTrackStatus(fStopAndKill);
-  if (prevname == "wCookie" && postvname == "wDirc") track->SetTrackStatus(fStopAndKill);
-  if (prevname == "wMcp" && postvname == "wPixel") track->SetTrackStatus(fStopButAlive);
+  if (track->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition()) {
+    if (prevname == "wMcp" && postvname == "wDirc") track->SetTrackStatus(fStopAndKill);
+    if (prevname == "wFd" && postvname == "wDirc") track->SetTrackStatus(fStopAndKill);
+    if (prevname == "wBWindow" && postvname == "wDirc") track->SetTrackStatus(fStopAndKill);
+    if (prevname == "wCookie" && postvname == "wDirc") track->SetTrackStatus(fStopAndKill);
+    if (prevname == "wMcp" && postvname == "wPixel") track->SetTrackStatus(fStopButAlive);
+  }
 }
