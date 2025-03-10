@@ -250,7 +250,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   } else {
     for (int i = 0; i < fNBoxes; i++) {
       tphi = dphi * i;
-      
+
       double dx = (fRadius - rshift) * cos(tphi);
       double dy = (fRadius - rshift) * sin(tphi);
 
