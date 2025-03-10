@@ -4,6 +4,7 @@
 #include "G4TransportationManager.hh"
 #include "G4PropagatorInField.hh"
 
+#include "TROOT.h"
 #include "PrtTrackingAction.h"
 
 PrtTrackingAction::PrtTrackingAction()
@@ -12,14 +13,16 @@ PrtTrackingAction::PrtTrackingAction()
  
 }
 
-
-void PrtTrackingAction::PreUserTrackingAction(const G4Track* aTrack){
-#ifdef G4_STORE_TRAJECTORY  
-  // Require rich trajectory...
-  fpTrackingManager->SetTrajectory(new G4RichTrajectory(aTrack));
-  // Activate storing of auxiliary points for smoother trajectory...
-  static G4IdentityTrajectoryFilter curvedFilter;
-  G4TransportationManager::GetTransportationManager()->
-    GetPropagatorInField()->SetTrajectoryFilter(&curvedFilter);
+void PrtTrackingAction::PreUserTrackingAction(const G4Track *aTrack) {
+#ifdef G4_STORE_TRAJECTORY
+  if (!gROOT->IsBatch()) {
+    // Require rich trajectory...
+    fpTrackingManager->SetTrajectory(new G4RichTrajectory(aTrack));
+    // Activate storing of auxiliary points for smoother trajectory...
+    static G4IdentityTrajectoryFilter curvedFilter;
+    G4TransportationManager::GetTransportationManager()
+      ->GetPropagatorInField()
+      ->SetTrajectoryFilter(&curvedFilter);
+  }
 #endif
 }
