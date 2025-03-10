@@ -37,7 +37,7 @@ class PrtDetectorConstruction : public G4VUserDetectorConstruction {
   G4LogicalVolume *lFront;
   G4LogicalVolume *lDirc;
   G4LogicalVolume *lFd;
-  G4LogicalVolume *lBar;
+  G4LogicalVolume *lBar, *lEvBar;
   G4LogicalVolume *lTracker;
   G4LogicalVolume *lGlue;
   G4LogicalVolume *lMirror;

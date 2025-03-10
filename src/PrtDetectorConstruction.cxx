@@ -113,7 +113,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
 
   if (fGeomType == 1 || fGeomType == 11) { // ePIC ECCE
     fNBoxes = 12;
-    fRadius = 770.5;
+    fRadius = 790;
     fNBar = 10;
     fBar[2] = 1225; // BaBar bars
     fBar[1] = 35;
@@ -224,8 +224,9 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   G4VPhysicalVolume *wExpHall =
     new G4PVPlacement(0, G4ThreeVector(), lExpHall, "wExpHall", 0, false, 0);
 
+  double evbarlength = 800;
   double gluethickness = 0.05;
-  double dirclength = fBar[2] * 4 + gluethickness * 4;
+  double dirclength = fBar[2] * 3 + evbarlength + gluethickness * 4;
   fRun->setRadiatorL(dirclength);
 
   // The DIRC bar box
@@ -238,10 +239,9 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
 
   double evprismheight = fBar[0];
   if (fEvType == 7) evprismheight = fBar[0] + 0.5 * (fPrizm[3] - fBar[0]);
-  double evprismlengh = 893; // Bar[2] // fTest1
   
-  double center_shift = 630; // makes end at -182
-  if(fEvType == 3 || fEvType > 4 ) center_shift -= 0.5*(fBar[2] - evprismlengh); 
+  double center_shift = 660 - 0.5*(fBar[2] - evbarlength); // makes end at -1790
+  if(fEvType == 3 || fEvType > 4 ) center_shift -= 0.5*(fBar[2] - evbarlength); 
   
   double rshift = -100; // shift x-center of the bar box to avoid overlaps
   if (fRunType == 1) {
@@ -264,10 +264,13 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   // The Bar
   G4Box *gBar = new G4Box("gBar", 0.5 * fBar[0], 0.5 * fBar[1], 0.5 * fBar[2]);
   lBar = new G4LogicalVolume(gBar, BarMaterial, "lBar", 0, 0, 0);
- 
 
-  G4Box *gExpVol = new G4Box("gExpVol", 0.5 * evprismheight, 0.5 * fBoxWidth, 0.5 * evprismlengh);
-  if (fEvType == 8 || fEvType == 9) gExpVol = new G4Box("gExpVol", 0.5 * evprismheight, 0.25 * fBoxWidth, 0.5 * evprismlengh);
+  // The EV Bar
+  auto gEvBar = new G4Box("gEvBar", 0.5 * fBar[0], 0.5 * fBar[1], 0.5 * evbarlength);
+  lEvBar = new G4LogicalVolume(gEvBar, BarMaterial, "lEvBar", 0, 0, 0);
+
+  G4Box *gExpVol = new G4Box("gExpVol", 0.5 * evprismheight, 0.5 * fBoxWidth, 0.5 * evbarlength);
+  if (fEvType == 8 || fEvType == 9) gExpVol = new G4Box("gExpVol", 0.5 * evprismheight, 0.25 * fBoxWidth, 0.5 * evbarlength);
   
   lExpVol = new G4LogicalVolume(gExpVol, BarMaterial, "lExpVol", 0, 0, 0);
   
@@ -293,12 +296,12 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   } else {
     int id = 0, nparts = 4;
     if (fEvType == 3 || fEvType == 5 || fEvType == 7 || fEvType == 8 || fEvType == 9) {
-      dirclength = fBar[2] * 3 + evprismlengh + gluethickness * 4;
-      fRun->setRadiatorL(dirclength - evprismlengh);
+      dirclength = fBar[2] * 3 + evbarlength + gluethickness * 4;
+      fRun->setRadiatorL(dirclength - evbarlength);
       double sh = 0;
       if (fEvType == 3 || fEvType == 7 || fEvType == 9) sh = fLens[2];
       nparts = 3;
-      double z = -0.5 * dirclength + 0.5 * evprismlengh + (fBar[2] + gluethickness) * 3;
+      double z = -0.5 * dirclength + 0.5 * evbarlength + (fBar[2] + gluethickness) * 3;
       double th = 0;
       if (fEvType == 7) th = 0.25 * (fPrizm[3] - fBar[0]);
       if (fEvType == 8 || fEvType == 9) {
@@ -311,7 +314,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
                           false, id);
       }
       new G4PVPlacement(
-        0, G4ThreeVector(rshift - th, 0, z + 0.5 * (evprismlengh + gluethickness) + sh), lGlueE,
+        0, G4ThreeVector(rshift - th, 0, z + 0.5 * (evbarlength + gluethickness) + sh), lGlueE,
         "wGlue", lDirc, false, id);
     }
 
@@ -319,9 +322,16 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
       double shifty = i * (fBar[1] + fBarsGap) - 0.5 * fBoxWidth + fBar[1] / 2.;
       for (int j = 0; j < nparts; j++) {
         double z = -0.5 * dirclength + 0.5 * fBar[2] + (fBar[2] + gluethickness) * j;
-	new G4PVPlacement(0, G4ThreeVector(rshift, shifty, z), lBar, "wBar", lDirc, false, id);
-        wGlue = new G4PVPlacement(0, G4ThreeVector(rshift, shifty, z + 0.5 * (fBar[2] + gluethickness)),
-                                  lGlue, "wGlue", lDirc, false, id);
+	if(j == 3)  {
+	  z = -0.5 * dirclength + 0.5 *evbarlength  + (fBar[2] + gluethickness) * j;
+	  new G4PVPlacement(0, G4ThreeVector(rshift, shifty, z), lEvBar, "wBar", lDirc, false, id);
+	  wGlue = new G4PVPlacement(0, G4ThreeVector(rshift, shifty, z + 0.5 * (evbarlength + gluethickness)),
+				    lGlue, "wGlue", lDirc, false, id);	  
+	} else{
+	  new G4PVPlacement(0, G4ThreeVector(rshift, shifty, z), lBar, "wBar", lDirc, false, id);
+	  wGlue = new G4PVPlacement(0, G4ThreeVector(rshift, shifty, z + 0.5 * (fBar[2] + gluethickness)),
+				    lGlue, "wGlue", lDirc, false, id);	  
+	}
         id++;
       }
     }
@@ -501,7 +511,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
       }
     } else {
       double sh = 0;
-      if (fEvType == 3 || fEvType == 7 || fEvType == 9) sh = evprismlengh + gluethickness;
+      if (fEvType == 3 || fEvType == 7 || fEvType == 9) sh = evbarlength + gluethickness;
       for (int i = 0; i < fNBar; i++) {
         double shifty = i * fLens[1] - 0.5 * (fBoxWidth - fLens[1]);
 	if (fStudy == 103)  shifty = i * (fLens[1] + 0.15) - 0.5 * (fBoxWidth - fLens[1]);
@@ -1348,6 +1358,7 @@ void PrtDetectorConstruction::SetVisualization() {
   G4VisAttributes *waBar = new G4VisAttributes(G4Colour(0., 1., 0.9, 0.05)); // 0.05
   waBar->SetVisibility(true);
   lBar->SetVisAttributes(waBar);
+  lEvBar->SetVisAttributes(waBar);
   lExpVol->SetVisAttributes(waBar);
 
   G4VisAttributes *waGlue = new G4VisAttributes(G4Colour(0., 0.4, 0.9, 0.1));
@@ -1601,7 +1612,7 @@ void PrtDetectorConstruction::DrawHitBox(int id) {
     tphi = dphi * i;
     double dx = fRadius * cos(tphi);
     double dy = fRadius  * sin(tphi);
-    double center_shift = 630;
+    double center_shift = 660;
     if (fEvType == 3 || fEvType > 4) center_shift -= 0.5 * (fBar[2] - 893) - 165;
     G4ThreeVector dirc =
       G4ThreeVector(dx, dy, 0.5 * fBar[2] * 4 + fPrizm[1] + fMcpActive[2] / 2. + fLens[2] + center_shift);
