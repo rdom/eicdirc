@@ -197,8 +197,7 @@ PrtReco::PrtReco(TString infile, TString lutfile, TString pdffile, TString nnfil
       std::cout << "-I- reading  " << fPdfPath << std::endl;
       TFile pdfFile(fPdfPath);
       int binfactor = (int)(fTimeRes * 1000 / 50. + 0.1);
-      std::cout << "binfactor " << binfactor << std::endl;
-      
+
       for (int h : {fp1, fp2}) {
         for (int i = 0; i < fmaxch; i++) {
           // auto hpdf = (TH1F *)pdfFile.Get(Form("h_%d_%d",h, i));
