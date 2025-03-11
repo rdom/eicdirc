@@ -140,8 +140,8 @@ void PrtTools::fill_digi(int pmt, int pix, double w){
 // _pmtlayout == 2021 - new 3.6 row's design for the PANDA Barrel DIRC
 // _pmtlayout == 2023 - new 2x4 layout for the PANDA Barrel DIRC
 // _pmtlayout == 2030 - EIC DIRC beam test
-// _pmtlayout == 2031 - EIC DIRC prism
-// _pmtlayout == 2032 - EIC DIRC focusing prism
+// _pmtlayout == 2031 - 4x6 EIC DIRC
+// _pmtlayout == 2032 - 4x5 EIC DIRC
 // _pmtlayout == 3000 - GlueX
 // _pmtlayout == 4 - EIC DIRC prism, LAPD
 // _pmtlayout == 3 - one pmt covering whole PD
@@ -200,7 +200,7 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
   }
   if (_pmtlayout == 2032) {
     nrow = 4;
-    ncol = 7;
+    ncol = 5;
   }
   if (_pmtlayout == 2031) {
     nrow = 4;
@@ -286,9 +286,9 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
         }
         if (_pmtlayout == 2032) {
           margin = 0.1;
-          shift = 0;
+          shift = 0.06;
           shiftw = 0.01;
-          tbw = 0.001;
+          tbw = 0.015;
           tbh = 0.001;
           padi = j * ncol + i;
         }
@@ -437,7 +437,7 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
   TPaletteAxis *palette;
   if (_pmtlayout == 2018 || _pmtlayout == 2023)
     palette = new TPaletteAxis(0.89, 0.1, 0.93, 0.90, (TH1 *)_hdigi[nnmax]);
-  else if (_pmtlayout == 2032 || _pmtlayout == 4 || _pmtlayout == 3)
+  else if (_pmtlayout == 4 || _pmtlayout == 3)
     palette = new TPaletteAxis(0.91, 0.1, 0.94, 0.90, (TH1 *)_hdigi[nnmax]);
   else
     palette = new TPaletteAxis(0.82, 0.1, 0.86, 0.90, (TH1 *)_hdigi[nnmax]);
@@ -467,7 +467,7 @@ TString PrtTools::pix_digi(TString s) {
   }
   if (_pmtlayout == 2032) {
     nrow = 4;
-    ncol = 7;
+    ncol = 5;
     npix = 16;
   }
   if (_pmtlayout == 2030) {

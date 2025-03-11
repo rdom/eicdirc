@@ -206,6 +206,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
     if (fGeomType == 2) barShift = 0;
 
     fParticleGun->SetParticlePosition(G4ThreeVector(-200, barShift, 0.5 * fRadiatorL + 630 - 0.2));
+    fParticleGun->SetParticlePosition(G4ThreeVector(-200, barShift, 2685 - 0.2));
     G4ThreeVector v(0, 0, -1);
     v.setTheta(acos(G4UniformRand()));
     v.setPhi(2 * M_PI * G4UniformRand());
