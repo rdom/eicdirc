@@ -48,7 +48,7 @@ PrtReco::PrtReco(TString infile, TString lutfile, TString pdffile, TString nnfil
   fPhysList = frun->getPhysList();
   fTimeRes = frun->getTimeSigma();  
   fTimeCut = frun->getTimeCut();
-
+ 
   if(fMethod == 20) {
     fRingFit = true;
     fMethod = 2;

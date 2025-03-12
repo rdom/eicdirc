@@ -28,7 +28,6 @@ PrtPixelSD::PrtPixelSD(const G4String &name, const G4String &hitsCollectionName)
   fRadiatorL = PrtManager::Instance()->getRun()->getRadiatorL();
   fRadiatorW = PrtManager::Instance()->getRun()->getRadiatorW();
   fRadiatorH = PrtManager::Instance()->getRun()->getRadiatorH();
-  std::cout << "npmt " << npmt <<  " npix " << npix << std::endl;
  
   // create MPC map
   for (int ch = 0; ch < npmt * npix; ch++) {

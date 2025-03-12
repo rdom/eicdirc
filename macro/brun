@@ -46,7 +46,7 @@ echo $tseed
 
 
 for i in {0..19}; do
-    ../build/eicdirc -r 0 -seed $tseed$i -o h_b$i.root -p 6 -theta 155 -e 200 -b 1 &
+    ../build/eicdirc -r 0 -seed $tseed$i -o h_b$i.root -p 6 -theta 30 -e 200 -b 1 -study 206 -t3 0.001 -x mix_pik &
     # ../build/eicdirc -r 0 -seed $tseed$i -o h_b$i.root -x mix_pik -theta 30 -e 100 -b 1 &
     # ../build/eicdirc -r 0 -seed $tseed$i -o h_b$i.root -x mix_pik \
     # 		     -theta 30 -field 0 -e 150 -b 1 -dn 116640000 & 
