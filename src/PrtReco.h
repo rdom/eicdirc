@@ -46,7 +46,7 @@ class PrtReco {
   void drawTheoryLines(double mom = 6);
 
  private:
-  void FindPeak(double (&cherenkovreco)[5], double (&spr)[5]);
+  void FindPeak(double (&cherenkovreco)[5], double (&spr)[5], double (&spr_err)[5]);
   int FindPdg(double mom, double cangle);
   void FitRing(double &x0, double &y0, double &theta);
   double FindStartTime(PrtEvent *e);

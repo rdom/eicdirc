@@ -291,7 +291,7 @@ void PrtReco::Run(int start, int end) {
   int nsEvents(0), barid(0);
 
   TString outFile = PrtManager::Instance()->getOutName();
-  double cangle[5] = {0}, spr[5] = {0}, trr[5] = {0}, nph_gr[5] = {0}, nph_gr_err[5] = {0},
+  double cangle[5] = {0}, spr[5] = {0}, spr_err[5] = {0}, trr[5] = {0}, nph_gr[5] = {0}, nph_gr_err[5] = {0},
          nph_ti[5] = {0}, nph_ti_err[5] = {0}, par5(0), par6(0), ctimeRes(0), trackRes(0), test1(0),
          test2(0), test3(0), sep_gr(0), sep_gr_err(0), sep_ti(0), sep_ti_err(0), sep_nn(0),
          sep_nn_err(0), epi_rejection1(0), epi_rejection2(0), epi_rejection3(0), track_res0(0),
@@ -464,7 +464,7 @@ void PrtReco::Run(int start, int end) {
       ft.wait_primitive("ff");
       // ft.canvasDel("ff");
 
-      FindPeak(cangle, spr);
+      FindPeak(cangle, spr, spr_err);
       hthetac[fp1]->Reset();
     }
 
@@ -504,7 +504,7 @@ void PrtReco::Run(int start, int end) {
   }
 
   if (fMethod == 2) {
-    FindPeak(cangle, spr);
+    FindPeak(cangle, spr, spr_err);
  
     for (int h = 0; h < 5; h++) {
       if (hnph_gr[h]->Integral() < 20) continue;
@@ -777,6 +777,7 @@ void PrtReco::Run(int start, int end) {
     tree.Branch("distPid", &distPid, "distPid/I");
     tree.Branch("likePid", &likePid, "likePid/I");
     tree.Branch("spr", &spr, "spr[5]/D");
+    tree.Branch("spr_err", &spr_err, "spr_eff[5]/D");
     tree.Branch("trr", &trr, "trr[5]/D");
     tree.Branch("nph_gr", &nph_gr, "nph_gr[5]/D");
     tree.Branch("nph_gr_err", &nph_gr_err, "nph_gr_err[5]/D");
@@ -1027,7 +1028,7 @@ void PrtReco::Run(int start, int end) {
   // delete fTime; // abort now to save time (for small pixels)
 }
 
-void PrtReco::FindPeak(double (&cangle)[5], double (&spr)[5]) {
+void PrtReco::FindPeak(double (&cangle)[5], double (&spr)[5], double (&spr_err)[5]) {
   for (int h = 0; h < 5; h++) {
     spr[h] = 0;
     cangle[h] = 0;
@@ -1046,6 +1047,7 @@ void PrtReco::FindPeak(double (&cangle)[5], double (&spr)[5]) {
       hthetac[h]->Fit("fgaus", "MQ", "", cangle[h] - 3.5 * fSigma[h], cangle[h] + 3.5 * fSigma[h]);
       cangle[h] = fFit->GetParameter(1);
       spr[h] = fFit->GetParameter(2) * 1000;
+      spr_err[h] = fFit->GetParError(2) * 1000;
       if (fVerbose > 2) gROOT->SetBatch(0);
     }
   }
