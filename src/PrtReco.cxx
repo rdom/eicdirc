@@ -42,6 +42,7 @@ PrtReco::PrtReco(TString infile, TString lutfile, TString pdffile, TString nnfil
   fMethod = frun->getRunType();
   fCorrType = frun->getCorrection();
   fStudyId = frun->getStudy();
+  
   fMomentum = frun->getMomentum();
   fRadiator = frun->getRadiator();
   fRadiatorL = frun->getRadiatorL();
@@ -758,8 +759,7 @@ void PrtReco::Run(int start, int end) {
     g->SetLineColor(kBlack);
     g->SetMarkerSize(1.5);
     auto r = g->Fit("pol1", "S");
-    if (r > -1) test3 = r->Parameter(1);
-    std::cout << "test3 " << test3 << std::endl;
+    // if (r > -1) test3 = r->Parameter(1);
     
     fhChromL->Draw("colz");
     g->Draw("PL");
@@ -769,6 +769,7 @@ void PrtReco::Run(int start, int end) {
     // outFile.ReplaceAll("reco_", Form("reco_%d_", frun->getId()));
     TFile file(outFile, "recreate");
     TTree tree("reco", "reco");
+    tree.Branch("study", &fStudyId, "fStudyId/I");
     tree.Branch("mom", &mom, "mom/D");
     tree.Branch("theta", &fTheta, "fTheta/D");
     tree.Branch("phi", &fPhi, "fPhi/D");

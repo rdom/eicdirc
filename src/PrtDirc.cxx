@@ -171,10 +171,10 @@ int main(int argc, char **argv) {
   run->setCorrection(correction);
   run->setTimeSigma(timeSigma);
   run->setTimeCut(timeCut);
-  run->setStudy(study);
-  run->setTest1(testVal1);
-  run->setTest2(testVal2);
-  run->setTest3(testVal3);
+  if (study != 0) run->setStudy(study);
+  if (testVal1 != 0) run->setTest1(testVal1);
+  if (testVal2 != 0) run->setTest2(testVal2);
+  if (testVal3 != 0) run->setTest3(testVal3);
 
   PrtManager::Instance(outfile, run);
   PrtManager::Instance()->setDisplayOpt(displayOpt);  
