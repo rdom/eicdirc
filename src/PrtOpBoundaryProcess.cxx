@@ -126,8 +126,8 @@ G4VParticleChange *PrtOpBoundaryProcess::PostStepDoIt(const G4Track &aTrack, con
     particleChange->ProposeTrackStatus(fStopAndKill);
   }
 
-  if(1){  
-    if (prename == "wBar" && posname == "wDirc" && GetStatus()  == TotalInternalReflection) {      
+  if (1) {
+    if (prename == "wBar" && posname == "wDirc" && GetStatus() == TotalInternalReflection) {
       auto gpos = pPostStepPoint->GetPosition();
       auto touchable = (G4TouchableHistory *)(pPreStepPoint->GetTouchable());
       auto lpos = touchable->GetHistory()->GetTopTransform().TransformPoint(gpos);
@@ -136,75 +136,77 @@ G4VParticleChange *PrtOpBoundaryProcess::PostStepDoIt(const G4Track &aTrack, con
       double as = atan(a / (0.5 * fRadiatorH)); // angle from sagita
       int study = PrtManager::Instance()->getRun()->getStudy();
 
-      auto gmom = G4ThreeVector(*aParticleChange.GetMomentumDirection());
-      if (study == 201) { // a
-        if (lpos.y() > 0.5 * fRadiatorW - 0.001) gmom.rotateZ(-2 * a);
-        if (lpos.y() < -0.5 * fRadiatorW + 0.001) gmom.rotateZ(-2 * a);
-      }
-
-      if (study == 202) { // b
-        // if (lpos.y() > 0.5 * fRadiatorW - 0.001)
-	  gmom.rotateZ(-2 * a);
-      }
-
-      if (study == 203) { // c
-        if (lpos.y() > 0.5 * fRadiatorW - 0.001) gmom.rotateZ(-2 * a);
-        if (lpos.y() < -0.5 * fRadiatorW + 0.001) gmom.rotateZ(2 * a);
-      }
-
-      if (study == 204) { // d
-	if (lpos.y() > 0.5 * fRadiatorW - 0.001) {
-          double h = 0.5 * fRadiatorH;
-          double d = lpos.x();
-          double r = (h * h + a * a) / (2 * a);
-          double b = acos(sqrt(r * r - d * d) / r);
-          gmom.rotateZ(2 * b);
-          if (lpos.x() > 0) gmom.rotateZ(2 * b);
-          else gmom.rotateZ(-2 * b);
+      if (a > 0) {
+        auto gmom = G4ThreeVector(*aParticleChange.GetMomentumDirection());
+        if (study == 201) { // a
+          if (lpos.y() > 0.5 * fRadiatorW - 0.001) gmom.rotateZ(-2 * a);
+          if (lpos.y() < -0.5 * fRadiatorW + 0.001) gmom.rotateZ(-2 * a);
         }
 
-        if (lpos.y() < -0.5 * fRadiatorW + 0.001) {
-	  double h = 0.5 * fRadiatorH;
-          double d = lpos.x();
-          double r = (h * h + a * a) / (2 * a);
-          double b = acos(sqrt(r * r - d * d) / r);
-          gmom.rotateZ(2 * b);
-          if (lpos.x() > 0) gmom.rotateZ(-2 * b);
-          else gmom.rotateZ(2 * b);
+        if (study == 202) { // b
+                            // if (lpos.y() > 0.5 * fRadiatorW - 0.001)
+          gmom.rotateZ(-2 * a);
         }
-      }
 
-      if (study == 205) { // e
-        if (lpos.y() > 0.5 * fRadiatorW - 0.001) {
-          double h = 0.5 * fRadiatorH;
-          double d = lpos.x();
-          double r = (h * h + a * a) / (2 * a);
-          double b = acos(sqrt(r * r - d * d) / r);
-          gmom.rotateZ(2 * b);
-          if (lpos.x() > 0) gmom.rotateZ(2 * b);
-          else gmom.rotateZ(-2 * b);
+        if (study == 203) { // c
+          if (lpos.y() > 0.5 * fRadiatorW - 0.001) gmom.rotateZ(-2 * a);
+          if (lpos.y() < -0.5 * fRadiatorW + 0.001) gmom.rotateZ(2 * a);
         }
-      }
 
-      if (study == 206) { // f
-        if (lpos.y() > 0.5 * fRadiatorW - 0.001) {
-	  double h = fRadiatorH;
-          double d = 0.5 * h + lpos.x();
-          double r = (h * h + a * a) / (2 * a);
-          double b = acos(sqrt(r * r - d * d) / r);
-          gmom.rotateZ(2 * b);
+        if (study == 204) { // d
+          if (lpos.y() > 0.5 * fRadiatorW - 0.001) {
+            double h = 0.5 * fRadiatorH;
+            double d = lpos.x();
+            double r = (h * h + a * a) / (2 * a);
+            double b = acos(sqrt(r * r - d * d) / r);
+            gmom.rotateZ(2 * b);
+            if (lpos.x() > 0) gmom.rotateZ(2 * b);
+            else gmom.rotateZ(-2 * b);
+          }
+
+          if (lpos.y() < -0.5 * fRadiatorW + 0.001) {
+            double h = 0.5 * fRadiatorH;
+            double d = lpos.x();
+            double r = (h * h + a * a) / (2 * a);
+            double b = acos(sqrt(r * r - d * d) / r);
+            gmom.rotateZ(2 * b);
+            if (lpos.x() > 0) gmom.rotateZ(-2 * b);
+            else gmom.rotateZ(2 * b);
+          }
         }
-      }
 
-      if (study == 207) { // g
-        if (lpos.y() > 0.5 * fRadiatorW - 0.001 || lpos.y() < -0.5 * fRadiatorW + 0.001) {
-          double b = G4RandGauss::shoot(0, a);
-          gmom.rotateZ(2 * b);
+        if (study == 205) { // e
+          if (lpos.y() > 0.5 * fRadiatorW - 0.001) {
+            double h = 0.5 * fRadiatorH;
+            double d = lpos.x();
+            double r = (h * h + a * a) / (2 * a);
+            double b = acos(sqrt(r * r - d * d) / r);
+            gmom.rotateZ(2 * b);
+            if (lpos.x() > 0) gmom.rotateZ(2 * b);
+            else gmom.rotateZ(-2 * b);
+          }
         }
-      }
 
-      aParticleChange.ProposeMomentumDirection(gmom);
-      return G4VDiscreteProcess::PostStepDoIt(aTrack, aStep);     
+        if (study == 206) { // f
+          if (lpos.y() > 0.5 * fRadiatorW - 0.001) {
+            double h = fRadiatorH;
+            double d = 0.5 * h + lpos.x();
+            double r = (h * h + a * a) / (2 * a);
+            double b = acos(sqrt(r * r - d * d) / r);
+            gmom.rotateZ(2 * b);
+          }
+        }
+
+        if (study == 207) { // g
+          if (lpos.y() > 0.5 * fRadiatorW - 0.001 || lpos.y() < -0.5 * fRadiatorW + 0.001) {
+            double b = G4RandGauss::shoot(0, a);
+            gmom.rotateZ(2 * b);
+          }
+        }
+
+        aParticleChange.ProposeMomentumDirection(gmom);
+        return G4VDiscreteProcess::PostStepDoIt(aTrack, aStep);
+      }
     }
   }
 

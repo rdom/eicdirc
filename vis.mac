@@ -215,6 +215,9 @@
 
 # /vis/geometry/set/colour lBar 1 0 1 0.9 0.3
 
+# # Front on PMT
+# /vis/drawView 0
+# /vis/viewer/zoomTo 15
 
 # # Camera setting
 # /vis/drawVolume
