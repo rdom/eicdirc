@@ -108,6 +108,7 @@ PrtStackingAction::PrtStackingAction()
 PrtStackingAction::~PrtStackingAction() {}
 
 G4ClassificationOfNewTrack PrtStackingAction::ClassifyNewTrack(const G4Track *aTrack) {
+
   if (aTrack->GetDefinition() ==
       G4OpticalPhoton::OpticalPhotonDefinition()) { // particle is optical photon
     if (aTrack->GetParentID() > 0) {                // particle is secondary

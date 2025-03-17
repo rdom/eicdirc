@@ -126,7 +126,7 @@ G4VParticleChange *PrtOpBoundaryProcess::PostStepDoIt(const G4Track &aTrack, con
     particleChange->ProposeTrackStatus(fStopAndKill);
   }
 
-  if (1) {
+  if (0) {
     if (prename == "wBar" && posname == "wDirc" && GetStatus() == TotalInternalReflection) {
       auto gpos = pPostStepPoint->GetPosition();
       auto touchable = (G4TouchableHistory *)(pPreStepPoint->GetTouchable());

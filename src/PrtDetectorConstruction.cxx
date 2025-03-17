@@ -281,7 +281,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   lGlueE = new G4LogicalVolume(gGlueE, epotekMaterial, "lGlueE", 0, 0, 0);
     
   // Tracker
-  G4Box *gTracker = new G4Box("gTracker", 0.5, fNBar * 0.5 * fBar[1], 4 * 0.5 * fBar[2]);
+  G4Box *gTracker = new G4Box("gTracker", 0.5, fNBar * 0.5 * fBar[1], 0.5 * dirclength);
   lTracker = new G4LogicalVolume(gTracker, defaultMaterial, "lTracker", 0, 0, 0);
 
   if (fNBar == 1) {
@@ -291,7 +291,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
       wGlue = new G4PVPlacement(0, G4ThreeVector(rshift, 0, z + 0.5 * (fBar[2] + gluethickness)),
                                 lGlue, "wGlue", lDirc, false, 0);
     }
-    wTracker = new G4PVPlacement(0, G4ThreeVector(rshift - 0.5 * fBar[0] - 1, 0, 0), lTracker,
+    wTracker = new G4PVPlacement(0, G4ThreeVector(rshift - 0.5 * fBar[0] - 18, 0, 0), lTracker,
                                  "wTracker", lDirc, false, 0);
   } else {
     int id = 0, nparts = 4;
@@ -317,7 +317,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
         0, G4ThreeVector(rshift - th, 0, z + 0.5 * (evbarlength + gluethickness) + sh), lGlueE,
         "wGlue", lDirc, false, id);
     }
-
+      
     for (int i = 0; i < fNBar; i++) {
       double shifty = i * (fBar[1] + fBarsGap) - 0.5 * fBoxWidth + fBar[1] / 2.;
       for (int j = 0; j < nparts; j++) {
@@ -335,7 +335,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
         id++;
       }
     }
-    wTracker = new G4PVPlacement(0, G4ThreeVector(rshift - 0.5 * fBar[0] - 1, 0, 0), lTracker,
+    wTracker = new G4PVPlacement(0, G4ThreeVector(rshift - 0.5 * fBar[0] - 18, 0, 0), lTracker,
                                  "wTracker", lDirc, false, 0);
   }
 
@@ -1348,7 +1348,7 @@ void PrtDetectorConstruction::SetVisualization() {
 
   G4VisAttributes *waDirc = new G4VisAttributes(DircColour);
   waDirc->SetForceWireframe(true);
-  waDirc->SetVisibility(false);
+  // waDirc->SetVisibility(false);
   lDirc->SetVisAttributes(waDirc);
 
   G4VisAttributes *waFd = new G4VisAttributes(DircColour);
@@ -1371,7 +1371,7 @@ void PrtDetectorConstruction::SetVisualization() {
   lMirror->SetVisAttributes(waMirror);
 
   G4VisAttributes *waTracker = new G4VisAttributes(G4Colour(1., 1., 0.7, 0.2));
-  waTracker->SetVisibility(false);
+  // waTracker->SetVisibility(false);
   lTracker->SetVisAttributes(waTracker);
   
   double transp = 0.4;
