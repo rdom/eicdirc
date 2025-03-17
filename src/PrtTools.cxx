@@ -39,7 +39,7 @@ void PrtTools::init() {
       _info += os->GetString() + " ";
     }
     _info += "\n";    
-    _info += gSystem->GetFromPipe("git rev-parse HEAD") + "\n";
+    _info += "git commit hash: " + gSystem->GetFromPipe("git rev-parse HEAD") + "\n";
   }  
   
   // if (!gSystem->AccessPathName("data_db.dat")) {
