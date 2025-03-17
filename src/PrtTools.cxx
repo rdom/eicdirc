@@ -38,8 +38,9 @@ void PrtTools::init() {
     while ((os = (TObjString *)next())) {
       _info += os->GetString() + " ";
     }
-    _info += "\n";
-  }
+    _info += "\n";    
+    _info += gSystem->GetFromPipe("git rev-parse HEAD") + "\n";
+  }  
   
   // if (!gSystem->AccessPathName("data_db.dat")) {
   //   read_db("data_db.dat");

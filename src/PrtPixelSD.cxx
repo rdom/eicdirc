@@ -35,6 +35,8 @@ PrtPixelSD::PrtPixelSD(const G4String &name, const G4String &hitsCollectionName)
     int pix = ch % npix;
     fMap_Mpc[mcp][pix] = ch;
   }
+
+  fBounce = new TH1F("fBounce", ";number of bounces [#];entries [#]", 300, 0, 300);    
 }
 
 PrtPixelSD::~PrtPixelSD() {}
@@ -188,6 +190,7 @@ G4bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
       //           << "] with prob = "<<totalProb<<std::endl;
       return true;
     }
+    // hit.setMomentum(TVector3(nBouncesX,nBouncesY,nBouncesX + nBouncesY)); // tmp save bounces
   }
 
   PrtManager::Instance()->addHit(hit, localPos);

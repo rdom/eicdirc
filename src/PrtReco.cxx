@@ -46,6 +46,8 @@ PrtReco::PrtReco(TString infile, TString lutfile, TString pdffile, TString nnfil
   fMomentum = frun->getMomentum();
   fRadiator = frun->getRadiator();
   fRadiatorL = frun->getRadiatorL();
+  fRadiatorW = frun->getRadiatorW();
+  fRadiatorH = frun->getRadiatorH();
   fPhysList = frun->getPhysList();
   fTimeRes = frun->getTimeSigma();  
   fTimeCut = frun->getTimeCut();
@@ -73,6 +75,10 @@ PrtReco::PrtReco(TString infile, TString lutfile, TString pdffile, TString nnfil
   fTrackAngle0 = new TH1F("fTrackAngle0", ";#Delta [mrad];entries [#]", 500, -20, 20);
   fTrackAngle1 = new TH1F("fTrackAngle1", ";#Delta [mrad];entries [#]", 500, -20, 20);
   fTrackAngle2 = new TH1F("fTrackAngle2", ";#Delta [mrad];entries [#]", 500, -20, 20);
+
+  fBounce = new TH1F("fBounce", ";number of bounces [#];entries [#]", 500, 0, 1000);
+  fBounceW = new TH1F("fBounceW", ";number of side bounces [#];entries [#]", 500, 0, 1000);  
+  fBounceH = new TH1F("fBounceH", ";number of tob-bottom bounces [#];entries [#]", 500, 0, 1000);
 
   fFindTime = new TH1F("ft", ";t_{measured}-t_{calculated} [ns];entries [#]", 2000, -100, 100);
   fFindTimeRes = new TH1F("ftr", "ftr", 100, -2, 2);
@@ -1015,6 +1021,16 @@ void PrtReco::Run(int start, int end) {
       fTrackAngle1->Draw("same");
     }
 
+    { // bounces
+      ft.add_canvas("bounces" + nid, 800, 400);
+      fBounce->SetLineColor(kBlack);
+      fBounce->Draw();
+    //   fBounceH->SetLineColor(kOrange + 7);
+    //   fBounceH->Draw("same");
+    //   fBounceW->SetLineColor(kBlue);
+    //   fBounceW->Draw("same");
+    }
+
     TString filedir = fCorrFile;
     if (filedir.Contains("/")) {
       filedir.Remove(filedir.Last('/'));
@@ -1269,7 +1285,9 @@ void PrtReco::geom_reco(PrtEvent *event, TVector3 mom, bool ringfit) {
     double hittime = hit.getLeadTime() + gRandom->Gaus(0, fTimeRes);
     double hittime_nc = hittime;
     double dirz = hit.getMomentum().Z();
-
+    int best_bounce_x = 0, best_bounce_y = 0;
+    double besttdiff = 100;
+      
     int mcp = hit.getPmt();
     int pix = hit.getPixel();
     int ch = hit.getChannel();
@@ -1389,6 +1407,14 @@ void PrtReco::geom_reco(PrtEvent *event, TVector3 mom, bool ringfit) {
 
           if (fabs(tangle - fAngle[fp2]) > 0.05 && fabs(tangle - fAngle[fp1]) > 0.05) continue;
 
+          if (fabs(tdiff) < besttdiff) {
+            besttdiff = fabs(tdiff);
+            if (fabs(tangle - fAngle[fp2]) < 0.02 || fabs(tangle - fAngle[fp1]) < 0.02) {
+              best_bounce_x = round(fabs(len * dir.X()) / fRadiatorH);
+              best_bounce_y = round(fabs(len * dir.Y()) / fRadiatorW);
+            }
+          }
+
           isGoodHit_gr = true;
 
           sum1 += -TMath::Log(fFunc[fp1]->Eval(tangle) + noise);
@@ -1402,6 +1428,12 @@ void PrtReco::geom_reco(PrtEvent *event, TVector3 mom, bool ringfit) {
       if (frun->getPid() == 10005) {
         if (pid == 3) ft.fill_digi(mcp, pix);
       } else if (pid == 2) ft.fill_digi(mcp, pix);
+    }
+
+    if (best_bounce_x + best_bounce_y > 0) {
+      fBounce->Fill(best_bounce_x + best_bounce_y);
+      fBounceH->Fill(best_bounce_x);
+      fBounceW->Fill(best_bounce_y);
     }
   }
 

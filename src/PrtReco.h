@@ -56,7 +56,8 @@ class PrtReco {
   PrtTools ft;
   int fmaxch, fnpmt, fnpix;
   int fDetectorID;
-  double fMomentum,fTheta,fPhi, fBboxNum, fPipehAngle, fDphi, fBarPhi, fRadiatorL;
+  double fMomentum, fTheta, fPhi, fBboxNum, fPipehAngle, fDphi, fBarPhi, fRadiatorL, fRadiatorW,
+    fRadiatorH;
   int fStudyId, fMethod, fPhysList, fRadiator;
   double fTimeRes, fTimeCut;
   bool fGeomReco, fTimeImaging, fNNet, fRingFit;
@@ -91,8 +92,8 @@ class PrtReco {
   TString fCorrPath;
   TString fPdfPath;
   TString fNNPath;
-  
-  TF1 *fFit, *fChromCor;  
+
+  TF1 *fFit, *fChromCor;
   TSpectrum *fSpect;
   double fSigma[5];
   TH1F *hthetac[5];
@@ -105,13 +106,14 @@ class PrtReco {
   TH1F *fLnDiffNn[5];
   double fCriticalAngle;
   TString fCorrFile;
-  TH1F *fTime[5][99000]; //7000
+  TH1F *fTime[5][99000]; // 7000
   // std::vector<std::vector<TH1F*>> fTime;//(5, std::vector<TH1F*>(99000));
   TGraph *fPdf[5][99000];
   TH1F *fPmt_a[28], *fPmt_td[28], *fPmt_tr[28], *fFindTimeA[20], *fTimeDiffR[3];
   TH1F *fTimeProp, *fTrackAngle0, *fTrackAngle1, *fTrackAngle2, *fFindTime, *fFindTimeRes;
+  TH1F *fBounceH, *fBounceW, *fBounce;
   TH2F *fTimeDiff, *fChRing, *fdtt, *fdtl, *fdtp, *fhChromL;
-  
+
 #ifdef AI
   cppflow::model *fNNmodel;
 #endif

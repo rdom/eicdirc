@@ -8,6 +8,8 @@
 #define PrtPixelSD_h 1
 
 #include <vector>
+#include "TH1F.h"
+
 
 #include "G4VSensitiveDetector.hh"
 
@@ -25,6 +27,7 @@ class PrtPixelSD : public G4VSensitiveDetector {
   int fEvType, fLensType, fMcpLayout, fRunType;
   double fRadiatorL, fRadiatorW, fRadiatorH;
   std::array<std::array<int, 10000>, 24> fMap_Mpc{};
+  TH1F * fBounce;
 };
 
 #endif
