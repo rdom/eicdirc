@@ -28,7 +28,8 @@ PrtPixelSD::PrtPixelSD(const G4String &name, const G4String &hitsCollectionName)
   fRadiatorL = PrtManager::Instance()->getRun()->getRadiatorL();
   fRadiatorW = PrtManager::Instance()->getRun()->getRadiatorW();
   fRadiatorH = PrtManager::Instance()->getRun()->getRadiatorH();
- 
+  fStudy = PrtManager::Instance()->getRun()->getStudy();
+
   // create MPC map
   for (int ch = 0; ch < npmt * npix; ch++) {
     int mcp = ch / npix;
@@ -178,10 +179,15 @@ G4bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
     double bounce_probX = 1 - pow(4 * pi * cos(angleX) * roughness * n_quartz / wavelength, 2);
     double bounce_probY = 1 - pow(4 * pi * cos(angleY) * roughness * n_quartz / wavelength, 2);
 
+    double scale = 1;
+    if(fStudy == 301) scale = 2.47801;
+    if(fStudy == 302) scale = 4.95602;
+    if(fStudy == 303) scale = 9.91204;
+    
     // fit to the data points
     double ratio =  0.918752 + exp(5.16451 -0.0132034 * wavelength);
-    bounce_probX = 1 - (1 - bounce_probX) * ratio;
-    bounce_probY = 1 - (1 - bounce_probY) * ratio;
+    bounce_probX = 1 - (1 - bounce_probX) * ratio * scale;
+    bounce_probY = 1 - (1 - bounce_probY) * ratio * scale;
  
     double totalProb = pow(bounce_probX, nBouncesX) * pow(bounce_probY, nBouncesY);
 

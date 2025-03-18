@@ -24,7 +24,7 @@ class PrtPixelSD : public G4VSensitiveDetector {
   virtual void EndOfEvent(G4HCofThisEvent *hitCollection);
 
  private:
-  int fEvType, fLensType, fMcpLayout, fRunType;
+  int fEvType, fLensType, fMcpLayout, fRunType, fStudy;
   double fRadiatorL, fRadiatorW, fRadiatorH;
   std::array<std::array<int, 10000>, 24> fMap_Mpc{};
   TH1F * fBounce;

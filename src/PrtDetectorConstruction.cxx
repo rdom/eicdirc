@@ -1348,7 +1348,7 @@ void PrtDetectorConstruction::SetVisualization() {
 
   G4VisAttributes *waDirc = new G4VisAttributes(DircColour);
   waDirc->SetForceWireframe(true);
-  // waDirc->SetVisibility(false);
+  waDirc->SetVisibility(false);
   lDirc->SetVisAttributes(waDirc);
 
   G4VisAttributes *waFd = new G4VisAttributes(DircColour);
