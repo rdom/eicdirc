@@ -816,6 +816,8 @@ void PrtReco::Run(int start, int end) {
     tree.Branch("epi_rejection2", &epi_rejection2, "epi_rejection2/D");
     tree.Branch("epi_rejection3", &epi_rejection3, "epi_rejection3/D");
 
+    trr[2] = sqrt(spr[2] * spr[2] / nph_gr[2] + trackingResTheta * trackingResTheta);
+
     tree.Fill();
     tree.Write();
     std::cout << "-I- writing " << outFile << std::endl;

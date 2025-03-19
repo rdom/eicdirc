@@ -59,6 +59,7 @@ bool PrtTools::init_run(TString in, int bdigi, TString savepath, int setupid) {
     return false;
   }
 
+  _iter = 0;
   _run = get_run(in);
   _npmt = _run->getNpmt();
   _npix = _run->getNpix();

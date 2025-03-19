@@ -183,6 +183,7 @@ G4bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
     if(fStudy == 301) scale = 2.47801;
     if(fStudy == 302) scale = 4.95602;
     if(fStudy == 303) scale = 9.91204;
+    if(fStudy == 304) scale = PrtManager::Instance()->getRun()->getTest3();
     
     // fit to the data points
     double ratio =  0.918752 + exp(5.16451 -0.0132034 * wavelength);
