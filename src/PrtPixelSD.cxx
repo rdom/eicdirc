@@ -183,13 +183,16 @@ G4bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
     if(fStudy == 301) scale = 2.47801;
     if(fStudy == 302) scale = 4.95602;
     if(fStudy == 303) scale = 9.91204;
-    if(fStudy == 304) scale = PrtManager::Instance()->getRun()->getTest3();
+    if(fStudy == 304) {
+      scale = PrtManager::Instance()->getRun()->getTest3();
+      scale = (1 - scale) / 0.000201775; // 0.000201775 = 1-rc @ 442 (BaBar)
+    }
     
-    // fit to the data points
-    double ratio =  0.918752 + exp(5.16451 -0.0132034 * wavelength);
+    // (1-rc) ratio of the BaBar measurment to ST(0.5nm)
+    double ratio = 0.918752 + exp(5.16451 - 0.0132034 * wavelength);
     bounce_probX = 1 - (1 - bounce_probX) * ratio * scale;
     bounce_probY = 1 - (1 - bounce_probY) * ratio * scale;
- 
+
     double totalProb = pow(bounce_probX, nBouncesX) * pow(bounce_probY, nBouncesY);
 
     if (G4UniformRand() > totalProb) {
