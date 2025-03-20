@@ -156,7 +156,7 @@ PrtReco::PrtReco(TString infile, TString lutfile, TString pdffile, TString nnfil
   for (int h = 0; h < 5; h++) {
     TString la = ";ln L(K) - ln L(#pi);entries [#]";
     fLnDiffGr[h] = new TH1F(Form("LnDiffGr_%d", h), la, 400, -range, range);
-    fLnDiffTi[h] = new TH1F(Form("LnDiffTi_%d", h), la, 400, -range, range);
+    fLnDiffTi[h] = new TH1F(Form("LnDiffTi_%d", h), la, 200, -range, range);
     fLnDiffNn[h] = new TH1F(Form("LnDiffNn_%d", h), la, 400, -range, range);
     fLnDiffGr[h]->SetLineColor(ft.color(h));
     fLnDiffTi[h]->SetLineColor(ft.color(h));
