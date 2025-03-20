@@ -298,7 +298,7 @@ void PrtReco::Run(int start, int end) {
   int nsEvents(0), barid(0);
 
   TString outFile = PrtManager::Instance()->getOutName();
-  double cangle[5] = {0}, spr[5] = {0}, spr_err[5] = {0}, trr[5] = {0}, nph_gr[5] = {0}, nph_gr_err[5] = {0},
+  double cangle[5] = {0}, spr[5] = {0}, spr_err[5] = {0}, trr_err[5] = {0}, trr[5] = {0}, nph_gr[5] = {0}, nph_gr_err[5] = {0},
          nph_ti[5] = {0}, nph_ti_err[5] = {0}, par5(0), par6(0), ctimeRes(0), trackRes(0), test1(0),
          test2(0), test3(0), sep_gr(0), sep_gr_err(0), sep_ti(0), sep_ti_err(0), sep_nn(0),
          sep_nn_err(0), epi_rejection1(0), epi_rejection2(0), epi_rejection3(0), track_res0(0),
@@ -786,6 +786,7 @@ void PrtReco::Run(int start, int end) {
     tree.Branch("spr", &spr, "spr[5]/D");
     tree.Branch("spr_err", &spr_err, "spr_eff[5]/D");
     tree.Branch("trr", &trr, "trr[5]/D");
+    tree.Branch("trr_err", &trr_err, "trr_eff[5]/D");    
     tree.Branch("nph_gr", &nph_gr, "nph_gr[5]/D");
     tree.Branch("nph_gr_err", &nph_gr_err, "nph_gr_err[5]/D");
     tree.Branch("nph_ti", &nph_ti, "nph_ti[5]/D");
@@ -816,7 +817,7 @@ void PrtReco::Run(int start, int end) {
     tree.Branch("epi_rejection2", &epi_rejection2, "epi_rejection2/D");
     tree.Branch("epi_rejection3", &epi_rejection3, "epi_rejection3/D");
 
-    trr[2] = sqrt(spr[2] * spr[2] / nph_gr[2] + trackingResTheta * trackingResTheta);
+    trr[2] = sqrt(spr[2] * spr[2] / nph_gr[2] + 1000 * trackingResTheta * 1000 *trackingResTheta);
 
     tree.Fill();
     tree.Write();
