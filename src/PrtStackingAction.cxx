@@ -225,7 +225,7 @@ G4ClassificationOfNewTrack PrtStackingAction::ClassifyNewTrack(const G4Track *aT
       if (true) {
         double lambda = 197.0 * 2.0 * pi / (aTrack->GetMomentum().mag() * 1.0E6);
         double ra = gRandom->Uniform(0., 1.);
-        if (ra > fDetEff[1]->Eval(lambda)) {
+        if (ra > fDetEff[fStudy]->Eval(lambda)) {
           return fKill;
         }
       }
