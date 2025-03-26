@@ -178,8 +178,8 @@ PrtStackingAction::PrtStackingAction()
       fEfficiencyR[1][i] = (i < 251) ? eff_400[i] * 0.01 * 0.95 : 0;
 
       // HIQ 500
-      lambda[2][i] = 180 + (i - 1) * 2;
-      fEfficiencyR[2][i] = (i < 251) ? eff_400[i] * 0.01 * 0.95 : 0;
+      lambda[2][i] = 200 + i - 1;
+      fEfficiencyR[2][i] = (i < 501) ? eff_500[i] * 0.01 * 0.95 : 0;
 
       // Panda PMT
       lambda[3][i] = 200 + (i - 1) * 2;
@@ -196,7 +196,10 @@ PrtStackingAction::PrtStackingAction()
     fDetEff[3] = new TGraph(1000, lambda[3], fEfficiencyR[3]);
     fDetEff[4] = new TGraph(19, en_s20, eff_s20);
     fDetEff[5] = new TGraph(22, en_sbi, eff_sbi);
-    
+
+    // TCanvas c;
+    // for (int i = 0; i < 6; i++) fDetEff[i]->Draw((i == 0) ? "APL" : "PL same");
+    // gPad->WaitPrimitive("dfs");
   }
 }
 
@@ -225,7 +228,7 @@ G4ClassificationOfNewTrack PrtStackingAction::ClassifyNewTrack(const G4Track *aT
       if (true) {
         double lambda = 197.0 * 2.0 * pi / (aTrack->GetMomentum().mag() * 1.0E6);
         double ra = gRandom->Uniform(0., 1.);
-        if (ra > fDetEff[1]->Eval(lambda)) {
+        if (ra > fDetEff[fStudy]->Eval(lambda)) {
           return fKill;
         }
       }
