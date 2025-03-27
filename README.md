@@ -69,6 +69,7 @@ example:
 		7    prism with thicker plate (shifted to center), lens between bars and plate
 		8    split prism with split plate, lens between plate and EV
 		9    split prism with split plate, lens between bars and plate
+		10   prism + panda lenses + Nikon bars
 
 -h    number of bars in one radiator box (use with "-g 0")
 

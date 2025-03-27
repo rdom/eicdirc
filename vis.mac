@@ -35,9 +35,9 @@
 # /vis/scene/add/axes 0 0 0 0.01 m auto false
 # /vis/scene/add/axes 0.7 0 1.33 0.01 m auto false
 
-# /vis/scene/add/axes 0.79 0 2.685 0.01 m auto false # bar end at prism side
-# /vis/scene/add/axes 0.79 0 -1.87 0.01 m auto false # barbox end
-# /vis/scene/add/axes 0.79 0 -1.79 0.01 m auto false # bar end at mirror side
+/vis/scene/add/axes 0.79 0 2.685 0.01 m auto false # bar end at prism side
+/vis/scene/add/axes 0.79 0 -1.87 0.01 m auto false # barbox end
+/vis/scene/add/axes 0.79 0 -1.79 0.01 m auto false # bar end at mirror side
 
 # Draw smooth trajectories at end of event, showing trajectory points
 # as markers 2 pixels wide:

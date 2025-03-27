@@ -68,13 +68,6 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   fPrizm[2] = fPrizm[3] + 300 * tan(32 * deg);
   fBarsGap = 0.15;
 
-  if (fMcpLayout == 2032) { // new design
-    fPrizm[0] = 352;
-    fPrizm[2] = fPrizm[3] + 300 * tan(33.7 * deg);
-    fNRow = 5;
-    fMcpLayout = 2031;
-  } 
-
   fdTilt = 80 * deg;
   fPrizmT[0] = 390;
   fPrizmT[1] = 400 - 290 * cos(fdTilt); //
@@ -102,8 +95,6 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   
   fBoxWidth = fPrizm[0];
 
- 
-
   if (fGeomType == 0 || fGeomType == 10) { // generic
     fNBoxes = 12;
     if (fNBar == 0) fNBar = 10;    
@@ -119,6 +110,13 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
     fBar[1] = 35;
     fPrizm[0] = 350 + 1.35;
     fBoxWidth = fNBar * (fBar[1] + fBarsGap);
+
+    if (fMcpLayout == 2032) { // new design
+      fPrizm[0] = 352;
+      fPrizm[2] = fPrizm[3] + 300 * tan(33.7 * deg);
+      fNRow = 5;
+      fMcpLayout = 2031;
+    }
   }
 
   if (fGeomType == 2 || fGeomType == 12) { // CORE
@@ -168,6 +166,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
 
   if (fLensId == 3 || fLensId == 2) {
     fLens[1] = fBoxWidth / fNBar;
+    if (fEvType == 10) fLens[1] = 53;
     if (fNBar == 1) fLens[1] = fBoxWidth / 11.;
   }
 
@@ -241,7 +240,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   if (fEvType == 7) evprismheight = fBar[0] + 0.5 * (fPrizm[3] - fBar[0]);
   
   double center_shift = 660 - 0.5*(fBar[2] - evbarlength); // makes end at -1790
-  if(fEvType == 3 || fEvType > 4 ) center_shift -= 0.5*(fBar[2] - evbarlength); 
+  // if(fEvType == 3 || fEvType > 4 ) center_shift -= 0.5*(fBar[2] - evbarlength); 
   
   double rshift = -100; // shift x-center of the bar box to avoid overlaps
   if (fRunType == 1) {
@@ -267,6 +266,9 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
 
   // The EV Bar
   auto gEvBar = new G4Box("gEvBar", 0.5 * fBar[0], 0.5 * fBar[1], 0.5 * evbarlength);
+  double pandabarw = 53;
+  if(fEvType == 10) gEvBar = new G4Box("gEvBar", 0.5 * fBar[0], 0.5 * pandabarw, 0.5 * evbarlength);
+
   lEvBar = new G4LogicalVolume(gEvBar, BarMaterial, "lEvBar", 0, 0, 0);
 
   G4Box *gExpVol = new G4Box("gExpVol", 0.5 * evprismheight, 0.5 * fBoxWidth, 0.5 * evbarlength);
@@ -278,6 +280,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   G4Box *gGlue = new G4Box("gGlue", 0.5 * fBar[0], 0.5 * fBar[1], 0.5 * gluethickness);
   lGlue = new G4LogicalVolume(gGlue, epotekMaterial, "lGlue", 0, 0, 0);
   G4Box *gGlueE = new G4Box("gGlueE", 0.5 * evprismheight, 0.5 * fBoxWidth, 0.5 * gluethickness);
+  if(fEvType == 10) gGlueE = new G4Box("gGlueE", 0.5 * evprismheight, 0.5 * pandabarw, 0.5 * gluethickness);
   lGlueE = new G4LogicalVolume(gGlueE, epotekMaterial, "lGlueE", 0, 0, 0);
     
   // Tracker
@@ -296,15 +299,18 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   } else {
     int id = 0, nparts = 4;
     if (fEvType == 3 || fEvType == 5 || fEvType == 7 || fEvType == 8 || fEvType == 9) {
-      dirclength = fBar[2] * 3 + evbarlength + gluethickness * 4;
-      fRun->setRadiatorL(dirclength - evbarlength);
+      // dirclength = fBar[2] * 3 + evbarlength + gluethickness * 4;
+      // fRun->setRadiatorL(dirclength - evbarlength);
       double sh = 0;
       if (fEvType == 3 || fEvType == 7 || fEvType == 9) sh = fLens[2];
       nparts = 3;
       double z = -0.5 * dirclength + 0.5 * evbarlength + (fBar[2] + gluethickness) * 3;
       double th = 0;
       if (fEvType == 7) th = 0.25 * (fPrizm[3] - fBar[0]);
-      if (fEvType == 8 || fEvType == 9) {
+      if (fEvType == 10) {
+        // new G4PVPlacement(0, G4ThreeVector(rshift - th, -0.25 * fPrizm[0] - 0.025, z + sh), lExpVol,
+        //                   "wExpVol", lDirc, false, id);
+      } else if (fEvType == 8 || fEvType == 9) {
         new G4PVPlacement(0, G4ThreeVector(rshift - th, -0.25 * fPrizm[0] - 0.025, z + sh), lExpVol,
                           "wExpVol", lDirc, false, id);
         new G4PVPlacement(0, G4ThreeVector(rshift - th, 0.25 * fPrizm[0] + 0.025, z + sh), lExpVol,
@@ -317,21 +323,34 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
         0, G4ThreeVector(rshift - th, 0, z + 0.5 * (evbarlength + gluethickness) + sh), lGlueE,
         "wGlue", lDirc, false, id);
     }
-      
+
     for (int i = 0; i < fNBar; i++) {
       double shifty = i * (fBar[1] + fBarsGap) - 0.5 * fBoxWidth + fBar[1] / 2.;
       for (int j = 0; j < nparts; j++) {
         double z = -0.5 * dirclength + 0.5 * fBar[2] + (fBar[2] + gluethickness) * j;
-	if(j == 3)  {
-	  z = -0.5 * dirclength + 0.5 *evbarlength  + (fBar[2] + gluethickness) * j;
-	  new G4PVPlacement(0, G4ThreeVector(rshift, shifty, z), lEvBar, "wBar", lDirc, false, id);
-	  wGlue = new G4PVPlacement(0, G4ThreeVector(rshift, shifty, z + 0.5 * (evbarlength + gluethickness)),
-				    lGlue, "wGlue", lDirc, false, id);	  
-	} else{
-	  new G4PVPlacement(0, G4ThreeVector(rshift, shifty, z), lBar, "wBar", lDirc, false, id);
-	  wGlue = new G4PVPlacement(0, G4ThreeVector(rshift, shifty, z + 0.5 * (fBar[2] + gluethickness)),
-				    lGlue, "wGlue", lDirc, false, id);	  
-	}
+        if (j == 3) {
+          if (fEvType == 10) {
+            if (i > 5) continue;
+            shifty = i * (pandabarw + fBarsGap) - 0.5 * fBoxWidth + 0.5 * pandabarw;
+            z = -0.5 * dirclength + 0.5 * evbarlength + (fBar[2] + gluethickness) * j;
+            new G4PVPlacement(0, G4ThreeVector(rshift, shifty, z), lEvBar, "wBar", lDirc, false,
+                              id);
+            new G4PVPlacement(
+              0, G4ThreeVector(rshift, shifty, z + 0.5 * (evbarlength + gluethickness)), lGlueE,
+              "wGlueE", lDirc, false, id);
+          } else {
+            z = -0.5 * dirclength + 0.5 * evbarlength + (fBar[2] + gluethickness) * j;
+            new G4PVPlacement(0, G4ThreeVector(rshift, shifty, z), lEvBar, "wBar", lDirc, false,
+                              id);
+            new G4PVPlacement(
+              0, G4ThreeVector(rshift, shifty, z + 0.5 * (evbarlength + gluethickness)), lGlue,
+              "wGlue", lDirc, false, id);
+          }
+        } else {
+          new G4PVPlacement(0, G4ThreeVector(rshift, shifty, z), lBar, "wBar", lDirc, false, id);
+          new G4PVPlacement(0, G4ThreeVector(rshift, shifty, z + 0.5 * (fBar[2] + gluethickness)),
+                            lGlue, "wGlue", lDirc, false, id);
+        }
         id++;
       }
     }
@@ -371,6 +390,11 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     r1 = 62;
     r2 = 36;
 
+    if(fEvType == 10){
+      r1 = 95;
+      r2 = 50;
+    }
+    
     if (fEvType == 3 || fEvType == 7 || fEvType == 9) {
       // r1 = 150; // for 500 mm ev-prism
       // r2 = 90;
@@ -390,6 +414,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     // fLens[2]
     double optimallt = (2 * lensMinThikness + r2 - sqrt(r2 * r2 - cr2 * cr2) + lensMinThikness);
     std::cout << "Used lens thickness = " << fLens[2] << " optimal = " << optimallt << std::endl;
+    if(fEvType == 10) fLens[2] = optimallt;
 
     G4ThreeVector zTrans1(0, 0,
                           -r1 - fLens[2] / 2. + r1 - sqrt(r1 * r1 - cr2 * cr2) + lensMinThikness);
@@ -513,6 +538,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
       double sh = 0;
       if (fEvType == 3 || fEvType == 7 || fEvType == 9) sh = evbarlength + gluethickness;
       for (int i = 0; i < fNBar; i++) {
+	if(fEvType == 10 && i > 5) continue;
         double shifty = i * fLens[1] - 0.5 * (fBoxWidth - fLens[1]);
 	if (fStudy == 103)  shifty = i * (fLens[1] + 0.15) - 0.5 * (fBoxWidth - fLens[1]);
         if ((fEvType == 6 || fEvType == 8 || fEvType == 9) && i >= 5)
@@ -1371,7 +1397,7 @@ void PrtDetectorConstruction::SetVisualization() {
   lMirror->SetVisAttributes(waMirror);
 
   G4VisAttributes *waTracker = new G4VisAttributes(G4Colour(1., 1., 0.7, 0.2));
-  // waTracker->SetVisibility(false);
+  waTracker->SetVisibility(false);
   lTracker->SetVisAttributes(waTracker);
   
   double transp = 0.4;
