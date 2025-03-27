@@ -1397,7 +1397,7 @@ void PrtDetectorConstruction::SetVisualization() {
   lMirror->SetVisAttributes(waMirror);
 
   G4VisAttributes *waTracker = new G4VisAttributes(G4Colour(1., 1., 0.7, 0.2));
-  waTracker->SetVisibility(false);
+  // waTracker->SetVisibility(false);
   lTracker->SetVisAttributes(waTracker);
   
   double transp = 0.4;

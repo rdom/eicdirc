@@ -155,7 +155,7 @@ PrtReco::PrtReco(TString infile, TString lutfile, TString pdffile, TString nnfil
 
   for (int h = 0; h < 5; h++) {
     TString la = ";ln L(K) - ln L(#pi);entries [#]";
-    fLnDiffGr[h] = new TH1F(Form("LnDiffGr_%d", h), la, 400, -range, range);
+    fLnDiffGr[h] = new TH1F(Form("LnDiffGr_%d", h), la, 200, -range, range);
     fLnDiffTi[h] = new TH1F(Form("LnDiffTi_%d", h), la, 200, -range, range);
     fLnDiffNn[h] = new TH1F(Form("LnDiffNn_%d", h), la, 400, -range, range);
     fLnDiffGr[h]->SetLineColor(ft.color(h));
@@ -1297,6 +1297,7 @@ void PrtReco::geom_reco(PrtEvent *event, TVector3 mom, bool ringfit) {
 
     TVector3 dir, dird, dir0 = hit.getMomentum().Unit();    
     double lenz = 0.5 * fRadiatorL - event->getPosition().Z();
+    lenz += gRandom->Gaus(0, 1); // smear position by 1 mm
     bool reflected = false;
     
     if (dirz < 0) reflected = true;
@@ -1442,7 +1443,7 @@ void PrtReco::geom_reco(PrtEvent *event, TVector3 mom, bool ringfit) {
 
   if (!ringfit) {
     double sum_gr = sum1 - sum2;
-    if (sum_gr != 0) fLnDiffGr[pid]->Fill(sum_gr);
+    if (sum_gr != 0) fLnDiffGr[pid]->Fill(sum_gr * 1.5);
     if (nph > 1) hnph_gr[pid]->Fill(nph);
   }
 }
