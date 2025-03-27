@@ -356,6 +356,11 @@ void PrtReco::Run(int start, int end) {
     fTrackAngle0->Fill(theta_diff0);
     fTrackAngle2->Fill(theta_diff2);
 
+    // tmp smear mom_vertex
+    mom_before.SetTheta(gRandom->Gaus(mom_before.Theta(), trackingResTheta));
+    mom_before.SetPhi(gRandom->Gaus(mom_before.Phi(), trackingResPhi));
+
+
     // // post-dirc tracking layer
     // TVector3 pa = fEvent->getPositionAfter();
     // TVector3 ma = fEvent->getMomentumAfter().Unit();
@@ -374,7 +379,9 @@ void PrtReco::Run(int start, int end) {
 
     // track already smeared during simulation at tracking layer. rotatedmom is direction at vertex
     // rotatedmom.SetTheta(gRandom->Gaus(rotatedmom.Theta(), trackingResTheta));
-    // rotatedmom.SetPhi(gRandom->Gaus(rotatedmom.Phi(), trackingResPhi));
+    // rotatedmom.SetPhi(gRandom->Gaus(rotatedmom.Phi(), trackingResPhi));i
+
+    
 
     for (int i = 0; i < 5; i++) {
       fAngle[i] = acos(sqrt(m * m + ft.mass(i) * ft.mass(i)) / m / 1.4738); // 1.4738 = 370 = 3.35
@@ -384,7 +391,7 @@ void PrtReco::Run(int start, int end) {
     }
 
     // double stime = FindStartTime(fEvent);
-    geom_reco(fEvent, mom_vertex, fRingFit);
+    geom_reco(fEvent, mom_before, fRingFit);
 
     if (fRingFit) {
       
@@ -1295,7 +1302,7 @@ void PrtReco::geom_reco(PrtEvent *event, TVector3 mom, bool ringfit) {
     int pix = hit.getPixel();
     int ch = hit.getChannel();
 
-    TVector3 dir, dird, dir0 = hit.getMomentum().Unit();    
+    TVector3 dir, dird; //, dir0 = hit.getMomentum().Unit();    
     double lenz = 0.5 * fRadiatorL - event->getPosition().Z();
     lenz += gRandom->Gaus(0, 1); // smear position by 1 mm
     bool reflected = false;
