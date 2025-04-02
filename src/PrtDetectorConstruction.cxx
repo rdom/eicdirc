@@ -223,7 +223,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   G4VPhysicalVolume *wExpHall =
     new G4PVPlacement(0, G4ThreeVector(), lExpHall, "wExpHall", 0, false, 0);
 
-  double evbarlength = 800;
+  double evbarlength = 840;
   double gluethickness = 0.05;
   double dirclength = fBar[2] * 3 + evbarlength + gluethickness * 4;
   fRun->setRadiatorL(dirclength);
@@ -239,7 +239,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   double evprismheight = fBar[0];
   if (fEvType == 7) evprismheight = fBar[0] + 0.5 * (fPrizm[3] - fBar[0]);
   
-  double center_shift = 660 - 0.5*(fBar[2] - evbarlength); // makes end at -1790
+  double center_shift = 620 - 0.5*(fBar[2] - evbarlength); // makes end at -1830
   // if(fEvType == 3 || fEvType > 4 ) center_shift -= 0.5*(fBar[2] - evbarlength); 
   
   double rshift = -100; // shift x-center of the bar box to avoid overlaps
@@ -1397,7 +1397,7 @@ void PrtDetectorConstruction::SetVisualization() {
   lMirror->SetVisAttributes(waMirror);
 
   G4VisAttributes *waTracker = new G4VisAttributes(G4Colour(1., 1., 0.7, 0.2));
-  // waTracker->SetVisibility(false);
+  waTracker->SetVisibility(false);
   lTracker->SetVisAttributes(waTracker);
   
   double transp = 0.4;
@@ -1638,7 +1638,7 @@ void PrtDetectorConstruction::DrawHitBox(int id) {
     tphi = dphi * i;
     double dx = fRadius * cos(tphi);
     double dy = fRadius  * sin(tphi);
-    double center_shift = 660;
+    double center_shift = 620;
     if (fEvType == 3 || fEvType > 4) center_shift -= 0.5 * (fBar[2] - 893) - 165;
     G4ThreeVector dirc =
       G4ThreeVector(dx, dy, 0.5 * fBar[2] * 4 + fPrizm[1] + fMcpActive[2] / 2. + fLens[2] + center_shift);
