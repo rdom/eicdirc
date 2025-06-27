@@ -177,7 +177,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
 
   if (fMcpLayout == 4) {
     fMcpTotal[0] = fMcpTotal[1] = 120;
-    fMcpActive[0] = fMcpActive[1] = 108;
+    fMcpActive[0] = fMcpActive[1] = 104; // incom
     fNRow = 3;
     fNCol = 2;
   }
@@ -844,8 +844,8 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     G4Box *gMcp = new G4Box("gMcp", 0.5 * fMcpTotal[0], 0.5 * fMcpTotal[1], 0.5 * fMcpTotal[2]);
     lMcp = new G4LogicalVolume(gMcp, BarMaterial, "lMcp", 0, 0, 0);
 
-    fNpix1 = 40;
-    fNpix2 = 40;
+    fNpix1 = 32; // income 
+    fNpix2 = 32;
     fRun->setNpix(fNpix1 * fNpix2);
 
     int mcpId = 0;

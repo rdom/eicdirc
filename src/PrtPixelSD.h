@@ -8,8 +8,8 @@
 #define PrtPixelSD_h 1
 
 #include <vector>
+#include <array>
 #include "TH1F.h"
-
 
 #include "G4VSensitiveDetector.hh"
 
