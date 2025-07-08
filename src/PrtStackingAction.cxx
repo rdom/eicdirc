@@ -16,7 +16,9 @@ PrtStackingAction::PrtStackingAction()
 
   fRunType = PrtManager::Instance()->getRun()->getRunType();
   fStudy = PrtManager::Instance()->getRun()->getStudy();
-
+  fQe = 1; // HiQ 400, default
+  fQe =  PrtManager::Instance()->getRun()->getTest3();
+  
   // create a detector efficiency function:
   {
     // quantum efficiency data from Alex Britting, Jan 25, 2011
@@ -252,7 +254,7 @@ G4ClassificationOfNewTrack PrtStackingAction::ClassifyNewTrack(const G4Track *aT
       if (true) {
         double lambda = 197.0 * 2.0 * pi / (aTrack->GetMomentum().mag() * 1.0E6);
         double ra = gRandom->Uniform(0., 1.);
-        if (ra > fDetEff[1]->Eval(lambda)) {
+        if (ra > fDetEff[fQe]->Eval(lambda)) {
           return fKill;
         }
       }

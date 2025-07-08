@@ -20,7 +20,7 @@ class PrtStackingAction : public G4UserStackingAction {
  private:
   G4int fScintillationCounter;
   G4int fCerenkovCounter;
-  int fRunType, fStudy;
+  int fRunType, fStudy, fQe;
   TGraph *fDetEff[7];
 };
 
