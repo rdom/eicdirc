@@ -17,8 +17,10 @@ PrtStackingAction::PrtStackingAction()
   fRunType = PrtManager::Instance()->getRun()->getRunType();
   fStudy = PrtManager::Instance()->getRun()->getStudy();
   fQe = 1; // HiQ 400, default
-  fQe =  PrtManager::Instance()->getRun()->getTest3();
-  
+
+  fQe = PrtManager::Instance()->getRun()->getTest3();
+  if (fQe < 1) fQe = 1;
+
   // create a detector efficiency function:
   {
     // quantum efficiency data from Alex Britting, Jan 25, 2011
