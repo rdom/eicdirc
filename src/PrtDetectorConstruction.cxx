@@ -844,7 +844,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     G4Box *gMcp = new G4Box("gMcp", 0.5 * fMcpTotal[0], 0.5 * fMcpTotal[1], 0.5 * fMcpTotal[2]);
     lMcp = new G4LogicalVolume(gMcp, BarMaterial, "lMcp", 0, 0, 0);
 
-    fNpix1 = 32; // income 
+    fNpix1 = 32; // incom
     fNpix2 = 32;
     fRun->setNpix(fNpix1 * fNpix2);
 

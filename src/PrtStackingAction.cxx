@@ -166,6 +166,27 @@ PrtStackingAction::PrtStackingAction()
     double en_sbi[22] = {0,   213, 214, 254, 270, 280, 290, 300, 350, 400, 450,
                          500, 532, 550, 600, 650, 700, 750, 800, 850, 900, 1000};
 
+     // https://github.com/eic/pfRICH/blob/746a580cdfe2fe9ce519106016809953f504d1d7/share/source/HRPPD.cc#L166
+    const int n_hrppd = 48;
+    double en_hrppd[n_hrppd] = {0,   199, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290,
+                                300, 310, 320, 330, 340, 350, 360, 370, 380, 390, 400, 410,
+                                420, 430, 440, 450, 460, 470, 480, 490, 500, 510, 520, 530,
+                                540, 550, 560, 570, 580, 590, 600, 610, 620, 630, 631, 1000};
+    double qe_hrppd[n_hrppd] = {
+      0,     0,     0.227, 0.277, 0.301, 0.313, 0.322, 0.316, 0.317, 0.304, 0.289, 0.284,
+      0.286, 0.286, 0.291, 0.305, 0.316, 0.325, 0.327, 0.336, 0.343, 0.334, 0.314, 0.295,
+      0.269, 0.246, 0.226, 0.206, 0.188, 0.170, 0.156, 0.142, 0.130, 0.119, 0.109, 0.099,
+      0.091, 0.083, 0.076, 0.070, 0.064, 0.058, 0.053, 0.048, 0.044, 0.040, 0,     0};
+
+    // https://github.com/eic/EICrecon/blob/irt-2.0/src/algorithms/pid/IrtDebugging.cc#L260
+    const int n_lappd = 30;
+    double en_lappd[n_lappd] = {0,   159, 160, 180, 200, 220, 240, 260, 280, 300,
+                                320, 340, 360, 380, 400, 420, 440, 460, 480, 500,
+                                520, 540, 560, 580, 600, 620, 640, 660, 661, 1000};
+    double qe_lappd[n_lappd] = {0,    0,    0.25, 0.26, 0.27, 0.30, 0.32, 0.35, 0.36, 0.36,
+                                0.36, 0.36, 0.37, 0.35, 0.30, 0.27, 0.24, 0.20, 0.18, 0.15,
+                                0.13, 0.11, 0.10, 0.09, 0.08, 0.07, 0.05, 0.05, 0,    0};
+
     double lambda[4][1000] = {{0}}, fEfficiencyR[4][1000] = {{0}};
     // still need to convert from percent and cut values below credible limit
     for (int i = 1; i < 1000; i++) {
@@ -186,16 +207,19 @@ PrtStackingAction::PrtStackingAction()
       fEfficiencyR[3][i] =
         (lambda[3][i] >= 240 && lambda[3][i] <= 850) ? eff_9002224[i] * 0.01 * 0.95 : 0;
     }
-
     for (int i = 0; i < 19; i++) eff_s20[i] *= 0.01 * 0.95;
     for (int i = 0; i < 22; i++) eff_sbi[i] *= 0.01 * 0.95;
-
+    for (int i = 0; i < n_hrppd; i++) qe_hrppd[i] *= 0.80;
+    for (int i = 0; i < n_lappd; i++) qe_lappd[i] *= 0.80;
+ 
     fDetEff[0] = new TGraph(1000, lambda[0], fEfficiencyR[0]);
     fDetEff[1] = new TGraph(1000, lambda[1], fEfficiencyR[1]);
     fDetEff[2] = new TGraph(1000, lambda[2], fEfficiencyR[2]);
     fDetEff[3] = new TGraph(1000, lambda[3], fEfficiencyR[3]);
     fDetEff[4] = new TGraph(19, en_s20, eff_s20);
     fDetEff[5] = new TGraph(22, en_sbi, eff_sbi);
+    fDetEff[6] = new TGraph(n_hrppd, en_hrppd, qe_hrppd);
+    fDetEff[7] = new TGraph(n_lappd, en_lappd, qe_lappd);
 
     // TCanvas c;
     // for (int i = 0; i < 6; i++) fDetEff[i]->Draw((i == 0) ? "APL" : "PL same");
