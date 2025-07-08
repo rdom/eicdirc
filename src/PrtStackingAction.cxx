@@ -182,6 +182,26 @@ PrtStackingAction::PrtStackingAction()
       0.269, 0.246, 0.226, 0.206, 0.188, 0.170, 0.156, 0.142, 0.130, 0.119, 0.109, 0.099,
       0.091, 0.083, 0.076, 0.070, 0.064, 0.058, 0.053, 0.048, 0.044, 0.040, 0,     0};
 
+    // Chandra's 2024 measurment; hrppd16_qe.txt
+    const int n_hrppd16 = 85;
+    double en_hrppd16[n_hrppd16] = {
+      0,   199, 200, 205, 210, 215, 220, 225, 230, 235, 240, 245, 250, 255, 260, 265, 270,
+      275, 280, 285, 290, 295, 300, 305, 310, 315, 320, 325, 330, 335, 340, 345, 350, 355,
+      360, 365, 370, 375, 380, 385, 390, 395, 400, 405, 410, 415, 420, 425, 430, 435, 440,
+      445, 450, 455, 460, 465, 470, 475, 480, 485, 490, 495, 500, 505, 510, 515, 520, 525,
+      530, 535, 540, 545, 550, 555, 560, 565, 570, 575, 580, 585, 590, 595, 600, 601, 1000};
+
+    double qe_hrppd16[n_hrppd16] = {
+      0,       0,       8.08172, 8.26597, 9.37861, 11.0208, 13.523,  17.0028, 20.1303, 22.9362,
+      25.6352, 28.2227, 29.7153, 31.2055, 31.0315, 29.8549, 27.7446, 25.152,  24.0912, 22.9278,
+      22.8591, 23.1835, 24.1761, 25.4669, 26.0491, 26.7738, 27.305,  27.9168, 28.3547, 28.875,
+      29.44,   30.1435, 30.658,  31.2107, 31.2073, 30.7696, 30.2307, 29.0598, 28.7942, 28.2622,
+      27.7715, 27.1614, 26.4059, 25.5618, 24.7555, 23.9478, 23.0903, 22.223,  21.3126, 20.4454,
+      19.5699, 18.7204, 17.9095, 17.1746, 16.3832, 15.7092, 15.098,  14.4619, 13.7381, 13.1973,
+      12.5621, 12.0501, 11.4934, 10.996,  10.5181, 10.0773, 9.63175, 9.21811, 8.7796,  8.39909,
+      8.00139, 7.64944, 7.2924,  6.97348, 6.65352, 6.36185, 6.07023, 5.79259, 5.50787, 5.24325,
+      4.98614, 4.74539, 4.50405, 0,       0};
+
     // https://github.com/eic/EICrecon/blob/irt-2.0/src/algorithms/pid/IrtDebugging.cc#L260
     const int n_lappd = 30;
     double en_lappd[n_lappd] = {0,   159, 160, 180, 200, 220, 240, 260, 280, 300,
@@ -214,8 +234,9 @@ PrtStackingAction::PrtStackingAction()
     for (int i = 0; i < 19; i++) eff_s20[i] *= 0.01 * 0.95;
     for (int i = 0; i < 22; i++) eff_sbi[i] *= 0.01 * 0.95;
     for (int i = 0; i < n_hrppd; i++) qe_hrppd[i] *= 0.80;
+    for (int i = 0; i < n_hrppd16; i++) qe_hrppd16[i] *= 0.01 * 0.80;
     for (int i = 0; i < n_lappd; i++) qe_lappd[i] *= 0.80;
- 
+
     fDetEff[0] = new TGraph(1000, lambda[0], fEfficiencyR[0]);
     fDetEff[1] = new TGraph(1000, lambda[1], fEfficiencyR[1]);
     fDetEff[2] = new TGraph(1000, lambda[2], fEfficiencyR[2]);
@@ -223,7 +244,8 @@ PrtStackingAction::PrtStackingAction()
     fDetEff[4] = new TGraph(19, en_s20, eff_s20);
     fDetEff[5] = new TGraph(22, en_sbi, eff_sbi);
     fDetEff[6] = new TGraph(n_hrppd, en_hrppd, qe_hrppd);
-    fDetEff[7] = new TGraph(n_lappd, en_lappd, qe_lappd);
+    fDetEff[7] = new TGraph(n_hrppd16, en_hrppd16, qe_hrppd16);
+    fDetEff[8] = new TGraph(n_lappd, en_lappd, qe_lappd);
 
     // TCanvas c;
     // for (int i = 0; i < 6; i++) fDetEff[i]->Draw((i == 0) ? "APL" : "PL same");

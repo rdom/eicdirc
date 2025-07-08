@@ -175,7 +175,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
     if (fEvType == 8 || fEvType == 9) fLens[1] = 0.5 * fBoxWidth;
   }
 
-  if (fMcpLayout == 4) {
+  if (fMcpLayout == 4) { // LAPPD/HRPPD pmt
     fMcpTotal[0] = fMcpTotal[1] = 120;
     fMcpActive[0] = fMcpActive[1] = 104; // incom
     fNRow = 3;
