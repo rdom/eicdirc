@@ -129,8 +129,8 @@ void PrtFastSimModelTracker::DoIt(const G4FastTrack &aFastTrack, G4FastStep &aFa
   fRun->setTrackingResTheta(dtheta);
   fRun->setTrackingResPhi(dphi);
 
-  // std::cout << "Smearing at the tracker:  dtheta = " << 1000 * dtheta
-  //           << " mrad, dphi = " << 1000 * dphi << " mrad" << std::endl;
+  std::cout << "Smearing at the tracker:  dtheta = " << 1000 * dtheta
+            << " mrad, dphi = " << 1000 * dphi << " mrad" << std::endl;
 }
 
 double PrtFastSimModelTracker::get_res(TGraph *gg[3], double theta, double mom){
