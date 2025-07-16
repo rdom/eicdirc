@@ -6,6 +6,7 @@
 #include "G4ios.hh"
 #include "G4RunManager.hh"
 #include "G4SystemOfUnits.hh"
+#include "Randomize.hh"
 #include <TVector3.h>
 
 #include "PrtEvent.h"
@@ -29,6 +30,7 @@ PrtPixelSD::PrtPixelSD(const G4String &name, const G4String &hitsCollectionName)
   fRadiatorW = PrtManager::Instance()->getRun()->getRadiatorW();
   fRadiatorH = PrtManager::Instance()->getRun()->getRadiatorH();
   fStudy = PrtManager::Instance()->getRun()->getStudy();
+  fTimePrecision = PrtManager::Instance()->getRun()->getTimeSigma();
 
   // create MPC map
   for (int ch = 0; ch < npmt * npix; ch++) {
@@ -95,7 +97,11 @@ G4bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
   G4HCofThisEvent *HCofEvent = currentEvent->GetHCofThisEvent();
   PrtPrizmHitsCollection *prizmCol = (PrtPrizmHitsCollection *)(HCofEvent->GetHC(collectionID));
 
-  double time = step->GetPreStepPoint()->GetLocalTime();  
+  double time = step->GetPreStepPoint()->GetLocalTime();
+
+
+  //smear time
+  time = G4RandGauss::shoot(time,fTimePrecision);
   
   Long_t pathId = 0;
   int refl = 0;
