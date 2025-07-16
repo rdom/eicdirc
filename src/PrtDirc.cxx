@@ -31,11 +31,11 @@ int main(int argc, char **argv) {
   TApplication theApp("EicDirc", 0, 0);
 
   TString macro, particle = "pi+", infile = "", lutfile = "", pdffile = "", nnfile = "",
-                 outfile = "";
+    outfile = "", thetaStr = "25", phiStr = "0", momentumStr = "6";
   int events(0), pdgid(0), geometry(1), firstevent(0), runtype(0), study(0), fid(0), verbose(0),
     batchmode(0), physlist(0), pmtLayout(2031), correction(2), field(0), ev(0), radiator(0),
     lensId(3), displayOpt(0);
-  double momentum(0), theta(25), phi(0), beamZ(0), trackingres(0.0005), dark_noise(0),
+  double momentum(0), momentumMax(0), theta(25),thetaMax(25), phi(0), phiMax(0), beamZ(0), trackingres(0.0005), dark_noise(0),
     prismStepX(0), prismStepY, beamX(0), timeSigma(0.1), timeCut(0.5), testVal1(0), testVal2(0),
     testVal3(0);
   long seed = 0;
@@ -52,14 +52,14 @@ int main(int argc, char **argv) {
     else if (G4String(argv[i]) == "-g") geometry = atoi(argv[i + 1]);
     else if (G4String(argv[i]) == "-ev") ev = atoi(argv[i + 1]);
     else if (G4String(argv[i]) == "-h") radiator = atoi(argv[i + 1]);
-    else if (G4String(argv[i]) == "-theta") theta = atof(argv[i + 1]);
-    else if (G4String(argv[i]) == "-phi") phi = atof(argv[i + 1]);
+    else if (G4String(argv[i]) == "-theta") thetaStr = argv[i + 1];
+    else if (G4String(argv[i]) == "-phi") phiStr = argv[i + 1];
     else if (G4String(argv[i]) == "-b") batchmode = atoi(argv[i + 1]);
     else if (G4String(argv[i]) == "-f") firstevent = atoi(argv[i + 1]);
     else if (G4String(argv[i]) == "-e") events = atoi(argv[i + 1]);
     else if (G4String(argv[i]) == "-l") lensId = atoi(argv[i + 1]);
     else if (G4String(argv[i]) == "-x") particle = argv[i + 1];
-    else if (G4String(argv[i]) == "-p") momentum = atof(argv[i + 1]);
+    else if (G4String(argv[i]) == "-p") momentumStr = argv[i + 1];
     else if (G4String(argv[i]) == "-w") physlist = atoi(argv[i + 1]);
     else if (G4String(argv[i]) == "-r") runtype = atoi(argv[i + 1]);
     else if (G4String(argv[i]) == "-study") study = atoi(argv[i + 1]);
@@ -83,6 +83,39 @@ int main(int argc, char **argv) {
       G4cerr << "read README.md" << G4endl;
       return 1;
     }
+  }
+
+  if (momentumStr.Contains("-")) {
+    auto sarr = momentumStr.Tokenize("-");
+    if (sarr->GetEntries() == 2) {
+      momentum = atof(((TObjString *)sarr->At(0))->GetName());
+      momentumMax = atof(((TObjString *)sarr->At(1))->GetName());
+    }
+  } else {
+    momentum = atof(momentumStr);
+    momentumMax = momentum;
+  }
+
+  if (thetaStr.Contains("-")) {
+    auto sarr = thetaStr.Tokenize("-");
+    if (sarr->GetEntries() == 2) {
+      theta = atof(((TObjString *)sarr->At(0))->GetName());
+      thetaMax = atof(((TObjString *)sarr->At(1))->GetName());
+    }
+  } else {
+    theta = atof(thetaStr);
+    thetaMax = theta;
+  }
+
+  if (phiStr.Contains("-")) {
+    auto sarr = phiStr.Tokenize("-");
+    if (sarr->GetEntries() == 2) {
+      phi = atof(((TObjString *)sarr->At(0))->GetName());
+      phiMax = atof(((TObjString *)sarr->At(1))->GetName());
+    }
+  } else {
+    phi = atof(phiStr);
+    phiMax = phi;
   }
 
   // default values
@@ -141,6 +174,7 @@ int main(int argc, char **argv) {
   run->setRunType(runtype);
   if (runtype < 2) {
     run->setMomentum(momentum);
+    run->setMomentumMax(momentumMax);
     run->setPhysList(physlist);
     run->setField(field);
     run->setGeometry(geometry);
@@ -160,7 +194,9 @@ int main(int argc, char **argv) {
     run->setTrackingResPhi(trackingres);
     run->setDarkNoise(dark_noise);
     run->setTheta(theta);
+    run->setThetaMax(thetaMax);
     run->setPhi(phi);
+    run->setPhiMax(phiMax);
     run->setPrismStepX(prismStepX);
     run->setPrismStepY(prismStepY);
     run->setBeamX(beamX);

@@ -166,7 +166,7 @@ PrtReco::PrtReco(TString infile, TString lutfile, TString pdffile, TString nnfil
     if (fMethod == 4) {
       for (int i = 0; i < fmaxch; i++) {
         fTime[h][i] =
-          new TH1F(Form("h_%d_%d", h, i), "pdf;LE time [ns]; entries [#]", 2000, 0, 100);
+          new TH1F(Form("h_%d_%d", h, i), "pdf;LE time [ns]; entries [#]", 2000, 0, 100); // 2000
       }
     }
 
@@ -204,7 +204,7 @@ PrtReco::PrtReco(TString infile, TString lutfile, TString pdffile, TString nnfil
       std::cout << "-I- reading  " << fPdfPath << std::endl;
       TFile pdfFile(fPdfPath);
       int binfactor = (int)(fTimeRes * 1000 / 50. + 0.1);
-
+      
       for (int h : {fp1, fp2}) {
         for (int i = 0; i < fmaxch; i++) {
           // auto hpdf = (TH1F *)pdfFile.Get(Form("h_%d_%d",h, i));
@@ -607,7 +607,8 @@ void PrtReco::Run(int start, int end) {
           ff->SetLineColor(kBlack);
         }
 
-        if (fp1 == 0 && mom < 1.5) { /// handle tails
+        // if (fp1 == 0 && mom < 1.5)
+	  { /// handle tails
           fLnDiffTi[fp2]->Fit("gaus", "S", "", -500, m1 + 1.5 * s1);
           ff = fLnDiffTi[fp2]->GetFunction("gaus");
           m2 = ff->GetParameter(1);
@@ -627,7 +628,8 @@ void PrtReco::Run(int start, int end) {
           ds2 = ff->GetParError(2);
           ff->SetLineColor(kBlack);
         }
-        if (fp1 == 0 && mom < 1.5) { /// handle tails
+        // if (fp1 == 0 && mom < 1.5)
+	  { /// handle tails
           fLnDiffTi[fp1]->Fit("gaus", "S", "", m2 - 1.5 * s2, 500);
           ff = fLnDiffTi[fp1]->GetFunction("gaus");
           m2 = ff->GetParameter(1);

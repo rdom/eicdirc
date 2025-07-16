@@ -89,12 +89,13 @@ example:
 
 -theta    polar between particle beam and bar radiator [deg]
                 25 default
-                if theta == 0 then theta = [30,160]
+		min-max (e.g. 25-155) for a random theta within given range
 
 -phi  azimuth angle between particle beam and bar radiator [deg]
                 0 default
 		use [990, 999] (corresponds to bar # [0,9]) to choose which bar should be hit (works also with -field 2, for > ~4 GeV/c)
-		same use of [990, 999] for LUT generation		
+		same use of [990, 999] for LUT generation
+		min-max (e.g. 0-15 or 990-999) for a random phi within given range
 
 -e    number of simulated events
 
@@ -111,6 +112,8 @@ example:
 	      "mix_kp"   1 kaon 1 proton mix
 	      
 -p    particle momentum [GeV/c]
+               6 default
+	       min-max (e.g. 2-12) for a random momentum within given range
 
 -w    physical list
                 0    standard EM (default)

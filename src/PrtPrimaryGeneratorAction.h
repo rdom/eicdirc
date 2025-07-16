@@ -28,6 +28,7 @@ class PrtPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
 
   void SetOptPhotonPolar();
   void SetOptPhotonPolar(G4double);
+  double GetPhiFromBarId(int barid, double theta);
 
  private:
   PrtRun *fRun;

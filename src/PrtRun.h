@@ -27,10 +27,13 @@ class PrtRun : public TObject {
   Int_t getStudy() const { return fStudy; }
   Bool_t getMc() const { return fMc; }
   Double_t getTheta() const { return fTheta; }
+  Double_t getThetaMax() const { return fThetaMax; }
   Double_t getPhi() const { return fPhi; }
+  Double_t getPhiMax() const { return fPhiMax; }
   Int_t getPhysList() const { return fPhysList; }
   Int_t getPid() const { return fPid; }
   Double_t getMomentum() const { return fMomentum; }
+  Double_t getMomentumMax() const { return fMomentumMax; }
   Int_t getField() const { return fField; }
   Int_t getGeometry() const { return fGeometry; }
   Int_t getRadiator() const { return fRadiator; }
@@ -67,10 +70,13 @@ class PrtRun : public TObject {
   void setStudy(Int_t v) { fStudy = v; }
   void setMc(Bool_t v) { fMc = v; }
   void setTheta(Double_t v) { fTheta = v; }
+  void setThetaMax(Double_t v) { fThetaMax = v; }
   void setPhi(Double_t v) { fPhi = v; }
+  void setPhiMax(Double_t v) { fPhiMax = v; }
   void setPhysList(Int_t v) { fPhysList = v; }
   void setPid(Int_t v) { fPid = v; }
   void setMomentum(Double_t v) { fMomentum = v; }
+  void setMomentumMax(Double_t v) { fMomentumMax = v; }
   void setField(Int_t v) { fField = v; }
   void setGeometry(Int_t v) { fGeometry = v; }
   void setRadiator(Int_t v) { fRadiator = v; }
@@ -120,8 +126,11 @@ class PrtRun : public TObject {
   Int_t fCorrection;
 
   Double_t fTheta;
+  Double_t fThetaMax;
   Double_t fPhi;
+  Double_t fPhiMax;
   Double_t fMomentum;
+  Double_t fMomentumMax;
 
   Double_t fPrismStepX;
   Double_t fPrismStepY;

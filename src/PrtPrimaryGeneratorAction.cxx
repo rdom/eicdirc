@@ -63,9 +63,12 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
 
   PrtManager::Instance()->addEvent(PrtEvent());
   int pdg = fRun->getPid();
-  double theta = (180 - fRun->getTheta()) * TMath::DegToRad();
-  // double theta2 = (180 - fRun->getTest1()) * TMath::DegToRad();
-  double phi = fRun->getPhi() * TMath::DegToRad();
+  double momentum = fRun->getMomentum();
+  double momentumMax = fRun->getMomentumMax();
+  double theta = fRun->getTheta() * deg;
+  double thetaMax = fRun->getThetaMax() * deg;
+  double phi = fRun->getPhi();
+  double phiMax = fRun->getPhiMax();
   double zpos = fRun->getBeamZ();
   double ypos = fRun->getBeamX();
   fRadiatorL = fRun->getRadiatorL();
@@ -74,6 +77,29 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
   fGeomType = fRun->getGeometry();
   fField = fRun->getField();
   fCurrentEvent++;
+
+  if (fabs(momentum - momentumMax) > 0.0001) {
+    momentum = (momentumMax - momentum) * G4UniformRand() + momentum;
+    fParticleGun->SetParticleMomentum(G4ThreeVector(0, 0, momentum * GeV));
+  }
+
+  if (fabs(theta - thetaMax) > 0.0001) {
+    theta = M_PI - ((theta - thetaMax) * G4UniformRand() + thetaMax);
+  } else {
+    theta = M_PI - theta;
+  }
+
+  if (fabs(phi - phiMax) > 0.0001) {
+    if (phi >= 990 && phi <= 999) {
+      phi = GetPhiFromBarId(phi - 990, theta);
+      phiMax = GetPhiFromBarId(phiMax - 990, theta);
+      phi = (phiMax - phi) * G4UniformRand() + phi;
+    } else {
+      phi = (phiMax - phi) * G4UniformRand() * deg;
+    }
+  } else {
+    if (phi >= 990 && phi <= 999) phi = GetPhiFromBarId(phi - 990, theta);
+  }
 
   if (pdg != 0) {
     if (pdg == 2212) fPid = 4;
@@ -105,72 +131,13 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
 
   G4ThreeVector vec(0, 0, 1);
   if (fRunType == 0 || fRunType == 10 || fRunType == 5) { // simulation
-    
-    // // second track
-    // vec.setTheta(theta2);
-    // vec.setPhi(phi);
-    // fParticleGun->SetParticleMomentumDirection(vec);
-    // fParticleGun->GeneratePrimaryVertex(anEvent);
-
-    // WJL target bar code -------------------------
-    int kTargetBar = -1;
-    double fTargetBarY = 0;
-    double fBarsGap = 0.15; //!!!! ALSO DEFINED IN PrtDetectorConstruction
-    double radius = 770.5;  // ePIC
-    double acharge = fParticleGun->GetParticleCharge();
-    double momentum = fParticleGun->GetParticleMomentum();
-    if (fRun->getPhi() >= 990 && fRun->getPhi() <= 999) {
-      //
-      kTargetBar = fRun->getPhi() - 990; // [0,9]
-      fTargetBarY = ((double)(kTargetBar - 5)) * fRadiatorW +
-                    fRadiatorW / 2.; // mm  !!!! ASSUMES TEN BARS, also IGNORES GAPS!!!!
-      double partheta = (180. - fRun->getTheta()); // deg
-      double distheta = fabs(partheta - 90.);      // deg
-      // field=2 MARCO 1.7T, theta scalings to handle radial component of field
-      double Bval = (-1.75 + (1.75 - 1.6) * (distheta / 60.)) * CLHEP::tesla;
-      double pt = momentum * sin(theta);
-      double R = 1000. * (pt / CLHEP::GeV) / 0.3 / fabs(Bval / CLHEP::tesla); // meters->mm
-      if (fField == 0) R = 1E12;                                              // no field
-      double x1 = 0;                                                          // primary vertex
-      double y1 = 0;                                                          // primary vertex
-      double x2 = radius + fRadiatorH / 2.;                                   // target point
-      double y2 = fTargetBarY; // target point !!!! HERE ASSUMES TEN BARS PER BOX
-      double xa = (x2 - x1) / 2.;
-      double ya = (y2 - y1) / 2.;
-      double x0 = x1 + xa;
-      double y0 = y1 + ya;
-      double a = sqrt(xa * xa + ya * ya);
-      double b = sqrt(R * R - a * a);
-      double x3 = x0 + b * ya / a;
-      double y3 = y0 - b * xa / a;
-      double x4 = x0 - b * ya / a;
-      double y4 = y0 + b * xa / a;
-      // reverse order to get phi angle of perpendicular to ray from PV to (x3,y3), NEG
-      double ang3 = atan2(x3, y3);
-      // reverse order to get phi angle of perpendicular to ray from PV to (x4,y4), POS
-      double ang4 = atan2(x4, y4);
-      if (acharge > 0.) phi = -ang4;      // pos
-      else if (acharge < 0.) phi = M_PI - ang3; // neg
-      //
-    } else {
-      ypos = 0.5 * fRadiatorW;
-      phi = fRun->getPhi() * TMath::DegToRad();
-    }
-    // WJL end target bar code -------------------------
 
     fParticleGun->SetParticlePosition(G4ThreeVector(0, ypos, zpos));
-     
-    if (theta > 0 && theta < M_PI) {
-      vec.setTheta(theta);
-      vec.setPhi(phi);      
-    } else {
-      // theta = M_PI * G4UniformRand();
-      theta = acos((cos(25 * deg) - cos(160 * deg)) * G4UniformRand() + cos(160 * deg));
-      theta = M_PI - theta;
-	    
-      vec.setTheta(theta);
-      vec.setPhi(2 * M_PI * G4UniformRand());
 
+    vec.setTheta(theta);
+    vec.setPhi(phi);
+
+    if(0){
       // 3 tracks for visualization
       vec.setTheta((180 - 25) * deg);
       vec.setPhi(0.5 * deg);
@@ -192,7 +159,8 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
         vec.rotateZ(G4UniformRand() * 0.032);
       }
       if (fRunType == 0) vec.rotateZ(0.016); // 0.016 hits the middle of the BaBar bar
-    }  
+    }
+    
     fParticleGun->SetParticleMomentumDirection(vec);
   }
 
@@ -248,4 +216,53 @@ void PrtPrimaryGeneratorAction::SetOptPhotonPolar(double angle) {
 
   G4ThreeVector polar = std::cos(angle) * e_paralle + std::sin(angle) * e_perpend;
   fParticleGun->SetParticlePolarization(polar);
+}
+
+double PrtPrimaryGeneratorAction::GetPhiFromBarId(int barid, double theta) {
+
+  // WJL target bar code -------------------------
+  int kTargetBar = -1;
+  double fTargetBarY = 0;
+  double fBarsGap = 0.15; //!!!! ALSO DEFINED IN PrtDetectorConstruction
+  double radius = 770.5;  // ePIC
+  double acharge = fParticleGun->GetParticleCharge();
+  double momentum = fParticleGun->GetParticleMomentum();
+  double phi = 0;
+  
+  kTargetBar = barid; // [0,9]
+  fTargetBarY = ((double)(kTargetBar - 5)) * fRadiatorW +
+                fRadiatorW / 2.;               // mm  !!!! ASSUMES TEN BARS, also IGNORES GAPS!!!!
+  // double partheta = (180. - theta / deg);      // deg
+  double partheta = theta / deg;      // deg
+  
+  double distheta = fabs(partheta - 90.);      // deg
+  // field=2 MARCO 1.7T, theta scalings to handle radial component of field
+  double Bval = (-1.75 + (1.75 - 1.6) * (distheta / 60.)) * CLHEP::tesla;
+  double pt = momentum * sin(theta);
+  double R = 1000. * (pt / CLHEP::GeV) / 0.3 / fabs(Bval / CLHEP::tesla); // meters->mm
+  if (fField == 0) R = 1E12;                                              // no field
+  double x1 = 0;                                                          // primary vertex
+  double y1 = 0;                                                          // primary vertex
+  double x2 = radius + fRadiatorH / 2.;                                   // target point
+  double y2 = fTargetBarY; // target point !!!! HERE ASSUMES TEN BARS PER BOX
+  double xa = (x2 - x1) / 2.;
+  double ya = (y2 - y1) / 2.;
+  double x0 = x1 + xa;
+  double y0 = y1 + ya;
+  double a = sqrt(xa * xa + ya * ya);
+  double b = sqrt(R * R - a * a);
+  double x3 = x0 + b * ya / a;
+  double y3 = y0 - b * xa / a;
+  double x4 = x0 - b * ya / a;
+  double y4 = y0 + b * xa / a;
+  // reverse order to get phi angle of perpendicular to ray from PV to (x3,y3), NEG
+  double ang3 = atan2(x3, y3);
+  // reverse order to get phi angle of perpendicular to ray from PV to (x4,y4), POS
+  double ang4 = atan2(x4, y4);
+  if (acharge > 0.) phi = -ang4;            // pos
+  else if (acharge < 0.) phi = M_PI - ang3; // neg
+
+  return phi;
+
+  // WJL end target bar code -------------------------
 }

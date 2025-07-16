@@ -3,10 +3,10 @@
 PrtRun::PrtRun()
   : fShortInfo(""), fName(""), fId(0), fRunType(0), fStudy(0), fMc(0), fPhysList(0), fPid(0),
     fField(0), fGeometry(0), fEv(0), fLens(0), fRadiator(0), fPmtLayout(0), fTrigger(0), fNpmt(0),
-    fNpix(0), fCorrection(0), fTheta(0), fPhi(0), fMomentum(0), fPrismStepX(0), fPrismStepY(0),
-    fBeamX(0), fBeamZ(0), fBeamSize(0), fTrackingResTheta(0), fTrackingResPhi(0), fTimeSigma(0),
-    fTimeCut(0), fSimOffset(0), fRadiatorL(0), fRadiatorW(0), fRadiatorH(0), fDarkNoise(0),
-    fTest1(0), fTest2(0), fTest3(0) {}
+    fNpix(0), fCorrection(0), fTheta(0), fThetaMax(0), fPhi(0), fPhiMax(0), fMomentum(0),
+    fMomentumMax(0), fPrismStepX(0), fPrismStepY(0), fBeamX(0), fBeamZ(0), fBeamSize(0),
+    fTrackingResTheta(0), fTrackingResPhi(0), fTimeSigma(0), fTimeCut(0), fSimOffset(0),
+    fRadiatorL(0), fRadiatorW(0), fRadiatorH(0), fDarkNoise(0), fTest1(0), fTest2(0), fTest3(0) {}
 
 void PrtRun::setPmtLayout(Int_t v) {
   if (v == 2030) {
