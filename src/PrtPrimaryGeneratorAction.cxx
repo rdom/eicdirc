@@ -233,9 +233,9 @@ double PrtPrimaryGeneratorAction::GetPhiFromBarId(int barid, double theta) {
   fTargetBarY = ((double)(kTargetBar - 5)) * fRadiatorW +
                 fRadiatorW / 2.;               // mm  !!!! ASSUMES TEN BARS, also IGNORES GAPS!!!!
   // double partheta = (180. - theta / deg);      // deg
-  double partheta = theta / deg;      // deg
-  
+  double partheta = theta / deg;      // deg  
   double distheta = fabs(partheta - 90.);      // deg
+
   // field=2 MARCO 1.7T, theta scalings to handle radial component of field
   double Bval = (-1.75 + (1.75 - 1.6) * (distheta / 60.)) * CLHEP::tesla;
   double pt = momentum * sin(theta);

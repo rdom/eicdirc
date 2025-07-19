@@ -99,7 +99,6 @@ G4bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
 
   double time = step->GetPreStepPoint()->GetLocalTime();
 
-
   //smear time
   time = G4RandGauss::shoot(time,fTimePrecision);
   
