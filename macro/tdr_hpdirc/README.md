@@ -30,8 +30,7 @@ Run simulation for 45k pi/K @ 6 GeV/c for every 5 degree polar angle step in [25
 ./reconstruct
 ```
 
-Per-angle plots will be stored at sim_data/reco
-Create final plots:
+Per-angle plots will be stored at sim_data/reco. Create final plots:
 
 ```
 root plot.C
