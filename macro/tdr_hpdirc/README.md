@@ -40,11 +40,13 @@ Run Time Imaging reconstruction using first 5k events:
 ./reconstruct
 ```
 
-Per-angle plots will be stored at sim_data/reco. Create final plots:
+Per-angle plots will be stored at "sim_data/reco". Create final plots:
 
 ```
 root plot.C
 
 ```
+
+Reference plots for the photon yield and for the separation power of time imaging reconstruction as a function of polar angle are located in "plots" folder.
 
 
