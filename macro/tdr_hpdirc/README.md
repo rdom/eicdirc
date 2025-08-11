@@ -3,13 +3,13 @@
 
 #### Software installation
 
-prerequisites:
+Prerequisites:
 ```
-root
-geant4
+root (>= 6)
+geant4 (>= v11.3.2)
 ```
 
-install hpDIRC standalone simulation/reconstruction:
+Install hpDIRC standalone simulation/reconstruction:
 ```
 git clone https://github.com/rdom/eicdirc
 cd eicdirc
@@ -22,18 +22,20 @@ make -j4
 
 #### Simulation/Reconstruction
 
-run simulation for 45k pi/K @ 6 GeV/c for every 5 degree polar angle step in [25,155] degree range (~1.3 cpu-hours per angle);
-create PDFs (probability density functions) using last 40k events;
-run Time Imaging reconstruction using first 5k events;
+Run simulation for 45k pi/K @ 6 GeV/c for every 5 degree polar angle step in [25,155] degree range (~1.3 cpu-hours per angle).
+Create PDFs (probability density functions) using last 40k events.
+Run Time Imaging reconstruction using first 5k events.
 
 ```
 ./simulate
 ./create_pdf
 ./reconstruct
+```
 
-per-angle plots will be stored at sim_data/reco
+Per-angle plots will be stored at sim_data/reco
+Create final plots:
 
-create final plots:
+```
 root plot.C
 
 ```
