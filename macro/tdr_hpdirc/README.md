@@ -12,6 +12,7 @@ geant4 (>= v11.3.2)
 Install hpDIRC standalone simulation/reconstruction:
 ```
 git clone https://github.com/rdom/eicdirc
+git checkout a18c34724980f69eee0e0671b923f37df100eb44
 cd eicdirc
 mkdir build
 cd build
