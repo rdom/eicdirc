@@ -22,7 +22,7 @@ make -j4
 
 #### Simulation/Reconstruction
 
-Run simulation for 45k pi/K @ 6 GeV/c for every 5 degree polar angle step in [25,155] degree range (it will take ~1.3 cpu-hours per angle, modify number of used thread inside script ):
+Run simulation for 45k pi/K @ 6 GeV/c for every 5 degree polar angle step in [25,155] degree range (it will take ~1.3 cpu-hours per angle; number of threads can be adjusted inside script):
 
 ```
 ./simulate
