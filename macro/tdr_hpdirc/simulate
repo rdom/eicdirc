@@ -1,0 +1,31 @@
+#!/bin/bash
+
+threads=20
+tseed=$(($(date +%s%N)/1000000-1393400000000))
+data="sim_data"
+
+start_time=$(date +%s)
+waitForMe (){
+    while : 
+    do 
+	activth=$(ps aux | grep "[e]icdirc" | wc -l)
+	printf "\r$statusline [$theta deg] [$activth jobs] ---- [$(($(date +%s) - start_time)) s] "
+	if [ "$activth" -lt "$1" ]; then 
+	    break  
+	fi
+	sleep 1
+    done
+}
+
+
+for theta in $(seq 25 5 155); do
+	for i in {0..19}; do
+	    ../../build/eicdirc -r 0 -seed $tseed$i -o $data/h_b$i.$theta.root -field 2 -p 6 -theta $theta -phi 995 -x mix_pik -trackingres 0.0005 -timeres 0 -e 2250 -b 1   > $data/h_b$i.$theta.log &
+	    waitForMe $threads
+	done
+	
+	waitForMe 1
+	hadd -f $data/hits.$theta.root $data/h_b*.$theta.root
+	
+done
+
