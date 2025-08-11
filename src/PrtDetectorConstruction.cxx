@@ -1491,21 +1491,26 @@ void PrtDetectorConstruction::ConstructSDandField() {
   // Magnetic Fields
   int fid = fRun->getField();
   if (fid == 1 || fid == 2 || fid == 3 || fid == 4) {
+    // get path to data folder
+    TString cxxPath = __FILE__;
+    TString cxxDir = gSystem->DirName(cxxPath);
 
     double ZOffset = 0.;
     G4MagneticField *mField;
     if (fid == 1) {
       // CORE field
-      mField = new PrtField("../data/field.tab", ZOffset);
+      mField = new PrtField(cxxDir + "/../data/field.tab", ZOffset);
     } else if (fid == 2) {
       // MARCO 1.7T
       mField = new PrtField(
-        "../data/MARCO_v.6.4.1.1.3_1.7T_Magnetic_Field_Map_2022_11_14_rad_coords_cm_T.CART.txt",
+        cxxDir +
+          "/../data/MARCO_v.6.4.1.1.3_1.7T_Magnetic_Field_Map_2022_11_14_rad_coords_cm_T.CART.txt",
         ZOffset);
     } else if (fid == 3) {
       // MARCO 2.0T
       mField = new PrtField(
-        "../data/MARCO_v.6.4.1.1.3_2T_Magnetic_Field_Map_2022_11_14_rad_coords_cm_T.CART.txt",
+        cxxDir +
+          "/../data/MARCO_v.6.4.1.1.3_2T_Magnetic_Field_Map_2022_11_14_rad_coords_cm_T.CART.txt",
         ZOffset);
     } else if (fid == 4) {
       // simple solenoidal field

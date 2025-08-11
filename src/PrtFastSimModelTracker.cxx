@@ -55,9 +55,14 @@ PrtFastSimModelTracker::PrtFastSimModelTracker(G4String aModelName, G4Region *aE
   grphi[1] = new TGraph(21, mombins, rphi_1);
   grphi[2] = new TGraph(21, mombins, rphi_2);
 
+  // get path to data folder
+  TString cxxPath = __FILE__;
+  TString cxxDir = gSystem->DirName(cxxPath); // extract directory
+  TString mapFile = cxxDir + "/../data/tracking_resolution_map_010725.root";
+  
   // TFile *file = TFile::Open("../data/tracking_resolution_map_220723.root");
   // TFile *file = TFile::Open("../data/tracking_resolution_map_271123.root");
-  TFile *file = TFile::Open("../data/tracking_resolution_map_010725.root");
+  TFile *file = TFile::Open(mapFile);
   fTrMapTheta = new TH2F();
   fTrMapPhi = new TH2F();
   file->GetObject("tr_theta", fTrMapTheta);

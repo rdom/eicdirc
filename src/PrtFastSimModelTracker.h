@@ -6,6 +6,7 @@
 #include "G4Navigator.hh"
 
 #include "PrtRun.h"
+#include "TSystem.h"
 #include "TGraph.h"
 #include "TH2F.h"
 
