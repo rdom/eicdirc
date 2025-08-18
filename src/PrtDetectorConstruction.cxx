@@ -114,8 +114,10 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
     if (fMcpLayout == 2032) { // new design
       fPrizm[0] = 352;
       fPrizm[2] = fPrizm[3] + 300 * tan(33.7 * deg);
-      fNRow = 5;
-      fMcpLayout = 2031;
+      fNRow = 6;
+
+      fMcpTotal[0] = 61.5;
+      fMcpTotal[1] = 60;
     }
   }
 
@@ -880,7 +882,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
       }
     }
   }
-  if (fMcpLayout == 2031) {
+  if (fMcpLayout == 2031 || fMcpLayout == 2032 ) {
     // alternative mcp pmt
     // The MCP
 
@@ -903,8 +905,15 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
 
     int mcpId = 0;
     int pixId = 0;
-    double gapx = (fPrizm[2] - fNCol * fMcpTotal[0]) / (double)(fNCol + 1);
-    double gapy = (fBoxWidth - fNRow * fMcpTotal[1]) / (double)(fNRow + 1);    
+    double gapx = (fPrizm[2] - fNCol * fMcpTotal[1]) / (double)(fNCol + 1);
+    double gapy = (fBoxWidth - fNRow * fMcpTotal[0]) / (double)(fNRow + 1);
+
+    double center_shift = 0;
+    if (fMcpLayout == 2032){
+      gapx = 1;
+      gapy = 1;
+      center_shift = 0.5 * (fNRow * (fMcpTotal[1] + gapx) - fPrizm[0]);
+    }
     
     std::cout << "fNpix1=" << fNpix1 << " fNpix2=" << fNpix2 << " size = " << fMcpActive[0] / fNpix1
               << std::endl;
@@ -932,7 +941,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
         // lDirc,false,mcpId++);
 
         double shiftx = i * (fMcpTotal[0] + gapx) - 0.5 * (fFd[1] - fMcpTotal[0]) + gapx;
-        double shifty = j * (fMcpTotal[1] + gapy) - 0.5 * (fBoxWidth - fMcpTotal[1]) + gapy;
+        double shifty = j * (fMcpTotal[1] + gapy) - 0.5 * (fPrizm[0] - fMcpTotal[1]) + gapy - center_shift;
 	// shifty += 0.5*fMcpTotal[0];
         new G4PVPlacement(0, G4ThreeVector(shiftx, shifty, 0), lMcp, "wMcp", lFd, false, mcpId++);
       }
