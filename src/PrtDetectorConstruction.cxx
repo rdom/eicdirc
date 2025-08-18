@@ -905,8 +905,8 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
 
     int mcpId = 0;
     int pixId = 0;
-    double gapx = (fPrizm[2] - fNCol * fMcpTotal[1]) / (double)(fNCol + 1);
-    double gapy = (fBoxWidth - fNRow * fMcpTotal[0]) / (double)(fNRow + 1);
+    double gapx = (fPrizm[2] - fNCol * fMcpTotal[0]) / (double)(fNCol + 1);
+    double gapy = (fBoxWidth - fNRow * fMcpTotal[1]) / (double)(fNRow + 1);
 
     double center_shift = 0;
     if (fMcpLayout == 2032){
