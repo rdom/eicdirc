@@ -235,20 +235,20 @@
 
 
 
-#rich
-# side yz
-/vis/viewer/set/viewpointVector 1 0 0
-/vis/viewer/set/upVector 0 1 0
-/vis/viewer/set/projection orthogonal
-/vis/viewer/zoomTo 7
-/vis/viewer/set/targetPoint 0.8 0 2.3 m
-/vis/viewer/set/background white
+# #rich
+# # side yz
+# /vis/viewer/set/viewpointVector 1 0 0
+# /vis/viewer/set/upVector 0 1 0
+# /vis/viewer/set/projection orthogonal
+# /vis/viewer/zoomTo 7
+# /vis/viewer/set/targetPoint 0.8 0 2.3 m
+# /vis/viewer/set/background white
 
 
 
-/vis/modeling/trajectories/create/drawByParticleID
-/vis/modeling/trajectories/drawByParticleID-1/setRGBA opticalphoton 1 0.58 0 1
-/vis/modeling/trajectories/drawByParticleID-1/default/setDrawStepPts false
-/vis/modeling/trajectories/drawByParticleID-1/default/setStepPtsSize 0.1
-/vis/viewer/set/viewpointVector 1.31839e-16 -1 -6.93889e-18
-/vis/viewer/set/upVector 0 1 0
+# /vis/modeling/trajectories/create/drawByParticleID
+# /vis/modeling/trajectories/drawByParticleID-1/setRGBA opticalphoton 1 0.58 0 1
+# /vis/modeling/trajectories/drawByParticleID-1/default/setDrawStepPts false
+# /vis/modeling/trajectories/drawByParticleID-1/default/setStepPtsSize 0.1
+# /vis/viewer/set/viewpointVector 1.31839e-16 -1 -6.93889e-18
+# /vis/viewer/set/upVector 0 1 0

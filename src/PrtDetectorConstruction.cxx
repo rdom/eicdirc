@@ -1416,7 +1416,7 @@ void PrtDetectorConstruction::SetVisualization() {
   
   double transp = 0.4;
   G4VisAttributes *vaLens = new G4VisAttributes(G4Colour(0., 1., 1., transp));
-  vaLens->SetForceWireframe(0);
+  vaLens->SetForceWireframe(true);
   // vaLens->SetForceAuxEdgeVisible(true);
   // vaLens->SetForceLineSegmentsPerCircle(10);
   // vaLens->SetLineWidth(4);
@@ -1427,7 +1427,7 @@ void PrtDetectorConstruction::SetVisualization() {
     lLens1->SetVisAttributes(vaLens);
     G4VisAttributes *vaLens2 = new G4VisAttributes(G4Colour(0., 1., 1., transp));
     vaLens2->SetColour(G4Colour(0., 0.5, 1., transp));
-    vaLens2->SetForceWireframe(0);
+    vaLens2->SetForceWireframe(true);
     lLens2->SetVisAttributes(vaLens2);
     if (fLensId == 3 || fLensId == 6) lLens3->SetVisAttributes(vaLens);
   }
