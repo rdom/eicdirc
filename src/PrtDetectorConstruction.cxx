@@ -24,6 +24,7 @@
 #include "G4Colour.hh"
 #include "G4VisAttributes.hh"
 #include "G4UImanager.hh"
+#include "G4GDMLParser.hh"
 
 #include "G4MagneticField.hh"
 #include "G4UniformMagField.hh"
@@ -158,8 +159,8 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   }
   
   if (fEvType == 3 || fEvType == 7 || fEvType == 9 ) {
-    fLens[0] =  fBar[0];
-    fLens[2] = 12;
+    fLens[0] = fBar[0];
+    fLens[2] = 8;
   }
   
   if (fLensId == 0 || fLensId == 10) {
@@ -308,7 +309,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
       nparts = 3;
       double z = -0.5 * dirclength + 0.5 * evbarlength + (fBar[2] + gluethickness) * 3;
       double th = 0;
-      if (fEvType == 7) th = 0.25 * (fPrizm[3] - fBar[0]);
+      // if (fEvType == 7) th = 0.25 * (fPrizm[3] - fBar[0]);
       if (fEvType == 10) {
         // new G4PVPlacement(0, G4ThreeVector(rshift - th, -0.25 * fPrizm[0] - 0.025, z + sh), lExpVol,
         //                   "wExpVol", lDirc, false, id);
@@ -478,7 +479,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     double shight = 25; //fBar[0];//25;
 
     if (fEvType == 3 || fEvType == 7 || fEvType == 9) {
-      shight = fBar[0];
+      // shight = fBar[0];
       r1 = 290; //fTest1; 
       r2 = 190; //fTest2;      
     }
@@ -1054,7 +1055,11 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   }
 
   SetVisualization();  
-  PrtManager::Instance()->initializeLut();  
+  PrtManager::Instance()->initializeLut();
+
+  // G4GDMLParser parser;
+  // parser.Write("geometry.gdml", wExpHall);
+  
   return wExpHall;
 }
 
@@ -1390,7 +1395,7 @@ void PrtDetectorConstruction::SetVisualization() {
   waFd->SetForceWireframe(true);
   lFd->SetVisAttributes(waFd);
 
-  G4VisAttributes *waBar = new G4VisAttributes(G4Colour(0., 1., 0.9, 0.05)); // 0.05
+  G4VisAttributes *waBar = new G4VisAttributes(G4Colour(0., 1., 0.9, 0.01)); // 0.05
   waBar->SetVisibility(true);
   lBar->SetVisAttributes(waBar);
   lEvBar->SetVisAttributes(waBar);
@@ -1411,7 +1416,7 @@ void PrtDetectorConstruction::SetVisualization() {
   
   double transp = 0.4;
   G4VisAttributes *vaLens = new G4VisAttributes(G4Colour(0., 1., 1., transp));
-  vaLens->SetForceWireframe(true);
+  vaLens->SetForceWireframe(0);
   // vaLens->SetForceAuxEdgeVisible(true);
   // vaLens->SetForceLineSegmentsPerCircle(10);
   // vaLens->SetLineWidth(4);
@@ -1422,7 +1427,7 @@ void PrtDetectorConstruction::SetVisualization() {
     lLens1->SetVisAttributes(vaLens);
     G4VisAttributes *vaLens2 = new G4VisAttributes(G4Colour(0., 1., 1., transp));
     vaLens2->SetColour(G4Colour(0., 0.5, 1., transp));
-    vaLens2->SetForceWireframe(true);
+    vaLens2->SetForceWireframe(0);
     lLens2->SetVisAttributes(vaLens2);
     if (fLensId == 3 || fLensId == 6) lLens3->SetVisAttributes(vaLens);
   }

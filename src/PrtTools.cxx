@@ -1252,7 +1252,7 @@ void PrtTools::set_style(TCanvas *c) {
 
       gg->GetYaxis()->SetLabelSize(0.05);
       gg->GetYaxis()->SetTitleSize(0.06);
-      gg->GetYaxis()->SetTitleOffset(0.7);
+      gg->GetYaxis()->SetTitleOffset(0.65);
     }
 
     if(obj->InheritsFrom("TMultiGraph")){
@@ -1263,7 +1263,7 @@ void PrtTools::set_style(TCanvas *c) {
 
       gg->GetYaxis()->SetLabelSize(0.05);
       gg->GetYaxis()->SetTitleSize(0.06);
-      gg->GetYaxis()->SetTitleOffset(0.7);
+      gg->GetYaxis()->SetTitleOffset(0.65);
     }
 
     if(obj->InheritsFrom("TF1")){

@@ -35,6 +35,7 @@
 #include "PrtStackingAction.h"
 #include "PrtSteppingVerbose.h"
 #include "PrtTrackingAction.h"
+#include "PrtEventAction.h"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -63,6 +64,7 @@ void PrtActionInitialization::Build() const
   SetUserAction(new PrtSteppingAction());
   SetUserAction(new PrtStackingAction());
   SetUserAction(new PrtTrackingAction());
+  SetUserAction(new PrtEventAction());
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

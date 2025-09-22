@@ -51,7 +51,7 @@ G4VParticleChange *PrtOpBoundaryProcess::PostStepDoIt(const G4Track &aTrack, con
 
   // ideal focusing
   if (fLensId == 10 && fEvType == 3) {
-    endofbar = 1855.15;
+    endofbar = 2685 - 840; //endofbar = 1855.15;
     G4ThreeVector gpoint = pPostStepPoint->GetPosition();
     G4TouchableHistory *touchable = (G4TouchableHistory *)(pPostStepPoint->GetTouchable());
     G4ThreeVector lpoint = touchable->GetHistory()->GetTransform(1).TransformPoint(gpoint);
@@ -66,7 +66,7 @@ G4VParticleChange *PrtOpBoundaryProcess::PostStepDoIt(const G4Track &aTrack, con
                            .TransformPoint(G4ThreeVector(0, 0, endofbar));
 
       // in global CS
-      endofbar = 1855.15;
+      endofbar = 2685 - 840; //1855.15;
       double newz = endofbar + 0.1; // lpoint.getZ()
       // if (prename != "wGlue")
       // particleChange->ProposeTrackStatus(fStopAndKill);
