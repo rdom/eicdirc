@@ -1056,9 +1056,9 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
 
   SetVisualization();  
   PrtManager::Instance()->initializeLut();
-
+  
   // G4GDMLParser parser;
-  // parser.Write("geometry.gdml", wExpHall);
+  // parser.Write("hpDIRC.gdml", wExpHall);
   
   return wExpHall;
 }
