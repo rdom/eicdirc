@@ -18,8 +18,9 @@ PrtStackingAction::PrtStackingAction()
   fStudy = PrtManager::Instance()->getRun()->getStudy();
   fQe = 1; // HiQ 400, default
 
-  fQe = fStudy;
-  if (fQe < 1) fQe = 1;
+  // fQe = fStudy;
+  // if (fQe < 1) fQe = 1;
+  if (PrtManager::Instance()->getRun()->getPmtLayout() == 4) fQe = 9; // hrppd24 qe
 
   // create a detector efficiency function:
   {
@@ -262,10 +263,10 @@ PrtStackingAction::PrtStackingAction()
     fDetEff[8] = new TGraph(n_lappd, en_lappd, qe_lappd);
     fDetEff[9] = new TGraph(n_hrppd24, en_hrppd24, qe_hrppd24);
 
-    TCanvas c;
-    for (int i = 7; i < 10; i++) fDetEff[i]->Draw((i == 7) ? "APL" : "PL same");
-    fDetEff[7]->GetYaxis()->SetRangeUser(0,0.35);
-    gPad->WaitPrimitive("dfs");
+    // TCanvas c;
+    // for (int i = 0; i < 10; i++) fDetEff[i]->Draw((i == 0) ? "APL" : "PL same");
+    // fDetEff[0]->GetYaxis()->SetRangeUser(0,0.35);
+    // gPad->WaitPrimitive("dfs");
   }
 }
 
