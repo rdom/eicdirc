@@ -91,7 +91,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   fMcpActive[2] = 1;
   fLens[0] = fLens[1] = fPrizm[3];
   fLens[2] = 12;
-  fRadius = 770.5;
+  fRadius = 766.25000; //770.5;
   fNBoxes = 16;
   
   fBoxWidth = fPrizm[0];
@@ -103,9 +103,9 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
     fBar[2] = 1100;
   }
 
-  if (fGeomType == 1 || fGeomType == 11) { // ePIC ECCE
+  if (fGeomType == 1 || fGeomType == 11) { // hpDIRC
     fNBoxes = 12;
-    fRadius = 790;
+    fRadius = 766.25; 
     fNBar = 10;
     fBar[2] = 1225; // BaBar bars
     fBar[1] = 35;

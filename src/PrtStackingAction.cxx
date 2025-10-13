@@ -202,6 +202,19 @@ PrtStackingAction::PrtStackingAction()
       8.00139, 7.64944, 7.2924,  6.97348, 6.65352, 6.36185, 6.07023, 5.79259, 5.50787, 5.24325,
       4.98614, 4.74539, 4.50405, 0,       0};
 
+    const int n_hrppd24 = 48;
+    double en_hrppd24[n_hrppd24] = {0,   199, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290,
+                                    300, 310, 320, 330, 340, 350, 360, 370, 380, 390, 400, 410,
+                                    420, 430, 440, 450, 460, 470, 480, 490, 500, 510, 520, 530,
+                                    540, 550, 560, 570, 580, 590, 600, 610, 620, 630, 631, 1000};
+
+    double qe_hrppd24[n_hrppd24] = {0,      0,      0.2272, 0.2769, 0.3006, 0.3126, 0.3215, 0.3156,
+                                    0.3173, 0.3038, 0.2890, 0.2837, 0.2858, 0.2863, 0.2907, 0.3052,
+                                    0.3158, 0.3245, 0.3272, 0.3355, 0.3432, 0.3339, 0.3142, 0.2951,
+                                    0.2691, 0.2460, 0.2257, 0.2061, 0.1878, 0.1704, 0.1562, 0.1424,
+                                    0.1303, 0.1191, 0.1088, 0.0993, 0.0910, 0.0831, 0.0759, 0.0695,
+                                    0.0635, 0.0580, 0.0528, 0.0482, 0.0439, 0.0402, 0,      0};
+
     // https://github.com/eic/EICrecon/blob/irt-2.0/src/algorithms/pid/IrtDebugging.cc#L260
     const int n_lappd = 30;
     double en_lappd[n_lappd] = {0,   159, 160, 180, 200, 220, 240, 260, 280, 300,
@@ -235,7 +248,8 @@ PrtStackingAction::PrtStackingAction()
     for (int i = 0; i < 22; i++) eff_sbi[i] *= 0.01 * 0.95;
     for (int i = 0; i < n_hrppd; i++) qe_hrppd[i] *= 0.81 * 0.7 ;
     for (int i = 0; i < n_hrppd16; i++) qe_hrppd16[i] *= 0.01 * 0.70;
-    for (int i = 0; i < n_lappd; i++) qe_lappd[i] *= 0.81 * 0.7 ;
+    for (int i = 0; i < n_lappd; i++) qe_lappd[i] *= 0.81 * 0.7;
+    for (int i = 0; i < n_hrppd24; i++) qe_hrppd24[i] *= 0.7;
 
     fDetEff[0] = new TGraph(1000, lambda[0], fEfficiencyR[0]);
     fDetEff[1] = new TGraph(1000, lambda[1], fEfficiencyR[1]);
@@ -246,11 +260,12 @@ PrtStackingAction::PrtStackingAction()
     fDetEff[6] = new TGraph(n_hrppd, en_hrppd, qe_hrppd);
     fDetEff[7] = new TGraph(n_hrppd16, en_hrppd16, qe_hrppd16);
     fDetEff[8] = new TGraph(n_lappd, en_lappd, qe_lappd);
+    fDetEff[9] = new TGraph(n_hrppd24, en_hrppd24, qe_hrppd24);
 
-    // TCanvas c;
-    // for (int i = 0; i < 9; i++) fDetEff[i]->Draw((i == 0) ? "APL" : "PL same");
-    // fDetEff[0]->GetYaxis()->SetRangeUser(0,0.35);
-    // gPad->WaitPrimitive("dfs");
+    TCanvas c;
+    for (int i = 7; i < 10; i++) fDetEff[i]->Draw((i == 7) ? "APL" : "PL same");
+    fDetEff[7]->GetYaxis()->SetRangeUser(0,0.35);
+    gPad->WaitPrimitive("dfs");
   }
 }
 
