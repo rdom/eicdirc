@@ -105,7 +105,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
 
   if (fGeomType == 1 || fGeomType == 11) { // hpDIRC
     fNBoxes = 12;
-    fRadius = 766.25; 
+    fRadius = 766.25;
     fNBar = 10;
     fBar[2] = 1225; // BaBar bars
     fBar[1] = 35;
@@ -401,8 +401,14 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     if (fEvType == 3 || fEvType == 7 || fEvType == 9) {
       // r1 = 150; // for 500 mm ev-prism
       // r2 = 90;
-      r1 = 290; //fTest1; // for 893 mm ev-prism
-      r2 = 190; //fTest2;
+      
+      // r1 = 290; // for 893 mm ev-prism
+      // r2 = 190; 
+
+      r1 = 65; // for 893 mm ev-prism v2
+      r2 = 55; 
+
+      
     }
 
     double thight = fBar[0];
