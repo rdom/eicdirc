@@ -140,7 +140,7 @@ int main(int argc, char **argv) {
       theta = 180;
     }
   }
-
+ 
   if (outfile == "") {
     outfile = "reco.root";                                          // reconstruction
     if (runtype == 0 || runtype == 10) outfile = "hits.root";       // simulation

@@ -78,27 +78,29 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
   fField = fRun->getField();
   fCurrentEvent++;
 
-  if (fabs(momentum - momentumMax) > 0.0001) {
-    momentum = (momentumMax - momentum) * G4UniformRand() + momentum;
-    fParticleGun->SetParticleMomentum(G4ThreeVector(0, 0, momentum * GeV));
-  }
-
-  if (fabs(theta - thetaMax) > 0.0001) {
-    theta = M_PI - ((theta - thetaMax) * G4UniformRand() + thetaMax);
-  } else {
-    theta = M_PI - theta;
-  }
-
-  if (fabs(phi - phiMax) > 0.0001) {
-    if (phi >= 990 && phi <= 999) {
-      phi = GetPhiFromBarId(phi - 990, theta);
-      phiMax = GetPhiFromBarId(phiMax - 990, theta);
-      phi = (phiMax - phi) * G4UniformRand() + phi;
-    } else {
-      phi = (phiMax - phi) * G4UniformRand() * deg;
+  if (fRunType == 0) { // random tracks
+    if (fabs(momentum - momentumMax) > 0.0001) {
+      momentum = (momentumMax - momentum) * G4UniformRand() + momentum;
+      fParticleGun->SetParticleMomentum(G4ThreeVector(0, 0, momentum * GeV));
     }
-  } else {
-    if (phi >= 990 && phi <= 999) phi = GetPhiFromBarId(phi - 990, theta);
+
+    if (fabs(theta - thetaMax) > 0.0001) {
+      theta = M_PI - ((theta - thetaMax) * G4UniformRand() + thetaMax);
+    } else {
+      theta = M_PI - theta;
+    }
+
+    if (fabs(phi - phiMax) > 0.0001) {
+      if (phi >= 990 && phi <= 999) {
+        phi = GetPhiFromBarId(phi - 990, theta);
+        phiMax = GetPhiFromBarId(phiMax - 990, theta);
+        phi = (phiMax - phi) * G4UniformRand() + phi;
+      } else {
+        phi = (phiMax - phi) * G4UniformRand() * deg;
+      }
+    } else {
+      if (phi >= 990 && phi <= 999) phi = GetPhiFromBarId(phi - 990, theta);
+    }
   }
 
   if (pdg != 0) {
@@ -169,12 +171,13 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
     int bars = fRun->getRadiator();
     if (fRun->getPhi() >= 990 && fRun->getPhi() <= 999)  targetbar = fRun->getPhi() - 990; // [0,9]
     double barShift = (-0.5 * bars + targetbar) * fRadiatorW + 0.5 * fRadiatorW;
-
+    double zShift = 2685 - 0.2;
     if (fRun->getEv() == 1) barShift = 0.5 * 35;
+    if (fRun->getEv() == 3) zShift -= 840;
     if (fGeomType == 2) barShift = 0;
 
     // fParticleGun->SetParticlePosition(G4ThreeVector(-200, barShift, 0.5 * fRadiatorL + 630 - 0.2));
-    fParticleGun->SetParticlePosition(G4ThreeVector(-200, barShift, 2685 - 0.2));
+    fParticleGun->SetParticlePosition(G4ThreeVector(-200, barShift, zShift));
     G4ThreeVector v(0, 0, -1);
     v.setTheta(acos(G4UniformRand()));
     v.setPhi(2 * M_PI * G4UniformRand());
