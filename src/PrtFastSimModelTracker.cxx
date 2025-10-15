@@ -58,10 +58,10 @@ PrtFastSimModelTracker::PrtFastSimModelTracker(G4String aModelName, G4Region *aE
   // get path to data folder
   TString cxxPath = __FILE__;
   TString cxxDir = gSystem->DirName(cxxPath); // extract directory
-  TString mapFile = cxxDir + "/../data/tracking_resolution_map_010725.root";
+
+  // TString mapFile = cxxDir + "/../data/tracking_resolution_map_010725.root";
+  TString mapFile = cxxDir + "/../data/tracking_resolution_map_050825.root";
   
-  // TFile *file = TFile::Open("../data/tracking_resolution_map_220723.root");
-  // TFile *file = TFile::Open("../data/tracking_resolution_map_271123.root");
   TFile *file = TFile::Open(mapFile);
   fTrMapTheta = new TH2F();
   fTrMapPhi = new TH2F();
@@ -134,8 +134,8 @@ void PrtFastSimModelTracker::DoIt(const G4FastTrack &aFastTrack, G4FastStep &aFa
   fRun->setTrackingResTheta(dtheta);
   fRun->setTrackingResPhi(dphi);
 
-  // std::cout << "Smearing at the tracker:  dtheta = " << 1000 * dtheta
-  //           << " mrad, dphi = " << 1000 * dphi << " mrad" << std::endl;
+  std::cout << "Smearing at the tracker:  dtheta = " << 1000 * dtheta
+            << " mrad, dphi = " << 1000 * dphi << " mrad" << std::endl;
 }
 
 double PrtFastSimModelTracker::get_res(TGraph *gg[3], double theta, double mom){
