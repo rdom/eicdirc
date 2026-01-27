@@ -13,7 +13,16 @@
 
 using std::cout;
 using std::endl;
-
+void PrintMemoryUsage() {
+  std::ifstream status("/proc/self/status");
+  std::string line;
+  while (std::getline(status, line)) {
+    if (line.find("VmPeak:") != std::string::npos) {
+      std::cout << "Memory: " << line << std::endl;
+      break;
+    }
+  }
+}
 
 struct {
   double ca;
@@ -153,7 +162,8 @@ PrtReco::PrtReco(TString infile, TString lutfile, TString pdffile, TString nnfil
   // if(fMomentum > 8) range = 500;
   // if(fMomentum > 8) range_gr = 200;
 
-  for (int h = 0; h < 5; h++) {
+  fTime.resize(5);
+  for (int h : {fp1, fp2}) {
     TString la = ";ln L(K) - ln L(#pi);entries [#]";
     fLnDiffGr[h] = new TH1F(Form("LnDiffGr_%d", h), la, 200, -range, range);
     fLnDiffTi[h] = new TH1F(Form("LnDiffTi_%d", h), la, 200, -range, range);
@@ -164,9 +174,10 @@ PrtReco::PrtReco(TString infile, TString lutfile, TString pdffile, TString nnfil
     fLnDiffTi[h]->SetMarkerColor(ft.color(h) + 1);
 
     if (fMethod == 4) {
+      fTime[h].resize(fmaxch);
       for (int i = 0; i < fmaxch; i++) {
-        fTime[h][i] =
-          new TH1F(Form("h_%d_%d", h, i), "pdf;LE time [ns]; entries [#]", 2000, 0, 100); // 2000
+        fTime[h][i] = std::make_unique<TH1F>(Form("h_%d_%d", h, i), "pdf;LE time [ns]; entries [#]",
+                                             2000, 0, 100);
       }
     }
 
@@ -204,13 +215,14 @@ PrtReco::PrtReco(TString infile, TString lutfile, TString pdffile, TString nnfil
       std::cout << "-I- reading  " << fPdfPath << std::endl;
       TFile pdfFile(fPdfPath);
       int binfactor = (int)(fTimeRes * 1000 / 50. + 0.1);
-      
       for (int h : {fp1, fp2}) {
+	fTime[h].resize(fmaxch);
         for (int i = 0; i < fmaxch; i++) {
-          // auto hpdf = (TH1F *)pdfFile.Get(Form("h_%d_%d",h, i));
-          fTime[h][i] = (TH1F *)pdfFile.Get(Form("h_%d_%d", h, i));
-          fTime[h][i]->SetDirectory(0);
+	  TH1F* hist = (TH1F*)pdfFile.Get(Form("h_%d_%d", h, i));
+	  hist->SetDirectory(0);  
+	  fTime[h][i] = std::unique_ptr<TH1F>(hist);
           if (fTimeRes > 0) fTime[h][i]->Rebin(binfactor);
+
           // if (sigma > 0) hpdf->Rebin(binfactor);
           // // hpdf->Smooth();
           // fPdf[h][i] = new TGraph(hpdf);
@@ -501,21 +513,23 @@ void PrtReco::Run(int start, int end) {
     if (eff_total[2] > 0) std::cout << "Eff NN (pi) = " << eff_nn[2] / (float)eff_total[2] << std::endl;
     if (eff_total[3] > 0) std::cout << "Eff NN (K) = " << eff_nn[3] / (float)eff_total[3] << std::endl;
   }
-  
+
   if (fMethod == 4) { // create pdf
     std::cout << "saving pdfs into " << fPdfPath << std::endl;
-
     TFile efile(fPdfPath, "RECREATE");
     for (int h : {fp1, fp2}) {
       for (int i = 0; i < fmaxch; i++) {
-        fTime[h][i]->Scale(1 / (double)fTotal[h]);
+        fTime[h][i]->Scale(1 / (double)fTotal[h], "nosw2");
         fTime[h][i]->Write();
       }
     }
+
     efile.Write();
     efile.Close();
     std::cout << "totals: " << fTotal[fp1] << " " << fTotal[fp2] << std::endl;
   }
+  
+  PrintMemoryUsage();
 
   if (fMethod == 2) {
     FindPeak(cangle, spr, spr_err);
@@ -863,7 +877,7 @@ void PrtReco::Run(int start, int end) {
       hnph_ti[fp1]->Draw("same");
       hnph_ti[fp2]->Draw("same");
     }
-
+    std::cout << "time " << std::endl;
     { // sep
       fLnDiffGr[fp1]->SetStats(0);
       fLnDiffGr[fp2]->SetStats(0);
@@ -1006,7 +1020,7 @@ void PrtReco::Run(int start, int end) {
     }
 
     { // time
-      ft.add_canvas("tdiff" + nid, 800, 400);
+      ft.add_canvas("tdiff" + nid, 800, 400);      
       ft.normalize(fTimeDiffR, 3);
       for (int i = 0; i < 3; i++) {
         if (fTimeDiffR[i]->GetEntries() > 100) {
@@ -1491,14 +1505,14 @@ void PrtReco::time_imaging(PrtEvent *event) {
 
         ft.add_canvas("ctemp", 800, 400);
         // ft.normalize(fPdf4[ch],fPdf2[ch]);
-        fPdf[fp2][ch]->SetLineColor(2);
-        fPdf[fp2][ch]->SetLineColor(4);
-        fPdf[fp2][ch]->Draw("APL");
-        fPdf[fp1][ch]->SetTitle(Form("mcp=%d  pix=%d", mcp, pix));
-        fPdf[fp1][ch]->GetXaxis()->SetTitle("LE time [ns]");
-        fPdf[fp1][ch]->GetYaxis()->SetTitle("PDF value");
-        fPdf[fp1][ch]->GetXaxis()->SetRangeUser(0, 40);
-        fPdf[fp1][ch]->Draw("PL same");
+        // fPdf[fp2][ch]->SetLineColor(2);
+        // fPdf[fp2][ch]->SetLineColor(4);
+        // fPdf[fp2][ch]->Draw("APL");
+        // fPdf[fp1][ch]->SetTitle(Form("mcp=%d  pix=%d", mcp, pix));
+        // fPdf[fp1][ch]->GetXaxis()->SetTitle("LE time [ns]");
+        // fPdf[fp1][ch]->GetYaxis()->SetTitle("PDF value");
+        // fPdf[fp1][ch]->GetXaxis()->SetRangeUser(0, 40);
+        // fPdf[fp1][ch]->Draw("PL same");
         gPad->Update();
         TLine *gLine = new TLine(0, 0, 0, 1000);
         gLine->SetLineWidth(2);

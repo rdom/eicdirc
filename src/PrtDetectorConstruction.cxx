@@ -68,7 +68,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   fPrizm[3] = 50;
   fPrizm[2] = fPrizm[3] + 300 * tan(32 * deg);
   fBarsGap = 0.15;
-
+  
   fdTilt = 80 * deg;
   fPrizmT[0] = 390;
   fPrizmT[1] = 400 - 290 * cos(fdTilt); //
@@ -232,7 +232,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   fRun->setRadiatorL(dirclength);
 
   // The DIRC bar box
-  G4Box *gDirc = new G4Box("gDirc", 0.5 * fPrizm[2] + 10, 0.5 *fPrizm[0] + 1, 0.5 * dirclength + 500);
+  G4Box *gDirc = new G4Box("gDirc", 0.5 * fPrizm[2] + 10, 0.5 *fPrizm[0] + 1, 0.5 * dirclength + 1500);
   lDirc = new G4LogicalVolume(gDirc, defaultMaterial, "lDirc", 0, 0, 0);
   G4Box *gFd = new G4Box("gFd", 0.5 * fFd[1], 0.5 * fFd[0], 0.5 * fFd[2]);
   lFd = new G4LogicalVolume(gFd, defaultMaterial, "lFd", 0, 0, 0);
@@ -760,6 +760,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   new G4PVPlacement(fdrot,
                     G4ThreeVector(rshift + 0.5 * fFd[1] - 0.5 * fPrizm[3] - evshiftx, 0, evshiftz),
                     lFd, "wFd", lDirc, false, 0);
+  
     
   if (fMcpLayout == 1) {
     // standard mcp pmt layout
@@ -1401,13 +1402,13 @@ void PrtDetectorConstruction::SetVisualization() {
   waFd->SetForceWireframe(true);
   lFd->SetVisAttributes(waFd);
 
-  G4VisAttributes *waBar = new G4VisAttributes(G4Colour(0., 1., 0.9, 0.01)); // 0.05
+  G4VisAttributes *waBar = new G4VisAttributes(G4Colour(0., 1., 0.9, 0.05)); // 0.05
   waBar->SetVisibility(true);
   lBar->SetVisAttributes(waBar);
   lEvBar->SetVisAttributes(waBar);
   lExpVol->SetVisAttributes(waBar);
 
-  G4VisAttributes *waGlue = new G4VisAttributes(G4Colour(0., 0.4, 0.9, 0.1));
+  G4VisAttributes *waGlue = new G4VisAttributes(G4Colour(0., 0.4, 0.9, 0.01));//0.1
   waGlue->SetVisibility(true);
   lGlue->SetVisAttributes(waGlue);
   lGlueE->SetVisAttributes(waGlue);
@@ -1420,9 +1421,9 @@ void PrtDetectorConstruction::SetVisualization() {
   waTracker->SetVisibility(false);
   lTracker->SetVisAttributes(waTracker);
   
-  double transp = 0.4;
+  double transp = 0.2;
   G4VisAttributes *vaLens = new G4VisAttributes(G4Colour(0., 1., 1., transp));
-  vaLens->SetForceWireframe(true);
+  // vaLens->SetForceWireframe(true);
   // vaLens->SetForceAuxEdgeVisible(true);
   // vaLens->SetForceLineSegmentsPerCircle(10);
   // vaLens->SetLineWidth(4);
@@ -1442,7 +1443,7 @@ void PrtDetectorConstruction::SetVisualization() {
   waCookie->SetVisibility(true);
   if(fCookie[2] > 0.01) lCookie->SetVisAttributes(waCookie);
   
-  G4VisAttributes *waPrizm = new G4VisAttributes(G4Colour(0., 0.9, 0.9, 0.3));
+  G4VisAttributes *waPrizm = new G4VisAttributes(G4Colour(0., 0.9, 0.9, 0.25)); //0.3
   // waPrizm->SetForceAuxEdgeVisible(true);
   // waPrizm->SetForceSolid(true);
   lPrizm->SetVisAttributes(waPrizm);
@@ -1663,10 +1664,11 @@ void PrtDetectorConstruction::DrawHitBox(int id) {
     tphi = dphi * i;
     double dx = fRadius * cos(tphi);
     double dy = fRadius  * sin(tphi);
-    double center_shift = 620;
-    if (fEvType == 3 || fEvType > 4) center_shift -= 0.5 * (fBar[2] - 893) - 165;
-    G4ThreeVector dirc =
-      G4ThreeVector(dx, dy, 0.5 * fBar[2] * 4 + fPrizm[1] + fMcpActive[2] / 2. + fLens[2] + center_shift);
+    double dz = 0.5 * fBar[2] * 3 + fPrizm[1] + fMcpActive[2] / 2. + fLens[2] + 840;
+    //2566.1; //620 - 0.5*fBar[2] - 840; //620;
+    if (fEvType == 3) dz = 0.5 * fBar[2] * 3 + fPrizm[1] + fMcpActive[2] / 2. + fLens[2] + 840 + 8;   
+    
+    G4ThreeVector dirc = G4ThreeVector(dx, dy, dz);
     
     G4Box *gDircHit = new G4Box("gDircHit", 400., 300., 10);
     lDircHit[i] = new G4LogicalVolume(gDircHit, defaultMaterial, Form("lDircHit%d", i), 0, 0, 0);
@@ -1683,11 +1685,20 @@ void PrtDetectorConstruction::DrawHitBox(int id) {
   for (int p = 0; p < 12; p++) {
     mcp = 0;
     double gapx = (fPrizm[2] - fNCol * fMcpTotal[0]) / (double)(fNCol + 1);
-    double gapy = (fPrizm[0] - fNRow * fMcpTotal[1]) / (double)(fNRow + 1);
+    double gapy = (fBoxWidth - fNRow * fMcpTotal[1]) / (double)(fNRow + 1);
+
+    double center_shift = 0;
+    if (fMcpLayout == 2032){
+      gapx = 1;
+      gapy = 1;
+      center_shift = 0.5 * (fNRow * (fMcpTotal[1] + gapx) - fPrizm[0]);
+    }
+    
+    // double gapy = (fPrizm[0] - fNRow * fMcpTotal[1]) / (double)(fNRow + 1);
     for (int i = 0; i < fNCol; i++) {
       for (int j = 0; j < fNRow; j++) {
         double shiftx = i * (fMcpTotal[0] + gapx) - fPrizm[3] / 2. + fMcpTotal[0] / 2 + gapx;
-        double shifty = j * (fMcpTotal[1] + gapy) - fPrizm[0] / 2. + fMcpTotal[1] / 2 + gapy;
+        double shifty = j * (fMcpTotal[1] + gapy) - fPrizm[0] / 2. + fMcpTotal[1] / 2 + gapy - center_shift;
         int pixelId = 0;
 
 	for (int i1 = 0; i1 < fNpix1; i1++) {

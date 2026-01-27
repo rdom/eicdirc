@@ -30,6 +30,7 @@
 #include "cppflow/cppflow.h"
 #endif
 
+
 class PrtReco {
 
  public:
@@ -106,9 +107,10 @@ class PrtReco {
   TH1F *fLnDiffNn[5];
   double fCriticalAngle;
   TString fCorrFile;
-  TH1F *fTime[5][99000]; // 7000
-  // std::vector<std::vector<TH1F*>> fTime;//(5, std::vector<TH1F*>(99000));
-  TGraph *fPdf[5][99000];
+
+  std::vector<std::vector<std::unique_ptr<TH1F>>> fTime;
+  // TGraph *fPdf[5][99000];
+  
   TH1F *fPmt_a[28], *fPmt_td[28], *fPmt_tr[28], *fFindTimeA[20], *fTimeDiffR[3];
   TH1F *fTimeProp, *fTrackAngle0, *fTrackAngle1, *fTrackAngle2, *fFindTime, *fFindTimeRes;
   TH1F *fBounceH, *fBounceW, *fBounce;

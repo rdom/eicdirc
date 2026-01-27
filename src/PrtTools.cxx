@@ -1035,6 +1035,7 @@ void PrtTools::normalize(TH1F *hists[], int size) {
 
   double max = 0, min = 0;
   for (int i = 0; i < size; i++) {
+    if(hists[i] == NULL) continue;
     double tmax = hists[i]->GetBinContent(hists[i]->GetMaximumBin());
     double tmin = hists[i]->GetMinimum();
     if (tmax > max) max = tmax;
@@ -1042,6 +1043,7 @@ void PrtTools::normalize(TH1F *hists[], int size) {
   }
   max += 0.05 * max;
   for (int i = 0; i < size; i++) {
+    if(hists[i] == NULL) continue;
     hists[i]->GetYaxis()->SetRangeUser(min, max);
   }
 }
@@ -1049,6 +1051,7 @@ void PrtTools::normalize(TH1F *hists[], int size) {
 void PrtTools::normalize_to(TH1F *hists[], int size, double max) {
 
   for (int i = 0; i < size; i++) {
+    if(hists[i] == NULL) continue;
     double tmax = hists[i]->GetBinContent(hists[i]->GetMaximumBin());
     if (tmax > 0) hists[i]->Scale(max / tmax);
   }
