@@ -53,6 +53,7 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   fTest1 = fRun->getTest1();
   fTest2 = fRun->getTest2();
   fTest3 = fRun->getTest3();
+  fTest4 = fRun->getTest4();
  
   fNRow = 6;
   fNCol = 4;
@@ -184,7 +185,37 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
     fNRow = 3;
     fNCol = 2;
   }
+  
+  if (fMcpLayout == 5) {
+    fMcpTotal[0] = fMcpTotal[1] = 120;
+    fMcpActive[0] = fMcpActive[1] = 104; // incom
+    fNRow = 3;
+    fNCol = 1;
+    fPrizm[3] = 50;
+    fPrizm[0] = 352;
+    fPrizm[1] = 100;
+    fPrizm[2] = fMcpTotal[0]; //fPrizm[3] + 300 * tan(33.7 * deg);
 
+    if(fTest4 == 1) {
+      fPrizm[3] = 50;
+      fPrizm[1] = 200;
+      fLens[2] = 15;
+    }else if(fTest4 == 2) {
+      fPrizm[3] = 50;
+      fPrizm[1] = 100;
+      fLens[2] = 15;
+    }
+    if(fTest4 == 3) {
+      fPrizm[3] = fMcpTotal[0];
+      fPrizm[1] = 200;
+      fLens[2] = 15;
+    }
+
+    fFd[0] = fPrizm[0];
+    fFd[1] = fPrizm[2];  
+    
+  }   
+  
   if (fStudy == 103) { // low hight lens with gaps
     fLens[0] = fBar[0];
     fLens[2] = 12;
@@ -232,7 +263,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   fRun->setRadiatorL(dirclength);
 
   // The DIRC bar box
-  G4Box *gDirc = new G4Box("gDirc", 0.5 * fPrizm[2] + 10, 0.5 *fPrizm[0] + 1, 0.5 * dirclength + 1500);
+  G4Box *gDirc = new G4Box("gDirc", 0.5 * fPrizm[2] + 10 + 60, 0.5 *fPrizm[0] + 1, 0.5 * dirclength + 1500);
   lDirc = new G4LogicalVolume(gDirc, defaultMaterial, "lDirc", 0, 0, 0);
   G4Box *gFd = new G4Box("gFd", 0.5 * fFd[1], 0.5 * fFd[0], 0.5 * fFd[2]);
   lFd = new G4LogicalVolume(gFd, defaultMaterial, "lFd", 0, 0, 0);
@@ -385,13 +416,11 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   if (fLensId == 3) { // 3-component spherical lens
     double lensMinThikness = 2;
 
-    double r1 = 0;// = fTest1;
-    double r2 = 0;// = fTest2;
+    double r1 = fTest1;
+    double r2 = fTest2;
 
-    r1 = (r1 == 0) ? 47.8 : r1;
-    r2 = (r2 == 0) ? 29.1 : r2;
-    r1 = 62;
-    r2 = 36;
+    r1 = (r1 == 0) ? 62 : r1;
+    r2 = (r2 == 0) ? 36 : r2;
 
     if(fEvType == 10){
       r1 = 95;
@@ -407,8 +436,6 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
 
       r1 = 65; // for 893 mm ev-prism v2
       r2 = 55; 
-
-      
     }
 
     double thight = fBar[0];
@@ -624,6 +651,8 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   double evshiftz = currentz + fPrizm[1] + 0.5 * fMcpActive[2];
   double evshiftx = 0;
 
+  if (fMcpLayout == 5) evshiftx = 0.5 * fPrizm[3] - 25;
+
   if (fEvType == 1) { // focusing prism
 
     double fWindow[] = {124, 437, 14.0}; // 9.6
@@ -752,13 +781,13 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     G4Trap *gPrizm = new G4Trap("gPrizm", fPrizm[0], fPrizm[1], fPrizm[2], fPrizm[3]);
     lPrizm = new G4LogicalVolume(gPrizm, BarMaterial, "lPrizm", 0, 0, 0);
 
-    fPrismShift = G4ThreeVector(rshift + (fPrizm[2] + fPrizm[3]) / 4. - 0.5 * fPrizm[3], 0,
+    fPrismShift = G4ThreeVector(rshift + (fPrizm[2] + fPrizm[3]) / 4. - 0.5 * fPrizm[3] + evshiftx, 0,
                                 currentz + 0.5 * fPrizm[1]);
     new G4PVPlacement(xRot, fPrismShift, lPrizm, "wPrizm", lDirc, false, 0);
   }
 
   new G4PVPlacement(fdrot,
-                    G4ThreeVector(rshift + 0.5 * fFd[1] - 0.5 * fPrizm[3] - evshiftx, 0, evshiftz),
+                    G4ThreeVector(rshift + 0.5 * fFd[1] - 0.5 * fPrizm[3] + evshiftx, 0, evshiftz),
                     lFd, "wFd", lDirc, false, 0);
   
     
@@ -848,7 +877,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     
     new G4PVPlacement(0, G4ThreeVector(0, 0, 0), lMcp, "wMcp", lFd, false, 0);
   }
-  if (fMcpLayout == 4) {
+  if (fMcpLayout == 4 || fMcpLayout == 5) {
     // LAPPD/HRPPD pmt
 
     G4Box *gMcp = new G4Box("gMcp", 0.5 * fMcpTotal[0], 0.5 * fMcpTotal[1], 0.5 * fMcpTotal[2]);

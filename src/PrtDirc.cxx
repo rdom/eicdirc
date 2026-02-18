@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
     outfile = "", thetaStr = "25", phiStr = "0", momentumStr = "6";
   int events(0), pdgid(0), geometry(1), firstevent(0), runtype(0), study(0), fid(0), verbose(0),
     batchmode(0), physlist(0), pmtLayout(2031), correction(2), field(0), ev(0), radiator(0),
-    lensId(3), displayOpt(0);
+    lensId(3), displayOpt(0), testVal4(0);
   double momentum(6), momentumMax(0), theta(25),thetaMax(25), phi(0), phiMax(0), beamZ(0), trackingres(0.0005), dark_noise(0),
     prismStepX(0), prismStepY(0), beamX(0), timeSigma(0.1), timeCut(0.5), testVal1(0), testVal2(0),
     testVal3(0);
@@ -68,6 +68,7 @@ int main(int argc, char **argv) {
     else if (G4String(argv[i]) == "-t1") testVal1 = atof(argv[i + 1]);
     else if (G4String(argv[i]) == "-t2") testVal2 = atof(argv[i + 1]);
     else if (G4String(argv[i]) == "-t3") testVal3 = atof(argv[i + 1]);
+    else if (G4String(argv[i]) == "-t4") testVal4 = atoi(argv[i + 1]);
     else if (G4String(argv[i]) == "-gsx") prismStepX = atof(argv[i + 1]);
     else if (G4String(argv[i]) == "-gsy") prismStepY = atof(argv[i + 1]);
     else if (G4String(argv[i]) == "-gz") beamZ = atof(argv[i + 1]);
@@ -211,6 +212,7 @@ int main(int argc, char **argv) {
   if (testVal1 != 0) run->setTest1(testVal1);
   if (testVal2 != 0) run->setTest2(testVal2);
   if (testVal3 != 0) run->setTest3(testVal3);
+  if (testVal4 != 0) run->setTest4(testVal4);
 
   PrtManager::Instance(outfile, run);
   PrtManager::Instance()->setDisplayOpt(displayOpt);  

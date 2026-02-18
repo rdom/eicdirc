@@ -35,9 +35,9 @@
 # /vis/scene/add/axes 0 0 0 0.01 m auto false
 # /vis/scene/add/axes 0.7 0 1.33 0.01 m auto false
 
-/vis/scene/add/axes 0.79 0 2.685 0.01 m auto false # bar end at prism side
+# /vis/scene/add/axes 0.79 0 2.685 0.01 m auto false # bar end at prism side
 # /vis/scene/add/axes 0.79 0 -1.87 0.01 m auto false # barbox end
-/vis/scene/add/axes 0.79 0 -1.83 0.01 m auto false # bar end at mirror side
+# s/vis/scene/add/axes 0.79 0 -1.83 0.01 m auto false # bar end at mirror side
 # /vis/scene/add/axes 0.79 0 1.845 0.01 m auto false # bar end at mirror side
 
 # Draw smooth trajectories at end of event, showing trajectory points
@@ -146,14 +146,14 @@
 # # /vis/viewer/set/targetPoint 0 0 15.6294 cm
 # /vis/viewer/set/targetPoint 0.85 0 1 m
 
-# # side xz
-# /vis/viewer/set/viewpointVector 1.31839e-16 -1 -6.93889e-18
-# /vis/viewer/set/upVector 0 1 0
-# /vis/viewer/set/projection orthogonal
-# /vis/viewer/zoomTo 1.4
-# /vis/viewer/scaleTo 1 1 1
-# /vis/viewer/set/targetPoint 0.8 0 0.8 m
-# /vis/viewer/set/rotationStyle freeRotation
+# side xz
+/vis/viewer/set/viewpointVector 1.31839e-16 -1 -6.93889e-18
+/vis/viewer/set/upVector 0 1 0
+/vis/viewer/set/projection orthogonal
+/vis/viewer/zoomTo 1.4
+/vis/viewer/scaleTo 1 1 1
+/vis/viewer/set/targetPoint 0.8 0 0.8 m
+/vis/viewer/set/rotationStyle freeRotation
 
 # # side yz
 # /vis/viewer/set/viewpointVector 1 0 0
@@ -170,16 +170,16 @@
 # /vis/viewer/scaleTo 1 1 1
 # /vis/viewer/set/targetPoint 0.8 0 2.17344 m
 
-# # side lens
-# /vis/viewer/set/viewpointVector 1.31839e-16 -1 -6.93889e-18
-# /vis/viewer/set/upVector 0 1 0
-# /vis/viewer/set/projection orthogonal
-# /vis/viewer/zoomTo 40
-# /vis/viewer/set/targetPoint 0.78 0 3.1 m
+# side lens
+/vis/viewer/set/viewpointVector 1.31839e-16 -1 -6.93889e-18
+/vis/viewer/set/upVector 0 1 0
+/vis/viewer/set/projection orthogonal
+/vis/viewer/zoomTo 15
+/vis/viewer/set/targetPoint 0.85 0 2.7 m
 
-# whole length
-/vis/viewer/zoomTo 2
-/vis/viewer/set/targetPoint 0.5 0 1 m
+# # whole length
+# /vis/viewer/zoomTo 2
+# /vis/viewer/set/targetPoint 0.5 0 1 m
 
 # /vis/ogl/export ev_1.svg 1000 1000
 # /vis/viewer/flush

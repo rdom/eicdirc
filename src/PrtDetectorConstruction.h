@@ -102,7 +102,8 @@ class PrtDetectorConstruction : public G4VUserDetectorConstruction {
   double fBarsGap;
   double fRotAngle;
   double *fQuantumEfficiency;
-  int fRunType, fStudy, fTest1, fTest2, fTest3;
+  double fTest1, fTest2, fTest3;
+  int fRunType, fStudy, fTest4;
 
   G4ThreeVector fPrismShift;
 

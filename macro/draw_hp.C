@@ -7,7 +7,7 @@ R__LOAD_LIBRARY(../build/libPrt.so)
 void draw_hp(TString infile = "../build/hits.root") {
 
   PrtTools t(infile);
-  double t1 = t.run()->getTest1();
+  double t1 = t.run()->getPmtLayout(); // Test1();
 
   while (t.next() && t.i() < 100000) {
     double th = t.event()->getMomentum().Theta();
@@ -31,8 +31,8 @@ void draw_hp(TString infile = "../build/hits.root") {
   }
 
   // auto cdigi = t.draw_digi();
-  auto cdigi = t.draw_digi(0, 0, new TCanvas("hp", "hp", 1200, 600));
-  cdigi->SetName(Form("hp_%d",(int) t1));
+  auto cdigi = t.draw_digi(0, 0, new TCanvas("hp", "hp", 1200, 380));
+  cdigi->SetName(Form("hp90_%d",(int) t1));
   t.add_canvas(cdigi);
   t.save_canvas("data/draw_hp", 0);
 }

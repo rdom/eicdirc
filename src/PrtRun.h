@@ -61,6 +61,7 @@ class PrtRun : public TObject {
   Double_t getTest1() const { return fTest1; }
   Double_t getTest2() const { return fTest2; }
   Double_t getTest3() const { return fTest3; }
+  Int_t getTest4() const { return fTest4; }
 
   // mutators
   void setInfo(TString v) { fShortInfo = v; }
@@ -104,6 +105,7 @@ class PrtRun : public TObject {
   void setTest1(Double_t v) { fTest1 = v; }
   void setTest2(Double_t v) { fTest2 = v; }
   void setTest3(Double_t v) { fTest3 = v; }
+  void setTest4(Int_t v) { fTest4 = v; }
 
  private:
   TString fShortInfo;
@@ -149,7 +151,8 @@ class PrtRun : public TObject {
   Double_t fTest1;
   Double_t fTest2;
   Double_t fTest3;
+  Int_t fTest4;
 
-  ClassDef(PrtRun, 3);
+  ClassDef(PrtRun, 4);
 };
 #endif

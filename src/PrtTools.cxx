@@ -145,8 +145,10 @@ void PrtTools::fill_digi(int pmt, int pix, double w){
 // _pmtlayout == 2031 - 4x6 EIC DIRC
 // _pmtlayout == 2032 - 4x5 EIC DIRC
 // _pmtlayout == 3000 - GlueX
-// _pmtlayout == 4 - EIC DIRC prism, LAPD
 // _pmtlayout == 3 - one pmt covering whole PD
+// _pmtlayout == 4 - 2x3 EIC DIRC prism, LAPD
+// _pmtlayout == 5 - 1x3 EIC DIRC prism, LAPD
+
 TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
   
   _last_maxz = maxz;
@@ -160,7 +162,7 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
   TPad *pads[28];// _nmaxpmt
   TPad *toppad;
 
-  if (_pmtlayout == 2015 || _pmtlayout == 5) toppad = new TPad(sid, "T", 0.04, 0.04, 0.88, 0.96);
+  if (_pmtlayout == 2015) toppad = new TPad(sid, "T", 0.04, 0.04, 0.88, 0.96);
   else if (_pmtlayout == 2021)
     toppad = new TPad(sid, "T", 0.12, 0.02, 0.78, 0.98);
   else if (_pmtlayout == 2016)
@@ -181,6 +183,8 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
     toppad = new TPad(sid, "T", 0.005, 0.07, 0.95, 0.93);
   else if (_pmtlayout == 4)
     toppad = new TPad(sid, "T", 0.12, 0.02, 0.85, 0.98);
+  else if (_pmtlayout == 5)
+    toppad = new TPad(sid, "T", 0.04, 0.02, 0.92, 0.98);
   else
     toppad = new TPad(sid, "T", 0.04, 0.04, 0.96, 0.96);
 
@@ -212,13 +216,17 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
     nrow = 6;
     ncol = 18;
   }
+  if (_pmtlayout == 3) {
+    nrow = 1;
+    ncol = 1;
+  }
   if (_pmtlayout == 4) {
     nrow = 2;
     ncol = 3;
   }
-  if (_pmtlayout == 3) {
+  if (_pmtlayout == 5) {
     nrow = 1;
-    ncol = 1;
+    ncol = 3;
   }
   if (_run->getGeometry() == 2) {
     nrow = 3;
@@ -310,6 +318,14 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
           tbh = 0.005;
           padi = i * nrow + j;
         }
+	if (_pmtlayout == 3) {
+          margin = 0.05;
+          shift = 0;
+          shiftw = 0.01;
+          tbw = 0.001;
+          tbh = 0.001;
+          padi = j * ncol + i;
+        }
 	if (_pmtlayout == 4) {
           margin = 0.1;
           shift = 0;
@@ -318,8 +334,8 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
           tbh = 0.005;
           padi = j * ncol + i;
         }
-	if (_pmtlayout == 3) {
-          margin = 0.05;
+	if (_pmtlayout == 5) {
+          margin = 0.1;
           shift = 0;
           shiftw = 0.01;
           tbw = 0.001;
@@ -439,7 +455,7 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
   TPaletteAxis *palette;
   if (_pmtlayout == 2018 || _pmtlayout == 2023)
     palette = new TPaletteAxis(0.89, 0.1, 0.93, 0.90, (TH1 *)_hdigi[nnmax]);
-  else if (_pmtlayout == 4 || _pmtlayout == 3)
+  else if (_pmtlayout == 3 || _pmtlayout == 4 || _pmtlayout == 5)
     palette = new TPaletteAxis(0.91, 0.1, 0.94, 0.90, (TH1 *)_hdigi[nnmax]);
   else
     palette = new TPaletteAxis(0.82, 0.1, 0.86, 0.90, (TH1 *)_hdigi[nnmax]);
