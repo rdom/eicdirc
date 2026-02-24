@@ -196,16 +196,19 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
     fPrizm[1] = 100;
     fPrizm[2] = fMcpTotal[0]; //fPrizm[3] + 300 * tan(33.7 * deg);
 
-    if(fTest4 == 1) {
+    if (fTest4 == 0) {
+      fPrizm[3] = 50;
+      fPrizm[1] = 300;
+      fLens[2] = 15;
+    } else if (fTest4 == 1) {
       fPrizm[3] = 50;
       fPrizm[1] = 200;
       fLens[2] = 15;
-    }else if(fTest4 == 2) {
+    } else if (fTest4 == 2) {
       fPrizm[3] = 50;
       fPrizm[1] = 100;
       fLens[2] = 15;
-    }
-    if(fTest4 == 3) {
+    } else if (fTest4 == 3) {
       fPrizm[3] = fMcpTotal[0];
       fPrizm[1] = 200;
       fLens[2] = 15;
@@ -422,6 +425,23 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     r1 = (r1 == 0) ? 62 : r1;
     r2 = (r2 == 0) ? 36 : r2;
 
+    if (fTest4 == 0) {
+      r1 = 62;
+      r2 = 36;
+    }
+    if (fTest4 == 1) {
+      r1 = 75;
+      r2 = 33;
+    }
+    if (fTest4 == 2) {
+      r1 = 108;
+      r2 = 27;
+    }
+    if (fTest4 == 3) {
+      r1 = 75;
+      r2 = 36;
+    }
+
     if(fEvType == 10){
       r1 = 95;
       r2 = 50;
@@ -435,7 +455,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
       // r2 = 190; 
 
       r1 = 65; // for 893 mm ev-prism v2
-      r2 = 55; 
+      r2 = 55;      
     }
 
     double thight = fBar[0];
