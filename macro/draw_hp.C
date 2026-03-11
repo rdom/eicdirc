@@ -32,7 +32,7 @@ void draw_hp(TString infile = "../build/hits.root") {
 
   // auto cdigi = t.draw_digi();
   auto cdigi = t.draw_digi(0, 0, new TCanvas("hp", "hp", 1200, 380));
-  cdigi->SetName(Form("hp90_%d",(int) t1));
+  cdigi->SetName(Form("hp_%d",(int) t1));
   t.add_canvas(cdigi);
   t.save_canvas("data/draw_hp", 0);
 }

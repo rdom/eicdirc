@@ -80,10 +80,10 @@ TGraph *get_graph(TString in = "reco.root", TString sx = "theta", TString sy = "
 
     is++;
     if(sx == sy) y = x;
-    if (sy.Contains("sep")) y_err += 0.2; // syst error
-    if (sy.Contains("trr")) y_err += 0.04; // syst error
-    if (sy.Contains("spr")) y_err += 0.2; // syst error
-    if (sy.Contains("nph")) y_err += 5; // syst error
+    if (sy.Contains("sep")) y_err = sqrt(y_err * y_err + 0.2 * 0.2); // syst error
+    if (sy.Contains("trr")) y_err = sqrt(y_err * y_err + 0.04 * 0.04); // syst error
+    if (sy.Contains("spr")) y_err = sqrt(y_err * y_err + 0.2 * 0.2); // syst error
+    if (sy.Contains("nph")) y_err = sqrt(y_err * y_err + 5 * 5); // syst error
 
     gg->SetPoint(is, x, y);
     gg->SetPointEYhigh(is, y_err);
