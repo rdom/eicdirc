@@ -193,7 +193,6 @@ class PrtTools {
   int _nmaxpmt = 28;
   int _last_max, _last_maxz, _last_minz;
   TF1 *_fgaus;
-  TSpectrum *_spectrum;
   TList *_canvaslist;
 };
 

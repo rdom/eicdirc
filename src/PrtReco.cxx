@@ -102,7 +102,6 @@ PrtReco::PrtReco(TString infile, TString lutfile, TString pdffile, TString nnfil
   fFit = new TF1("fgaus", "[0]*exp(-0.5*((x-[1])/[2])*(x-[1])/[2]) +[3]", 0.35, 0.9);
   fChromCor = new TF1("fchrom1", "x<87? 23.15+0.41837*x : 93.82 - 0.435507*x", 15, 165);
    
-  fSpect = new TSpectrum(10);
   fnX1 = TVector3(1, 0, 0);
   fnY1 = TVector3(0, 1, 0);
 
@@ -1078,9 +1077,8 @@ void PrtReco::FindPeak(double (&cangle)[5], double (&spr)[5], double (&spr_err)[
 
     if (hthetac[h]->Integral() > 20) {
       gROOT->SetBatch(1);
-      int nfound = fSpect->Search(hthetac[h], 1, "", 0.9); // 0.6
-      if (nfound > 0) cangle[h] = fSpect->GetPositionX()[0];
-      else cangle[h] = hthetac[h]->GetXaxis()->GetBinCenter(hthetac[h]->GetMaximumBin());
+
+      cangle[h] = hthetac[h]->GetXaxis()->GetBinCenter(hthetac[h]->GetMaximumBin());
 
       fFit->SetParameters(100, cangle[h], 0.005, 10);
       fFit->FixParameter(2, 0.005);                   // width

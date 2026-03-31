@@ -16,7 +16,6 @@
 #include "TApplication.h"
 
 #include "PrtManager.h"
-#include "PrtLutReco.h"
 #include "PrtReco.h"
 #include "PrtPhysicsList.h"
 #include "PrtDetectorConstruction.h"
@@ -219,7 +218,6 @@ int main(int argc, char **argv) {
   std::cout << run->getInfo() << std::endl;
 
   if (runtype == 2 || runtype == 3 || runtype == 4 || runtype > 19) {
-    // PrtLutReco *reco = new PrtLutReco(infile, lutfile, pdffile, nnfile, verbose);
     PrtReco *reco = new PrtReco(infile, lutfile, pdffile, nnfile, verbose);
     reco->Run(firstevent, events);
     return 0;

@@ -29,7 +29,6 @@ void PrtTools::init() {
   
   _canvaslist = new TList();
    _event = new PrtEvent();
-  _spectrum = new TSpectrum(2);
   _info = "";
  
   if (gROOT->GetApplication()) {
@@ -895,45 +894,47 @@ TVector3 PrtTools::fit(TH1 *h, double range, double threshold, double limit, int
     }
 
     if (peakSearch > 1) {
-      nfound = _spectrum->Search(h, 4, "goff", 0.1);
-      std::cout << "nfound  " << nfound << std::endl;
-      if (nfound == 1) {
-        _fgaus = new TF1("_fgaus", "gaus(0)", xmax - range, xmax + range);
-        _fgaus->SetNpx(500);
-        _fgaus->SetParameter(1, _spectrum->GetPositionX()[0]);
-      } else if (nfound >= 2) {
-        double p1 = _spectrum->GetPositionX()[0];
-        double p2 = _spectrum->GetPositionX()[1];
-        if (p1 > p2) {
-          xxmax = p1;
-          xxmin = p2;
-        } else {
-          xxmax = p2;
-          xxmin = p1;
-        }
-        if (peakSearch == 20) {
-          xxmax = xxmin;
-          _fgaus = new TF1("_fgaus", "gaus(0)", xxmin - range, xxmin + range);
-          _fgaus->SetNpx(500);
-          _fgaus->SetParameter(1, _spectrum->GetPositionX()[0]);
-        } else {
-          _fgaus = new TF1("_fgaus", "gaus(0)+gaus(3)", xmax - range, xmax + range);
-          _fgaus->SetNpx(500);
-          _fgaus->SetParameter(0, 1000);
-          _fgaus->SetParameter(3, 1000);
+      std::cout << "WRN: not implemented " << std::endl;
+      
+      // nfound = _spectrum->Search(h, 4, "goff", 0.1);
+      // std::cout << "nfound  " << nfound << std::endl;
+      // if (nfound == 1) {
+      //   _fgaus = new TF1("_fgaus", "gaus(0)", xmax - range, xmax + range);
+      //   _fgaus->SetNpx(500);
+      //   _fgaus->SetParameter(1, _spectrum->GetPositionX()[0]);
+      // } else if (nfound >= 2) {
+      //   double p1 = _spectrum->GetPositionX()[0];
+      //   double p2 = _spectrum->GetPositionX()[1];
+      //   if (p1 > p2) {
+      //     xxmax = p1;
+      //     xxmin = p2;
+      //   } else {
+      //     xxmax = p2;
+      //     xxmin = p1;
+      //   }
+      //   if (peakSearch == 20) {
+      //     xxmax = xxmin;
+      //     _fgaus = new TF1("_fgaus", "gaus(0)", xxmin - range, xxmin + range);
+      //     _fgaus->SetNpx(500);
+      //     _fgaus->SetParameter(1, _spectrum->GetPositionX()[0]);
+      //   } else {
+      //     _fgaus = new TF1("_fgaus", "gaus(0)+gaus(3)", xmax - range, xmax + range);
+      //     _fgaus->SetNpx(500);
+      //     _fgaus->SetParameter(0, 1000);
+      //     _fgaus->SetParameter(3, 1000);
 
-          _fgaus->FixParameter(1, xxmin);
-          _fgaus->FixParameter(4, xxmax);
-          _fgaus->SetParameter(2, 0.1);
-          _fgaus->SetParameter(5, 0.1);
-          h->Fit("_fgaus", opt, "", xxmin - range, xxmax + range);
-          _fgaus->ReleaseParameter(1);
-          _fgaus->ReleaseParameter(4);
-        }
-      }
+      //     _fgaus->FixParameter(1, xxmin);
+      //     _fgaus->FixParameter(4, xxmax);
+      //     _fgaus->SetParameter(2, 0.1);
+      //     _fgaus->SetParameter(5, 0.1);
+      //     h->Fit("_fgaus", opt, "", xxmin - range, xxmax + range);
+      //     _fgaus->ReleaseParameter(1);
+      //     _fgaus->ReleaseParameter(4);
+      //   }
+      // }
 
-      _fgaus->SetParameter(2, 0.2);
-      _fgaus->SetParameter(5, 0.2);
+      // _fgaus->SetParameter(2, 0.2);
+      // _fgaus->SetParameter(5, 0.2);
     }
 
     h->Fit("_fgaus", opt, "same", xxmin - range, xxmax + range);
