@@ -94,7 +94,6 @@ class PrtReco {
   TString fNNPath;
 
   TF1 *fFit, *fChromCor;
-  TSpectrum *fSpect;
   double fSigma[5];
   TH1F *hthetac[5];
   TH1F *hthetacd[5];

@@ -263,7 +263,7 @@ int main(int argc, char **argv) {
 
   // Initialize visualization
   G4VisManager *visManager = new G4VisExecutive;
-  visManager->SetVerboseLevel(0); // set to 3 for graphics systems info
+  visManager->SetVerboseLevel(3); // set to 3 for graphics systems info
   visManager->Initialize();
 
   // Get the pointer to the User Interface manager
