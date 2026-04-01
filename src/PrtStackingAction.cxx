@@ -20,7 +20,7 @@ PrtStackingAction::PrtStackingAction()
 
   // fQe = fStudy;
   // if (fQe < 1) fQe = 1;
-  // if (PrtManager::Instance()->getRun()->getPmtLayout() == 4) fQe = 9; // hrppd24 qe
+  if (PrtManager::Instance()->getRun()->getPmtLayout() == 4) fQe = 9; // hrppd24 qe
 
   // create a detector efficiency function:
   {
