@@ -216,6 +216,9 @@ PrtReco::PrtReco(TString infile, TString lutfile, TString pdffile, TString nnfil
       int binfactor = (int)(fTimeRes * 1000 / 50. + 0.1);
       for (int h : {fp1, fp2}) {
 	fTime[h].resize(fmaxch);
+	fPdfNph[h] = (TH1F*)pdfFile.Get(Form("nph_ti_%d", h));
+	fPdfNph[h]->SetDirectory(0);
+	
         for (int i = 0; i < fmaxch; i++) {
 	  TH1F* hist = (TH1F*)pdfFile.Get(Form("h_%d_%d", h, i));
 	  hist->SetDirectory(0);  
@@ -309,12 +312,13 @@ void PrtReco::Run(int start, int end) {
   int nsEvents(0), barid(0);
 
   TString outFile = PrtManager::Instance()->getOutName();
-  double cangle[5] = {0}, spr[5] = {0}, spr_err[5] = {0}, trr_err[5] = {0}, trr[5] = {0}, nph_gr[5] = {0}, nph_gr_err[5] = {0},
-         nph_ti[5] = {0}, nph_ti_err[5] = {0}, par5(0), par6(0), ctimeRes(0), trackRes(0), test1(0),
-         test2(0), test3(0), sep_gr(0), sep_gr_err(0), sep_ti(0), sep_ti_err(0), sep_nn(0),
-         sep_nn_err(0), epi_rejection1(0), epi_rejection2(0), epi_rejection3(0), track_res0(0),
-         track_res1(0), track_res2(0);
-
+  double cangle[5] = {0}, spr[5] = {0}, spr_err[5] = {0}, trr_err[5] = {0}, trr[5] = {0},
+    nph_gr[5] = {0}, nph_gr_err[5] = {0}, nph_ti[5] = {0}, nph_ti_err[5] = {0}, events[5] = {0},
+    par5(0), par6(0), ctimeRes(0), trackRes(0), test1(0),
+    test2(0), test3(0), sep_gr(0), sep_gr_err(0), sep_ti(0), sep_ti_err(0), sep_nn(0),
+    sep_nn_err(0), epi_rejection1(0), epi_rejection2(0), epi_rejection3(0), track_res0(0),
+    track_res1(0), track_res2(0);
+  
   ft.set_palette(1);
   ft.create_maps();
   ft.init_digi();
@@ -351,7 +355,6 @@ void PrtReco::Run(int start, int end) {
 
     int pid = fEvent->getPid();    
 
-
     if (ievent % 1000 == 0)
       std::cout << "event # " << ievent << " has " << fEvent->getHits().size() << " hits"
                 << std::endl;
@@ -370,7 +373,6 @@ void PrtReco::Run(int start, int end) {
     // tmp smear mom_vertex
     mom_before.SetTheta(gRandom->Gaus(mom_before.Theta(), trackingResTheta));
     mom_before.SetPhi(gRandom->Gaus(mom_before.Phi(), trackingResPhi));
-
 
     // // post-dirc tracking layer
     // TVector3 pa = fEvent->getPositionAfter();
@@ -391,9 +393,7 @@ void PrtReco::Run(int start, int end) {
     // track already smeared during simulation at tracking layer. rotatedmom is direction at vertex
     // rotatedmom.SetTheta(gRandom->Gaus(rotatedmom.Theta(), trackingResTheta));
     // rotatedmom.SetPhi(gRandom->Gaus(rotatedmom.Phi(), trackingResPhi));i
-
-    
-
+  
     for (int i = 0; i < 5; i++) {
       fAngle[i] = acos(sqrt(m * m + ft.mass(i) * ft.mass(i)) / m / 1.4738); // 1.4738 = 370 = 3.35
       fFunc[i]->SetParameter(0, 1);
@@ -493,32 +493,19 @@ void PrtReco::Run(int start, int end) {
       hthetac[fp1]->Reset();
     }
 
+    events[pid]++;
     if (++nsEvents >= end) break;
-  }
-
-  { // calclulate efficiencies
-    // double eff = ft.calculate_efficiency(fLnDiffGr[fp1],fLnDiffGr[fp2]);
-    // std::cout << "GR eff = " << eff << std::endl;
-    // if (eff_total[3] > 0) std::cout << "NN eff = " << eff_nn[3] / (float) eff_total[3] << std::endl;
-    // std::cout << "eff_total " << eff_total[3] <<  " eff_nn " << eff_nn[3] << std::endl;
-
-    double eff_gr = ft.calculate_efficiency(fLnDiffGr[fp1], fLnDiffGr[fp2]);
-    std::cout << "Eff GR = " << eff_gr << std::endl;
-    double eff_ti = ft.calculate_efficiency(fLnDiffTi[fp1], fLnDiffTi[fp2]);
-    std::cout << "Eff TI = " << eff_ti << std::endl;
-    double eff_nnt = ft.calculate_efficiency(fLnDiffNn[fp1], fLnDiffNn[fp2]);
-    std::cout << "Eff NN = " << eff_nnt << std::endl;
-
-    if (eff_total[2] > 0) std::cout << "Eff NN (pi) = " << eff_nn[2] / (float)eff_total[2] << std::endl;
-    if (eff_total[3] > 0) std::cout << "Eff NN (K) = " << eff_nn[3] / (float)eff_total[3] << std::endl;
   }
 
   if (fMethod == 4) { // create pdf
     std::cout << "saving pdfs into " << fPdfPath << std::endl;
     TFile efile(fPdfPath, "RECREATE");
     for (int h : {fp1, fp2}) {
+      if (events[h] > 0) hnph_ti[h]->Scale(1 / (double)events[h], "nosw2");
+      hnph_ti[h]->Write();
+
       for (int i = 0; i < fmaxch; i++) {
-        fTime[h][i]->Scale(1 / (double)fTotal[h], "nosw2");
+        if (fTotal[h] > 0) fTime[h][i]->Scale(1 / (double)fTotal[h], "nosw2");
         fTime[h][i]->Write();
       }
     }
@@ -527,7 +514,7 @@ void PrtReco::Run(int start, int end) {
     efile.Close();
     std::cout << "totals: " << fTotal[fp1] << " " << fTotal[fp2] << std::endl;
   }
-  
+
   PrintMemoryUsage();
 
   if (fMethod == 2) {
@@ -614,19 +601,20 @@ void PrtReco::Run(int start, int end) {
       if (fLnDiffTi[fp2]->Integral() > 10) {
         fLnDiffTi[fp2]->Fit("gaus", "Q");
         ff = fLnDiffTi[fp2]->GetFunction("gaus");
-	ff->SetNpx(250);
         if (ff) {
+	  ff->SetNpx(400);
+	  ff->SetLineColor(kBlack);
           m1 = ff->GetParameter(1);
           s1 = ff->GetParameter(2);
           dm1 = ff->GetParError(1);
           ds1 = ff->GetParError(2);
-          ff->SetLineColor(kBlack);
         }
 
-        if (fp1 == 0 && mom < 1.5)
-	  { /// handle tails
+        if (0 && mom < 1.5) { /// handle tails
           fLnDiffTi[fp2]->Fit("gaus", "S", "", -500, m1 + 1.5 * s1);
           ff = fLnDiffTi[fp2]->GetFunction("gaus");
+          ff->SetLineColor(kBlack);
+          ff->SetNpx(400);
           m2 = ff->GetParameter(1);
           s2 = ff->GetParameter(2);
           dm2 = ff->GetParError(1);
@@ -637,18 +625,19 @@ void PrtReco::Run(int start, int end) {
       if (fLnDiffTi[fp1]->Integral() > 10) {
         fLnDiffTi[fp1]->Fit("gaus", "Q");
         ff = fLnDiffTi[fp1]->GetFunction("gaus");
-	ff->SetNpx(250);
         if (ff) {
+	  ff->SetNpx(400);
+	  ff->SetLineColor(kBlack);	  
           m2 = ff->GetParameter(1);
           s2 = ff->GetParameter(2);
           dm2 = ff->GetParError(1);
           ds2 = ff->GetParError(2);
-          ff->SetLineColor(kBlack);
         }
-        if (fp1 == 0 && mom < 1.5)
-	  { /// handle tails
+        if (0 && mom < 1.5) { /// handle tails
           fLnDiffTi[fp1]->Fit("gaus", "S", "", m2 - 1.5 * s2, 500);
           ff = fLnDiffTi[fp1]->GetFunction("gaus");
+          ff->SetLineColor(kBlack);
+          ff->SetNpx(400);
           m2 = ff->GetParameter(1);
           s2 = ff->GetParameter(2);
           dm2 = ff->GetParError(1);
@@ -716,6 +705,26 @@ void PrtReco::Run(int start, int end) {
       e3 = -2 * (m1 - m2) / ((s1 + s2) * (s1 + s2)) * ds1;
       e4 = -2 * (m1 - m2) / ((s1 + s2) * (s1 + s2)) * ds2;
       sep_nn_err = sqrt(e1 * e1 + e2 * e2 + e3 * e3 + e4 * e4);
+    }
+
+    { // calclulate efficiencies
+      // double eff = ft.calculate_efficiency(fLnDiffGr[fp1],fLnDiffGr[fp2]);
+      // std::cout << "GR eff = " << eff << std::endl;
+      // if (eff_total[3] > 0) std::cout << "NN eff = " << eff_nn[3] / (float) eff_total[3] <<
+      // std::endl; std::cout << "eff_total " << eff_total[3] <<  " eff_nn " << eff_nn[3] <<
+      // std::endl;
+
+      double eff_gr = ft.calculate_efficiency(fLnDiffGr[fp1], fLnDiffGr[fp2]);
+      std::cout << "Eff GR = " << eff_gr << std::endl;
+      double eff_ti = ft.calculate_efficiency(fLnDiffTi[fp1], fLnDiffTi[fp2]);
+      std::cout << "Eff TI = " << eff_ti << std::endl;
+      double eff_nnt = ft.calculate_efficiency(fLnDiffNn[fp1], fLnDiffNn[fp2]);
+      std::cout << "Eff NN = " << eff_nnt << std::endl;
+
+      if (eff_total[2] > 0)
+        std::cout << "Eff NN (pi) = " << eff_nn[2] / (float)eff_total[2] << std::endl;
+      if (eff_total[3] > 0)
+        std::cout << "Eff NN (K) = " << eff_nn[3] / (float)eff_total[3] << std::endl;
     }
 
     std::cout << Form("%3d : SPR = %2.2f N_gr = %2.2f +/- %2.2f  N_ti = %2.2f +/- %2.2f",
@@ -861,7 +870,7 @@ void PrtReco::Run(int start, int end) {
       ft.add_canvas(cdigi);
     }
 
-    { // sep
+    if (fMethod == 2) { // sep
       fLnDiffGr[fp1]->SetStats(0);
       fLnDiffGr[fp2]->SetStats(0);
       fLnDiffTi[fp1]->SetStats(0);
@@ -869,7 +878,7 @@ void PrtReco::Run(int start, int end) {
       fLnDiffNn[fp1]->SetStats(0);
       fLnDiffNn[fp2]->SetStats(0);
       TString lhtitle = "ln L(" + ft.lname(fp1) + ") - ln L(" + ft.lname(fp2) + ")";
-      
+
       if (fGeomReco) {
         ft.add_canvas("lh_gr" + nid, 800, 400);
         ft.normalize(fLnDiffGr, 5);
@@ -1078,7 +1087,6 @@ void PrtReco::Run(int start, int end) {
     if (fVerbose > 2) ft.wait_primitive("nph" + nid, "none");
   }
   
-
   // delete fTime; // abort now to save time (for small pixels)
 }
 
@@ -1486,7 +1494,7 @@ void PrtReco::time_imaging(PrtEvent *event) {
   int pid = event->getPid();
   double sum1(0), sum2(0), noise(0.5e-5);
   int nph(0);
- 
+
   for (auto hit : event->getHits()) {
     
     double t = hit.getLeadTime() + gRandom->Gaus(0, fTimeRes);
@@ -1532,21 +1540,30 @@ void PrtReco::time_imaging(PrtEvent *event) {
         gLine->SetY2(gPad->GetUymax());
         gLine->Draw();
         gPad->Update();
-        gPad->WaitPrimitive();
+        gPad->WaitPrimitive(); 
       }
     }
 
     if (fMethod == 4) {
+      nph++;
       double w = 1;
       fTotal[pid]++;
       fTime[pid][ch]->Fill(t, w);
     }
   }
 
-  double sum_nph = 0;
-  
-  if (nph > 1) hnph_ti[pid]->Fill(nph);
-  double sum_ti = 1.5 * (sum1 - sum2) + 30 * sum_nph;
+  if (fMethod == 2) {
+    int hits = event->getHits().size();
+    double ln1 = fPdfNph[fp1]->GetBinContent(fPdfNph[fp1]->FindBin(hits));
+    double ln2 = fPdfNph[fp2]->GetBinContent(fPdfNph[fp2]->FindBin(hits));
+
+    double wnph = frun->getTest3();
+    sum1 += wnph * TMath::Log(ln1 + noise);
+    sum2 += wnph * TMath::Log(ln2 + noise);
+  }
+
+  hnph_ti[pid]->Fill(nph);
+  double sum_ti = 1.5 * (sum1 - sum2);
   if (fabs(sum_ti) > 0.1) fLnDiffTi[pid]->Fill(1.0 * sum_ti);
 }
 

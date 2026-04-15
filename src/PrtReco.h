@@ -97,7 +97,7 @@ class PrtReco {
   double fSigma[5];
   TH1F *hthetac[5];
   TH1F *hthetacd[5];
-  TH1F *hnph_gr[5], *hnph_ti[5];
+  TH1F *hnph_gr[5], *hnph_ti[5], *fPdfNph[5];
   double fAngle[5];
   TF1 *fFunc[5];
   TH1F *fLnDiffGr[5];
