@@ -531,6 +531,8 @@ void PrtReco::Run(int start, int end) {
   PrintMemoryUsage();
 
   if (fMethod == 2) {
+    gROOT->SetBatch(1);
+    
     FindPeak(cangle, spr, spr_err);
  
     for (int h = 0; h < 5; h++) {
@@ -612,6 +614,7 @@ void PrtReco::Run(int start, int end) {
       if (fLnDiffTi[fp2]->Integral() > 10) {
         fLnDiffTi[fp2]->Fit("gaus", "Q");
         ff = fLnDiffTi[fp2]->GetFunction("gaus");
+	ff->SetNpx(250);
         if (ff) {
           m1 = ff->GetParameter(1);
           s1 = ff->GetParameter(2);
@@ -634,6 +637,7 @@ void PrtReco::Run(int start, int end) {
       if (fLnDiffTi[fp1]->Integral() > 10) {
         fLnDiffTi[fp1]->Fit("gaus", "Q");
         ff = fLnDiffTi[fp1]->GetFunction("gaus");
+	ff->SetNpx(250);
         if (ff) {
           m2 = ff->GetParameter(1);
           s2 = ff->GetParameter(2);
@@ -724,6 +728,8 @@ void PrtReco::Run(int start, int end) {
               << std::endl;
     std::cout << Form("SEP GR = %2.2f +/- %2.2f ", sep_gr, sep_gr_err) << std::endl;
     std::cout << Form("SEP TI = %2.2f +/- %2.2f ", sep_ti, sep_ti_err) << std::endl;
+
+    gROOT->SetBatch(0);
   }
 
   if (!fVerbose) gROOT->SetBatch(1);
@@ -768,30 +774,18 @@ void PrtReco::Run(int start, int end) {
     }
   }
 
-  { // track resolution with cherenkov ring fit
-    auto r = fTrackAngle0->Fit("gaus","SQ");
-    if (r > -1) track_res0 = r->Parameter(2);
-    TF1 *mgaus = new TF1("mgaus","gaus");
-    mgaus->SetParLimits(1,-0.7,0.7);
-    r = fTrackAngle1->Fit("mgaus","SQ");
-    if (r > -1) track_res1 = r->Parameter(2);
-    r = fTrackAngle2->Fit("gaus","SQ");
-    if (r > -1) track_res2 = r->Parameter(2);
-    std::cout << "track_res0 " << track_res0 <<  " track_res1 " << track_res1 <<" track_res2 " << track_res2 << std::endl;
-  }
-
-  { // chromatic corrections 
-    fhChromL->SetStats(0);
-    auto g = ft.fit_slices_x(fhChromL, -0.00008, 0.00008, 0.01, 2, 0);
-    g->SetMarkerStyle(20);
-    g->SetLineColor(kBlack);
-    g->SetMarkerSize(1.5);
-    auto r = g->Fit("pol1", "S");
-    // if (r > -1) test3 = r->Parameter(1);
+  // { // chromatic corrections 
+  //   fhChromL->SetStats(0);
+  //   auto g = ft.fit_slices_x(fhChromL, -0.00008, 0.00008, 0.01, 2, 0);
+  //   g->SetMarkerStyle(20);
+  //   g->SetLineColor(kBlack);
+  //   g->SetMarkerSize(1.5);
+  //   auto r = g->Fit("pol1", "S");
+  //   // if (r > -1) test3 = r->Parameter(1);
     
-    fhChromL->Draw("colz");
-    g->Draw("PL");
-  }
+  //   fhChromL->Draw("colz");
+  //   g->Draw("PL");
+  // }
 
   { // tree
     // outFile.ReplaceAll("reco_", Form("reco_%d_", frun->getId()));
@@ -850,22 +844,6 @@ void PrtReco::Run(int start, int end) {
     TString nid = Form("_%d_%1.2f_%1.4f_%1.2f", fp1, frun->getTheta(), test1, mom);
     TGaxis::SetMaxDigits(3);
 
-    { // cherenkov angle
-      ft.add_canvas("tangle" + nid, 800, 400);
-      ft.normalize(hthetac, 5);
-
-      hthetac[fp1]->SetTitle(Form("theta %1.2f", fTheta));
-      hthetac[fp1]->Draw("");
-      hthetac[fp2]->Draw("same");
-      drawTheoryLines(mom);
-
-      // ft.add_canvas("tangled" + nid, 800, 400);
-      // ft.normalize(hthetacd, 5);
-      // hthetacd[fp2]->SetTitle(Form("theta %1.2f", fTheta));
-      // hthetacd[fp2]->Draw("");
-      // hthetacd[fp1]->Draw("same");
-    }
-
     { // nph
       ft.add_canvas("nph" + nid, 800, 400);
       ft.normalize(hnph_gr, 5);
@@ -876,7 +854,13 @@ void PrtReco::Run(int start, int end) {
       hnph_ti[fp1]->Draw("same");
       hnph_ti[fp2]->Draw("same");
     }
-    std::cout << "time " << std::endl;
+
+    { // hp
+      auto cdigi = ft.draw_digi(0, 0);
+      cdigi->SetName("hp" + nid);
+      ft.add_canvas(cdigi);
+    }
+
     { // sep
       fLnDiffGr[fp1]->SetStats(0);
       fLnDiffGr[fp2]->SetStats(0);
@@ -884,16 +868,18 @@ void PrtReco::Run(int start, int end) {
       fLnDiffTi[fp2]->SetStats(0);
       fLnDiffNn[fp1]->SetStats(0);
       fLnDiffNn[fp2]->SetStats(0);
-
-      ft.add_canvas("lh_gr" + nid, 800, 400);
-      ft.normalize(fLnDiffGr, 5);
-      fLnDiffGr[fp2]->SetName(Form("s_%2.2f", sep_gr));
-      fLnDiffGr[fp2]->SetTitle(Form("GR separation = %2.2f s.d.", sep_gr));
       TString lhtitle = "ln L(" + ft.lname(fp1) + ") - ln L(" + ft.lname(fp2) + ")";
-      fLnDiffGr[fp2]->GetXaxis()->SetTitle(lhtitle);
+      
+      if (fGeomReco) {
+        ft.add_canvas("lh_gr" + nid, 800, 400);
+        ft.normalize(fLnDiffGr, 5);
+        fLnDiffGr[fp2]->SetName(Form("s_%2.2f", sep_gr));
+        fLnDiffGr[fp2]->SetTitle(Form("GR separation = %2.2f s.d.", sep_gr));
+        fLnDiffGr[fp2]->GetXaxis()->SetTitle(lhtitle);
 
-      fLnDiffGr[fp2]->Draw();
-      fLnDiffGr[fp1]->Draw("same");
+        fLnDiffGr[fp2]->Draw();
+        fLnDiffGr[fp1]->Draw("same");
+      }
 
       if (fTimeImaging) {
         fLnDiffTi[fp2]->GetXaxis()->SetTitle(lhtitle);
@@ -920,140 +906,165 @@ void PrtReco::Run(int start, int end) {
       fLnDiffNn[fp2]->Draw();
       fLnDiffNn[fp1]->Draw("same");
 #endif
-
     }
 
-    { // chromatic corrections
-      ft.add_canvas("chroml" + nid, 800, 400);
-      fhChromL->SetStats(0);
-      auto g = ft.fit_slices_x(fhChromL,-0.00008,0.00008,0.03,2,0);      
-      g->SetMarkerStyle(20);
-      g->SetLineColor(kBlack);
-      g->SetMarkerSize(1.5);
-      g->Fit("pol1");
-      fhChromL->Draw("colz");
-      g->Draw("PL");
-    }
+    if (fGeomReco) {
 
-    { // hp
-      auto cdigi = ft.draw_digi(0, 0);
-      cdigi->SetName("hp" + nid);
-      ft.add_canvas(cdigi);
-    }
+      { // cherenkov angle
+        ft.add_canvas("tangle" + nid, 800, 400);
+        ft.normalize(hthetac, 5);
 
-    if (fRingFit) { // cherenkov ring
+        hthetac[fp1]->SetTitle(Form("theta %1.2f", fTheta));
+        hthetac[fp1]->Draw("");
+        hthetac[fp2]->Draw("same");
+        drawTheoryLines(mom);
 
-      ft.add_canvas("ring" + nid, 800, 800);
+        // ft.add_canvas("tangled" + nid, 800, 400);
+        // ft.normalize(hthetacd, 5);
+        // hthetacd[fp2]->SetTitle(Form("theta %1.2f", fTheta));
+        // hthetacd[fp2]->Draw("");
+        // hthetacd[fp1]->Draw("same");
+      }
 
-      fChRing->SetStats(0);
-      fChRing->GetXaxis()->SetTitle("#theta_{c}sin(#varphi_{c})");
-      fChRing->GetYaxis()->SetTitle("#theta_{c}cos(#varphi_{c})");
-      fChRing->SetTitle(Form("%1.0f#circ polar angle", fTheta));
-      fChRing->Draw("colz");
-      double x0(0), y0(0), a = 0.5 * (fAngle[2] + fAngle[3]);
-      FitRing(x0, y0, a);
-      TVector3 corr(x0, y0, 1 - TMath::Sqrt(x0 * x0 + y0 * y0));
+      { // chromatic corrections
+        ft.add_canvas("chroml" + nid, 800, 400);
+        fhChromL->SetStats(0);
+        auto g = ft.fit_slices_x(fhChromL, -0.00008, 0.00008, 0.03, 2, 0);
+        g->SetMarkerStyle(20);
+        g->SetLineColor(kBlack);
+        g->SetMarkerSize(1.5);
+        g->Fit("pol1");
+        fhChromL->Draw("colz");
+        g->Draw("PL");
+      }
 
-      TLegend *leg = new TLegend(0.32, 0.42, 0.67, 0.59);
-      leg->SetFillStyle(0);
-      leg->SetBorderSize(0);
-      leg->AddEntry((TObject *)0, Form("Entries %0.0f", fChRing->GetEntries()), "");
-      leg->AddEntry((TObject *)0, Form("#Delta#theta_{c} %1.2f [mrad]", corr.Theta() * 1000), "");
-      leg->AddEntry((TObject *)0, Form("#Delta#varphi_{c} %1.2f [rad]", corr.Phi()), "");
-      leg->Draw();
+      { // track resolution with cherenkov ring fit
+        auto r = fTrackAngle0->Fit("gaus", "SQ");
+        if (r > -1) track_res0 = r->Parameter(2);
+        TF1 *mgaus = new TF1("mgaus", "gaus");
+        mgaus->SetParLimits(1, -0.7, 0.7);
+        r = fTrackAngle1->Fit("mgaus", "SQ");
+        if (r > -1) track_res1 = r->Parameter(2);
+        r = fTrackAngle2->Fit("gaus", "SQ");
+        if (r > -1) track_res2 = r->Parameter(2);
+        std::cout << "track_res0 " << track_res0 << " track_res1 " << track_res1 << " track_res2 "
+                  << track_res2 << std::endl;
+      }
 
-      TArc *arc = new TArc(x0, y0, fAngle[2]);
-      arc->SetLineColor(kBlack);
-      arc->SetLineWidth(2);
-      arc->SetFillStyle(0);
-      arc->Draw();
-      glob_i = 0;
-      glob_gr.Set(0);
-    }
+      if (fRingFit) { // cherenkov ring
 
-    if (fCorrType > 0 && fCorrLevel < 1) { // corrections
-      std::cout << "-I- writing " << fCorrFile << std::endl;
+        ft.add_canvas("ring" + nid, 800, 800);
 
-      TFile fc(fCorrFile, "recreate");
-      TTree *tc = new TTree("corrections", "corrections");
-      int pmt, lvl = 0;
-      double c_ca = 0, c_td = 0, c_tr = 0, fitrange = 0.01;
-      tc->Branch("lvl", &lvl, "lvl/I");
-      tc->Branch("pmt", &pmt, "pmt/I");
-      tc->Branch("c_ca", &c_ca, "c_ca/D");
-      tc->Branch("c_td", &c_td, "c_td/D");
-      tc->Branch("c_tr", &c_tr, "c_tr/D");
-      tc->Branch("spr", &spr, "spr[5]/D");
+        fChRing->SetStats(0);
+        fChRing->GetXaxis()->SetTitle("#theta_{c}sin(#varphi_{c})");
+        fChRing->GetYaxis()->SetTitle("#theta_{c}cos(#varphi_{c})");
+        fChRing->SetTitle(Form("%1.0f#circ polar angle", fTheta));
+        fChRing->Draw("colz");
+        double x0(0), y0(0), a = 0.5 * (fAngle[2] + fAngle[3]);
+        FitRing(x0, y0, a);
+        TVector3 corr(x0, y0, 1 - TMath::Sqrt(x0 * x0 + y0 * y0));
 
-      TString nid = Form("cor_a%d", lvl);
-      ft.add_canvas(nid, 1600, 1000);
-      auto c = ft.get_canvas(nid);
-      c->Divide(6, 4);
-      nid = Form("cor_t%d", lvl);
-      ft.add_canvas(nid, 1600, 1000);
-      auto c2 = ft.get_canvas(nid);
-      c2->Divide(6, 4);
-      c->cd(1);
-      for (pmt = 0; pmt < fnpmt; pmt++) {
-        if (fPmt_a[pmt]->GetEntries() < 20) continue;
+        TLegend *leg = new TLegend(0.32, 0.42, 0.67, 0.59);
+        leg->SetFillStyle(0);
+        leg->SetBorderSize(0);
+        leg->AddEntry((TObject *)0, Form("Entries %0.0f", fChRing->GetEntries()), "");
+        leg->AddEntry((TObject *)0, Form("#Delta#theta_{c} %1.2f [mrad]", corr.Theta() * 1000), "");
+        leg->AddEntry((TObject *)0, Form("#Delta#varphi_{c} %1.2f [rad]", corr.Phi()), "");
+        leg->Draw();
 
-	  c->cd(pmt + 1);
-	  c_td = -ft.fit(fPmt_td[pmt], 5, 20, 1).X();
-	  c_tr = -ft.fit(fPmt_tr[pmt], 5, 20, 1).X();
+        TArc *arc = new TArc(x0, y0, fAngle[2]);
+        arc->SetLineColor(kBlack);
+        arc->SetLineWidth(2);
+        arc->SetFillStyle(0);
+        arc->Draw();
+        glob_i = 0;
+        glob_gr.Set(0);
+      }
 
-	  fPmt_td[pmt]->Draw();
-	  fPmt_tr[pmt]->SetLineColor(2);
+      if (fCorrType > 0 && fCorrLevel < 1) { // corrections
+        std::cout << "-I- writing " << fCorrFile << std::endl;
+
+        TFile fc(fCorrFile, "recreate");
+        TTree *tc = new TTree("corrections", "corrections");
+        int pmt, lvl = 0;
+        double c_ca = 0, c_td = 0, c_tr = 0, fitrange = 0.01;
+        tc->Branch("lvl", &lvl, "lvl/I");
+        tc->Branch("pmt", &pmt, "pmt/I");
+        tc->Branch("c_ca", &c_ca, "c_ca/D");
+        tc->Branch("c_td", &c_td, "c_td/D");
+        tc->Branch("c_tr", &c_tr, "c_tr/D");
+        tc->Branch("spr", &spr, "spr[5]/D");
+
+        TString nid = Form("cor_a%d", lvl);
+        ft.add_canvas(nid, 1600, 1000);
+        auto c = ft.get_canvas(nid);
+        c->Divide(6, 4);
+        nid = Form("cor_t%d", lvl);
+        ft.add_canvas(nid, 1600, 1000);
+        auto c2 = ft.get_canvas(nid);
+        c2->Divide(6, 4);
+        c->cd(1);
+        for (pmt = 0; pmt < fnpmt; pmt++) {
+          if (fPmt_a[pmt]->GetEntries() < 20) continue;
+
+          c->cd(pmt + 1);
+          c_td = -ft.fit(fPmt_td[pmt], 5, 20, 1).X();
+          c_tr = -ft.fit(fPmt_tr[pmt], 5, 20, 1).X();
+
+          fPmt_td[pmt]->Draw();
+          fPmt_tr[pmt]->SetLineColor(2);
           fPmt_tr[pmt]->Draw("same");
 
-	  c2->cd(pmt + 1);
+          c2->cd(pmt + 1);
           c_ca = -ft.fit(fPmt_a[pmt], fitrange, 20, 0.01).X();
-	  lvl = 2;
+          lvl = 2;
           tc->Fill();
           fPmt_a[pmt]->Draw();
-	  std::cout <<"c_ca " << c_ca << "c_td " << c_td << " c_tr " << c_tr << std::endl;
-      }
-
-      tc->Write();
-      fc.Write();
-      fc.Close();
-    }
-
-    { // time
-      ft.add_canvas("tdiff" + nid, 800, 400);      
-      ft.normalize(fTimeDiffR, 3);
-      for (int i = 0; i < 3; i++) {
-        if (fTimeDiffR[i]->GetEntries() > 100) {
-          fTimeDiffR[i]->SetStats(0);
-          fTimeDiffR[i]->SetTitle(Form("theta %1.2f", fTheta));
-          fTimeDiffR[i]->Draw((i == 0) ? "h" : "hsame");
+          std::cout << "c_ca " << c_ca << "c_td " << c_td << " c_tr " << c_tr << std::endl;
         }
+
+        tc->Write();
+        fc.Write();
+        fc.Close();
       }
 
-      ft.add_canvas("diff" + nid, 800, 400);
-      fTimeDiff->SetStats(0);
-      fTimeDiff->Draw("colz");
-      
-      ft.add_canvas("time" + nid, 800, 400);
-      fTimeProp->Draw();
-    }
+      { // time
+        ft.add_canvas("tdiff" + nid, 800, 400);
+        ft.normalize(fTimeDiffR, 3);
+        for (int i = 0; i < 3; i++) {
+          if (fTimeDiffR[i]->GetEntries() > 100) {
+            fTimeDiffR[i]->SetStats(0);
+            fTimeDiffR[i]->SetTitle(Form("theta %1.2f", fTheta));
+            fTimeDiffR[i]->Draw((i == 0) ? "h" : "hsame");
+          }
+        }
 
-    { // track smearing
-      ft.add_canvas("track_smear" + nid, 800, 400);
-      ft.normalize(fTrackAngle0, fTrackAngle1);     
-      fTrackAngle1->SetLineColor(kRed);
-      fTrackAngle0->GetXaxis()->SetRangeUser(-10, 10);
-      fTrackAngle0->Draw();
-      fTrackAngle1->Draw("same");
-    }
+        ft.add_canvas("diff" + nid, 800, 400);
+        fTimeDiff->SetStats(0);
+        fTimeDiff->Draw("colz");
 
-    { // bounces
-      ft.add_canvas("bounces" + nid, 800, 400);
-      fBounce->SetLineColor(kBlack);
-      fBounce->Draw();
-    //   fBounceH->SetLineColor(kOrange + 7);
-    //   fBounceH->Draw("same");
-    //   fBounceW->SetLineColor(kBlue);
-    //   fBounceW->Draw("same");
+        ft.add_canvas("time" + nid, 800, 400);
+        fTimeProp->Draw();
+      }
+
+      if (0) { // track smearing
+        ft.add_canvas("track_smear" + nid, 800, 400);
+        ft.normalize(fTrackAngle0, fTrackAngle1);
+        fTrackAngle1->SetLineColor(kRed);
+        fTrackAngle0->GetXaxis()->SetRangeUser(-10, 10);
+        fTrackAngle0->Draw();
+        fTrackAngle1->Draw("same");
+      }
+
+      if (0) { // bounces
+        ft.add_canvas("bounces" + nid, 800, 400);
+        fBounce->SetLineColor(kBlack);
+        fBounce->Draw();
+        //   fBounceH->SetLineColor(kOrange + 7);
+        //   fBounceH->Draw("same");
+        //   fBounceW->SetLineColor(kBlue);
+        //   fBounceW->Draw("same");
+      }
     }
 
     TString filedir = fCorrFile;
@@ -1062,10 +1073,11 @@ void PrtReco::Run(int start, int end) {
       filedir += "/";
     } else filedir = "";
 
-    ft.save_canvas(filedir + "reco", 0, 0, 0);
-    
-    if (fVerbose > 2) ft.wait_primitive("lh_gr" + nid, "none");
+    ft.save_canvas(filedir + "reco", 0, 0, 0);   
+
+    if (fVerbose > 2) ft.wait_primitive("nph" + nid, "none");
   }
+  
 
   // delete fTime; // abort now to save time (for small pixels)
 }
