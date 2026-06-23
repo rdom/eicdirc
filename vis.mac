@@ -1,6 +1,7 @@
 # Use this open statement to create an OpenGL view:
-/vis/open OGLS
+#/vis/open OGLS
 #/vis/open OGL 600x600-0+0
+/vis/open OGLIQt
 
 #
 # Use this open statement to create a .prim file suitable for

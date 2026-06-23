@@ -142,7 +142,7 @@ PrtReco::PrtReco(TString infile, TString lutfile, TString pdffile, TString nnfil
   double range = 100;
   if (fMomentum < 5) range = 500;
   if (fMomentum < 3) range = 500;
-  if (fMomentum < 0.6) range = 500;
+  if (fMomentum < 0.6) range = 300;
   if (fMomentum > 8) range = 200;
   if (fMomentum > 12) range = 100;
   if (fp1 == 0) {
@@ -498,11 +498,20 @@ void PrtReco::Run(int start, int end) {
   }
 
   if (fMethod == 4) { // create pdf
+    ft.add_canvas(Form("pdf_nph_%2.1f_%2.0f", mom, fTheta), 1200, 600);
+
     std::cout << "saving pdfs into " << fPdfPath << std::endl;
     TFile efile(fPdfPath, "RECREATE");
     for (int h : {fp1, fp2}) {
       if (events[h] > 0) hnph_ti[h]->Scale(1 / (double)events[h], "nosw2");
+
+      gStyle->SetOptStat(0);
+      hnph_ti[h]->SetTitle(Form("p = %2.1f GeV/c,  #theta = %2.0f deg", mom, fTheta));
+      hnph_ti[h]->GetYaxis()->SetTitle("entries / N");
+      hnph_ti[h]->GetXaxis()->SetRangeUser(0, 140);
       hnph_ti[h]->Write();
+      hnph_ti[h]->Draw("same");
+
 
       for (int i = 0; i < fmaxch; i++) {
         if (fTotal[h] > 0) fTime[h][i]->Scale(1 / (double)fTotal[h], "nosw2");
@@ -783,19 +792,6 @@ void PrtReco::Run(int start, int end) {
     }
   }
 
-  // { // chromatic corrections 
-  //   fhChromL->SetStats(0);
-  //   auto g = ft.fit_slices_x(fhChromL, -0.00008, 0.00008, 0.01, 2, 0);
-  //   g->SetMarkerStyle(20);
-  //   g->SetLineColor(kBlack);
-  //   g->SetMarkerSize(1.5);
-  //   auto r = g->Fit("pol1", "S");
-  //   // if (r > -1) test3 = r->Parameter(1);
-    
-  //   fhChromL->Draw("colz");
-  //   g->Draw("PL");
-  // }
-
   { // tree
     // outFile.ReplaceAll("reco_", Form("reco_%d_", frun->getId()));
     TFile file(outFile, "recreate");
@@ -947,18 +943,18 @@ void PrtReco::Run(int start, int end) {
         g->Draw("PL");
       }
 
-      { // track resolution with cherenkov ring fit
-        auto r = fTrackAngle0->Fit("gaus", "SQ");
-        if (r > -1) track_res0 = r->Parameter(2);
-        TF1 *mgaus = new TF1("mgaus", "gaus");
-        mgaus->SetParLimits(1, -0.7, 0.7);
-        r = fTrackAngle1->Fit("mgaus", "SQ");
-        if (r > -1) track_res1 = r->Parameter(2);
-        r = fTrackAngle2->Fit("gaus", "SQ");
-        if (r > -1) track_res2 = r->Parameter(2);
-        std::cout << "track_res0 " << track_res0 << " track_res1 " << track_res1 << " track_res2 "
-                  << track_res2 << std::endl;
-      }
+      // { // track resolution with cherenkov ring fit
+      //   auto r = fTrackAngle0->Fit("gaus", "SQ");
+      //   if (r > -1) track_res0 = r->Parameter(2);
+      //   TF1 *mgaus = new TF1("mgaus", "gaus");
+      //   mgaus->SetParLimits(1, -0.7, 0.7);
+      //   r = fTrackAngle1->Fit("mgaus", "SQ");
+      //   if (r > -1) track_res1 = r->Parameter(2);
+      //   r = fTrackAngle2->Fit("gaus", "SQ");
+      //   if (r > -1) track_res2 = r->Parameter(2);
+      //   std::cout << "track_res0 " << track_res0 << " track_res1 " << track_res1 << " track_res2 "
+      //             << track_res2 << std::endl;
+      // }
 
       if (fRingFit) { // cherenkov ring
 
