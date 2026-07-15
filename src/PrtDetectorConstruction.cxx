@@ -86,6 +86,10 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   fCookie[1] = fPrizm[0];
   fCookie[2] = 0;
 
+  fPmtCookie[0] = fPrizm[2];
+  fPmtCookie[1] = fPrizm[0];
+  fPmtCookie[2] = 0;
+
   fMcpTotal[0] = fMcpTotal[1] = 53 + 6;
   fMcpTotal[2] = 1;
   fMcpActive[0] = fMcpActive[1] = 53;
@@ -237,6 +241,14 @@ PrtDetectorConstruction::PrtDetectorConstruction() : G4VUserDetectorConstruction
   if (fStudy == 102) { // air gap
     fBWindow[2] = 5;
     fCookie[2] = 0.1;
+  }
+
+  if (fStudy == 105) { // air gap between PMT and prism
+    fPmtCookie[2] = 0.1;
+  }
+
+  if (fStudy == 106) { // cookie between PMT and prism
+    fPmtCookie[2] = 3;
   }
 
   fRun->setRadiator(fNBar);
@@ -629,7 +641,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   double currentz = 0.5 * dirclength + fLens[2];
 
   auto aircookiemat = defaultMaterial;
-  if (fStudy == 101) aircookiemat = opticalCookieMaterial;
+  if (fStudy == 101 || fStudy == 106) aircookiemat = opticalCookieMaterial;
 
   // Cookie / Air
   if (fCookie[2] > 0.01) {
@@ -806,11 +818,19 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     new G4PVPlacement(xRot, fPrismShift, lPrizm, "wPrizm", lDirc, false, 0);
   }
 
+  // Pmt Cookie / Air
+  if (fPmtCookie[2] > 0.01) {
+    G4Box *gPmtCookie = new G4Box("gPmtCookie", 0.5 * fPmtCookie[0], 0.5 * fPmtCookie[1], 0.5 * fPmtCookie[2]);
+    lPmtCookie = new G4LogicalVolume(gPmtCookie, aircookiemat, "lPmtCookie", 0, 0, 0);
+    new G4PVPlacement(0, G4ThreeVector(rshift + 0.5 * fFd[1] - 0.5 * fPrizm[3] + evshiftx, 0, currentz + fPrizm[1] + 0.5 * fPmtCookie[2]), lPmtCookie,
+                      "wCookie", lDirc, false, 1);
+    evshiftz += fPmtCookie[2];
+  }
+  
   new G4PVPlacement(fdrot,
                     G4ThreeVector(rshift + 0.5 * fFd[1] - 0.5 * fPrizm[3] + evshiftx, 0, evshiftz),
                     lFd, "wFd", lDirc, false, 0);
-  
-    
+      
   if (fMcpLayout == 1) {
     // standard mcp pmt layout
     // The MCP
@@ -1491,6 +1511,8 @@ void PrtDetectorConstruction::SetVisualization() {
   G4VisAttributes *waCookie = new G4VisAttributes(G4Colour(0.2, 0.1, 0.7, 0.2)); // 0.05
   waCookie->SetVisibility(true);
   if(fCookie[2] > 0.01) lCookie->SetVisAttributes(waCookie);
+  if(fPmtCookie[2] > 0.01) lPmtCookie->SetVisAttributes(new G4VisAttributes(G4Colour(0.2, 0.1, 0.7, 0.01)));
+  if(fPmtCookie[2] > 1) lPmtCookie->SetVisAttributes(waCookie);
   
   G4VisAttributes *waPrizm = new G4VisAttributes(G4Colour(0., 0.9, 0.9, 0.25)); //0.3
   // waPrizm->SetForceAuxEdgeVisible(true);

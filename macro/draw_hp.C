@@ -22,7 +22,7 @@ void draw_hp(TString infile = "../build/hits.root") {
       // if(spath.Contains("8")) continue;
     
       int ch = hit.getChannel();
-      int pmt = hit.getPmt();
+      int pmt = hit.getPmt();      
       int pix = hit.getPixel();
       double time = hit.getLeadTime();
 
@@ -31,7 +31,7 @@ void draw_hp(TString infile = "../build/hits.root") {
   }
 
   // auto cdigi = t.draw_digi();
-  auto cdigi = t.draw_digi(0, 0, new TCanvas("hp", "hp", 1200, 380));
+  auto cdigi = t.draw_digi(3000, 0, new TCanvas("hp", "hp", 1200, 600));
   cdigi->SetName(Form("hp_%d",(int) t1));
   t.add_canvas(cdigi);
   t.save_canvas("data/draw_hp", 0);
