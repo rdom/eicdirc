@@ -77,7 +77,8 @@ G4bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
   G4ThreeVector translation =
     touchable->GetHistory()->GetTopTransform().Inverse().TransformPoint(G4ThreeVector(0, 0, 0));
   G4ThreeVector inPrismpos = touchable->GetHistory()->GetTransform(1).TransformPoint(globalpos);
-  G4ThreeVector g4mom = track->GetVertexMomentumDirection(); // GetMomentum();
+  // G4ThreeVector g4mom = track->GetVertexMomentumDirection();
+  G4ThreeVector g4mom = track->GetMomentum();
   G4ThreeVector g4pos = track->GetVertexPosition();
 
   G4ThreeVector localvec = touchable->GetHistory()->GetTopTransform().TransformAxis(g4mom);
@@ -111,7 +112,7 @@ G4bool PrtPixelSD::ProcessHits(G4Step *step, G4TouchableHistory *hist) {
     PrtPrizmHit *phit = (*prizmCol)[i];
     if (phit->GetTrackID() == track->GetTrackID()) {
       if (fRunType == 5 && phit->GetNormalId() == -5) {
-        momentum.SetXYZ(phit->GetPos().x(), phit->GetPos().y(), phit->GetPos().z());
+        // momentum.SetXYZ(phit->GetPos().x(), phit->GetPos().y(), phit->GetPos().z());
         prismtime = phit->GetEdep();
       }
       if (phit->GetNormalId() > 0) {
