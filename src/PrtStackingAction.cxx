@@ -171,7 +171,7 @@ PrtStackingAction::PrtStackingAction()
     double en_sbi[22] = {0,   213, 214, 254, 270, 280, 290, 300, 350, 400, 450,
                          500, 532, 550, 600, 650, 700, 750, 800, 850, 900, 1000};
 
-     // https://github.com/eic/pfRICH/blob/746a580cdfe2fe9ce519106016809953f504d1d7/share/source/HRPPD.cc#L166
+    // https://github.com/eic/pfRICH/blob/746a580cdfe2fe9ce519106016809953f504d1d7/share/source/HRPPD.cc#L166
     const int n_hrppd = 48;
     double en_hrppd[n_hrppd] = {0,   199, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290,
                                 300, 310, 320, 330, 340, 350, 360, 370, 380, 390, 400, 410,
@@ -250,7 +250,7 @@ PrtStackingAction::PrtStackingAction()
     for (int i = 0; i < n_hrppd; i++) qe_hrppd[i] *= 0.81 * 0.7 ;
     for (int i = 0; i < n_hrppd16; i++) qe_hrppd16[i] *= 0.01 * 0.70;
     for (int i = 0; i < n_lappd; i++) qe_lappd[i] *= 0.81 * 0.7;
-    for (int i = 0; i < n_hrppd24; i++) qe_hrppd24[i] *= 0.7;
+    for (int i = 0; i < n_hrppd24; i++) qe_hrppd24[i] *= 0.73; // 25% at the peak with 0.73 CE 
 
     fDetEff[0] = new TGraph(1000, lambda[0], fEfficiencyR[0]);
     fDetEff[1] = new TGraph(1000, lambda[1], fEfficiencyR[1]);

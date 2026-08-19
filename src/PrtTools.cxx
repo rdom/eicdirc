@@ -28,7 +28,7 @@ void PrtTools::init() {
   _pmtlayout = 2031;
   
   _canvaslist = new TList();
-   _event = new PrtEvent();
+  _event = new PrtEvent();
   _info = "";
  
   if (gROOT->GetApplication()) {
@@ -149,11 +149,10 @@ void PrtTools::fill_digi(int pmt, int pix, double w){
 // _pmtlayout == 5 - 1x3 EIC DIRC prism, LAPD
 
 TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
-  
   _last_maxz = maxz;
   _last_minz = minz;
-
   TString sid = rand_str(3);
+
   if (cdigi) cdigi->cd();
   else
     cdigi = new TCanvas("hp=" + sid, "hp_" + sid, 800, 400);
@@ -231,7 +230,7 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
     nrow = 3;
     ncol = 4;
   }
-
+    
   if (_pmtlayout > 1) {
     float tbw(0.02), tbh(0.01), shift(0), shiftw(0.02), shifth(0), margin(0.01);
     int padi(0);
@@ -431,7 +430,7 @@ TCanvas *PrtTools::draw_digi(double maxz, double minz, TCanvas *cdigi) {
       }
     }
   }
-
+  
   _last_max = max;
   int nnmax(0);
   for (int p = 0; p < nrow * ncol; p++) {
