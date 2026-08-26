@@ -250,9 +250,11 @@ PrtStackingAction::PrtStackingAction()
     for (int i = 0; i < n_hrppd; i++) qe_hrppd[i] *= 0.81 * 0.7 ;
     for (int i = 0; i < n_hrppd16; i++) qe_hrppd16[i] *= 0.01 * 0.70;
     for (int i = 0; i < n_lappd; i++) qe_lappd[i] *= 0.81 * 0.7;
+    // for (int i = 0; i < n_hrppd24; i++) qe_hrppd24[i] *= 0.7;
     // for (int i = 0; i < n_hrppd24; i++) qe_hrppd24[i] *= 0.73; // 25% at the peak with 0.73 CE 
-    for (int i = 0; i < n_hrppd24; i++) qe_hrppd24[i] *= 0.95; // tmp
-
+    // for (int i = 0; i < n_hrppd24; i++) qe_hrppd24[i] *= 0.95; // 33%
+    for (int i = 0; i < n_hrppd24; i++) qe_hrppd24[i] *=  27 / 34.32 * 0.7; // 18.9% 
+    
     fDetEff[0] = new TGraph(1000, lambda[0], fEfficiencyR[0]);
     fDetEff[1] = new TGraph(1000, lambda[1], fEfficiencyR[1]);
     fDetEff[2] = new TGraph(1000, lambda[2], fEfficiencyR[2]);
