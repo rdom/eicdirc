@@ -400,10 +400,10 @@ void PrtReco::Run(int start, int end) {
       fFunc[i]->SetParameter(1, fAngle[i]);
       fFunc[i]->SetParameter(2, fSigma[i]);
     }
-
+    
     // double stime = FindStartTime(fEvent);
     geom_reco(fEvent, mom_before, fRingFit);
-
+    
     if (fRingFit) {
       
       double x0(0), y0(0), a(fAngle[2]);
@@ -467,7 +467,7 @@ void PrtReco::Run(int start, int end) {
 
     if (fTimeImaging) time_imaging(fEvent);
     if (fNNet) nn_reco(fEvent, mom_vertex);
-
+ 
     double sum_nph = 0;
     // if (m < 2.5) {  // photon yield likelihood
     //   TF1 *f_pi = new TF1("gaus", "gaus", 0, 150);
@@ -1490,17 +1490,17 @@ void PrtReco::time_imaging(PrtEvent *event) {
   int pid = event->getPid();
   double sum1(0), sum2(0), noise(0.5e-5);
   int nph(0);
-
+  
   for (auto hit : event->getHits()) {
+    double t = hit.getLeadTime() + gRandom->Gaus(0, fTimeRes); 
     
-    double t = hit.getLeadTime() + gRandom->Gaus(0, fTimeRes);
-    int mcp = hit.getPmt();
+    int mcp = hit.getPmt();    
     int pix = hit.getPixel();
     int ch = hit.getChannel();
-
+    
+    
     if (fMethod == 2) {
-      nph++;
-
+      nph++; 
       double lh1 = fTime[fp1][ch]->GetBinContent(fTime[fp1][ch]->FindBin(t));
       double lh2 = fTime[fp2][ch]->GetBinContent(fTime[fp2][ch]->FindBin(t));
       // double lh1 = fPdf[fp1][ch]->Eval(t);

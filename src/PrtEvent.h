@@ -22,7 +22,7 @@ class PrtEvent : public TObject {
   void addHit(PrtHit hit) { fHitArray.push_back(hit); }
 
   // accessors
-  Int_t getPid() const { return fPid; }
+  Int_t getPid() const { return (fPid != 7)? fPid : 2; }
   Double_t getTime() const { return fTime; }
   Double_t getTof() { return fTof; }
   Double_t getTofPi() { return fTofPi; }
