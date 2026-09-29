@@ -77,8 +77,36 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
   fGeomType = fRun->getGeometry();
   fField = fRun->getField();
   fCurrentEvent++;
+  
+  if (pdg != 0) {
+    if (pdg == 2212) fPid = 4;
+    else if (pdg == 11) fPid = 0;
+    else if (pdg == 13) fPid = 1;
+    else if (pdg == 211) fPid = 2;
+    else if (pdg == 321) fPid = 3;
+    else if (pdg == -11) fPid = 5;
+    else if (pdg == -13) fPid = 6;
+    else if (pdg == -211) fPid = 7;
+    else if (pdg == -321) fPid = 8;    
+    else if (pdg == 10000 && fPid != 7) fPid = 7;
+    else if (pdg == 10000) fPid = 0;
+    else if (pdg == 10001 && fPid != 2) fPid = 2;
+    else if (pdg == 10001) fPid = 1;
+    else if (pdg == 10003 && fPid != 2) fPid = 2;
+    else if (pdg == 10003) fPid = 3;
+    else if (pdg == 10004 && fPid != 2) fPid = 2;
+    else if (pdg == 10004) fPid = 4;
+    else if (pdg == 10005 && fPid != 3) fPid = 3;
+    else if (pdg == 10005) fPid = 4;
 
-  if (fRunType == 0) { // random tracks
+    fParticleGun->SetParticleDefinition(fParticle[fPid]);
+   
+  } else {
+    fParticleGun->SetParticleDefinition(fParticleOP);
+  }
+  PrtManager::Instance()->getEvent()->setPid(fPid);
+
+   if (fRunType == 0) { // random tracks
     if (fabs(momentum - momentumMax) > 0.0001) {
       momentum = (momentumMax - momentum) * G4UniformRand() + momentum;
       fParticleGun->SetParticleMomentum(G4ThreeVector(0, 0, momentum * GeV));
@@ -102,35 +130,7 @@ void PrtPrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
       if (phi >= 990 && phi <= 999) phi = GetPhiFromBarId(phi - 990, theta);
     }
   }
-
-  if (pdg != 0) {
-    if (pdg == 2212) fPid = 4;
-    else if (pdg == 11) fPid = 0;
-    else if (pdg == 13) fPid = 1;
-    else if (pdg == 211) fPid = 2;
-    else if (pdg == 321) fPid = 3;
-    else if (pdg == -11) fPid = 5;
-    else if (pdg == -13) fPid = 6;
-    else if (pdg == -211) fPid = 7;
-    else if (pdg == -321) fPid = 8;    
-    else if (pdg == 10000 && fPid != 2) fPid = 2;
-    else if (pdg == 10000) fPid = 0;
-    else if (pdg == 10001 && fPid != 2) fPid = 2;
-    else if (pdg == 10001) fPid = 1;
-    else if (pdg == 10003 && fPid != 2) fPid = 2;
-    else if (pdg == 10003) fPid = 3;
-    else if (pdg == 10004 && fPid != 2) fPid = 2;
-    else if (pdg == 10004) fPid = 4;
-    else if (pdg == 10005 && fPid != 3) fPid = 3;
-    else if (pdg == 10005) fPid = 4;
-
-    fParticleGun->SetParticleDefinition(fParticle[fPid]);
-   
-  } else {
-    fParticleGun->SetParticleDefinition(fParticleOP);
-  }
-  PrtManager::Instance()->getEvent()->setPid(fPid);
-
+  
   G4ThreeVector vec(0, 0, 1);
   if (fRunType == 0 || fRunType == 10 || fRunType == 5) { // simulation
 

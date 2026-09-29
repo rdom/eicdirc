@@ -1469,9 +1469,10 @@ void PrtDetectorConstruction::SetVisualization() {
 
   G4VisAttributes *waFd = new G4VisAttributes(DircColour);
   waFd->SetForceWireframe(true);
+  waFd->SetVisibility(false);
   lFd->SetVisAttributes(waFd);
 
-  G4VisAttributes *waBar = new G4VisAttributes(G4Colour(0., 1., 0.9, 0.05)); // 0.05
+  G4VisAttributes *waBar = new G4VisAttributes(G4Colour(0., 1., 0.9, 0.2)); // 0.05
   waBar->SetVisibility(true);
   lBar->SetVisAttributes(waBar);
   lEvBar->SetVisAttributes(waBar);
@@ -1514,7 +1515,7 @@ void PrtDetectorConstruction::SetVisualization() {
   if(fPmtCookie[2] > 0.01) lPmtCookie->SetVisAttributes(new G4VisAttributes(G4Colour(0.2, 0.1, 0.7, 0.01)));
   if(fPmtCookie[2] > 1) lPmtCookie->SetVisAttributes(waCookie);
   
-  G4VisAttributes *waPrizm = new G4VisAttributes(G4Colour(0., 0.9, 0.9, 0.25)); //0.3
+  G4VisAttributes *waPrizm = new G4VisAttributes(G4Colour(0., 0.9, 0.9, 0.4)); //0.25
   // waPrizm->SetForceAuxEdgeVisible(true);
   // waPrizm->SetForceSolid(true);
   lPrizm->SetVisAttributes(waPrizm);
@@ -1530,7 +1531,7 @@ void PrtDetectorConstruction::SetVisualization() {
     lFmirror->SetVisAttributes(waMirror);
   }
 
-  G4VisAttributes *waMcp = new G4VisAttributes(G4Colour(0.3,0.0,0.3,0.1));
+  G4VisAttributes *waMcp = new G4VisAttributes(G4Colour(0.3,0.0,0.3,0.3)); // 0.1
   //G4VisAttributes *waMcp = new G4VisAttributes(G4Colour(1.0, 0., 0.1, 0.4));
   // waMcp->SetForceWireframe(true);
   waMcp->SetForceSolid(true);

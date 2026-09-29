@@ -136,7 +136,28 @@
 # /vis/viewer/set/upVector 0 1
 # /vis/viewer/set/viewpointThetaPhi 9  41  deg
 # /vis/viewer/zoomTo 6
-# /vis/viewer/set/targetPoint 88.5358 -17.0546 18.8692 cm
+# # /vis/viewer/set/targetPoint 88.5358 -17.0546 18.8692 cm
+
+# /vis/viewer/set/viewpointVector -0.397681 0.24007 0.88556
+# /vis/viewer/set/upVector 0 1 0
+# /vis/viewer/set/projection perspective 35 deg
+# /vis/viewer/zoomTo 8.02663
+# /vis/viewer/scaleTo 1 1 1
+# /vis/viewer/set/targetPoint 1.41869 -0.351226 1.56045 m  
+# # Note that if you have not set a target point, the vis system sets
+# # a target point based on the scene - plus any panning and dollying -
+# # so don't be alarmed by strange coordinates here.
+# /vis/viewer/dollyTo 0 fm 
+# /vis/viewer/set/lightsMove object
+# /vis/viewer/set/lightsVector 1 1 1
+# /vis/viewer/set/rotationStyle constrainUpDirection
+# /vis/viewer/set/background 1 1 1 1
+# /vis/viewer/set/defaultColour 1 1 1 1
+# /vis/viewer/set/defaultTextColour 0 0 1 1
+
+
+
+
 
 # # side xy
 # /vis/viewer/set/viewpointVector 0 0 1
@@ -171,12 +192,12 @@
 # /vis/viewer/scaleTo 1 1 1
 # /vis/viewer/set/targetPoint 0.8 0 2.17344 m
 
-# side lens
-/vis/viewer/set/viewpointVector 1.31839e-16 -1 -6.93889e-18
-/vis/viewer/set/upVector 0 1 0
-/vis/viewer/set/projection orthogonal
-/vis/viewer/zoomTo 15
-/vis/viewer/set/targetPoint 0.85 0 2.7 m
+# # side lens
+# /vis/viewer/set/viewpointVector 1.31839e-16 -1 -6.93889e-18
+# /vis/viewer/set/upVector 0 1 0
+# /vis/viewer/set/projection orthogonal
+# /vis/viewer/zoomTo 15
+# /vis/viewer/set/targetPoint 0.85 0 2.7 m
 
 # # whole length
 # /vis/viewer/zoomTo 2
