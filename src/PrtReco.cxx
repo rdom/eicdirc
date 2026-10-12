@@ -1553,7 +1553,7 @@ void PrtReco::time_imaging(PrtEvent *event) {
     double ln1 = fPdfNph[fp1]->GetBinContent(fPdfNph[fp1]->FindBin(hits));
     double ln2 = fPdfNph[fp2]->GetBinContent(fPdfNph[fp2]->FindBin(hits));
 
-    double wnph = frun->getTest3();
+    double wnph = 5; //frun->getTest3();
     sum1 += wnph * TMath::Log(ln1 + noise);
     sum2 += wnph * TMath::Log(ln2 + noise);
   }
