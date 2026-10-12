@@ -26,6 +26,8 @@
 #include "G4UImanager.hh"
 #include "G4GDMLParser.hh"
 
+#include "G4Tubs.hh"
+
 #include "G4MagneticField.hh"
 #include "G4UniformMagField.hh"
 #include "G4TransportationManager.hh"
@@ -309,16 +311,76 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     }
   }
 
-  // The Bar
-  G4Box *gBar = new G4Box("gBar", 0.5 * fBar[0], 0.5 * fBar[1], 0.5 * fBar[2]);
-  lBar = new G4LogicalVolume(gBar, BarMaterial, "lBar", 0, 0, 0);
-
-  // The EV Bar
-  auto gEvBar = new G4Box("gEvBar", 0.5 * fBar[0], 0.5 * fBar[1], 0.5 * evbarlength);
   double pandabarw = 53;
-  if(fEvType == 10) gEvBar = new G4Box("gEvBar", 0.5 * fBar[0], 0.5 * pandabarw, 0.5 * evbarlength);
+  
+  // The Bar
+  if (fTest3 > 0.0001) {
+    double deform = fTest3;
+    G4double halfX = 0.5 * fBar[0]; // half thickness (x) =  8.5
+    G4double halfY = 0.5 * fBar[1]; // half width     (y) = 16
+    G4double halfZ = 0.5 * fBar[2]; // half length    (z) = 525
 
-  lEvBar = new G4LogicalVolume(gEvBar, BarMaterial, "lEvBar", 0, 0, 0);
+    G4double Rmid = (halfZ * halfZ + deform * deform) / (2.0 * deform); // needs deform > 0
+    G4double Rmax = Rmid + halfX;
+    G4double Rmin = Rmid - halfX;
+    G4double phiHalf = std::asin(std::min(1.0, halfZ / Rmin));
+
+    G4Tubs *barArc = new G4Tubs("barArc", Rmin, Rmax, halfY, -phiHalf, 2.0 * phiHalf);
+
+    // end face touches the inner/outer arcs at tube-frame x = xIn / xOut
+    G4double xIn = std::sqrt(std::max(Rmin * Rmin - halfZ * halfZ, 0.0));
+    G4double xOut = std::sqrt(std::max(Rmax * Rmax - halfZ * halfZ, 0.0));
+    G4double xCurv = -0.5 * (xIn + xOut);
+    G4double sIn = Rmid - xIn;
+
+    G4VSolid *archF = new G4DisplacedSolid("archF", barArc, G4ThreeVector(-Rmid, 0., 0.));
+
+    G4double eps = 1.0 * mm;
+    G4Box *cutoffF = new G4Box("cutoffF",
+                               halfX + sIn + eps, // x : non-clipping (covers [-sIn, +halfX])
+                               halfZ,             // y : THE cutoff faces -> world z = +-halfZ
+                               halfY + eps);      // z : non-clipping
+
+    G4VSolid *barF = new G4IntersectionSolid("barF", archF, cutoffF);
+
+    // world orientation: centre of curvature at (xCurv, 0, 0), arch middle at x = xCurv+Rmid
+    G4RotationMatrix rotToY;
+    rotToY.rotateX(-0.5 * CLHEP::pi);
+    G4VSolid *gBar =
+      new G4DisplacedSolid("gBar", barF, &rotToY, G4ThreeVector(xCurv + Rmid, 0., 0.));
+
+    lBar = new G4LogicalVolume(gBar, BarMaterial, "lBar", 0, 0, 0);
+
+    halfZ = 0.5 * evbarlength;
+    Rmid = (halfZ * halfZ + deform * deform) / (2.0 * deform); // needs deform > 0
+    Rmax = Rmid + halfX;
+    Rmin = Rmid - halfX;
+    phiHalf = std::asin(std::min(1.0, halfZ / Rmin));
+
+    G4Tubs *barArc1 = new G4Tubs("barArc1", Rmin, Rmax, halfY, -phiHalf, 2.0 * phiHalf);
+
+    xIn = std::sqrt(std::max(Rmin * Rmin - halfZ * halfZ, 0.0));
+    xOut = std::sqrt(std::max(Rmax * Rmax - halfZ * halfZ, 0.0));
+    xCurv = -0.5 * (xIn + xOut);
+    sIn = Rmid - xIn;
+
+    G4VSolid *archF1 = new G4DisplacedSolid("archF1", barArc1, G4ThreeVector(-Rmid, 0., 0.));
+    G4Box *cutoffF1 = new G4Box("cutoffF1", halfX + sIn + eps, halfZ, halfY + eps);
+    G4VSolid *barF1 = new G4IntersectionSolid("barF1", archF1, cutoffF1);
+    G4VSolid *gEvBar =
+      new G4DisplacedSolid("gBar1", barF1, &rotToY, G4ThreeVector(xCurv + Rmid, 0., 0.));
+    lEvBar = new G4LogicalVolume(gEvBar, BarMaterial, "lEvBar", 0, 0, 0);
+
+  } else {
+    G4Box *gBar = new G4Box("gBar", 0.5 * fBar[0], 0.5 * fBar[1], 0.5 * fBar[2]);
+    lBar = new G4LogicalVolume(gBar, BarMaterial, "lBar", 0, 0, 0);
+    
+    // The EV Bar
+    auto gEvBar = new G4Box("gEvBar", 0.5 * fBar[0], 0.5 * fBar[1], 0.5 * evbarlength);
+    if(fEvType == 10) gEvBar = new G4Box("gEvBar", 0.5 * fBar[0], 0.5 * pandabarw, 0.5 * evbarlength);
+    lEvBar = new G4LogicalVolume(gEvBar, BarMaterial, "lEvBar", 0, 0, 0);
+  }
+
 
   G4Box *gExpVol = new G4Box("gExpVol", 0.5 * evprismheight, 0.5 * fBoxWidth, 0.5 * evbarlength);
   if (fEvType == 8 || fEvType == 9) gExpVol = new G4Box("gExpVol", 0.5 * evprismheight, 0.25 * fBoxWidth, 0.5 * evbarlength);
