@@ -312,63 +312,49 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   }
 
   double pandabarw = 53;
-  
+
   // The Bar
   if (fTest3 > 0.0001) {
     double deform = fTest3;
-    G4double halfX = 0.5 * fBar[0]; // half thickness (x) =  8.5
-    G4double halfY = 0.5 * fBar[1]; // half width     (y) = 16
-    G4double halfZ = 0.5 * fBar[2]; // half length    (z) = 525
+    double halfX = 0.5 * fBar[0]; // half thickness (x) =  8.5
+    double halfY = 0.5 * fBar[1]; // half width     (y) = 16
+    double halfZ = 0.5 * fBar[2]; // half length    (z) = 525
 
-    G4double Rmid = (halfZ * halfZ + deform * deform) / (2.0 * deform); // needs deform > 0
-    G4double Rmax = Rmid + halfX;
-    G4double Rmin = Rmid - halfX;
-    G4double phiHalf = std::asin(std::min(1.0, halfZ / Rmin));
-
-    G4Tubs *barArc = new G4Tubs("barArc", Rmin, Rmax, halfY, -phiHalf, 2.0 * phiHalf);
-
+    double Rmid = (halfZ * halfZ + deform * deform) / (2.0 * deform); // needs deform > 0
+    double Rmax = Rmid + halfX;
+    double Rmin = Rmid - halfX;
+    double phiHalf =  std::asin(std::min(1.0, halfZ / Rmin)) + 1.0/Rmin; //  + 1e-4;
+    
     // end face touches the inner/outer arcs at tube-frame x = xIn / xOut
-    G4double xIn = std::sqrt(std::max(Rmin * Rmin - halfZ * halfZ, 0.0));
-    G4double xOut = std::sqrt(std::max(Rmax * Rmax - halfZ * halfZ, 0.0));
-    G4double xCurv = -0.5 * (xIn + xOut);
-    G4double sIn = Rmid - xIn;
+    double xIn = std::sqrt(std::max(Rmin * Rmin - halfZ * halfZ, 0.0));
+    double xOut = std::sqrt(std::max(Rmax * Rmax - halfZ * halfZ, 0.0));
+    double xCurv = -0.5 * (xIn + xOut);
+    double sIn = Rmid - xIn;
+    double eps = 1;
 
-    G4VSolid *archF = new G4DisplacedSolid("archF", barArc, G4ThreeVector(-Rmid, 0., 0.));
-
-    G4double eps = 1.0 * mm;
-    G4Box *cutoffF = new G4Box("cutoffF",
-                               halfX + sIn + eps, // x : non-clipping (covers [-sIn, +halfX])
-                               halfZ,             // y : THE cutoff faces -> world z = +-halfZ
-                               halfY + eps);      // z : non-clipping
-
-    G4VSolid *barF = new G4IntersectionSolid("barF", archF, cutoffF);
-
-    // world orientation: centre of curvature at (xCurv, 0, 0), arch middle at x = xCurv+Rmid
     G4RotationMatrix rotToY;
     rotToY.rotateX(-0.5 * CLHEP::pi);
-    G4VSolid *gBar =
-      new G4DisplacedSolid("gBar", barF, &rotToY, G4ThreeVector(xCurv + Rmid, 0., 0.));
-
+    G4Tubs *barArc = new G4Tubs("barArc", Rmin, Rmax, halfY, -phiHalf, 2 * phiHalf);
+    G4Box *cutoffF = new G4Box("cutoffF", halfX + sIn + eps, halfY + eps, halfZ);
+    G4VSolid *gBar = new G4IntersectionSolid("barF", cutoffF, barArc, &rotToY, G4ThreeVector(-Rmid + xCurv + Rmid, 0., 0.));
+    
     lBar = new G4LogicalVolume(gBar, BarMaterial, "lBar", 0, 0, 0);
 
     halfZ = 0.5 * evbarlength;
     Rmid = (halfZ * halfZ + deform * deform) / (2.0 * deform); // needs deform > 0
     Rmax = Rmid + halfX;
     Rmin = Rmid - halfX;
-    phiHalf = std::asin(std::min(1.0, halfZ / Rmin));
-
-    G4Tubs *barArc1 = new G4Tubs("barArc1", Rmin, Rmax, halfY, -phiHalf, 2.0 * phiHalf);
+    phiHalf = std::asin(std::min(1.0, halfZ / Rmin)) + 1.0/Rmin; //  + 1e-4;
 
     xIn = std::sqrt(std::max(Rmin * Rmin - halfZ * halfZ, 0.0));
     xOut = std::sqrt(std::max(Rmax * Rmax - halfZ * halfZ, 0.0));
     xCurv = -0.5 * (xIn + xOut);
     sIn = Rmid - xIn;
 
-    G4VSolid *archF1 = new G4DisplacedSolid("archF1", barArc1, G4ThreeVector(-Rmid, 0., 0.));
-    G4Box *cutoffF1 = new G4Box("cutoffF1", halfX + sIn + eps, halfZ, halfY + eps);
-    G4VSolid *barF1 = new G4IntersectionSolid("barF1", archF1, cutoffF1);
-    G4VSolid *gEvBar =
-      new G4DisplacedSolid("gBar1", barF1, &rotToY, G4ThreeVector(xCurv + Rmid, 0., 0.));
+    G4Tubs *barArc1 = new G4Tubs("barArc1", Rmin, Rmax, halfY, -phiHalf, 2.0 * phiHalf);
+    G4Box *cutoffF1 = new G4Box("cutoffF1", halfX + sIn + eps, halfY + eps, halfZ);
+    G4VSolid *gEvBar = new G4IntersectionSolid("gEvbar", cutoffF1, barArc1, &rotToY, G4ThreeVector(-Rmid + xCurv + Rmid, 0., 0.));
+
     lEvBar = new G4LogicalVolume(gEvBar, BarMaterial, "lEvBar", 0, 0, 0);
 
   } else {
