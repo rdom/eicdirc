@@ -11,6 +11,8 @@
 #include "G4OpticalParameters.hh"
 #include "FTFP_BERT.hh"
 #include "G4FastSimulationManagerProcess.hh"
+#include "G4GeometryManager.hh"
+#include "G4GeometryTolerance.hh"
 
 #include "TROOT.h"
 #include "TApplication.h"
@@ -225,8 +227,9 @@ int main(int argc, char **argv) {
 
   // Choose the Random engine
   G4Random::setTheEngine(new CLHEP::RanecuEngine);
+  G4GeometryManager::GetInstance()->SetWorldMaximumExtent(10000);
   G4RunManager *runManager = new G4RunManager;
-
+  
   G4Random::setTheSeed(seed);
 
   // G4PhysListFactory *physListFactory = new G4PhysListFactory();
