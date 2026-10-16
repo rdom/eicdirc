@@ -89,7 +89,7 @@
 /vis/viewer/set/hiddenEdge true
 #/vis/viewer/set/background 1 1 1 0
 /vis/viewer/set/hiddenMarker 
-/vis/geometry/set/forceLineSegmentsPerCircle all 0 150
+/vis/geometry/set/forceLineSegmentsPerCircle all 0 150 #150
 # /vis/viewer/set/globalLineWidthScale 1.5
 # /vis/geometry/set/lineWidth all 0 1
 

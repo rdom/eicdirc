@@ -312,50 +312,103 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
   }
 
   double pandabarw = 53;
-
+  std::vector<G4LogicalVolume*> lBarJ(4), lGlueJ(4);
+    
   // The Bar
-  if (fTest3 > 0.0001) {
-    double deform = fTest3;
-    double halfX = 0.5 * fBar[0]; // half thickness (x) =  8.5
-    double halfY = 0.5 * fBar[1]; // half width     (y) = 16
-    double halfZ = 0.5 * fBar[2]; // half length    (z) = 525
+  if (fTest3 > 0.0001 && (fStudy == 600 || fStudy == 601 || fStudy == 603)) {
+    if (fStudy == 600 || fStudy == 601) { // sine shape
+      double deform = fTest3;
+      double halfX = 0.5 * fBar[0]; // half thickness (x) =  8.5
+      double halfY = 0.5 * fBar[1]; // half width     (y) = 16
+      double halfZ = 0.5 * fBar[2]; // half length    (z) = 525
 
-    double Rmid = (halfZ * halfZ + deform * deform) / (2.0 * deform); // needs deform > 0
-    double Rmax = Rmid + halfX;
-    double Rmin = Rmid - halfX;
-    double phiHalf =  std::asin(std::min(1.0, halfZ / Rmin)) + 1.0/Rmin; //  + 1e-4;
-    
-    // end face touches the inner/outer arcs at tube-frame x = xIn / xOut
-    double xIn = std::sqrt(std::max(Rmin * Rmin - halfZ * halfZ, 0.0));
-    double xOut = std::sqrt(std::max(Rmax * Rmax - halfZ * halfZ, 0.0));
-    double xCurv = -0.5 * (xIn + xOut);
-    double sIn = Rmid - xIn;
-    double eps = 1;
+      double Rmid = (halfZ * halfZ + deform * deform) / (2.0 * deform); // needs deform > 0
+      double Rmax = Rmid + halfX;
+      double Rmin = Rmid - halfX;
+      double phiHalf = std::asin(std::min(1.0, halfZ / Rmin)) + 1.0 / Rmin; //  + 1e-4;
 
-    G4RotationMatrix rotToY;
-    rotToY.rotateX(-0.5 * CLHEP::pi);
-    G4Tubs *barArc = new G4Tubs("barArc", Rmin, Rmax, halfY, -phiHalf, 2 * phiHalf);
-    G4Box *cutoffF = new G4Box("cutoffF", halfX + sIn + eps, halfY + eps, halfZ);
-    G4VSolid *gBar = new G4IntersectionSolid("barF", cutoffF, barArc, &rotToY, G4ThreeVector(-Rmid + xCurv + Rmid, 0., 0.));
-    
-    lBar = new G4LogicalVolume(gBar, BarMaterial, "lBar", 0, 0, 0);
+      // end face touches the inner/outer arcs at tube-frame x = xIn / xOut
+      double xIn = std::sqrt(std::max(Rmin * Rmin - halfZ * halfZ, 0.0));
+      double xOut = std::sqrt(std::max(Rmax * Rmax - halfZ * halfZ, 0.0));
+      double xCurv = -0.5 * (xIn + xOut);
+      double sIn = Rmid - xIn;
+      double eps = 1;
 
-    halfZ = 0.5 * evbarlength;
-    Rmid = (halfZ * halfZ + deform * deform) / (2.0 * deform); // needs deform > 0
-    Rmax = Rmid + halfX;
-    Rmin = Rmid - halfX;
-    phiHalf = std::asin(std::min(1.0, halfZ / Rmin)) + 1.0/Rmin; //  + 1e-4;
+      G4RotationMatrix rotToY;
+      rotToY.rotateX(-0.5 * CLHEP::pi);
+      G4Tubs *barArc = new G4Tubs("barArc", Rmin, Rmax, halfY, -phiHalf, 2 * phiHalf);
+      G4Box *cutoffF = new G4Box("cutoffF", halfX + sIn + eps, halfY + eps, halfZ);
+      G4VSolid *gBar = new G4IntersectionSolid("barF", cutoffF, barArc, &rotToY,
+                                               G4ThreeVector(-Rmid + xCurv + Rmid, 0., 0.));
 
-    xIn = std::sqrt(std::max(Rmin * Rmin - halfZ * halfZ, 0.0));
-    xOut = std::sqrt(std::max(Rmax * Rmax - halfZ * halfZ, 0.0));
-    xCurv = -0.5 * (xIn + xOut);
-    sIn = Rmid - xIn;
+      lBar = new G4LogicalVolume(gBar, BarMaterial, "lBar", 0, 0, 0);
 
-    G4Tubs *barArc1 = new G4Tubs("barArc1", Rmin, Rmax, halfY, -phiHalf, 2.0 * phiHalf);
-    G4Box *cutoffF1 = new G4Box("cutoffF1", halfX + sIn + eps, halfY + eps, halfZ);
-    G4VSolid *gEvBar = new G4IntersectionSolid("gEvbar", cutoffF1, barArc1, &rotToY, G4ThreeVector(-Rmid + xCurv + Rmid, 0., 0.));
+      halfZ = 0.5 * evbarlength;
+      Rmid = (halfZ * halfZ + deform * deform) / (2.0 * deform); // needs deform > 0
+      Rmax = Rmid + halfX;
+      Rmin = Rmid - halfX;
+      phiHalf = std::asin(std::min(1.0, halfZ / Rmin)) + 1.0 / Rmin; //  + 1e-4;
 
-    lEvBar = new G4LogicalVolume(gEvBar, BarMaterial, "lEvBar", 0, 0, 0);
+      xIn = std::sqrt(std::max(Rmin * Rmin - halfZ * halfZ, 0.0));
+      xOut = std::sqrt(std::max(Rmax * Rmax - halfZ * halfZ, 0.0));
+      xCurv = -0.5 * (xIn + xOut);
+      sIn = Rmid - xIn;
+
+      G4Tubs *barArc1 = new G4Tubs("barArc1", Rmin, Rmax, halfY, -phiHalf, 2.0 * phiHalf);
+      G4Box *cutoffF1 = new G4Box("cutoffF1", halfX + sIn + eps, halfY + eps, halfZ);
+      G4VSolid *gEvBar = new G4IntersectionSolid("gEvbar", cutoffF1, barArc1, &rotToY,
+                                                 G4ThreeVector(-Rmid + xCurv + Rmid, 0., 0.));
+
+      lEvBar = new G4LogicalVolume(gEvBar, BarMaterial, "lEvBar", 0, 0, 0);
+    }
+
+    if (fStudy == 603) { // one big arc
+      double halfX = 0.5 * fBar[0], halfY = 0.5 * fBar[1];
+      double deform = fTest3; // sagitta of the WHOLE bar
+      int nparts = 4;
+
+      // ---- z of every piece / glue, identical to the placement loop ----
+      std::vector<double> partL(nparts), partZ(nparts), glueZ(nparts);
+      double zBot = -0.5 * dirclength;
+      for (int j = 0; j < nparts; j++) {
+        partL[j] = (j == nparts - 1) ? evbarlength : fBar[2];
+        partZ[j] = zBot + 0.5 * partL[j] + j * (fBar[2] + gluethickness);
+        glueZ[j] = partZ[j] + 0.5 * (partL[j] + gluethickness);
+      }
+      double zTop = glueZ[nparts - 1];
+      double zMid = 0.5 * (zBot + zTop);
+      double chord = 0.5 * (zTop - zBot);
+
+      // ---- the single common circle ----
+      double Rmid = (chord * chord + deform * deform) / (2.0 * deform); // needs deform > 0
+      double Rmax = Rmid + halfX, Rmin = Rmid - halfX;
+      double phiHalf = std::asin(std::min(1.0, chord / Rmin)) + 1.0 / Rmin;
+      double xIn = std::sqrt(std::max(Rmin * Rmin - chord * chord, 0.));
+      double xOut = std::sqrt(std::max(Rmax * Rmax - chord * chord, 0.));
+      double xCurv = -0.5 * (xIn + xOut), sIn = Rmid - xIn, eps = 1.;
+
+      G4RotationMatrix rotToY;
+      rotToY.rotateX(-0.5 * CLHEP::pi);
+
+      auto arch = [&](const G4String &nm, double zPos, double hz) -> G4VSolid * {
+        G4Tubs *arc = new G4Tubs(nm + "_arc", Rmin, Rmax, halfY, -phiHalf, 2 * phiHalf);
+        G4Box *cut = new G4Box(nm + "_cut", halfX + sIn + eps, halfY + eps, hz);
+        return new G4IntersectionSolid(nm, cut, arc, &rotToY,
+                                       G4ThreeVector(xCurv, 0., zMid - zPos));
+      };
+
+      for (int j = 0; j < nparts; j++) {
+        G4String js = std::to_string(j);
+        lBarJ[j] = new G4LogicalVolume(arch("barJ" + js, partZ[j], 0.5 * partL[j]), BarMaterial,
+                                       "lBarJ" + js);
+
+        lGlueJ[j] = new G4LogicalVolume(arch("glueJ" + js, glueZ[j], 0.5 * gluethickness),
+                                        epotekMaterial, "lGlueJ" + js);
+
+        lBar = lBarJ[j];
+        lEvBar = lBar;
+      }
+    }
 
   } else {
     G4Box *gBar = new G4Box("gBar", 0.5 * fBar[0], 0.5 * fBar[1], 0.5 * fBar[2]);
@@ -422,10 +475,15 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
     }
 
     for (int i = 0; i < fNBar; i++) {
+
       double shifty = i * (fBar[1] + fBarsGap) - 0.5 * fBoxWidth + fBar[1] / 2.;
-      for (int j = 0; j < nparts; j++) {
-        double z = -0.5 * dirclength + 0.5 * fBar[2] + (fBar[2] + gluethickness) * j;
-        if (j == 3) {
+
+      if (fStudy == 603) {                                                        // one big arc
+        G4VisAttributes *waBar = new G4VisAttributes(G4Colour(0., 1., 0.9, 0.2)); // 0.05
+        waBar->SetVisibility(true);
+        for (int j = 0; j < nparts; j++) {
+          G4RotationMatrix *rotd = 0;
+          double z = -0.5 * dirclength + 0.5 * fBar[2] + (fBar[2] + gluethickness) * j;
           if (fEvType == 10) {
             if (i > 5) continue;
             shifty = i * (pandabarw + fBarsGap) - 0.5 * fBoxWidth + 0.5 * pandabarw;
@@ -436,19 +494,54 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
               0, G4ThreeVector(rshift, shifty, z + 0.5 * (evbarlength + gluethickness)), lGlueE,
               "wGlueE", lDirc, false, id);
           } else {
-            z = -0.5 * dirclength + 0.5 * evbarlength + (fBar[2] + gluethickness) * j;
-            new G4PVPlacement(0, G4ThreeVector(rshift, shifty, z), lEvBar, "wBar", lDirc, false,
+            if (j == 3) z = -0.5 * dirclength + 0.5 * evbarlength + (fBar[2] + gluethickness) * j;
+            new G4PVPlacement(0, G4ThreeVector(rshift, shifty, z), lBarJ[j], "wBar", lDirc, false,
                               id);
-            new G4PVPlacement(
-              0, G4ThreeVector(rshift, shifty, z + 0.5 * (evbarlength + gluethickness)), lGlue,
-              "wGlue", lDirc, false, id);
+            if (j == 3) z -= 0.5 * (fBar[2] - evbarlength);
+            new G4PVPlacement(0, G4ThreeVector(rshift, shifty, z + 0.5 * (fBar[2] + gluethickness)),
+                              lGlueJ[j], "wGlue", lDirc, false, id);
+
+            lBarJ[j]->SetVisAttributes(waBar);
           }
-        } else {
-          new G4PVPlacement(0, G4ThreeVector(rshift, shifty, z), lBar, "wBar", lDirc, false, id);
-          new G4PVPlacement(0, G4ThreeVector(rshift, shifty, z + 0.5 * (fBar[2] + gluethickness)),
-                            lGlue, "wGlue", lDirc, false, id);
+          id++;
         }
-        id++;
+      } else {
+
+        for (int j = 0; j < nparts; j++) {
+          G4RotationMatrix *rotd = new G4RotationMatrix();
+          if (fStudy == 601) { // sine shape
+            if (fTest3 > 0.0001 && (j == 3 || j == 1)) {
+              rotd->rotateY(CLHEP::pi);
+            }
+          }
+
+          double z = -0.5 * dirclength + 0.5 * fBar[2] + (fBar[2] + gluethickness) * j;
+          if (j == 3) {
+            if (fEvType == 10) {
+              if (i > 5) continue;
+              shifty = i * (pandabarw + fBarsGap) - 0.5 * fBoxWidth + 0.5 * pandabarw;
+              z = -0.5 * dirclength + 0.5 * evbarlength + (fBar[2] + gluethickness) * j;
+              new G4PVPlacement(0, G4ThreeVector(rshift, shifty, z), lEvBar, "wBar", lDirc, false,
+                                id);
+              new G4PVPlacement(
+                0, G4ThreeVector(rshift, shifty, z + 0.5 * (evbarlength + gluethickness)), lGlueE,
+                "wGlueE", lDirc, false, id);
+            } else {
+              z = -0.5 * dirclength + 0.5 * evbarlength + (fBar[2] + gluethickness) * j;
+              new G4PVPlacement(rotd, G4ThreeVector(rshift, shifty, z), lEvBar, "wBar", lDirc,
+                                false, id);
+              new G4PVPlacement(
+                0, G4ThreeVector(rshift, shifty, z + 0.5 * (evbarlength + gluethickness)), lGlue,
+                "wGlue", lDirc, false, id);
+            }
+          } else {
+            new G4PVPlacement(rotd, G4ThreeVector(rshift, shifty, z), lBar, "wBar", lDirc, false,
+                              id);
+            new G4PVPlacement(0, G4ThreeVector(rshift, shifty, z + 0.5 * (fBar[2] + gluethickness)),
+                              lGlue, "wGlue", lDirc, false, id);
+          }
+          id++;
+        }
       }
     }
     wTracker = new G4PVPlacement(0, G4ThreeVector(rshift - 0.5 * fBar[0] - 18, 0, 0), lTracker,
@@ -1627,8 +1720,10 @@ void PrtDetectorConstruction::ConstructSDandField() {
 
   PrtBarSD *barSD = new PrtBarSD("BarSD", "BarHitsCollection", 0);
   G4SDManager::GetSDMpointer()->AddNewDetector(barSD);
-  SetSensitiveDetector("lBar", barSD);
 
+  if(fStudy == 603) for (int j = 0; j < 4; j++) SetSensitiveDetector(Form("lBarJ%d",j), barSD); //TMP
+  else  SetSensitiveDetector("lBar", barSD);
+  
   // Magnetic Fields
   int fid = fRun->getField();
   if (fid == 1 || fid == 2 || fid == 3 || fid == 4) {
