@@ -478,7 +478,7 @@ G4VPhysicalVolume *PrtDetectorConstruction::Construct() {
 
       double shifty = i * (fBar[1] + fBarsGap) - 0.5 * fBoxWidth + fBar[1] / 2.;
 
-      if (fStudy == 603) {                                                        // one big arc
+      if (fTest3 > 0.0001 && fStudy == 603) {                                                        // one big arc
         G4VisAttributes *waBar = new G4VisAttributes(G4Colour(0., 1., 0.9, 0.2)); // 0.05
         waBar->SetVisibility(true);
         for (int j = 0; j < nparts; j++) {
@@ -1721,7 +1721,7 @@ void PrtDetectorConstruction::ConstructSDandField() {
   PrtBarSD *barSD = new PrtBarSD("BarSD", "BarHitsCollection", 0);
   G4SDManager::GetSDMpointer()->AddNewDetector(barSD);
 
-  if(fStudy == 603) for (int j = 0; j < 4; j++) SetSensitiveDetector(Form("lBarJ%d",j), barSD); //TMP
+  if(fStudy == 603 && fTest3 > 0.0001) for (int j = 0; j < 4; j++) SetSensitiveDetector(Form("lBarJ%d",j), barSD); //TMP
   else  SetSensitiveDetector("lBar", barSD);
   
   // Magnetic Fields
