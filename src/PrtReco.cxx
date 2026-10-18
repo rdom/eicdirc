@@ -1465,7 +1465,7 @@ void PrtReco::geom_reco(PrtEvent *event, TVector3 mom, bool ringfit) {
     }
 
     if (isGoodHit_gr || (!fGeomReco) || 1) {
-      nph++;
+      if (isGoodHit_gr || (!fGeomReco)) nph++;
       if (frun->getPid() == 10005) {
         if (pid == 3) ft.fill_digi(mcp, pix);
       } else if (pid == 2) ft.fill_digi(mcp, pix);
