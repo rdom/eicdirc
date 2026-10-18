@@ -227,7 +227,7 @@ int main(int argc, char **argv) {
 
   // Choose the Random engine
   G4Random::setTheEngine(new CLHEP::RanecuEngine);
-  G4GeometryManager::GetInstance()->SetWorldMaximumExtent(10000);
+  G4GeometryManager::GetInstance()->SetWorldMaximumExtent(100000);
   G4RunManager *runManager = new G4RunManager;
   
   G4Random::setTheSeed(seed);
